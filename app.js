@@ -1,16 +1,24 @@
-import { arabicAlphabet, words, dailyTasks } from "./data.js";
+import { arabicAlphabet, words, dailyTasks, surahs, dailyTasksEn } from "./data.js";
 
 const GROQ_API_KEY = "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";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
-const AI_SYSTEM_PROMPT_PL = `You are a warm, motivating and personal Arabic learning assistant inside the app 'Alif AI'. 
-The user is Abang / Gantengku / Hubby. His wife is Baby / babe / wifey / princess / guardian angel.
-Always reply ONLY in Polish language. Be friendly, encouraging, playful and personal. 
-When the user asks for flashcards, quizzes, stories, facts or any content - generate high-quality Arabic learning material and always offer buttons to add it directly to the correct section of the app (Fiszki, Książeczki, Nasza Przygoda, etc.).`;
-const AI_SYSTEM_PROMPT_EN = `You are a warm, motivating and personal Arabic learning assistant inside the app 'Alif AI'.
-The user is Abang / Gantengku / Hubby. His wife is Baby / babe / wifey / princess / guardian angel.
-Always reply ONLY in English language. Be friendly, encouraging, playful and personal.
-When the user asks for flashcards, quizzes, stories, facts or any content - generate high-quality Arabic learning material and always offer buttons to add it directly to the correct section of the app (Flashcards, Books, Our Adventure, etc.).`;
+const AI_SYSTEM_PROMPT_PL = `Jesteś ciepłym, motywującym osobistym asystentem nauki arabskiego w aplikacji 'Alif AI'.
+Użytkownik to Abang. Jego żona to Princess. Używaj TYLKO tych dwóch imion.
+Odpowiadaj WYŁĄCZNIE po polsku. Bądź przyjazny, zachęcający, bezpośredni i osobisty.
+Gdy tworzysz fiszki – pisz je w formacie: słowo arabskie, myślnik, tłumaczenie po polsku, myślnik, transliteracja. Np: سلام - pokój/cześć - salam
+Gdy tworzysz lekcję – podaj arabski zwrot, jego transliterację i znaczenie, plus krótkie wyjaśnienie.
+Gdy tworzysz historyjkę – pisz krótko (3-5 zdań), prosto, z 1-2 arabskimi słowami wytłumaczonymi w nawiasach.
+Gdy piszesz ciekawostkę – pisz krótko (2-4 zdania), z jednym arabskim słowem i jego wymową.
+NIE dodawaj opisów przycisków ani instrukcji. Tylko treść.`;
+const AI_SYSTEM_PROMPT_EN = `You are a warm, motivating personal Arabic learning assistant inside the app 'Alif AI'.
+The user is Abang. His wife is Princess. Use ONLY these two names.
+Always reply ONLY in English. Be friendly, encouraging, direct and personal.
+When creating flashcards – write them as: Arabic word, dash, English meaning, dash, transliteration. E.g.: سلام - peace/hello - salam
+When creating a lesson – provide the Arabic phrase, its transliteration and meaning, plus a brief explanation.
+When creating a story – write briefly (3-5 sentences), simply, with 1-2 Arabic words explained in brackets.
+When writing a culture fact – write briefly (2-4 sentences), with one Arabic word and its pronunciation.
+Do NOT add button descriptions or instructions. Just the content.`;
 
 const $ = (selector) => document.querySelector(selector);
 const view = $("#view");
@@ -35,68 +43,131 @@ const navItems = [
   ["adventure", "☆", "navAdventure"],
   ["books", "▤", "navBooks"],
   ["culture", "✦", "navCulture"],
+  ["quran", "☽", "navQuran"],
   ["games", "◎", "navGames"],
   ["settings", "⚙", "navSettings"]
 ];
 
 const ROMANTIC_LINES = [
-  "Kocham Cię, Baby 🌸",
-  "Tęsknię za Tobą, Princess 💕",
-  "Habibi ❤️",
-  "You are my everything, Abang 💐",
-  "Aku sayang kamu 🌺",
-  "Selalu rindu kamu, sayang ❤️",
-  "Jesteś moim domem, gdziekolwiek jesteś 💕",
-  "My heart is learning Arabic with you 🌸"
+  "I love you, Princess 🌸",
+  "Missing you every moment, Princess 💕",
+  "You are my everything 💐",
+  "My heart is learning Arabic with you 🌸",
+  "Abang misses you so much 🌺",
+  "Together we learn, together we grow 💕",
+  "You make my heart smile, Princess 🥰",
+  "Abang, you are my hero 💪❤️",
+  "Distance means nothing when someone means everything ❤️",
+  "Every day I fall in love with you more, Princess 🌸",
+  "You are the reason I smile 💕",
+  "Can't wait to hold you again, Princess 🌺",
+  "Learning Arabic just to say I love you better 💞",
+  "You are home to me, wherever you are ❤️",
+  "My favorite person in the world 🌸",
+  "Thinking of you, always 💕"
 ];
 
 const I18N = {
   pl: {
-    navHome: "Start", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navSettings: "Ustawienia",
+    navHome: "Start", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navQuran: "Koran", navGames: "Gry", navSettings: "Ustawienia",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
-    welcome: "Witaj w ألف AI", homeTitle: "Uczymy się arabskiego krok po kroku", homeLead: "Duże litery, spokojne powtórki, wymowa, pisanie i osobisty AI Assistant dla Abanga.",
+    welcome: "Witaj w ألف AI", homeTitle: "Uczymy się arabskiego krok po kroku", homeLead: "Duże litery, spokojne powtórki, wymowa, pisanie i osobisty AI Assistant.",
     streak: "Seria dni", level: "Poziom", alphabetProgress: "Alfabet", todayTask: "Dzisiejsze zadanie", start: "Zaczynam", progress: "Postęp", points: "pkt",
-    aiAssistant: "AI Assistant", aiPlaceholder: "Poproś o fiszki, quiz, historyjkę albo ciekawostkę...", send: "Wyślij", aiHello: "Cześć Abang. Jestem Twoim Alif AI Assistantem. Mogę stworzyć fiszki, mini-lekcję, quiz, historyjkę dla Ciebie i Baby albo ciekawostkę dnia.",
+    aiAssistant: "AI Assistant", aiPlaceholder: "Poproś o fiszki, quiz, historyjkę albo ciekawostkę...", send: "Wyślij", aiHello: "Cześć! Jestem Twoim Alif AI Assistantem. Mogę stworzyć fiszki, mini-lekcję, quiz, historyjkę dla Ciebie i Princess albo ciekawostkę dnia.",
     addFlashcards: "Dodaj do fiszek", saveBook: "Zapisz jako nową książeczkę", addAdventure: "Dodaj do Naszej Przygody", addCulture: "Dodaj jako ciekawostkę",
+    addLesson: "Stwórz lekcję AI",
     more: "Więcej", play: "Odtwórz", check: "Sprawdź", clear: "Wyczyść", next: "Następna", good: "dobrze", weak: "słabo", veryWeak: "bardzo słabo", attempts: "Historia prób",
     frontHint: "Dotknij karty, żeby ją odwrócić", hard: "Trudne", ok: "OK", easy: "Łatwe", noCards: "Nie ma kart w tym trybie",
-    correct: "Dobrze", wrong: "Źle", history: "Historia", stop: "Stop", record: "Rekord", score: "Wynik"
+    correct: "Dobrze", wrong: "Źle", history: "Historia", stop: "Stop", record: "Rekord", score: "Wynik",
+    quranTitle: "Nauka sur Koranu", quranLead: "Ucz się 10 najkrótszych sur z wymową i transliteracją. Dodaj własne.", quranFact: "Ciekawostka", quranListen: "Odsłuchaj surę", quranLearn: "Uczę się tej sury", quranLearned: "Sura zaliczona", quranAddMore: "Dodaj surę po numerze",
+    learnedPct: "opanowane"
   },
   en: {
-    navHome: "Home", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navSettings: "Settings",
+    navHome: "Home", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navQuran: "Quran", navGames: "Games", navSettings: "Settings",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
-    welcome: "Welcome to ألف AI", homeTitle: "We learn Arabic step by step", homeLead: "Big letters, calm reviews, pronunciation, writing and a personal AI Assistant for Abang.",
+    welcome: "Welcome to ألف AI", homeTitle: "We learn Arabic step by step", homeLead: "Big letters, calm reviews, pronunciation, writing and a personal AI Assistant.",
     streak: "Daily streak", level: "Level", alphabetProgress: "Alphabet", todayTask: "Today's task", start: "Start", progress: "Progress", points: "pts",
-    aiAssistant: "AI Assistant", aiPlaceholder: "Ask for flashcards, a quiz, a story or a culture fact...", send: "Send", aiHello: "Hi Abang. I am your Alif AI Assistant. I can create flashcards, mini-lessons, quizzes, stories for you and Baby, or a daily culture fact.",
+    aiAssistant: "AI Assistant", aiPlaceholder: "Ask for flashcards, a quiz, a story or a culture fact...", send: "Send", aiHello: "Hi! I am your Alif AI Assistant. I can create flashcards, mini-lessons, quizzes, stories for you and Princess, or a daily culture fact.",
     addFlashcards: "Add to flashcards", saveBook: "Save as new book", addAdventure: "Add to Our Adventure", addCulture: "Add as culture fact",
+    addLesson: "Create AI lesson",
     more: "More", play: "Play", check: "Check", clear: "Clear", next: "Next", good: "good", weak: "weak", veryWeak: "very weak", attempts: "Attempt history",
     frontHint: "Tap the card to flip it", hard: "Hard", ok: "OK", easy: "Easy", noCards: "No cards in this mode",
-    correct: "Correct", wrong: "Wrong", history: "History", stop: "Stop", record: "Best", score: "Score"
+    correct: "Correct", wrong: "Wrong", history: "History", stop: "Stop", record: "Best", score: "Score",
+    quranTitle: "Learning Quran Surahs", quranLead: "Learn 10 short surahs with pronunciation and transliteration. Add your own.", quranFact: "Did you know", quranListen: "Listen to surah", quranLearn: "I am learning this surah", quranLearned: "Surah completed", quranAddMore: "Add surah by number",
+    learnedPct: "learned"
   }
 };
 
-const DAILY_TASKS_EN = [
-  "Learn 3 new letters and tap each one.",
-  "Do 7 flashcards in review mode.",
-  "Practice pronunciation of the word سلام.",
-  "Trace the letter ب on the canvas.",
-  "Play one round of Memory Match."
-];
+const DAILY_TASKS_EN = dailyTasksEn;
 
 const LESSONS_DATA = {
   pl: [
-    { id: "hello", title: "Powitania", ar: "السلام عليكم", tr: "as-salamu alejkum", meaning: "Pokoj z Toba", task: "Powiedz zwrot na glos i dodaj go do fiszek." },
-    { id: "thanks", title: "Wdzięcznosc", ar: "شكرا", tr: "szukran", meaning: "Dziekuje", task: "Uzyj zwrotu w jednym polskim zdaniu." },
-    { id: "family", title: "Rodzina", ar: "أحب عائلتي", tr: "uhibbu a'ilati", meaning: "Kocham moja rodzine", task: "Przeczytaj wolno trzy razy." },
-    { id: "book", title: "Nauka", ar: "هذا كتاب", tr: "haza kitab", meaning: "To jest ksiazka", task: "Znajdz litere ك i ب." }
+    { id: "hello", cat: "Powitania", title: "As-salamu alejkum", ar: "السَّلَامُ عَلَيْكُمْ", tr: "as-salamu alejkum", meaning: "Pokój z Tobą", task: "Powiedz ten zwrot na głos. Używaj go na powitanie." },
+    { id: "hello2", cat: "Powitania", title: "Marhaba", ar: "مَرْحَبًا", tr: "marhaba", meaning: "Cześć / Witaj", task: "To nieformalne 'cześć'. Powiedz do kogoś dziś 'marhaba'." },
+    { id: "sabah", cat: "Powitania", title: "Sabah al-chajr", ar: "صَبَاحُ الْخَيْرِ", tr: "sabah al-chajr", meaning: "Dzień dobry (rano)", task: "Odpowiedź brzmi: صباح النور (sabah an-nur) – 'poranek światła'. Powiedz obydwa." },
+    { id: "masa", cat: "Powitania", title: "Masa al-chajr", ar: "مَسَاءُ الْخَيْرِ", tr: "masa al-chajr", meaning: "Dobry wieczór", task: "Używaj tego wieczorem. Odpowiedź: مساء النور (masa an-nur)." },
+    { id: "shukran", cat: "Grzeczność", title: "Szukran", ar: "شُكْرًا", tr: "szukran", meaning: "Dziękuję", task: "Powiedz 'szukran' za coś małego dziś. Odpowiedź: عفوا (afwan) – proszę bardzo." },
+    { id: "afwan", cat: "Grzeczność", title: "Afwan", ar: "عَفْوًا", tr: "afwan", meaning: "Proszę bardzo / Przepraszam", task: "Użyj 'afwan' jako odpowiedź na 'szukran'." },
+    { id: "minfadlak", cat: "Grzeczność", title: "Min fadlak", ar: "مِنْ فَضْلِكَ", tr: "min fadlak", meaning: "Proszę (gdy o coś prosisz)", task: "Powiedz pełne zdanie: 'Min fadlak, ma ismak?' – Jak masz na imię, proszę?" },
+    { id: "ahlan", cat: "Grzeczność", title: "Ahlan wa sahlan", ar: "أَهْلاً وَسَهْلاً", tr: "ahlan wa sahlan", meaning: "Witaj serdecznie!", task: "To cieplejsze powitanie. Powiedz je do kogoś bliskiego." },
+    { id: "kayf", cat: "Rozmowa", title: "Kayfa haluk", ar: "كَيْفَ حَالُكَ؟", tr: "kayfa haluk?", meaning: "Jak się masz?", task: "Odpowiedź: بخير (bi-chajr) – dobrze. Poćwicz dialog." },
+    { id: "bikhair", cat: "Rozmowa", title: "Bi-chajr", ar: "بِخَيْرٍ", tr: "bi-chajr", meaning: "Dobrze (odpowiedź na 'jak się masz')", task: "Powiedz: بخير، شكرا (bi-chajr, szukran) – Dobrze, dziękuję." },
+    { id: "naam", cat: "Rozmowa", title: "Na'am / La", ar: "نَعَمْ / لَا", tr: "na'am / la", meaning: "Tak / Nie", task: "Najprostsze słowa! Powiedz na'am i la na głos 3 razy każde." },
+    { id: "ismi", cat: "Rozmowa", title: "Ismi...", ar: "اِسْمِي...", tr: "ismi...", meaning: "Mam na imię...", task: "Powiedz: اسمي Abang (ismi Abang). Podaj swoje imię." },
+    { id: "numbers1", cat: "Liczby", title: "Wahid, Ithnan, Thalatha", ar: "وَاحِد، اثْنَان، ثَلَاثَة", tr: "wahid, itnan, talata", meaning: "Jeden, dwa, trzy", task: "Policz po arabsku od 1 do 3 na głos." },
+    { id: "numbers2", cat: "Liczby", title: "Arba, Chamsa, Sitta", ar: "أَرْبَعَة، خَمْسَة، سِتَّة", tr: "arba'a, chamsa, sitta", meaning: "Cztery, pięć, sześć", task: "Kontynuuj liczenie od 4 do 6 po arabsku." },
+    { id: "numbers3", cat: "Liczby", title: "Sab'a, Thamanya, Tis'a, Aszara", ar: "سَبْعَة، ثَمَانِية، تِسْعَة، عَشَرَة", tr: "sab'a, tamania, tis'a, aszara", meaning: "Siedem, osiem, dziewięć, dziesięć", task: "Policz od 7 do 10. Teraz policz od 1 do 10!" },
+    { id: "colors1", cat: "Kolory", title: "Ahmar, Azrak", ar: "أَحْمَر، أَزْرَق", tr: "ahmar, azrak", meaning: "Czerwony, niebieski", task: "Wskaż coś czerwonego i powiedz 'ahmar'. Wskaż coś niebieskiego i powiedz 'azrak'." },
+    { id: "colors2", cat: "Kolory", title: "Achdar, Asfar, Abjad", ar: "أَخْضَر، أَصْفَر، أَبْيَض", tr: "achdar, asfar, abjad", meaning: "Zielony, żółty, biały", task: "Używaj kolorów, żeby opisywać rzeczy wokół siebie." },
+    { id: "family1", cat: "Rodzina", title: "Ab, Umm, Achu, Ucht", ar: "أَب، أُمّ، أَخ، أُخْت", tr: "ab, umm, ach, ucht", meaning: "Ojciec, matka, brat, siostra", task: "Powiedz imiona swoich bliskich po arabsku." },
+    { id: "family2", cat: "Rodzina", title: "Zawdż, Zawdża", ar: "زَوْج، زَوْجَة", tr: "zawdż, zawdża", meaning: "Mąż, żona", task: "Powiedz: زوجتي Princess (zawdżati Princess) – moja żona Princess." },
+    { id: "food1", cat: "Jedzenie", title: "Chubz, Ma, Lahm, Fawakiha", ar: "خُبْز، مَاء، لَحْم، فَوَاكِه", tr: "chubz, ma, lahm, fawakiha", meaning: "Chleb, woda, mięso, owoce", task: "Wskaż każdy z tych produktów i powiedz jego arabską nazwę." },
+    { id: "food2", cat: "Jedzenie", title: "Aruzz, Samak, Chudra", ar: "أَرُزّ، سَمَك، خُضَار", tr: "aruzz, samak, chudra", meaning: "Ryż, ryba, warzywa", task: "Arabska kuchnia jest bogata w ryż i ryby. Powiedz te słowa 3 razy." },
+    { id: "places1", cat: "Miejsca", title: "Manzil, Masdżid, Madrasah", ar: "مَنْزِل، مَسْجِد، مَدْرَسَة", tr: "manzil, masdżid, madrasa", meaning: "Dom, meczet, szkoła", task: "Wskaż kierunek każdego miejsca w swoim otoczeniu." },
+    { id: "places2", cat: "Miejsca", title: "Suq, Shira, Maktaba", ar: "سُوق، شَارِع، مَكْتَبَة", tr: "suq, szari', maktaba", meaning: "Rynek, ulica, biblioteka", task: "Powiedz zdanie: أنا في السوق (ana fi as-suq) – jestem na rynku." },
+    { id: "time1", cat: "Czas", title: "Yawm, Usbu, Szahr", ar: "يَوْم، أُسْبُوع، شَهْر", tr: "jawm, usbu', szahr", meaning: "Dzień, tydzień, miesiąc", task: "Powiedz: كل يوم (kull jawm) – każdego dnia. Mów to jako motywację!" },
+    { id: "time2", cat: "Czas", title: "Al-yawm, Ams, Ghadan", ar: "الْيَوْم، أَمْس، غَدًا", tr: "al-jawm, ams, ghadan", meaning: "Dzisiaj, wczoraj, jutro", task: "Powiedz: غداً سأتعلم المزيد (ghadan sa'ata'allam al-mazid) – jutro nauczę się więcej." },
+    { id: "emotions1", cat: "Emocje", title: "Fariha, Hazin, Mutafail", ar: "فَرِح، حَزِين، مُتَفَائِل", tr: "farih, hazin, mutafa'il", meaning: "Szczęśliwy, smutny, optymistyczny", task: "Jak się dziś czujesz? Powiedz to po arabsku!" },
+    { id: "love1", cat: "Uczucia", title: "Uhibbuka", ar: "أُحِبُّكَ", tr: "uhibbuka (do mężczyzny) / uhibbuki (do kobiety)", meaning: "Kocham cię", task: "Powiedz 'uhibbuki ya Princess' – kocham cię, Princess. 💕" },
+    { id: "love2", cat: "Uczucia", title: "Wahashtani / Asztaqtu ilayk", ar: "وَحَشْتَنِي / اشْتَقْتُ إِلَيْكَ", tr: "wahashtani / asztaqtu ilayk", meaning: "Tęskniłam za tobą / Stęskniłem się za tobą", task: "To piękne zdanie na powitanie po długiej rozłące. Poćwicz je." },
+    { id: "islam1", cat: "Islam", title: "Bismillah", ar: "بِسْمِ اللَّهِ", tr: "bismillah", meaning: "W imię Allaha (zacznij każde działanie)", task: "Powiedz bismillah przed jedzeniem lub rozpoczęciem nauki." },
+    { id: "islam2", cat: "Islam", title: "Alhamdulillah", ar: "الْحَمْدُ لِلَّهِ", tr: "alhamdulillah", meaning: "Chwała Allahowi (dziękczynienie)", task: "Powiedz alhamdulillah za coś dobrego, co się dziś zdarzyło." },
+    { id: "islam3", cat: "Islam", title: "Inszallah", ar: "إِنْ شَاءَ اللَّهُ", tr: "insza'allah", meaning: "Jeśli Allah zechce (o planach w przyszłości)", task: "Powiedz: غداً، إن شاء الله – jutro, insza'allah." }
   ],
   en: [
-    { id: "hello", title: "Greetings", ar: "السلام عليكم", tr: "as-salamu alejkum", meaning: "Peace be with you", task: "Say this phrase aloud and add it to flashcards." },
-    { id: "thanks", title: "Gratitude", ar: "شكرا", tr: "szukran", meaning: "Thank you", task: "Use this phrase in one short English sentence." },
-    { id: "family", title: "Family", ar: "أحب عائلتي", tr: "uhibbu a'ilati", meaning: "I love my family", task: "Read it slowly three times." },
-    { id: "book", title: "Learning", ar: "هذا كتاب", tr: "haza kitab", meaning: "This is a book", task: "Find the letters ك and ب." }
+    { id: "hello", cat: "Greetings", title: "As-salamu alaykum", ar: "السَّلَامُ عَلَيْكُمْ", tr: "as-salamu alaykum", meaning: "Peace be upon you", task: "Say this greeting out loud. Use it as a hello." },
+    { id: "hello2", cat: "Greetings", title: "Marhaba", ar: "مَرْحَبًا", tr: "marhaba", meaning: "Hello / Welcome", task: "This is an informal hello. Say 'marhaba' to someone today." },
+    { id: "sabah", cat: "Greetings", title: "Sabah al-khayr", ar: "صَبَاحُ الْخَيْرِ", tr: "sabah al-khayr", meaning: "Good morning", task: "The reply is: صباح النور (sabah an-nur) – morning of light. Practice both." },
+    { id: "masa", cat: "Greetings", title: "Masa al-khayr", ar: "مَسَاءُ الْخَيْرِ", tr: "masa al-khayr", meaning: "Good evening", task: "Use this in the evening. Reply: مساء النور (masa an-nur)." },
+    { id: "shukran", cat: "Politeness", title: "Shukran", ar: "شُكْرًا", tr: "shukran", meaning: "Thank you", task: "Say 'shukran' for something small today. Reply: عفوا (afwan) – you're welcome." },
+    { id: "afwan", cat: "Politeness", title: "Afwan", ar: "عَفْوًا", tr: "afwan", meaning: "You're welcome / Sorry", task: "Use 'afwan' as a response to 'shukran'." },
+    { id: "minfadlak", cat: "Politeness", title: "Min fadlak", ar: "مِنْ فَضْلِكَ", tr: "min fadlak", meaning: "Please (when asking for something)", task: "Say a full sentence: 'Min fadlak, ma ismak?' – What is your name, please?" },
+    { id: "ahlan", cat: "Politeness", title: "Ahlan wa sahlan", ar: "أَهْلاً وَسَهْلاً", tr: "ahlan wa sahlan", meaning: "Welcome! (warm)", task: "This is a warmer welcome. Say it to someone close to you." },
+    { id: "kayf", cat: "Conversation", title: "Kayfa haluk", ar: "كَيْفَ حَالُكَ؟", tr: "kayfa haluk?", meaning: "How are you?", task: "Reply: بخير (bi-khayr) – fine. Practice the dialogue." },
+    { id: "bikhair", cat: "Conversation", title: "Bi-khayr", ar: "بِخَيْرٍ", tr: "bi-khayr", meaning: "Fine (reply to 'how are you')", task: "Say: بخير، شكرا (bi-khayr, shukran) – Fine, thank you." },
+    { id: "naam", cat: "Conversation", title: "Na'am / La", ar: "نَعَمْ / لَا", tr: "na'am / la", meaning: "Yes / No", task: "The simplest words! Say na'am and la out loud 3 times each." },
+    { id: "ismi", cat: "Conversation", title: "Ismi...", ar: "اِسْمِي...", tr: "ismi...", meaning: "My name is...", task: "Say: اسمي Abang (ismi Abang). Add your name." },
+    { id: "numbers1", cat: "Numbers", title: "Wahid, Ithnan, Thalatha", ar: "وَاحِد، اثْنَان، ثَلَاثَة", tr: "wahid, ithnan, thalatha", meaning: "One, two, three", task: "Count from 1 to 3 in Arabic out loud." },
+    { id: "numbers2", cat: "Numbers", title: "Arba, Khamsa, Sitta", ar: "أَرْبَعَة، خَمْسَة، سِتَّة", tr: "arba'a, khamsa, sitta", meaning: "Four, five, six", task: "Continue counting from 4 to 6 in Arabic." },
+    { id: "numbers3", cat: "Numbers", title: "Sab'a, Thamanya, Tis'a, Ashara", ar: "سَبْعَة، ثَمَانِية، تِسْعَة، عَشَرَة", tr: "sab'a, thamanya, tis'a, ashara", meaning: "Seven, eight, nine, ten", task: "Count from 7 to 10. Now count from 1 to 10!" },
+    { id: "colors1", cat: "Colors", title: "Ahmar, Azraq", ar: "أَحْمَر، أَزْرَق", tr: "ahmar, azraq", meaning: "Red, blue", task: "Point to something red and say 'ahmar'. Point to something blue and say 'azraq'." },
+    { id: "colors2", cat: "Colors", title: "Akhdar, Asfar, Abyad", ar: "أَخْضَر، أَصْفَر، أَبْيَض", tr: "akhdar, asfar, abyad", meaning: "Green, yellow, white", task: "Use colors to describe things around you." },
+    { id: "family1", cat: "Family", title: "Ab, Umm, Akh, Ukht", ar: "أَب، أُمّ، أَخ، أُخْت", tr: "ab, umm, akh, ukht", meaning: "Father, mother, brother, sister", task: "Say the names of your family members in Arabic." },
+    { id: "family2", cat: "Family", title: "Zawj, Zawja", ar: "زَوْج، زَوْجَة", tr: "zawj, zawja", meaning: "Husband, wife", task: "Say: زوجتي Princess (zawjati Princess) – my wife Princess." },
+    { id: "food1", cat: "Food", title: "Khubz, Ma, Lahm, Fawakiha", ar: "خُبْز، مَاء، لَحْم، فَوَاكِه", tr: "khubz, ma, lahm, fawakiha", meaning: "Bread, water, meat, fruits", task: "Point to each of these items and say its Arabic name." },
+    { id: "food2", cat: "Food", title: "Ruzz, Samak, Khudar", ar: "أَرُزّ، سَمَك، خُضَار", tr: "ruzz, samak, khudar", meaning: "Rice, fish, vegetables", task: "Arabic cuisine is rich in rice and fish. Say these words 3 times." },
+    { id: "places1", cat: "Places", title: "Manzil, Masjid, Madrasa", ar: "مَنْزِل، مَسْجِد، مَدْرَسَة", tr: "manzil, masjid, madrasa", meaning: "Home, mosque, school", task: "Point in the direction of each place in your surroundings." },
+    { id: "places2", cat: "Places", title: "Suq, Shari, Maktaba", ar: "سُوق، شَارِع، مَكْتَبَة", tr: "suq, shari', maktaba", meaning: "Market, street, library", task: "Say: أنا في السوق (ana fi as-suq) – I am at the market." },
+    { id: "time1", cat: "Time", title: "Yawm, Usbu, Shahr", ar: "يَوْم، أُسْبُوع، شَهْر", tr: "yawm, usbu', shahr", meaning: "Day, week, month", task: "Say: كل يوم (kull yawm) – every day. Use it as motivation!" },
+    { id: "time2", cat: "Time", title: "Al-yawm, Ams, Ghadan", ar: "الْيَوْم، أَمْس، غَدًا", tr: "al-yawm, ams, ghadan", meaning: "Today, yesterday, tomorrow", task: "Say: غداً سأتعلم المزيد (ghadan sa'ata'allam al-mazid) – tomorrow I will learn more." },
+    { id: "emotions1", cat: "Emotions", title: "Farih, Hazin, Mutafa'il", ar: "فَرِح، حَزِين، مُتَفَائِل", tr: "farih, hazin, mutafa'il", meaning: "Happy, sad, optimistic", task: "How do you feel today? Say it in Arabic!" },
+    { id: "love1", cat: "Feelings", title: "Uhibbuka / Uhibbuki", ar: "أُحِبُّكَ / أُحِبُّكِ", tr: "uhibbuka (to a man) / uhibbuki (to a woman)", meaning: "I love you", task: "Say 'uhibbuki ya Princess' – I love you, Princess. 💕" },
+    { id: "love2", cat: "Feelings", title: "Wahashtani / Ishtaqtu ilayk", ar: "وَحَشْتَنِي / اشْتَقْتُ إِلَيْكَ", tr: "wahashtani / ishtaqtu ilayk", meaning: "I missed you", task: "This is a beautiful phrase for reunion. Practice it." },
+    { id: "islam1", cat: "Islam", title: "Bismillah", ar: "بِسْمِ اللَّهِ", tr: "bismillah", meaning: "In the name of Allah (start any action)", task: "Say bismillah before eating or starting your study." },
+    { id: "islam2", cat: "Islam", title: "Alhamdulillah", ar: "الْحَمْدُ لِلَّهِ", tr: "alhamdulillah", meaning: "Praise be to Allah (gratitude)", task: "Say alhamdulillah for something good that happened today." },
+    { id: "islam3", cat: "Islam", title: "Insha'Allah", ar: "إِنْ شَاءَ اللَّهُ", tr: "insha'allah", meaning: "If Allah wills (for future plans)", task: "Say: غداً، إن شاء الله – tomorrow, insha'allah." }
   ]
 };
 
@@ -175,7 +246,10 @@ const defaultState = {
   quizHistory: [],
   memoryStats: { correct: 0, wrong: 0 },
   catchHistory: [],
-  pendingAdventurePhoto: null
+  pendingAdventurePhoto: null,
+  surahProgress: {},
+  learnedSurahs: {},
+  customSurahs: []
 };
 
 let state = loadState();
@@ -217,7 +291,7 @@ function wordMeaning(word) {
 }
 
 function activeDailyTasks() {
-  return state.lang === "pl" ? dailyTasks : DAILY_TASKS_EN;
+  return state.lang === "pl" ? dailyTasks : DAILY_TASKS_EN || dailyTasks;
 }
 
 function updateDocumentI18nMeta() {
@@ -240,11 +314,11 @@ function activeProfileLabel() {
 }
 
 function partnerLabel() {
-  return activeProfile() === "Princess" ? "Abang" : "Baby";
+  return activeProfile() === "Princess" ? "Abang" : "Princess";
 }
 
 function nicknameForFeedback() {
-  return activeProfile() === "Princess" ? "Princess" : "Gantengku";
+  return activeProfile();
 }
 
 function homeLeadText() {
@@ -256,9 +330,9 @@ function homeLeadText() {
 
 function aiHelloText() {
   if (state.lang === "pl") {
-    return `Cześć ${activeProfileLabel()}. Jestem Twoim Alif AI Assistantem. Mogę stworzyć fiszki, mini-lekcję, quiz, historyjkę dla Ciebie i ${partnerLabel()} albo ciekawostkę dnia.`;
+    return `Cześć ${activeProfileLabel()}! Jestem Twoim Alif AI Assistantem. Mogę stworzyć fiszki, lekcję, quiz, historyjkę dla Ciebie i ${partnerLabel()}, ciekawostkę dnia lub pomóc z surami Koranu. O co chcesz poprosić?`;
   }
-  return `Hi ${activeProfileLabel()}. I am your Alif AI Assistant. I can create flashcards, mini-lessons, quizzes, stories for you and ${partnerLabel()}, or a daily culture fact.`;
+  return `Hi ${activeProfileLabel()}! I am your Alif AI Assistant. I can create flashcards, lessons, quizzes, stories for you and ${partnerLabel()}, culture facts, or help with Quran surahs. What would you like to ask?`;
 }
 
 function themeMeta(theme) {
@@ -451,7 +525,7 @@ function showLoveToast(message = romanticLine()) {
 }
 
 function scheduleRomanticToast() {
-  const delay = (8 + Math.random() * 7) * 60 * 1000;
+  const delay = (1.5 + Math.random() * 2.5) * 60 * 1000;
   setTimeout(() => {
     showLoveToast();
     scheduleRomanticToast();
@@ -466,18 +540,16 @@ function mountProfileGate() {
         <div class="mb-5 text-center">
           <img src="assets/icon.svg" alt="Alif AI" class="mx-auto h-20 w-20 rounded-lg shadow-sm" />
           <h1 class="mt-4 text-4xl font-black">Alif AI</h1>
-          <p class="mt-2 text-[var(--muted)]">${state.lang === "pl" ? "Wybierz, kto dziś uczy się arabskiego." : "Choose who is learning Arabic today."}</p>
+          <p class="mt-2 text-[var(--muted)]">${state.lang === "pl" ? "Kto dziś uczy się arabskiego?" : "Who is learning Arabic today?"}</p>
         </div>
         <div class="grid gap-3 sm:grid-cols-2">
           <button class="profile-card" data-profile="Abang">
-            <span class="text-sm font-bold text-emerald-600">Gantengku</span>
-            <strong class="mt-2 block text-3xl">Abang</strong>
-            <span class="mt-3 block text-[var(--muted)]">${state.lang === "pl" ? "Ciepła ścieżka dla Hubby." : "A warm path for Hubby."}</span>
+            <strong class="mt-2 block text-4xl">Abang</strong>
+            <span class="mt-3 block text-[var(--muted)]">${state.lang === "pl" ? "Witaj, Abang 💪" : "Welcome, Abang 💪"}</span>
           </button>
           <button class="profile-card" data-profile="Princess">
-            <span class="text-sm font-bold text-amber-600">Guardian angel</span>
-            <strong class="mt-2 block text-3xl">Princess</strong>
-            <span class="mt-3 block text-[var(--muted)]">${state.lang === "pl" ? "Delikatna ścieżka dla Baby." : "A gentle path for Baby."}</span>
+            <strong class="mt-2 block text-4xl">Princess</strong>
+            <span class="mt-3 block text-[var(--muted)]">${state.lang === "pl" ? "Witaj, Princess 🌸" : "Welcome, Princess 🌸"}</span>
           </button>
         </div>
       </section>
@@ -535,7 +607,7 @@ function render() {
   if (aiFabLabel) aiFabLabel.textContent = t("aiAssistant");
   const aiInput = $("#aiInput");
   if (aiInput) aiInput.placeholder = t("aiPlaceholder");
-  const views = { home, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, settings };
+  const views = { home, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, quran, games, settings };
   (views[route] || home)();
 }
 
@@ -553,10 +625,11 @@ function home() {
           </div>
           <div class="grid h-28 w-28 shrink-0 place-items-center rounded-lg bg-emerald-500 text-7xl text-white shadow-sm arabic">ا</div>
         </div>
-        <div class="mt-7 grid gap-3 sm:grid-cols-3">
-          ${statCard(t("streak"), `${state.streak} ${tx("dni", "days")}`, tx("Codzienna obecnosc", "Daily presence"))}
+        <div class="mt-7 grid gap-3 sm:grid-cols-4">
+          ${statCard(t("streak"), `${state.streak} ${tx("dni", "days")}`, tx("Codzienna obecność", "Daily presence"))}
           ${statCard(t("level"), `${t("level")} ${level()}`, `${state.points} ${t("points")}`)}
           ${statCard(t("alphabetProgress"), `${progressPercent()}%`, `${state.learnedLetters.length}/28`)}
+          ${statCard(t("navQuran"), `${Object.keys(state.surahProgress || {}).filter((id) => state.surahProgress[id]?.length > 0).length}/${surahs.length}`, tx("sur", "surahs"))}
         </div>
       </section>
       <aside class="grid gap-4">
@@ -578,12 +651,13 @@ function home() {
       </aside>
     </div>
     ${journeyWidget()}
-    <div class="mt-4 grid gap-3 sm:grid-cols-5">
-      ${quickLink(t("aiAssistant"), tx("Tworz fiszki, quizy i historie", "Create cards, quizzes and stories"), "ai")}
-      ${quickLink(t("navLessons"), tx("Pierwsze slowa i zwroty", "First words and phrases"), "lessons")}
+    <div class="mt-4 grid gap-3 sm:grid-cols-6">
+      ${quickLink(t("aiAssistant"), tx("Twórz fiszki, quizy i historie", "Create cards, quizzes and stories"), "ai")}
+      ${quickLink(t("navLessons"), tx("Słowa i zwroty", "Words and phrases"), "lessons")}
+      ${quickLink(t("navQuran"), tx("Ucz się sur Koranu", "Learn Quran surahs"), "quran")}
       ${quickLink(t("navCulture"), tx("Ciekawostka dnia", "Daily culture fact"), "culture")}
-      ${quickLink(t("navAdventure"), tx("Zdjecia i historie AI", "Photos and AI stories"), "adventure")}
-      ${quickLink(t("navGames"), tx("Quiz, memory i lapanie liter", "Quiz, memory and catch game"), "games")}
+      ${quickLink(t("navAdventure"), tx("Zdjęcia i historie AI", "Photos and AI stories"), "adventure")}
+      ${quickLink(t("navGames"), tx("Quiz, memory i łapanie liter", "Quiz, memory and catch game"), "games")}
     </div>
   `;
   view.querySelectorAll("[data-route]").forEach((button) => {
@@ -666,9 +740,10 @@ function settings() {
       </section>
       <section class="panel p-5">
         <h2 class="text-xl font-black">${tx("Profil", "Profile")}</h2>
+        <p class="mt-2 text-sm text-[var(--muted)]">${tx("Aktywny profil:", "Active profile:")} <strong>${activeProfileLabel()}</strong></p>
         <div class="mt-4 grid grid-cols-2 gap-2">
-          <button class="big-action ${state.profile === "Abang" ? "bg-emerald-500 text-white" : "border border-[var(--line)] bg-[var(--surface)]"}" data-profile-set="Abang">Abang</button>
-          <button class="big-action ${state.profile === "Princess" ? "bg-emerald-500 text-white" : "border border-[var(--line)] bg-[var(--surface)]"}" data-profile-set="Princess">Princess</button>
+          <button class="big-action ${state.profile === "Abang" ? "bg-emerald-500 text-white" : "border border-[var(--line)] bg-[var(--surface)]"}" data-profile-set="Abang">💪 Abang</button>
+          <button class="big-action ${state.profile === "Princess" ? "bg-emerald-500 text-white" : "border border-[var(--line)] bg-[var(--surface)]"}" data-profile-set="Princess">🌸 Princess</button>
         </div>
       </section>
       <section class="panel p-5">
@@ -747,6 +822,8 @@ function settings() {
     state.flashcards = {};
     state.customFlashcards = [];
     state.miniLessonsDone = [];
+    state.surahProgress = {};
+    state.learnedSurahs = {};
     saveState();
     render();
   });
@@ -809,9 +886,7 @@ function alphabet() {
   view.querySelectorAll("[data-letter-say]").forEach((button) => {
     button.addEventListener("click", () => {
       const letter = arabicAlphabet.find((item) => item.id === button.dataset.letterSay);
-      markLetterLearned(letter.id);
       speakArabic(letter.forms.isolated);
-      updateAlphabetCounter();
     });
   });
   view.querySelectorAll("[data-letter-info]").forEach((button) => {
@@ -873,48 +948,96 @@ function formBox(label, value) {
 }
 
 function lessons() {
-  const unlocked = state.learnedLetters.length >= arabicAlphabet.length;
   const lessonsData = LESSONS_DATA[state.lang] || LESSONS_DATA.pl;
+  const cats = [...new Set(lessonsData.map((l) => l.cat))];
+  const done = new Set(state.miniLessonsDone);
+  const totalDone = lessonsData.filter((l) => done.has(l.id)).length;
+
   view.innerHTML = `
-    <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Pierwsze slowa i zwroty", "First words and phrases")}</h1>
-      <p class="text-[var(--muted)]">${unlocked ? tx("Alfabet opanowany, wiec lekcje sa otwarte.", "Alphabet completed, lessons are now unlocked.") : tx("Lekcje odblokuja sie po poznaniu wszystkich 28 liter alfabetu.", "Lessons unlock after you learn all 28 letters of the alphabet.")}</p>
-    </div>
-    ${!unlocked ? `
-      <div class="soft-panel p-5">
-        <div class="mb-3 flex items-center justify-between gap-3">
-          <strong>${state.learnedLetters.length}/28 ${tx("liter", "letters")}</strong>
-          <span class="text-sm text-[var(--muted)]">${progressPercent()}%</span>
-        </div>
-        <div class="h-4 overflow-hidden rounded-full bg-emerald-100"><div class="h-full bg-emerald-500" style="width:${progressPercent()}%"></div></div>
-        <button class="big-action mt-4 bg-emerald-500 text-white" data-route="alphabet">${tx("Dokoncz alfabet", "Finish alphabet")}</button>
+    <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <h1 class="text-3xl font-black">${tx("Słowa i zwroty", "Words and Phrases")}</h1>
+        <p class="text-[var(--muted)]">${tx("Kliknij literę, żeby usłyszeć. Zalicz lekcję, żeby zdobyć punkty.", "Tap to hear. Complete lessons to earn points.")}</p>
       </div>
-    ` : ""}
-    <div class="mt-4 grid gap-3 sm:grid-cols-2">
-      ${lessonsData.map((lesson) => `
-        <article class="panel p-5 ${unlocked ? "" : "opacity-55"}">
-          <h2 class="text-xl font-black">${lesson.title}</h2>
-          <p class="arabic mt-4 text-5xl">${lesson.ar}</p>
-          <p class="mt-2 font-bold">${lesson.meaning}</p>
-          <p class="text-sm text-[var(--muted)]">${lesson.tr}</p>
-          <p class="mt-4 text-[var(--muted)]">${lesson.task}</p>
-          <div class="mt-4 grid gap-2 sm:grid-cols-2">
-            <button class="big-action bg-emerald-500 text-white" data-say="${lesson.ar}" ${unlocked ? "" : "disabled"}>${t("play")}</button>
-            <button class="big-action bg-amber-500 text-white" data-lesson="${lesson.id}" ${unlocked ? "" : "disabled"}>${tx("Zaliczone", "Completed")}</button>
-          </div>
-        </article>
-      `).join("")}
+      <div class="flex items-center gap-3">
+        <span class="font-bold text-emerald-600">${totalDone}/${lessonsData.length} ${tx("zaliczone", "done")}</span>
+        <button id="aiLessonBtn" class="big-action bg-amber-500 text-white px-4">${t("addLesson")}</button>
+      </div>
     </div>
+    <div class="mb-4 h-3 overflow-hidden rounded-full bg-emerald-100">
+      <div class="h-full rounded-full bg-emerald-500 transition-all" style="width:${Math.round((totalDone / lessonsData.length) * 100)}%"></div>
+    </div>
+    ${cats.map((cat) => `
+      <section class="mb-6">
+        <h2 class="mb-3 text-lg font-black text-[var(--muted)]">${cat}</h2>
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          ${lessonsData.filter((l) => l.cat === cat).map((lesson) => `
+            <article class="lesson-card ${done.has(lesson.id) ? "done" : ""}">
+              <div class="flex items-start justify-between gap-2">
+                <h3 class="font-black">${lesson.title}</h3>
+                ${done.has(lesson.id) ? `<span class="text-emerald-500 text-xl">✓</span>` : ""}
+              </div>
+              <p class="arabic text-4xl leading-relaxed">${lesson.ar}</p>
+              <p class="text-sm font-bold">${lesson.meaning}</p>
+              <p class="text-xs text-[var(--muted)]">${lesson.tr}</p>
+              <p class="text-xs text-[var(--muted)] border-t border-[var(--line)] pt-2">${lesson.task}</p>
+              <div class="flex gap-2 pt-1">
+                <button class="big-action flex-1 bg-emerald-500 text-white text-sm" data-say="${escapeHtml(lesson.ar)}">🔊 ${t("play")}</button>
+                <button class="big-action flex-1 ${done.has(lesson.id) ? "border border-[var(--line)] bg-[var(--surface)]" : "bg-amber-500 text-white"} text-sm" data-lesson="${lesson.id}">${done.has(lesson.id) ? tx("Zaliczone ✓", "Done ✓") : tx("Zalicz", "Complete")}</button>
+              </div>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+    `).join("")}
+    <div id="aiLessonResult"></div>
   `;
-  view.querySelectorAll("[data-route]").forEach((button) => button.addEventListener("click", () => setRoute(button.dataset.route)));
   view.querySelectorAll("[data-say]").forEach((button) => button.addEventListener("click", () => speakArabic(button.dataset.say)));
   view.querySelectorAll("[data-lesson]").forEach((button) => button.addEventListener("click", () => {
-    if (!state.miniLessonsDone.includes(button.dataset.lesson)) state.miniLessonsDone.push(button.dataset.lesson);
-    addPoints(18, false);
-    saveState();
-    confetti();
-    lessons();
+    const id = button.dataset.lesson;
+    if (!done.has(id)) {
+      state.miniLessonsDone.push(id);
+      done.add(id);
+      addPoints(18, false);
+      saveState();
+      confetti();
+      button.textContent = tx("Zaliczone ✓", "Done ✓");
+      button.className = "big-action flex-1 border border-[var(--line)] bg-[var(--surface)] text-sm";
+      button.closest("article")?.classList.add("done");
+    }
   }));
+  $("#aiLessonBtn").addEventListener("click", generateAiLesson);
+}
+
+async function generateAiLesson() {
+  const resultArea = $("#aiLessonResult");
+  const btn = $("#aiLessonBtn");
+  btn.textContent = tx("Tworzę...", "Creating...");
+  btn.disabled = true;
+  try {
+    const prompt = tx(
+      "Stwórz jedną prostą lekcję arabskiego dla początkującego. Format: tytuł po polsku, arabski zwrot w piśmie arabskim, transliteracja fonetyczna, tłumaczenie po polsku, krótkie zadanie (1 zdanie). Pisz prosto i przyjaźnie.",
+      "Create one simple Arabic lesson for a beginner. Format: English title, Arabic phrase in Arabic script, phonetic transliteration, English translation, short task (1 sentence). Write simply and friendly."
+    );
+    const text = await askGroq([{ role: "user", content: prompt }]);
+    resultArea.innerHTML = `
+      <div class="panel p-5 mt-4">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <h2 class="text-xl font-black">${tx("Nowa lekcja AI", "New AI Lesson")}</h2>
+          <button id="addLessonToFlash" class="big-action bg-emerald-500 text-white">${t("addFlashcards")}</button>
+        </div>
+        <p class="whitespace-pre-wrap text-[var(--muted)]">${escapeHtml(text)}</p>
+      </div>
+    `;
+    $("#addLessonToFlash").addEventListener("click", () => {
+      addAiFlashcards(text);
+      confetti();
+    });
+  } catch {
+    resultArea.innerHTML = `<p class="mt-4 text-red-500">${tx("Błąd AI. Sprawdź internet.", "AI error. Check internet.")}</p>`;
+  }
+  btn.textContent = t("addLesson");
+  btn.disabled = false;
 }
 
 function flashcards() {
@@ -953,9 +1076,28 @@ function flashcards() {
 
 function buildFlashDeck(tab, mode) {
   const source = tab === "letters"
-    ? arabicAlphabet.map((letter) => ({ id: `letter-${letter.id}`, front: letter.forms.isolated, translation: letterName(letter), transliteration: letter.transliteration, back: `${letterName(letter)} · ${letter.transliteration}`, hint: letterPronunciationText(letter) }))
+    ? arabicAlphabet.map((letter) => ({
+        id: `letter-${letter.id}`,
+        front: letter.forms.isolated,
+        translation: letterName(letter),
+        transliteration: letter.transliteration,
+        back: `${letterName(letter)} · ${letter.transliteration}`,
+        hint: letter.transliteration,
+        exampleWord: {
+          ar: letter.example.ar,
+          pl: letterExampleMeaning(letter),
+          tr: letter.example.tr
+        }
+      }))
     : tab === "words"
-      ? words.map((word) => ({ id: `word-${word.id}`, front: word.ar, translation: wordMeaning(word), transliteration: word.tr, back: `${wordMeaning(word)} · ${word.tr}`, hint: tx("slowo", "word") }))
+      ? words.map((word) => ({
+          id: `word-${word.id}`,
+          front: word.ar,
+          translation: wordMeaning(word),
+          transliteration: word.tr,
+          back: `${wordMeaning(word)} · ${word.tr}`,
+          hint: tx("słowo", "word")
+        }))
       : state.customFlashcards.map((card) => {
         const parsed = parseBack(card.back);
         return {
@@ -978,10 +1120,21 @@ function buildFlashDeck(tab, mode) {
   renderFlashCard();
 }
 
+function flashCardStats() {
+  const total = arabicAlphabet.length + words.length + state.customFlashcards.length;
+  const learned = Object.values(state.flashcards).filter((m) => m && m.repetitions >= 2).length;
+  const pct = total ? Math.round((learned / total) * 100) : 0;
+  return `<div class="flash-stats-bar mb-3">
+    <span class="flash-stat">📊 ${pct}% ${t("learnedPct")}</span>
+    <span class="flash-stat">${learned}/${total} ${tx("kart", "cards")}</span>
+    <span class="flash-stat">${flashIndex}/${flashDeck.length}</span>
+  </div>`;
+}
+
 function renderFlashCard() {
   const area = $("#flashArea");
   if (!flashDeck.length) {
-    area.innerHTML = `<div class="panel p-6 text-center"><h2 class="text-2xl font-black">${t("noCards")}</h2><p class="mt-2 text-[var(--muted)]">${tx("Wroc do losowych albo popros AI Assistanta o nowe fiszki.", "Go back to random mode or ask the AI Assistant for new cards.")}</p><button id="openAiFromFlash" class="big-action mt-4 bg-emerald-500 text-white">${tx("Popros AI", "Ask AI")}</button></div>`;
+    area.innerHTML = `<div class="panel p-6 text-center"><h2 class="text-2xl font-black">${t("noCards")}</h2><p class="mt-2 text-[var(--muted)]">${tx("Wróć do losowych albo poproś AI Assistanta o nowe fiszki.", "Go back to random mode or ask the AI Assistant for new cards.")}</p><button id="openAiFromFlash" class="big-action mt-4 bg-emerald-500 text-white">${tx("Poproś AI", "Ask AI")}</button></div>`;
     $("#openAiFromFlash")?.addEventListener("click", openAiChat);
     return;
   }
@@ -989,31 +1142,48 @@ function renderFlashCard() {
   const back = parseBack(card.back);
   const translation = card.translation || back.translation || (state.lang === "pl" ? "Fiszka Alif AI" : "Alif AI card");
   const transliteration = card.transliteration || back.transliteration || card.hint || "";
+  const meta = state.flashcards[card.id];
+  const historyTag = meta
+    ? `<span class="flash-stat">${tx("powtórzenia", "reps")}: ${meta.repetitions} · ${tx("EF", "EF")}: ${meta.ef?.toFixed(1) ?? "2.5"}</span>`
+    : `<span class="flash-stat text-amber-600">${tx("nowa karta", "new card")}</span>`;
+
+  const exampleWord = card.exampleWord;
+  const backContent = exampleWord
+    ? `<p class="arabic text-5xl leading-relaxed">${exampleWord.ar}</p>
+       <p class="mt-2 font-black text-xl">${escapeHtml(exampleWord.pl)}</p>
+       <p class="text-sm text-[var(--muted)]">${escapeHtml(exampleWord.tr)}</p>
+       <button type="button" class="speaker-btn mt-2" data-say-back="${escapeHtml(exampleWord.ar)}">🔊</button>`
+    : `<p class="text-3xl font-black leading-snug">${escapeHtml(translation)}</p>
+       <p class="mt-3 rounded-lg bg-[var(--surface-soft)] px-4 py-2 text-lg font-bold text-[var(--muted)]">${escapeHtml(transliteration)}</p>`;
+
   area.innerHTML = `
-    <div id="flipCard" class="flashcard block w-full text-left" role="button" tabindex="0" aria-label="${tx("Odwroc fiszke", "Flip flashcard")}">
+    ${flashCardStats()}
+    <div id="flipCard" class="flashcard block w-full text-left" role="button" tabindex="0" aria-label="${tx("Odwróć fiszkę", "Flip flashcard")}">
       <div class="flashcard-inner">
         <div class="flash-face flash-front">
           <div class="text-center">
-            <p class="arabic text-8xl">${card.front}</p>
+            <p class="arabic text-8xl leading-normal">${card.front}</p>
             <button type="button" class="speaker-btn mt-4" data-say-card="${escapeHtml(card.front)}">🔊</button>
-            <p class="mt-3 text-sm font-bold text-[var(--muted)]">${card.hint}</p>
+            <p class="mt-3 text-sm font-bold text-[var(--muted)]">${card.hint || ""}</p>
             <p class="mt-2 text-xs text-[var(--muted)]">${t("frontHint")}</p>
           </div>
         </div>
         <div class="flash-face flash-back">
-          <div class="text-center">
-            <p class="text-3xl font-black leading-snug">${escapeHtml(translation)}</p>
-            <p class="mt-3 rounded-lg bg-[var(--surface-soft)] px-4 py-2 text-lg font-bold text-[var(--muted)]">${escapeHtml(transliteration)}</p>
-            <p class="mt-3 text-[var(--muted)]">${tx("Jak poszlo?", "How did it go?")}</p>
+          <div class="text-center w-full">
+            <p class="mb-3 text-sm font-bold text-[var(--muted)]">${escapeHtml(translation)} · ${escapeHtml(transliteration)}</p>
+            ${backContent}
+            <p class="mt-4 text-sm text-[var(--muted)]">${tx("Jak poszło?", "How did it go?")}</p>
+            <div class="flash-stats-bar mt-2 justify-center">${historyTag}</div>
           </div>
         </div>
       </div>
     </div>
     <div class="mt-4 grid grid-cols-3 gap-2">
-      <button class="big-action bg-red-500 text-white" data-grade="1">${t("hard")}</button>
-      <button class="big-action bg-amber-500 text-white" data-grade="3">${t("ok")}</button>
-      <button class="big-action bg-emerald-500 text-white" data-grade="5">${t("easy")}</button>
+      <button class="big-action bg-red-500 text-white" data-grade="1">${t("hard")} ↩</button>
+      <button class="big-action bg-amber-500 text-white" data-grade="3">${t("ok")} →</button>
+      <button class="big-action bg-emerald-500 text-white" data-grade="5">${t("easy")} ↑</button>
     </div>
+    <p class="mt-2 text-center text-xs text-[var(--muted)]">${tx("Trudne: wraca jutro · OK: za kilka dni · Łatwe: za długo", "Hard: returns tomorrow · OK: in a few days · Easy: much later")}</p>
   `;
   $("#flipCard").addEventListener("click", (event) => event.currentTarget.classList.toggle("flipped"));
   $("#flipCard").addEventListener("keydown", (event) => {
@@ -1021,9 +1191,13 @@ function renderFlashCard() {
     event.preventDefault();
     event.currentTarget.classList.toggle("flipped");
   });
-  area.querySelector("[data-say-card]").addEventListener("click", (event) => {
+  area.querySelector("[data-say-card]")?.addEventListener("click", (event) => {
     event.stopPropagation();
     speakArabic(event.currentTarget.dataset.sayCard);
+  });
+  area.querySelector("[data-say-back]")?.addEventListener("click", (event) => {
+    event.stopPropagation();
+    speakArabic(event.currentTarget.dataset.sayBack);
   });
   area.querySelectorAll("[data-grade]").forEach((button) => button.addEventListener("click", () => {
     gradeCard(card.id, Number(button.dataset.grade));
@@ -1511,22 +1685,23 @@ function adventure() {
 }
 
 async function generateAdventureStory() {
-  const prompt = $("#storyPrompt").value.trim() || tx("Napisz krotka, ciepla historyjke o Abangu i jego zonie, z trzema prostymi arabskimi slowami.", "Write a short warm story about Abang and his wife, using three simple Arabic words.");
-  $("#generateStoryBtn").textContent = tx("Pisze...", "Writing...");
+  const userPrompt = $("#storyPrompt").value.trim();
+  $("#generateStoryBtn").textContent = tx("Piszę...", "Writing...");
   try {
-    const aiPrompt = tx(
-      `Stworz czysta, romantyczna, ciepla historyjke do sekcji Nasza Przygoda. Nie dodawaj surowych linkow markdown ani listy przyciskow. Dodaj 3 proste arabskie slowa z naturalnym objasnieniem w tekscie. ${prompt}`,
-      `Create a clean, romantic, warm story for the Our Adventure section. Do not add raw markdown links or button lists. Add 3 simple Arabic words with natural explanation inside the story. ${prompt}`
+    const basePrompt = tx(
+      `Napisz KRÓTKĄ historyjkę (3-4 zdania) o Abangu i Princess. Użyj 1-2 arabskich słów i w nawiasach podaj ich znaczenie po polsku. Pisz prosto, ciepło. Bez markdown, bez listy przycisków. ${userPrompt}`,
+      `Write a SHORT story (3-4 sentences) about Abang and Princess. Use 1-2 Arabic words and put their English meaning in brackets. Write simply and warmly. No markdown, no button lists. ${userPrompt}`
     );
-    const text = cleanAiText(await askGroq([{ role: "user", content: aiPrompt }]));
-    const story = { id: crypto.randomUUID(), title: tx(`Historyjka ${new Date().toLocaleDateString(localeTag())}`, `Story ${new Date().toLocaleDateString(localeTag())}`), text, photo: state.pendingAdventurePhoto };
+    const text = cleanAiText(await askGroq([{ role: "user", content: basePrompt }]));
+    const story = { id: crypto.randomUUID(), title: tx(`Historia ${new Date().toLocaleDateString(localeTag())}`, `Story ${new Date().toLocaleDateString(localeTag())}`), text, photo: state.pendingAdventurePhoto };
     state.adventureStories.unshift(story);
     if (state.pendingAdventurePhoto) state.adventurePhotos.unshift(state.pendingAdventurePhoto);
     state.pendingAdventurePhoto = null;
     saveState();
     adventure();
   } catch (error) {
-    $("#generateStoryBtn").textContent = tx("Blad AI", "AI error");
+    const btn = $("#generateStoryBtn");
+    if (btn) btn.textContent = tx("Błąd AI", "AI error");
   }
 }
 
@@ -1535,36 +1710,48 @@ function cleanAiText(text) {
 }
 
 function books() {
+  const hasBooks = state.interactiveBooks.length + state.books.length > 0;
   view.innerHTML = `
     <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Moje ksiazeczki", "My books")}</h1>
-      <p class="text-[var(--muted)]">${tx("PDF z Gemini, linki oraz interaktywne ksiazeczki z klikalnymi kartami i wymowa.", "Gemini PDFs, links and interactive books with clickable pronunciation cards.")}</p>
+      <h1 class="text-3xl font-black">${tx("Moje książeczki", "My Books")}</h1>
+      <p class="text-[var(--muted)]">${tx("Dodaj PDF lub link, żeby tworzyć interaktywne karty z wymową.", "Add a PDF or link to create interactive pronunciation cards.")}</p>
     </div>
-    <div class="panel grid gap-3 p-5">
-      <input id="bookTitle" class="min-h-12 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4" placeholder="${tx("Tytul ksiazeczki", "Book title")}" />
-      <input id="bookFile" class="rounded-lg border border-[var(--line)] bg-[var(--surface)] p-4" type="file" accept="application/pdf" />
-      <input id="bookLink" class="min-h-12 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4" placeholder="${tx("Albo link do PDF", "Or a PDF link")}" />
+    <div class="panel grid gap-3 p-5 mb-4">
       <div class="grid gap-2 sm:grid-cols-2">
-      <button id="addBook" class="big-action bg-emerald-500 text-white">${tx("Dodaj PDF", "Add PDF")}</button>
-      <button id="extractBook" class="big-action bg-amber-500 text-white">${tx("Wyciagnij tekst i zrob karty", "Extract text and make cards")}</button>
+        <input id="bookTitle" class="min-h-12 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4" placeholder="${tx("Tytuł książeczki (opcjonalnie)", "Book title (optional)")}" />
+        <input id="bookLink" class="min-h-12 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4" placeholder="${tx("Link do PDF (opcjonalnie)", "PDF link (optional)")}" />
+      </div>
+      <input id="bookFile" class="rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3 text-sm" type="file" accept="application/pdf" />
+      <div class="grid gap-2 sm:grid-cols-2">
+        <button id="addBook" class="big-action bg-emerald-500 text-white">${tx("Dodaj PDF", "Add PDF")}</button>
+        <button id="extractBook" class="big-action bg-amber-500 text-white">${tx("Wyciągnij karty z PDF", "Extract cards from PDF")}</button>
       </div>
     </div>
-    <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      ${state.interactiveBooks.map((book) => `
-        <button class="panel p-4 text-left" data-interactive-book="${book.id}">
-          <div class="book-cover grid place-items-center text-4xl">AI</div>
-          <strong class="mt-3 block">${book.title}</strong>
-          <span class="text-sm text-[var(--muted)]">${book.cards.length} ${tx("kart interaktywnych", "interactive cards")}</span>
-        </button>
-      `).join("")}
-      ${state.books.map((book) => `
-        <button class="panel p-4 text-left" data-book="${book.id}">
-          <div class="book-cover grid place-items-center text-5xl">PDF</div>
-          <strong class="mt-3 block">${book.title}</strong>
-          <span class="text-sm text-[var(--muted)]">${book.sourceType === "file" ? tx("plik lokalny", "local file") : tx("link", "link")}</span>
-        </button>
-      `).join("") || (state.interactiveBooks.length ? "" : `<div class="soft-panel p-6 text-center text-[var(--muted)] sm:col-span-2 lg:col-span-3">${tx("Nie dodano jeszcze ksiazeczek.", "No books added yet.")}</div>`)}
-    </div>
+    ${!hasBooks ? `<div class="soft-panel p-8 text-center text-[var(--muted)]"><p class="text-4xl mb-3">📚</p><p>${tx("Nie dodano jeszcze żadnych książeczek. Dodaj PDF lub link powyżej.", "No books added yet. Add a PDF or link above.")}</p></div>` : ""}
+    ${state.interactiveBooks.length ? `
+      <h2 class="text-xl font-black mb-3">${tx("Interaktywne", "Interactive")}</h2>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-6">
+        ${state.interactiveBooks.map((book) => `
+          <button class="panel p-4 text-left group" data-interactive-book="${book.id}">
+            <div class="book-cover grid place-items-center text-3xl font-black mb-3">✦ AI</div>
+            <strong class="block leading-snug">${escapeHtml(book.title)}</strong>
+            <span class="text-sm text-[var(--muted)]">${book.cards.length} ${tx("kart interaktywnych", "interactive cards")}</span>
+          </button>
+        `).join("")}
+      </div>
+    ` : ""}
+    ${state.books.length ? `
+      <h2 class="text-xl font-black mb-3">PDF</h2>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        ${state.books.map((book) => `
+          <button class="panel p-4 text-left" data-book="${book.id}">
+            <div class="book-cover grid place-items-center text-3xl font-black mb-3">PDF</div>
+            <strong class="block leading-snug">${escapeHtml(book.title)}</strong>
+            <span class="text-sm text-[var(--muted)]">${book.sourceType === "file" ? tx("plik lokalny", "local file") : tx("link", "link")}</span>
+          </button>
+        `).join("")}
+      </div>
+    ` : ""}
     <div id="pdfViewer" class="mt-4"></div>
   `;
   $("#addBook").addEventListener("click", addBook);
@@ -1593,21 +1780,25 @@ function addBook() {
 }
 
 async function extractBook() {
-  const title = $("#bookTitle").value.trim() || tx("Interaktywna ksiazeczka", "Interactive booklet");
+  const title = $("#bookTitle").value.trim() || tx("Interaktywna książeczka", "Interactive booklet");
   const file = $("#bookFile").files[0];
   const link = $("#bookLink").value.trim();
   const button = $("#extractBook");
+  if (!file && !link) {
+    alert(tx("Wybierz plik PDF lub podaj link.", "Choose a PDF file or enter a link."));
+    return;
+  }
   button.textContent = tx("Czytam PDF...", "Reading PDF...");
   try {
     const source = file ? new Uint8Array(await file.arrayBuffer()) : link;
-    if (!source) return;
     const text = await extractPdfText(source);
     const cards = makeBookCards(text);
     state.interactiveBooks.unshift({ id: crypto.randomUUID(), title, rawText: text.slice(0, 12000), cards });
     saveState();
     books();
   } catch (error) {
-    button.textContent = tx("Nie udalo sie odczytac", "Could not read");
+    button.textContent = tx("Nie udało się odczytać", "Could not read PDF");
+    setTimeout(() => { button.textContent = tx("Wyciągnij karty z PDF", "Extract cards from PDF"); }, 3000);
   }
 }
 
@@ -1626,19 +1817,24 @@ async function extractPdfText(source) {
 }
 
 function makeBookCards(text) {
-  const tokens = text
-    .split(/\s+/)
-    .map((token) => token.trim())
-    .filter((token) => token.length > 1)
+  const arabicTokens = (text.match(/[\u0600-\u06FF][\u0600-\u06FF\s\u064B-\u0652\uFE70-\uFEFF]*/g) || [])
+    .map((t) => t.trim())
+    .filter((t) => t.length > 1)
     .slice(0, 36);
-  if (!tokens.length) {
-    return words.slice(0, 8).map((word) => ({ ar: word.ar, pl: wordMeaning(word), tr: word.tr }));
+
+  if (arabicTokens.length >= 4) {
+    return arabicTokens.map((ar) => {
+      const foundWord = words.find((w) => w.ar === ar);
+      return {
+        ar,
+        pl: foundWord ? wordMeaning(foundWord) : extractNearbyLine(text, ar) || ar,
+        tr: foundWord ? foundWord.tr : ar
+      };
+    });
   }
-  return tokens.map((token, index) => ({
-    ar: /[\u0600-\u06FF]/.test(token) ? token : words[index % words.length].ar,
-    pl: token,
-    tr: words[index % words.length].tr
-  }));
+
+  const shuffledWords = [...words].sort(() => Math.random() - 0.5).slice(0, 8);
+  return shuffledWords.map((word) => ({ ar: word.ar, pl: wordMeaning(word), tr: word.tr }));
 }
 
 function openBook(id) {
@@ -1718,11 +1914,28 @@ function addSingleFlashcard(front, back, hint = "AI") {
 }
 
 function saveInteractiveBook(title, text) {
-  const cards = text.split(/[.!?\n]+/).map((line, index) => line.trim()).filter(Boolean).slice(0, 12).map((line, index) => ({
-    ar: words[index % words.length].ar,
-    pl: line,
-    tr: words[index % words.length].tr
-  }));
+  const arabicMatches = text.match(/[؀-ۿ][؀-ۿ\sً-ْـ]*/g) || [];
+  let cards;
+  if (arabicMatches.length >= 2) {
+    cards = arabicMatches.slice(0, 12).map((ar, index) => {
+      const trimmed = ar.trim();
+      const foundWord = words.find((w) => w.ar === trimmed);
+      const nearbyLine = extractNearbyLine(text, trimmed);
+      return {
+        ar: trimmed,
+        pl: foundWord ? wordMeaning(foundWord) : (nearbyLine || trimmed),
+        tr: foundWord ? foundWord.tr : trimmed
+      };
+    });
+  } else {
+    const lines = text.split(/[.!?\n]+/).map((l) => l.trim()).filter(Boolean).slice(0, 12);
+    const allWords = [...words].sort(() => Math.random() - 0.5);
+    cards = lines.map((line, index) => ({
+      ar: allWords[index % allWords.length].ar,
+      pl: line,
+      tr: allWords[index % allWords.length].tr
+    }));
+  }
   state.interactiveBooks.unshift({ id: crypto.randomUUID(), title, rawText: text, cards });
   saveState();
 }
@@ -1735,45 +1948,254 @@ function readFileAsDataUrl(file, callback) {
 }
 
 function culture() {
-  const fact = state.cultureFacts.find((item) => item.date === today());
+  const todayFacts = state.cultureFacts.filter((item) => item.date === today());
+  const latestFact = todayFacts[0];
+  const pastFacts = state.cultureFacts.filter((item) => item.date !== today()).slice(0, 8);
+
   view.innerHTML = `
     <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Kultura i ciekawostki", "Culture and facts")}</h1>
-      <p class="text-[var(--muted)]">${tx("Ciekawostki dnia o arabskim, islamie, Indonezji i codziennych zwyczajach.", "Daily facts about Arabic, Islam, Indonesia and everyday customs.")}</p>
+      <h1 class="text-3xl font-black">${tx("Kultura i ciekawostki", "Culture & Facts")}</h1>
+      <p class="text-[var(--muted)]">${tx("Ciekawostki o arabskim, islamie, Indonezji i kulturze.", "Facts about Arabic, Islam, Indonesia and culture.")}</p>
     </div>
-    <section class="panel p-5">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p class="text-sm font-bold text-emerald-600">${tx("Ciekawostka dnia", "Fact of the day")}</p>
-          <h2 class="text-2xl font-black">${fact ? fact.title : tx("Wygeneruj dzisiejsza ciekawostke", "Generate today's fact")}</h2>
+    <section class="panel p-5 mb-4">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div class="flex-1">
+          <p class="text-sm font-bold text-emerald-600">${tx("Ciekawostka dnia", "Fact of the day")} · ${today()}</p>
+          <h2 class="text-xl font-black mt-1">${latestFact ? escapeHtml(latestFact.title) : tx("Wygeneruj dzisiejszą ciekawostkę", "Generate today's fact")}</h2>
+          ${latestFact ? `<p class="mt-3 text-[var(--muted)] leading-relaxed">${escapeHtml(latestFact.text)}</p>` : `<p class="mt-3 text-sm text-[var(--muted)]">${tx("Kliknij przycisk, żeby AI napisał krótką ciekawostkę.", "Click the button for AI to write a short fact.")}</p>`}
         </div>
-        <button id="generateCultureBtn" class="big-action bg-emerald-500 text-white">${fact ? tx("Odswiez AI", "Refresh AI") : tx("Generuj AI", "Generate AI")}</button>
+        <button id="generateCultureBtn" class="big-action bg-emerald-500 text-white shrink-0">${latestFact ? tx("Nowa AI", "New AI") : tx("Generuj AI", "Generate AI")}</button>
       </div>
-      <p class="mt-4 whitespace-pre-wrap text-[var(--muted)]">${fact ? escapeHtml(fact.text) : tx("AI przygotuje krotka ciekawostke z mini-slowkiem arabskim i prostym przykladem.", "AI will prepare a short fact with one Arabic mini-word and a simple example.")}</p>
     </section>
-    <div class="mt-4 grid gap-3 sm:grid-cols-2">
-      ${state.cultureFacts.slice(0, 8).map((item) => `
-        <article class="soft-panel p-4">
-          <p class="text-xs font-bold text-[var(--muted)]">${item.date}</p>
-          <h3 class="mt-1 font-black">${item.title}</h3>
-          <p class="mt-2 text-sm text-[var(--muted)]">${escapeHtml(item.text)}</p>
-        </article>
-      `).join("")}
-    </div>
+    ${pastFacts.length ? `
+      <h2 class="text-xl font-black mb-3">${tx("Poprzednie ciekawostki", "Previous facts")}</h2>
+      <div class="grid gap-3 sm:grid-cols-2">
+        ${pastFacts.map((item) => `
+          <article class="soft-panel p-4">
+            <p class="text-xs font-bold text-[var(--muted)] mb-1">${item.date}</p>
+            <h3 class="font-black text-sm">${escapeHtml(item.title)}</h3>
+            <p class="mt-2 text-sm text-[var(--muted)] leading-relaxed">${escapeHtml(item.text)}</p>
+          </article>
+        `).join("")}
+      </div>
+    ` : ""}
   `;
   $("#generateCultureBtn").addEventListener("click", generateCultureFact);
 }
 
 async function generateCultureFact() {
   const button = $("#generateCultureBtn");
-  button.textContent = tx("Mysle...", "Thinking...");
+  button.textContent = tx("Myślę...", "Thinking...");
   try {
-    const text = await askGroq([{ role: "user", content: tx("Wygeneruj jedna ciekawostke dnia do sekcji Kultura. Ma byc krotka, ciepla, po polsku, z jednym arabskim slowem, transliteracja i mikro-zadaniem.", "Generate one fact of the day for the Culture section. It should be short, warm, in English, with one Arabic word, transliteration, and a micro-task.") }]);
-    state.cultureFacts.unshift({ id: crypto.randomUUID(), date: today(), title: tx(`Ciekawostka ${new Date().toLocaleDateString(localeTag())}`, `Fact ${new Date().toLocaleDateString(localeTag())}`), text });
+    const promptText = tx(
+      "Napisz jedną krótką ciekawostkę o arabskiej kulturze, islamie lub Indonezji. Max 3 zdania. Podaj jedno arabskie słowo i jego wymowę w nawiasach. Tylko treść, żadnych przycisków ani instrukcji.",
+      "Write one short culture fact about Arabic culture, Islam, or Indonesia. Max 3 sentences. Include one Arabic word and its pronunciation in brackets. Only content, no buttons or instructions."
+    );
+    const text = await askGroq([{ role: "user", content: promptText }]);
+    const cleanText = cleanAiText(text);
+    const dateStr = new Date().toLocaleDateString(localeTag());
+    state.cultureFacts.unshift({
+      id: crypto.randomUUID(),
+      date: today(),
+      title: tx(`Ciekawostka ${dateStr}`, `Fact ${dateStr}`),
+      text: cleanText
+    });
     saveState();
     culture();
   } catch {
-    button.textContent = tx("Blad AI", "AI error");
+    const btn = $("#generateCultureBtn");
+    if (btn) btn.textContent = tx("Błąd AI", "AI error");
+  }
+}
+
+function quran() {
+  if (!state.learnedSurahs) state.learnedSurahs = {};
+  if (!state.surahProgress) state.surahProgress = {};
+  const customSurahs = state.customSurahs || [];
+  const allSurahs = [...surahs, ...customSurahs];
+  const totalAyat = allSurahs.reduce((sum, s) => sum + s.ayat.length, 0);
+  const learnedAyat = Object.values(state.surahProgress).reduce((sum, arr) => sum + (Array.isArray(arr) ? arr.length : 0), 0);
+  const pct = totalAyat ? Math.round((learnedAyat / totalAyat) * 100) : 0;
+
+  view.innerHTML = `
+    <div class="mb-4">
+      <h1 class="text-3xl font-black">${t("quranTitle")}</h1>
+      <p class="text-[var(--muted)]">${t("quranLead")}</p>
+    </div>
+    <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-3 flex-1 min-w-48 overflow-hidden rounded-full bg-emerald-100">
+          <div class="h-full rounded-full bg-emerald-500 transition-all" style="width:${pct}%"></div>
+        </div>
+        <span class="font-bold text-emerald-600">${pct}% ${t("learnedPct")}</span>
+      </div>
+      <button id="addCustomSurah" class="big-action bg-amber-500 text-white">${t("quranAddMore")}</button>
+    </div>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-4">
+      ${allSurahs.map((surah) => {
+        const learned = state.surahProgress[surah.id] || [];
+        const surahPct = Math.round((learned.length / surah.ayat.length) * 100);
+        return `
+          <button class="surah-card text-left ${learned.length === surah.ayat.length ? "surah-card active" : ""}" data-surah="${surah.id}">
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span class="text-xs font-bold text-[var(--muted)]">${tx("Sura", "Surah")} ${surah.number}</span>
+              <span class="text-xs font-bold ${learned.length === surah.ayat.length ? "text-emerald-500" : "text-[var(--muted)]"}">${surahPct}%</span>
+            </div>
+            <p class="arabic text-2xl leading-relaxed">${surah.name}</p>
+            <p class="font-black mt-1">${state.lang === "pl" ? surah.namePl : surah.nameEn}</p>
+            <p class="text-sm text-[var(--muted)]">${state.lang === "pl" ? surah.meaningPl : surah.meaningEn} · ${surah.ayat.length} ${tx("ajatów", "ayat")}</p>
+            <div class="mt-3 h-2 overflow-hidden rounded-full bg-emerald-100">
+              <div class="h-full rounded-full bg-emerald-500" style="width:${surahPct}%"></div>
+            </div>
+          </button>
+        `;
+      }).join("")}
+    </div>
+    <div id="surahDetail"></div>
+  `;
+
+  view.querySelectorAll("[data-surah]").forEach((btn) => {
+    btn.addEventListener("click", () => openSurah(btn.dataset.surah, allSurahs));
+  });
+
+  $("#addCustomSurah").addEventListener("click", () => addCustomSurahByNumber(allSurahs));
+}
+
+function openSurah(id, allSurahs) {
+  const surah = allSurahs.find((s) => s.id === id);
+  if (!surah) return;
+  if (!state.surahProgress) state.surahProgress = {};
+  const learned = new Set(state.surahProgress[surah.id] || []);
+  const detail = $("#surahDetail");
+
+  detail.innerHTML = `
+    <div class="panel p-5">
+      <div class="flex items-start justify-between gap-3 mb-4">
+        <div>
+          <p class="text-sm font-bold text-[var(--muted)]">${tx("Sura", "Surah")} ${surah.number}</p>
+          <h2 class="text-2xl font-black">${state.lang === "pl" ? surah.namePl : surah.nameEn}</h2>
+          <p class="text-[var(--muted)]">${state.lang === "pl" ? surah.meaningPl : surah.meaningEn}</p>
+        </div>
+        <div class="arabic text-4xl leading-normal">${surah.name}</div>
+      </div>
+      <div class="soft-panel p-4 mb-4">
+        <p class="text-sm font-bold text-emerald-600 mb-1">${t("quranFact")}</p>
+        <p class="text-sm text-[var(--muted)]">${state.lang === "pl" ? surah.factPl : surah.factEn}</p>
+        <button class="mt-3 big-action bg-emerald-500 text-white w-full" data-say-surah="${escapeHtml(surah.ayat.map((a) => a.ar).join(" "))}">🔊 ${t("quranListen")}</button>
+      </div>
+      <div class="grid gap-0">
+        ${surah.ayat.map((ayah) => `
+          <div class="ayah-row" data-ayah-id="${surah.id}-${ayah.n}">
+            <div class="ayah-num ${learned.has(ayah.n) ? "ayah-learned" : ""}" data-ayah-num="${ayah.n}">${ayah.n}</div>
+            <div>
+              <p class="arabic text-2xl leading-relaxed mb-2">${ayah.ar}</p>
+              <p class="text-sm font-bold text-emerald-700">${ayah.tr}</p>
+              <p class="text-sm text-[var(--muted)] mt-1">${state.lang === "pl" ? ayah.pl : ayah.en}</p>
+            </div>
+            <button class="speaker-btn" data-say="${escapeHtml(ayah.ar)}" aria-label="${t("play")}">🔊</button>
+          </div>
+        `).join("")}
+      </div>
+      <div class="mt-5 grid gap-2 sm:grid-cols-2">
+        <button id="learnSurahBtn" class="big-action bg-emerald-500 text-white">${t("quranLearn")}</button>
+        <button id="surahAiBtn" class="big-action bg-amber-500 text-white">✦ ${tx("Ciekawostka AI", "AI Insight")}</button>
+      </div>
+      <div id="surahAiResult"></div>
+    </div>
+  `;
+
+  detail.querySelectorAll("[data-say]").forEach((btn) => {
+    btn.addEventListener("click", (e) => { e.stopPropagation(); speakArabic(btn.dataset.say); });
+  });
+  detail.querySelector("[data-say-surah]")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    speakArabic(e.currentTarget.dataset.saySurah);
+  });
+
+  detail.querySelector("[data-ayah-num]") && detail.querySelectorAll("[data-ayah-row], .ayah-row").forEach((row) => {
+    row.addEventListener("click", () => {
+      const numEl = row.querySelector("[data-ayah-num]");
+      if (!numEl) return;
+      const n = Number(numEl.dataset.ayahNum);
+      if (learned.has(n)) {
+        learned.delete(n);
+        numEl.classList.remove("ayah-learned");
+      } else {
+        learned.add(n);
+        numEl.classList.add("ayah-learned");
+      }
+      state.surahProgress[surah.id] = [...learned];
+      saveState();
+    });
+  });
+
+  $("#learnSurahBtn").addEventListener("click", () => {
+    surah.ayat.forEach((a) => learned.add(a.n));
+    state.surahProgress[surah.id] = [...learned];
+    addPoints(surah.ayat.length * 5, false);
+    saveState();
+    confetti();
+    detail.querySelectorAll("[data-ayah-num]").forEach((el) => el.classList.add("ayah-learned"));
+    $("#learnSurahBtn").textContent = t("quranLearned");
+    $("#learnSurahBtn").className = "big-action border border-[var(--line)] bg-[var(--surface)]";
+  });
+
+  $("#surahAiBtn").addEventListener("click", () => generateSurahFact(surah));
+  detail.scrollIntoView({ behavior: "smooth" });
+}
+
+async function generateSurahFact(surah) {
+  const btn = $("#surahAiBtn");
+  const result = $("#surahAiResult");
+  btn.textContent = tx("Myślę...", "Thinking...");
+  btn.disabled = true;
+  try {
+    const prompt = tx(
+      `Powiedz jedno krótkie (2-3 zdania) ciekawe fakty o surze ${surah.namePl} (${surah.nameEn}) z Koranu. Pisz po polsku, przyjaźnie. Bez markdown.`,
+      `Tell one short (2-3 sentences) interesting fact about Surah ${surah.nameEn} from the Quran. Write in English, friendly. No markdown.`
+    );
+    const text = await askGroq([{ role: "user", content: prompt }]);
+    result.innerHTML = `<div class="soft-panel p-4 mt-3"><p class="text-sm font-bold text-amber-600 mb-1">✦ AI</p><p class="text-sm">${escapeHtml(text)}</p></div>`;
+  } catch {
+    result.innerHTML = `<p class="mt-3 text-sm text-red-500">${tx("Błąd AI", "AI error")}</p>`;
+  }
+  btn.textContent = `✦ ${tx("Ciekawostka AI", "AI Insight")}`;
+  btn.disabled = false;
+}
+
+async function addCustomSurahByNumber(allSurahs) {
+  const input = prompt(
+    tx("Podaj numer sury (1-114) lub jej angielską nazwę:", "Enter surah number (1-114) or its English name:")
+  );
+  if (!input) return;
+  const btn = $("#addCustomSurah");
+  btn.textContent = tx("Pobieram...", "Fetching...");
+  btn.disabled = true;
+  try {
+    const promptText = tx(
+      `Podaj informacje o surze Koranu numer ${input} lub o nazwie "${input}". Odpowiedz w JSON z polami: id (unikalny string), number (int), name (arabski), nameEn, namePl, meaningEn, meaningPl, factPl (2 zdania), factEn (2 zdania), ayat (tablica obiektów: n, ar, tr (transliteracja), pl, en). Podaj kompletne ajaty.`,
+      `Provide information about Quran surah number ${input} or named "${input}". Reply in JSON with fields: id (unique string), number (int), name (Arabic), nameEn, namePl, meaningEn, meaningPl, factPl (2 sentences), factEn (2 sentences), ayat (array of objects: n, ar, tr (transliteration), pl, en). Include all complete ayat.`
+    );
+    const text = await askGroq([{ role: "user", content: promptText }]);
+    const jsonMatch = text.match(/\{[\s\S]+\}/);
+    if (!jsonMatch) throw new Error("No JSON");
+    const surahData = JSON.parse(jsonMatch[0]);
+    if (!surahData.id || !surahData.ayat?.length) throw new Error("Invalid data");
+    if (allSurahs.find((s) => s.id === surahData.id || s.number === surahData.number)) {
+      alert(tx("Ta sura jest już dostępna.", "This surah is already available."));
+      btn.textContent = t("quranAddMore");
+      btn.disabled = false;
+      return;
+    }
+    if (!state.customSurahs) state.customSurahs = [];
+    state.customSurahs.push(surahData);
+    saveState();
+    confetti();
+    quran();
+  } catch {
+    alert(tx("Nie udało się pobrać sury. Spróbuj ponownie.", "Could not fetch surah. Please try again."));
+    btn.textContent = t("quranAddMore");
+    btn.disabled = false;
   }
 }
 
@@ -2036,6 +2458,7 @@ function aiActionButtons(index) {
       <button class="ai-chip" data-ai-action="book" data-message-index="${index}">${t("saveBook")}</button>
       <button class="ai-chip" data-ai-action="adventure" data-message-index="${index}">${t("addAdventure")}</button>
       <button class="ai-chip" data-ai-action="culture" data-message-index="${index}">${t("addCulture")}</button>
+      <button class="ai-chip" data-ai-action="lesson" data-message-index="${index}">${t("addLesson")}</button>
     </div>
   `;
 }
@@ -2113,32 +2536,59 @@ function handleAiAction(action, messageIndex) {
     setRoute("adventure");
   }
   if (action === "culture") {
-    state.cultureFacts.unshift({ id: crypto.randomUUID(), date: today(), title: tx("Ciekawostka AI", "AI fact"), text: message.content });
+    state.cultureFacts.unshift({ id: crypto.randomUUID(), date: today(), title: tx("Ciekawostka AI", "AI fact"), text: cleanAiText(message.content) });
     saveState();
     setRoute("culture");
+  }
+  if (action === "lesson") {
+    addAiFlashcards(message.content);
+    setRoute("flashcards");
+  }
+  if (action === "book") {
+    saveInteractiveBook(tx(`Książeczka AI ${new Date().toLocaleDateString(localeTag())}`, `AI Book ${new Date().toLocaleDateString(localeTag())}`), message.content);
+    setRoute("books");
   }
   $("#aiDialog").close();
   confetti();
 }
 
 function addAiFlashcards(text) {
-  const arabicMatches = text.match(/[\u0600-\u06FF][\u0600-\u06FF\sًٌٍَُِّْـ]+/g) || [];
-  const created = arabicMatches.slice(0, 12).map((front, index) => ({
-    id: `ai-${crypto.randomUUID()}`,
-    front: front.trim(),
-    back: extractNearbyLine(text, front) || tx(`Fiszka AI ${index + 1}`, `AI card ${index + 1}`),
-    hint: "AI"
-  }));
-  if (!created.length) {
-    state.customFlashcards.unshift({
+  const created = [];
+  const lines = text.split(/\n/).map((l) => l.trim()).filter(Boolean);
+
+  for (const line of lines) {
+    const arabicMatch = line.match(/[\u0600-\u06FF][\u0600-\u06FF\u064B-\u0652\u0670\uFB50-\uFDFF\s]*/);
+    if (!arabicMatch) continue;
+    const front = arabicMatch[0].trim();
+    if (front.length < 2) continue;
+    const rest = line.replace(arabicMatch[0], "").replace(/^[-\u2013\u2014:|\u060C,\s]+/, "").trim();
+    const parts = rest.split(/\s*[-\u2013\u2014\u00B7|]\s*/);
+    const translation = parts[0]?.trim() || tx(`Fiszka AI ${created.length + 1}`, `AI card ${created.length + 1}`);
+    const transliteration = parts[1]?.trim() || "";
+    created.push({
       id: `ai-${crypto.randomUUID()}`,
-      front: "سلام",
-      back: text.slice(0, 180),
+      front,
+      back: transliteration ? `${translation} \u00B7 ${transliteration}` : translation,
+      translation,
+      transliteration,
       hint: "AI"
     });
-  } else {
-    state.customFlashcards.unshift(...created);
+    if (created.length >= 12) break;
   }
+
+  if (!created.length) {
+    const arabicMatches = (text.match(/[\u0600-\u06FF][\u0600-\u06FF\u064B-\u0652\s]*/g) || []).filter((m) => m.trim().length > 1);
+    for (const front of arabicMatches.slice(0, 12)) {
+      const nearbyLine = extractNearbyLine(text, front.trim()) || front.trim();
+      created.push({ id: `ai-${crypto.randomUUID()}`, front: front.trim(), back: nearbyLine, hint: "AI" });
+    }
+  }
+
+  if (!created.length) {
+    created.push({ id: `ai-${crypto.randomUUID()}`, front: "\u0633\u0644\u0627\u0645", back: text.slice(0, 180), hint: "AI" });
+  }
+
+  state.customFlashcards.unshift(...created);
   saveState();
 }
 
