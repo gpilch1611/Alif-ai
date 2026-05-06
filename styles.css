@@ -262,13 +262,14 @@ select {
 }
 
 .letter-tile {
-  min-height: 124px;
+  min-height: 140px;
   border-radius: 14px;
   border: 1px solid var(--line);
   background: var(--surface);
   display: grid;
   place-items: center;
   padding: 12px;
+  overflow: hidden;
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
@@ -818,6 +819,113 @@ h3 {
   border-radius: 999px;
 }
 
+/* Surah / Quran section */
+.surah-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: 16px;
+  text-align: left;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.surah-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-pop);
+}
+
+.surah-card.active {
+  border-color: var(--emerald);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.ayah-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.ayah-row:last-child {
+  border-bottom: none;
+}
+
+.ayah-num {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--emerald), var(--gold));
+  color: white;
+  font-size: 13px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.ayah-learned {
+  background: linear-gradient(135deg, #10b981, #047857) !important;
+}
+
+.lesson-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.lesson-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+
+.lesson-card.done {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.04);
+}
+
+.lesson-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+}
+
+[data-theme="dark"] .lesson-tag {
+  background: rgba(16, 185, 129, 0.18);
+  color: #6ee7b7;
+}
+
+[data-theme="romantic"] .lesson-tag {
+  background: rgba(230, 87, 135, 0.12);
+  color: #c73f73;
+}
+
+.flash-stats-bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.flash-stat {
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+}
+
 @media (min-width: 640px) {
   .nav-btn {
     min-height: 68px;
@@ -881,6 +989,10 @@ h3 {
   .falling-letter {
     width: 62px;
     height: 62px;
+  }
+
+  .ayah-row {
+    grid-template-columns: auto 1fr;
   }
 }
 
