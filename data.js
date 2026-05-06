@@ -73,7 +73,91 @@ export const words = [
   { id: "marhaba", ar: "مرحبا", tr: "marhaba", pl: "cześć / witaj" },
   { id: "sabah", ar: "صباح", tr: "sabah", pl: "poranek" },
   { id: "masa", ar: "مساء", tr: "masa'", pl: "wieczór" },
-  { id: "lail", ar: "ليل", tr: "lajl", pl: "noc" }
+  { id: "lail", ar: "ليل", tr: "lajl", pl: "noc" },
+
+  // Islam / Aqeedah
+  { id: "nabi", ar: "نَبِيّ", tr: "nabi", pl: "prorok" },
+  { id: "rasul", ar: "رَسُول", tr: "rasul", pl: "posłaniec / wysłannik" },
+  { id: "iman", ar: "إِيمَان", tr: "iman", pl: "wiara" },
+  { id: "taqwa", ar: "تَقْوَى", tr: "taqwa", pl: "bogobojność" },
+  { id: "tawhid", ar: "تَوْحِيد", tr: "tawhid", pl: "jedność Allaha" },
+  { id: "jannah", ar: "جَنَّة", tr: "jannah", pl: "raj / ogród" },
+  { id: "nar", ar: "نَار", tr: "nar", pl: "ogień / piekło" },
+  { id: "akhira", ar: "آخِرَة", tr: "akhira", pl: "życie po śmierci" },
+  { id: "dunya", ar: "دُنْيَا", tr: "dunya", pl: "ten świat / życie doczesne" },
+  { id: "qadar", ar: "قَدَر", tr: "qadar", pl: "przeznaczenie" },
+  { id: "ikhlas_w", ar: "إِخْلَاص", tr: "ikhlas", pl: "szczerość / oddanie" },
+  { id: "sabr", ar: "صَبْر", tr: "sabr", pl: "cierpliwość" },
+  { id: "tawbah", ar: "تَوْبَة", tr: "tawbah", pl: "skrucha / nawrócenie" },
+  { id: "barakah", ar: "بَرَكَة", tr: "barakah", pl: "błogosławieństwo" },
+  { id: "maghfirah", ar: "مَغْفِرَة", tr: "maghfirah", pl: "przebaczenie" },
+  { id: "hidayah", ar: "هِدَايَة", tr: "hidayah", pl: "przewodnictwo" },
+  { id: "ummah", ar: "أُمَّة", tr: "ummah", pl: "wspólnota muzułmańska" },
+  { id: "dua_w", ar: "دُعَاء", tr: "du'a", pl: "modlitwa osobista / prośba" },
+  { id: "dhikr", ar: "ذِكْر", tr: "dhikr", pl: "wspomnienie Allaha" },
+  { id: "tawakkul", ar: "تَوَكُّل", tr: "tawakkul", pl: "ufność w Allahu" },
+  { id: "istighfar", ar: "اسْتِغْفَار", tr: "istighfar", pl: "prośba o przebaczenie" },
+
+  // Ibadah (modlitwa i rytuały)
+  { id: "salat", ar: "صَلَاة", tr: "salat", pl: "modlitwa (rytm.)" },
+  { id: "zakat_w", ar: "زَكَاة", tr: "zakat", pl: "jałmużna obowiązkowa" },
+  { id: "sawm", ar: "صَوْم", tr: "sawm", pl: "post" },
+  { id: "hajj_w", ar: "حَجّ", tr: "hajj", pl: "pielgrzymka do Mekki" },
+  { id: "wudu", ar: "وُضُوء", tr: "wudu", pl: "ablucja / oczyszczenie" },
+  { id: "qibla", ar: "قِبْلَة", tr: "qibla", pl: "kierunek modlitwy" },
+  { id: "kaaba", ar: "كَعْبَة", tr: "kaaba", pl: "Kaaba w Mekce" },
+  { id: "adhan", ar: "أَذَان", tr: "adhan", pl: "wezwanie do modlitwy" },
+  { id: "haram_w", ar: "حَرَام", tr: "haram", pl: "zakazane" },
+  { id: "sunnah_w", ar: "سُنَّة", tr: "sunnah", pl: "tradycja Proroka ﷺ" },
+  { id: "hadith_w", ar: "حَدِيث", tr: "hadith", pl: "przekaz / tradycja" },
+  { id: "imam_w", ar: "إِمَام", tr: "imam", pl: "imam / prowadzący modlitwę" },
+
+  // Koran
+  { id: "surah_w", ar: "سُورَة", tr: "surah", pl: "sura Koranu" },
+  { id: "ayah_w", ar: "آيَة", tr: "ayah", pl: "ajet (werset)" },
+  { id: "tajwid", ar: "تَجْوِيد", tr: "tajwid", pl: "zasady recytacji Koranu" },
+  { id: "hafiz_w", ar: "حَافِظ", tr: "hafiz", pl: "znający Koran na pamięć" },
+  { id: "tafsir", ar: "تَفْسِير", tr: "tafsir", pl: "interpretacja Koranu" },
+
+  // Prorocy
+  { id: "ibrahim_w", ar: "إِبْرَاهِيم", tr: "ibrahim", pl: "Ibrahim (Abraham)" },
+  { id: "musa_w", ar: "مُوسَى", tr: "musa", pl: "Musa (Mojżesz)" },
+  { id: "isa_w", ar: "عِيسَى", tr: "isa", pl: "Isa (Jezus)" },
+  { id: "muhammad_w", ar: "مُحَمَّد", tr: "muhammad", pl: "Muhammad ﷺ" },
+  { id: "yusuf_w", ar: "يُوسُف", tr: "yusuf", pl: "Yusuf (Józef)" },
+  { id: "adam_w", ar: "آدَم", tr: "adam", pl: "Adam" },
+
+  // Natura
+  { id: "bahr", ar: "بَحْر", tr: "bahr", pl: "morze" },
+  { id: "jabal", ar: "جَبَل", tr: "jabal", pl: "góra" },
+  { id: "nahr", ar: "نَهْر", tr: "nahr", pl: "rzeka" },
+  { id: "sama", ar: "سَمَاء", tr: "sama'", pl: "niebo" },
+  { id: "ard_w", ar: "أَرْض", tr: "ard", pl: "ziemia / ląd" },
+  { id: "shajara", ar: "شَجَرَة", tr: "shajara", pl: "drzewo" },
+  { id: "matar", ar: "مَطَر", tr: "matar", pl: "deszcz" },
+  { id: "najm", ar: "نَجْم", tr: "najm", pl: "gwiazda" },
+  { id: "rih", ar: "رِيح", tr: "rih", pl: "wiatr" },
+
+  // Wiedza i rozum
+  { id: "ilm", ar: "عِلْم", tr: "'ilm", pl: "wiedza / nauka" },
+  { id: "aql", ar: "عَقْل", tr: "'aql", pl: "rozum / intelekt" },
+  { id: "hikmah", ar: "حِكْمَة", tr: "hikmah", pl: "mądrość" },
+  { id: "qalam", ar: "قَلَم", tr: "qalam", pl: "pióro / długopis" },
+  { id: "kitab_w", ar: "كِتَاب", tr: "kitab", pl: "księga / Pismo" },
+
+  // Codzienne
+  { id: "bayt_w", ar: "بَيْت", tr: "bayt", pl: "dom" },
+  { id: "wajh", ar: "وَجْه", tr: "wajh", pl: "twarz" },
+  { id: "ras", ar: "رَأْس", tr: "ra's", pl: "głowa" },
+  { id: "bab", ar: "بَاب", tr: "bab", pl: "drzwi" },
+  { id: "tariq", ar: "طَرِيق", tr: "tariq", pl: "droga / ścieżka" },
+  { id: "yawm", ar: "يَوْم", tr: "yawm", pl: "dzień" },
+  { id: "layla", ar: "لَيْلَة", tr: "layla", pl: "noc (jedna)" },
+  { id: "waqt", ar: "وَقْت", tr: "waqt", pl: "czas / pora" },
+  { id: "amal", ar: "عَمَل", tr: "'amal", pl: "czyn / praca" },
+  { id: "khayr", ar: "خَيْر", tr: "khayr", pl: "dobro / dobroć" },
+  { id: "haqq", ar: "حَقّ", tr: "haqq", pl: "prawda / prawo" },
+  { id: "nafs", ar: "نَفْس", tr: "nafs", pl: "dusza / jaźń" }
 ];
 
 export const dailyTasks = [
@@ -265,6 +349,191 @@ export const surahs = [
       { n: 5, ar: "الَّذِينَ هُمْ عَن صَلَاتِهِمْ سَاهُونَ", tr: "Alladhina hum 'an salatihim sahun", pl: "Którzy są niedbali w swojej modlitwie", en: "Who are heedless of their prayer" },
       { n: 6, ar: "الَّذِينَ هُمْ يُرَاءُونَ", tr: "Alladhina hum yura'un", pl: "Którzy się popisują (swoją pobożnością)", en: "Those who make show of their deeds" },
       { n: 7, ar: "وَيَمْنَعُونَ الْمَاعُونَ", tr: "Wa yamna'una l-ma'un", pl: "I odmawiają drobnych uprzejmości", en: "And withhold small kindnesses" }
+    ]
+  },
+  {
+    id: "kafirun",
+    number: 109,
+    name: "الكافرون",
+    nameEn: "Al-Kafirun",
+    namePl: "Al-Kafirun",
+    meaningEn: "The Disbelievers",
+    meaningPl: "Niewierni",
+    factPl: "Al-Kafirun jest znana jako 'Czwarta Al-Ikhlas'. Prorok ﷺ recytował ją w modlitwie Fajr i Witr. Chroni przed shirkiem – oddawaniem czci innym niż Allah.",
+    factEn: "Al-Kafirun is known as the fourth Al-Ikhlas. The Prophet ﷺ recited it in Fajr and Witr prayers. It protects against shirk – worshipping other than Allah.",
+    ayat: [
+      { n: 1, ar: "قُلْ يَا أَيُّهَا الْكَافِرُونَ", tr: "Qul ya ayyuha l-kafirun", pl: "Powiedz: O wy, niewierni!", en: "Say: O disbelievers!" },
+      { n: 2, ar: "لَا أَعْبُدُ مَا تَعْبُدُونَ", tr: "La a'budu ma ta'budun", pl: "Nie czczę tego, co wy czcicie", en: "I do not worship what you worship" },
+      { n: 3, ar: "وَلَا أَنتُمْ عَابِدُونَ مَا أَعْبُدُ", tr: "Wa la antum 'abiduna ma a'bud", pl: "I wy nie czcicie tego, co ja czczę", en: "Nor are you worshippers of what I worship" },
+      { n: 4, ar: "وَلَا أَنَا عَابِدٌ مَّا عَبَدتُّمْ", tr: "Wa la ana 'abidun ma 'abadtum", pl: "I ja nie będę czcił tego, coście czcili", en: "Nor will I be a worshipper of what you worship" },
+      { n: 5, ar: "وَلَا أَنتُمْ عَابِدُونَ مَا أَعْبُدُ", tr: "Wa la antum 'abiduna ma a'bud", pl: "I wy nie będziecie czcić tego, co ja czczę", en: "Nor will you be worshippers of what I worship" },
+      { n: 6, ar: "لَكُمْ دِينُكُمْ وَلِيَ دِينِ", tr: "Lakum dinukum wa liya din", pl: "Wasza jest wasza religia, a moja jest moja", en: "For you is your religion, and for me is my religion" }
+    ]
+  },
+  {
+    id: "masad",
+    number: 111,
+    name: "المسد",
+    nameEn: "Al-Masad",
+    namePl: "Al-Masad",
+    meaningEn: "The Palm Fibre",
+    meaningPl: "Włókno palmowe",
+    factPl: "Al-Masad (znana też jako Al-Lahab) opisuje Abu Lahaba – stryja Proroka ﷺ, który był jego największym wrogiem. To jedyna sura, w której wymieniono kogoś z imienia.",
+    factEn: "Al-Masad (also known as Al-Lahab) describes Abu Lahab – the Prophet's ﷺ uncle and his fiercest enemy. It is the only surah that names a specific person.",
+    ayat: [
+      { n: 1, ar: "تَبَّتْ يَدَا أَبِي لَهَبٍ وَتَبَّ", tr: "Tabbat yada Abi Lahabin wa tabb", pl: "Niech przepadną obie ręce Abu Lahaba, i niech on sam przepadnie", en: "May the hands of Abu Lahab perish, and may he perish" },
+      { n: 2, ar: "مَا أَغْنَىٰ عَنْهُ مَالُهُ وَمَا كَسَبَ", tr: "Ma aghna 'anhu maluhu wa ma kasab", pl: "Nie pomoże mu jego majątek ani to, co zyskał", en: "His wealth will not avail him or that which he gained" },
+      { n: 3, ar: "سَيَصْلَىٰ نَارًا ذَاتَ لَهَبٍ", tr: "Sa-yasla naran dhata lahab", pl: "Wkrótce wejdzie w ogień płomienisty", en: "He will enter a blazing Fire" },
+      { n: 4, ar: "وَامْرَأَتُهُ حَمَّالَةَ الْحَطَبِ", tr: "Wa mra'atuhu hammалата l-hatab", pl: "I jego żona, nosicielka chrustu", en: "And his wife, the carrier of firewood" },
+      { n: 5, ar: "فِي جِيدِهَا حَبْلٌ مِّن مَّسَدٍ", tr: "Fi jiidiha hablun min masad", pl: "Na jej szyi sznur z włókna palmowego", en: "Around her neck is a rope of palm fibre" }
+    ]
+  },
+  {
+    id: "qadr",
+    number: 97,
+    name: "القدر",
+    nameEn: "Al-Qadr",
+    namePl: "Al-Kadr",
+    meaningEn: "The Night of Decree",
+    meaningPl: "Noc Przeznaczenia",
+    factPl: "Laylat al-Qadr jest lepsza niż tysiąc miesięcy (~83 lata) modlitwy. Jest w jednej z ostatnich 10 nocy Ramadanu, najprawdopodobniej 27. nocy. Anioł Dżibril zstąpił z Koranem w tę noc.",
+    factEn: "Laylat al-Qadr is better than a thousand months (~83 years) of worship. It falls in one of the last 10 nights of Ramadan, most likely the 27th night. Angel Jibril descended with the Quran on this night.",
+    ayat: [
+      { n: 1, ar: "إِنَّا أَنزَلْنَاهُ فِي لَيْلَةِ الْقَدْرِ", tr: "Inna anzalnahu fi laylati l-qadr", pl: "Zaprawdę zesłaliśmy go w Nocy Przeznaczenia", en: "Indeed, We sent it down on the Night of Decree" },
+      { n: 2, ar: "وَمَا أَدْرَاكَ مَا لَيْلَةُ الْقَدْرِ", tr: "Wa ma adraka ma laylatu l-qadr", pl: "A cóż ci wyjaśni, czym jest Noc Przeznaczenia?", en: "And what can make you know what the Night of Decree is?" },
+      { n: 3, ar: "لَيْلَةُ الْقَدْرِ خَيْرٌ مِّنْ أَلْفِ شَهْرٍ", tr: "Laylatu l-qadri khayrun min alfi shahr", pl: "Noc Przeznaczenia jest lepsza niż tysiąc miesięcy", en: "The Night of Decree is better than a thousand months" },
+      { n: 4, ar: "تَنَزَّلُ الْمَلَائِكَةُ وَالرُّوحُ فِيهَا بِإِذْنِ رَبِّهِم مِّن كُلِّ أَمْرٍ", tr: "Tanazzalu l-mala'ikatu wa r-ruhu fiha bi idhni rabbihim min kulli amr", pl: "Zstępują aniołowie i Duch za zezwoleniem Pana ich, z każdym rozkazem", en: "The angels and the Spirit descend therein by permission of their Lord for every matter" },
+      { n: 5, ar: "سَلَامٌ هِيَ حَتَّىٰ مَطْلَعِ الْفَجْرِ", tr: "Salamun hiya hatta matla'i l-fajr", pl: "Jest pokój aż do wschodu jutrzenki", en: "Peace it is until the emergence of dawn" }
+    ]
+  },
+  {
+    id: "zalzalah",
+    number: 99,
+    name: "الزلزلة",
+    nameEn: "Az-Zalzalah",
+    namePl: "Az-Zalzala",
+    meaningEn: "The Earthquake",
+    meaningPl: "Trzęsienie ziemi",
+    factPl: "Az-Zalzalah uczy, że każdy czyn – nawet najmniejszy jak ziarnko piasku – zostanie policzony w Dniu Sądu. Prorok ﷺ powiedział, że jest równoważna połowie Koranu.",
+    factEn: "Az-Zalzalah teaches that every deed – even one as small as a grain – will be counted on the Day of Judgment. The Prophet ﷺ said it is equivalent to half the Quran.",
+    ayat: [
+      { n: 1, ar: "إِذَا زُلْزِلَتِ الْأَرْضُ زِلْزَالَهَا", tr: "Idha zulzilati l-ardu zilzalaha", pl: "Gdy ziemia zostanie wstrząśnięta swoim wstrząśnieniem", en: "When the earth is shaken with its final earthquake" },
+      { n: 2, ar: "وَأَخْرَجَتِ الْأَرْضُ أَثْقَالَهَا", tr: "Wa akhrajati l-ardu athqalaha", pl: "I ziemia wyrzuci swoje ciężary", en: "And the earth discharges its burdens" },
+      { n: 3, ar: "وَقَالَ الْإِنسَانُ مَا لَهَا", tr: "Wa qala l-insanu ma laha", pl: "I człowiek zapyta: co jej się stało?", en: "And man says: What is wrong with it?" },
+      { n: 4, ar: "يَوْمَئِذٍ تُحَدِّثُ أَخْبَارَهَا", tr: "Yawma'idhin tuhaddithu akhbaraha", pl: "W owym dniu będzie ona opowiadać swoje nowiny", en: "That day, it will report its news" },
+      { n: 5, ar: "بِأَنَّ رَبَّكَ أَوْحَىٰ لَهَا", tr: "Bi-anna rabbaka awha laha", pl: "Bo twój Pan natchnął ją", en: "Because your Lord inspired it" },
+      { n: 6, ar: "يَوْمَئِذٍ يَصْدُرُ النَّاسُ أَشْتَاتًا لِّيُرَوْا أَعْمَالَهُمْ", tr: "Yawma'idhin yasduru n-nasu ashtatан li-yuraw a'malahum", pl: "Tego dnia ludzie rozejdą się grupami, aby zobaczyć swoje czyny", en: "That day, people will depart separated to be shown their deeds" },
+      { n: 7, ar: "فَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَرَهُ", tr: "Fa man ya'mal mithqala dharratin khayran yarah", pl: "Ktokolwiek uczynił dobro ważące ziarnko – zobaczy je", en: "So whoever does an atom's weight of good will see it" },
+      { n: 8, ar: "وَمَن يَعْمَلْ مِثْقَالَ ذَرَّةٍ شَرًّا يَرَهُ", tr: "Wa man ya'mal mithqala dharratin sharran yarah", pl: "Ktokolwiek uczynił zło ważące ziarnko – zobaczy je", en: "And whoever does an atom's weight of evil will see it" }
+    ]
+  },
+  {
+    id: "takathur",
+    number: 102,
+    name: "التكاثر",
+    nameEn: "At-Takathur",
+    namePl: "At-Takasur",
+    meaningEn: "The Rivalry in World Increase",
+    meaningPl: "Współzawodnictwo w gromadzeniu",
+    factPl: "At-Takathur ostrzega przed obsesją na punkcie bogactwa i statusu. Prorok ﷺ powiedział, że gdyby syn Adama miał jedną dolinę złota, pragnąłby drugiej.",
+    factEn: "At-Takathur warns against obsession with wealth and status. The Prophet ﷺ said if the son of Adam had one valley of gold, he would desire a second.",
+    ayat: [
+      { n: 1, ar: "أَلْهَاكُمُ التَّكَاثُرُ", tr: "Alhakumu t-takathur", pl: "Zajęło was gromadzenie", en: "Competition in worldly increase diverts you" },
+      { n: 2, ar: "حَتَّىٰ زُرْتُمُ الْمَقَابِرَ", tr: "Hatta zurtumu l-maqabir", pl: "Aż odwiedzicie groby", en: "Until you visit the graveyards" },
+      { n: 3, ar: "كَلَّا سَوْفَ تَعْلَمُونَ", tr: "Kalla sawfa ta'lamun", pl: "Nie tak! Niebawem poznacie", en: "No! You are going to know" },
+      { n: 4, ar: "ثُمَّ كَلَّا سَوْفَ تَعْلَمُونَ", tr: "Thumma kalla sawfa ta'lamun", pl: "A potem, nie tak! Niebawem poznacie", en: "Then no! You are going to know" },
+      { n: 5, ar: "كَلَّا لَوْ تَعْلَمُونَ عِلْمَ الْيَقِينِ", tr: "Kalla law ta'lamuna 'ilma l-yaqin", pl: "Nie tak! Gdybyście wiedzieli wiedzą pewną", en: "No! If you only knew with knowledge of certainty" },
+      { n: 6, ar: "لَتَرَوُنَّ الْجَحِيمَ", tr: "La-tarawunna l-jahim", pl: "Z pewnością ujrzycie piekło", en: "You will surely see the Hellfire" },
+      { n: 7, ar: "ثُمَّ لَتَرَوُنَّهَا عَيْنَ الْيَقِينِ", tr: "Thumma la-tarawunnaha 'ayna l-yaqin", pl: "Potem z pewnością ujrzycie je okiem pewności", en: "Then you will surely see it with the eye of certainty" },
+      { n: 8, ar: "ثُمَّ لَتُسْأَلُنَّ يَوْمَئِذٍ عَنِ النَّعِيمِ", tr: "Thumma la-tus'alunna yawma'idhin 'ani n-na'im", pl: "A potem, w owym dniu, na pewno będziecie pytani o rozkosz", en: "Then you will surely be asked that day about pleasure" }
+    ]
+  },
+  {
+    id: "humazah",
+    number: 104,
+    name: "الهمزة",
+    nameEn: "Al-Humazah",
+    namePl: "Al-Humaza",
+    meaningEn: "The Slanderer",
+    meaningPl: "Oszczerca",
+    factPl: "Al-Humazah potępia tych, którzy gromadzą majątek i szydzą z innych. Słowo 'humazah' oznacza kogoś, kto rani innych słowami i gestami.",
+    factEn: "Al-Humazah condemns those who hoard wealth and mock others. The word 'humazah' means one who hurts others with words and gestures.",
+    ayat: [
+      { n: 1, ar: "وَيْلٌ لِّكُلِّ هُمَزَةٍ لُّمَزَةٍ", tr: "Waylun li-kulli humazatin lumazah", pl: "Biada każdemu oszczercy i potwarcę", en: "Woe to every scorner and mocker" },
+      { n: 2, ar: "الَّذِي جَمَعَ مَالًا وَعَدَّدَهُ", tr: "Alladhi jama'a malan wa 'addadah", pl: "Który gromadzi majątek i wciąż go liczy", en: "Who collects wealth and continuously counts it" },
+      { n: 3, ar: "يَحْسَبُ أَنَّ مَالَهُ أَخْلَدَهُ", tr: "Yahsabu anna malahu akhladah", pl: "Sądzi, że jego majątek uczyni go nieśmiertelnym", en: "He thinks that his wealth will make him immortal" },
+      { n: 4, ar: "كَلَّا لَيُنبَذَنَّ فِي الْحُطَمَةِ", tr: "Kalla la-yunbadhanna fi l-hutama", pl: "Nie tak! Z pewnością zostanie wrzucony do Hutamy", en: "No! He will surely be thrown into the Crusher" },
+      { n: 5, ar: "وَمَا أَدْرَاكَ مَا الْحُطَمَةُ", tr: "Wa ma adraka ma l-hutama", pl: "A cóż ci wyjaśni, czym jest Hutama?", en: "And what can make you know what the Crusher is?" },
+      { n: 6, ar: "نَارُ اللَّهِ الْمُوقَدَةُ", tr: "Naru llahi l-muqada", pl: "Ogień Allaha rozpalony", en: "It is the fire of Allah, [eternally] fueled" },
+      { n: 7, ar: "الَّتِي تَطَّلِعُ عَلَى الْأَفْئِدَةِ", tr: "Allati tattali'u 'ala l-af'ida", pl: "Który dosięga serc", en: "Which mounts directed at the hearts" },
+      { n: 8, ar: "إِنَّهَا عَلَيْهِم مُّؤْصَدَةٌ", tr: "Innaha 'alayhim mu'sada", pl: "Zaprawdę on jest nad nimi zamknięty", en: "Indeed it will be closed down upon them" },
+      { n: 9, ar: "فِي عَمَدٍ مُّمَدَّدَةٍ", tr: "Fi 'amadin mumaddada", pl: "W słupach wydłużonych", en: "In extended columns" }
+    ]
+  },
+  {
+    id: "duha",
+    number: 93,
+    name: "الضحى",
+    nameEn: "Ad-Duha",
+    namePl: "Ad-Duha",
+    meaningEn: "The Morning Brightness",
+    meaningPl: "Blask poranka",
+    factPl: "Ad-Duha została zesłana gdy Prorok ﷺ był smutny, bo przez pewien czas nie przychodziły do niego objawienia. Allah pociesza go tą surą, mówiąc: nie opuściłem cię.",
+    factEn: "Ad-Duha was revealed when the Prophet ﷺ was sad because revelation had paused for a time. Allah comforts him in this surah, saying: I have not abandoned you.",
+    ayat: [
+      { n: 1, ar: "وَالضُّحَىٰ", tr: "Wa d-duha", pl: "Na blask poranka!", en: "By the morning brightness" },
+      { n: 2, ar: "وَاللَّيْلِ إِذَا سَجَىٰ", tr: "Wa l-layli idha saja", pl: "I na noc, gdy spokojnieje!", en: "And by the night when it covers with darkness" },
+      { n: 3, ar: "مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ", tr: "Ma wadda'aka rabbuka wa ma qala", pl: "Twój Pan nie opuścił cię i nie ma do ciebie urazy", en: "Your Lord has not taken leave of you, nor has He detested you" },
+      { n: 4, ar: "وَلَلْآخِرَةُ خَيْرٌ لَّكَ مِنَ الْأُولَىٰ", tr: "Wa la-l-akhiratu khayrun laka mina l-ula", pl: "A życie ostateczne jest dla ciebie lepsze niż pierwsze", en: "And the Hereafter is better for you than the first life" },
+      { n: 5, ar: "وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَىٰ", tr: "Wa la-sawfa yu'tika rabbuka fa-tarda", pl: "Twój Pan z pewnością da ci, i będziesz zadowolony", en: "And your Lord is going to give you, and you will be satisfied" },
+      { n: 6, ar: "أَلَمْ يَجِدْكَ يَتِيمًا فَآوَىٰ", tr: "Alam yajidka yatiman fa-awa", pl: "Czyż nie znalazł cię sierotą i dał schronienie?", en: "Did He not find you an orphan and give you shelter?" },
+      { n: 7, ar: "وَوَجَدَكَ ضَالًّا فَهَدَىٰ", tr: "Wa wajadaka dallan fa-hada", pl: "I znalazł cię błądzącym i poprowadził", en: "And He found you lost and guided you" },
+      { n: 8, ar: "وَوَجَدَكَ عَائِلًا فَأَغْنَىٰ", tr: "Wa wajadaka 'a'ilan fa-aghna", pl: "I znalazł cię ubogim i wzbogacił", en: "And He found you poor and made you self-sufficient" },
+      { n: 9, ar: "فَأَمَّا الْيَتِيمَ فَلَا تَقْهَرْ", tr: "Fa-amma l-yatima fa-la taqhar", pl: "A sieroty nie uciskaj", en: "So as for the orphan, do not oppress him" },
+      { n: 10, ar: "وَأَمَّا السَّائِلَ فَلَا تَنْهَرْ", tr: "Wa amma s-sa'ila fa-la tanhar", pl: "A proszącego nie odpychaj", en: "And as for the petitioner, do not repel him" },
+      { n: 11, ar: "وَأَمَّا بِنِعْمَةِ رَبِّكَ فَحَدِّثْ", tr: "Wa amma bi-ni'mati rabbika fa-haddith", pl: "A łaski swego Pana – głoś!", en: "But as for the favor of your Lord, report it" }
+    ]
+  },
+  {
+    id: "sharh",
+    number: 94,
+    name: "الشرح",
+    nameEn: "Ash-Sharh",
+    namePl: "Asz-Szarh",
+    meaningEn: "The Relief",
+    meaningPl: "Ulga",
+    factPl: "Ash-Sharh jest siostrą Ad-Duha – zesłaną w tym samym czasie. Zawiera jeden z najpotężniejszych wersetów Koranu: 'Wraz z każdą trudnością jest ulga' – powtórzony dwa razy.",
+    factEn: "Ash-Sharh is the sister surah of Ad-Duha – revealed together. It contains one of the most powerful verses in the Quran: 'With hardship comes ease' – repeated twice.",
+    ayat: [
+      { n: 1, ar: "أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ", tr: "Alam nashrah laka sadrak", pl: "Czyż nie poszerzyliśmy ci piersi?", en: "Did We not expand for you your breast?" },
+      { n: 2, ar: "وَوَضَعْنَا عَنكَ وِزْرَكَ", tr: "Wa wada'na 'anka wizrak", pl: "I zdjęliśmy z ciebie twój ciężar", en: "And We removed from you your burden" },
+      { n: 3, ar: "الَّذِي أَنقَضَ ظَهْرَكَ", tr: "Alladhi anqada zahrak", pl: "Który ugniatał twój grzbiet", en: "Which had weighed upon your back" },
+      { n: 4, ar: "وَرَفَعْنَا لَكَ ذِكْرَكَ", tr: "Wa rafa'na laka dhikrak", pl: "I wywyższyliśmy twoje imię", en: "And raised high for you your repute" },
+      { n: 5, ar: "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا", tr: "Fa-inna ma'a l-'usri yusra", pl: "Zaprawdę, wraz z trudnością jest ulga!", en: "For indeed, with hardship will be ease" },
+      { n: 6, ar: "إِنَّ مَعَ الْعُسْرِ يُسْرًا", tr: "Inna ma'a l-'usri yusra", pl: "Zaprawdę, wraz z trudnością jest ulga!", en: "Indeed, with hardship will be ease" },
+      { n: 7, ar: "فَإِذَا فَرَغْتَ فَانصَبْ", tr: "Fa-idha faraghta fa-nsab", pl: "Kiedy więc skończysz, trudź się nadal", en: "So when you have finished, then stand up for worship" },
+      { n: 8, ar: "وَإِلَىٰ رَبِّكَ فَارْغَبْ", tr: "Wa ila rabbika fa-rghab", pl: "I ku Panu twemu się zwróć", en: "And to your Lord direct your longing" }
+    ]
+  },
+  {
+    id: "tin",
+    number: 95,
+    name: "التين",
+    nameEn: "At-Tin",
+    namePl: "At-Tin",
+    meaningEn: "The Fig",
+    meaningPl: "Figa",
+    factPl: "At-Tin wymienia figę, oliwkę, górę Synaj i Mekkę jako miejsca błogosławione. Mówi, że człowiek jest stworzony w najpiękniejszej postaci, ale może spaść na najniższy poziom.",
+    factEn: "At-Tin mentions fig, olive, Mount Sinai and Mecca as blessed places. It says man is created in the best form, but can fall to the lowest of the low.",
+    ayat: [
+      { n: 1, ar: "وَالتِّينِ وَالزَّيْتُونِ", tr: "Wa t-tini wa z-zaytun", pl: "Na figę i oliwkę!", en: "By the fig and the olive" },
+      { n: 2, ar: "وَطُورِ سِينِينَ", tr: "Wa turi sinin", pl: "I na górę Synaj!", en: "And by Mount Sinai" },
+      { n: 3, ar: "وَهَٰذَا الْبَلَدِ الْأَمِينِ", tr: "Wa hadha l-baladi l-amin", pl: "I na to miasto bezpieczne!", en: "And by this secure city [Makkah]" },
+      { n: 4, ar: "لَقَدْ خَلَقْنَا الْإِنسَانَ فِي أَحْسَنِ تَقْوِيمٍ", tr: "Laqad khalaqna l-insana fi ahsani taqwim", pl: "Zaprawdę stworzyliśmy człowieka w najpiękniejszej postaci", en: "We have certainly created man in the best of stature" },
+      { n: 5, ar: "ثُمَّ رَدَدْنَاهُ أَسْفَلَ سَافِلِينَ", tr: "Thumma radadnahu asfala safilin", pl: "Potem strącamy go na najniższy poziom", en: "Then We return him to the lowest of the low" },
+      { n: 6, ar: "إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ فَلَهُمْ أَجْرٌ غَيْرُ مَمْنُونٍ", tr: "Illa lladhina amanu wa 'amilu s-salihati fa-lahum ajrun ghayru mamnun", pl: "Z wyjątkiem tych, którzy uwierzyli i czynili dobro – dla nich nagroda nieprzerwana", en: "Except for those who believe and do righteous deeds – for they will have a reward uninterrupted" },
+      { n: 7, ar: "فَمَا يُكَذِّبُكَ بَعْدُ بِالدِّينِ", tr: "Fa-ma yukadhdhibuka ba'du bi d-din", pl: "Cóż więc skłania cię do zaprzeczania Sądowi?", en: "So what yet causes you to deny the Recompense?" },
+      { n: 8, ar: "أَلَيْسَ اللَّهُ بِأَحْكَمِ الْحَاكِمِينَ", tr: "A-laysa llahu bi-ahkami l-hakimin", pl: "Czyż Allah nie jest Najsprawiedliwszym z sędziów?", en: "Is not Allah the most just of judges?" }
     ]
   }
 ];

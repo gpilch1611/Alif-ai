@@ -996,3 +996,55 @@ h3 {
   }
 }
 
+/* Activity graph */
+.act-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.act-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--surface-soft, #e5e7eb);
+}
+
+[data-theme="dark"] .act-cell {
+  background: #1e3a4a;
+}
+
+.act-cell.active {
+  background: #10b981;
+}
+
+/* Dictionary */
+.dict-search,
+.dict-filter {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-family: inherit;
+}
+
+.dict-search:focus,
+.dict-filter:focus {
+  outline: 2px solid #10b981;
+  outline-offset: 1px;
+}
+
+.dict-entry {
+  transition: opacity 0.15s;
+}
+
+/* Drill mode */
+.drill-card {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
