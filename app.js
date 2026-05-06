@@ -587,7 +587,10 @@ function registerPwa() {
 
   navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" })
     .then((reg) => {
-      setInterval(() => reg.update(), 60 * 60 * 1000);
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") reg.update();
+      });
+      setInterval(() => reg.update(), 5 * 60 * 1000);
       reg.addEventListener("updatefound", () => {
         const sw = reg.installing;
         sw.addEventListener("statechange", () => {
