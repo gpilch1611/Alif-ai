@@ -35,6 +35,7 @@ const THEME_COLOR = {
 
 const navItems = [
   ["home", "⌂", "navHome"],
+  ["quran", "☽", "navQuran"],
   ["alphabet", "ا", "navAlphabet"],
   ["lessons", "Aa", "navLessons"],
   ["flashcards", "▣", "navFlashcards"],
@@ -43,7 +44,6 @@ const navItems = [
   ["adventure", "☆", "navAdventure"],
   ["books", "▤", "navBooks"],
   ["culture", "✦", "navCulture"],
-  ["quran", "☽", "navQuran"],
   ["games", "◎", "navGames"],
   ["settings", "⚙", "navSettings"]
 ];
