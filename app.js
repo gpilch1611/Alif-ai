@@ -366,7 +366,17 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    if (e.name === "QuotaExceededError" || e.code === 22 || e.code === 1014) {
+      state.recordings = {};
+      state.adventurePhotos = state.adventurePhotos.slice(0, 3);
+      state.writingAttempts = state.writingAttempts.slice(0, 5);
+      state.aiMessages = state.aiMessages.slice(-10);
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+    }
+  }
 }
 
 function today() {
@@ -577,6 +587,7 @@ function registerPwa() {
 
   navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" })
     .then((reg) => {
+      setInterval(() => reg.update(), 60 * 60 * 1000);
       reg.addEventListener("updatefound", () => {
         const sw = reg.installing;
         sw.addEventListener("statechange", () => {
@@ -1341,6 +1352,7 @@ function startSpeech(sample) {
     $("#speechText").textContent = tx("Ta przegladarka nie obsluguje SpeechRecognition.", "This browser does not support SpeechRecognition.");
     return;
   }
+  if (recognition) { try { recognition.abort(); } catch {} recognition = null; }
   recognition = new SpeechRecognition();
   recognition.lang = "ar-SA";
   recognition.interimResults = false;
@@ -1361,8 +1373,8 @@ function startSpeech(sample) {
 
 async function toggleRecording() {
   const button = $("#recordBtn");
-  if (mediaRecorder && mediaRecorder.state === "recording") {
-    mediaRecorder.stop();
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    try { mediaRecorder.stop(); } catch {}
     button.textContent = tx("Nagraj", "Record");
     return;
   }
@@ -1506,8 +1518,10 @@ function writingMessage(score) {
 
 function setupCanvas() {
   const canvas = $("#writingCanvas");
-  const ctx = canvas.getContext("2d");
+  if (!canvas) return;
   const rect = canvas.getBoundingClientRect();
+  if (rect.width < 10) { requestAnimationFrame(setupCanvas); return; }
+  const ctx = canvas.getContext("2d");
   const ratio = window.devicePixelRatio || 1;
   writingInk = 0;
   writingLastPoint = null;
@@ -2313,7 +2327,7 @@ function renderMemory() {
       first = null;
       if (matched === letters.length) {
         state.points += 25;
-        state.memoryBest = Math.max(state.memoryBest, state.points);
+        state.memoryBest = (state.memoryBest || 0) + 1;
         saveState();
         confetti();
       }
@@ -2541,28 +2555,20 @@ function handleAiAction(action, messageIndex) {
   if (action === "flashcards") {
     addAiFlashcards(message.content);
     setRoute("flashcards");
-  }
-  if (action === "book") {
-    saveInteractiveBook(tx(`Ksiazeczka AI ${new Date().toLocaleDateString(localeTag())}`, `AI Book ${new Date().toLocaleDateString(localeTag())}`), message.content);
+  } else if (action === "book") {
+    saveInteractiveBook(tx(`Książeczka AI ${new Date().toLocaleDateString(localeTag())}`, `AI Book ${new Date().toLocaleDateString(localeTag())}`), message.content);
     setRoute("books");
-  }
-  if (action === "adventure") {
+  } else if (action === "adventure") {
     state.adventureStories.unshift({ id: crypto.randomUUID(), title: tx(`Historia AI ${new Date().toLocaleDateString(localeTag())}`, `AI Story ${new Date().toLocaleDateString(localeTag())}`), text: message.content });
     saveState();
     setRoute("adventure");
-  }
-  if (action === "culture") {
+  } else if (action === "culture") {
     state.cultureFacts.unshift({ id: crypto.randomUUID(), date: today(), title: tx("Ciekawostka AI", "AI fact"), text: cleanAiText(message.content) });
     saveState();
     setRoute("culture");
-  }
-  if (action === "lesson") {
+  } else if (action === "lesson") {
     addAiFlashcards(message.content);
-    setRoute("flashcards");
-  }
-  if (action === "book") {
-    saveInteractiveBook(tx(`Książeczka AI ${new Date().toLocaleDateString(localeTag())}`, `AI Book ${new Date().toLocaleDateString(localeTag())}`), message.content);
-    setRoute("books");
+    setRoute("lessons");
   }
   $("#aiDialog").close();
   confetti();
