@@ -137,7 +137,22 @@ const LESSONS_DATA = {
     { id: "warsaw_ar", category: "Polska i Indonezja", title: "Warszawa", ar: "وَارْسُو", tr: "warsaw", meaning: "Warszawa", task: "Znajdź literę و w alfabecie." },
     { id: "borze_ar", category: "Polska i Indonezja", title: "Borzęta", ar: "بُورْزِينْتَا", tr: "borzenta", meaning: "Borzęta (miasteczko w Polsce)", task: "Naucz się pisać i powiedzieć nazwę swojego miasta po arabsku." },
     { id: "indonesia_ar", category: "Polska i Indonezja", title: "Indonezja", ar: "إِنْدُونِيسِيَا", tr: "indunisia", meaning: "Indonezja", task: "Kraj kochany od zawsze – powiedz na głos 5 razy." },
-    { id: "surabaya_ar", category: "Polska i Indonezja", title: "Surabaya", ar: "سُورَابَايَا", tr: "surabaja", meaning: "Surabaya (miasto w Indonezji)", task: "Napisz na canvasie litery س ر ب." }
+    { id: "surabaya_ar", category: "Polska i Indonezja", title: "Surabaya", ar: "سُورَابَايَا", tr: "surabaja", meaning: "Surabaya (miasto w Indonezji)", task: "Napisz na canvasie litery س ر ب." },
+    { id: "shahada", category: "Islam – najważniejsze", title: "Szahada", ar: "لَا إِلَٰهَ إِلَّا اللَّهُ مُحَمَّدٌ رَسُولُ اللَّهِ", tr: "la ilaha illallah, Muhammadun rasulullah", meaning: "Nie ma boga prócz Allaha, Muhammad jest posłańcem Allaha", task: "Powtórz wolno i ze zrozumieniem każde słowo." },
+    { id: "fatiha", category: "Islam – najważniejsze", title: "Al-Fatiha (wstęp)", ar: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", tr: "alhamdu lillahi rabbil alamin", meaning: "Chwała Bogu, Panu światów (werset 2 Al-Fatiha)", task: "Naucz się tego wersetu na pamięć – to pierwszy werset modlitwy." },
+    { id: "ayat_kursi_intro", category: "Islam – najważniejsze", title: "Ajet al-Kursi (początek)", ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ", tr: "Allahu la ilaha illa huwal hayyul qayyum", meaning: "Bóg — nie ma boga prócz Niego, Żyjącego, Samopodtrzymującego", task: "Ajet al-Kursi to najpotężniejszy werset Koranu (2:255). Zapamiętaj jego początek." },
+    { id: "dua_eat", category: "Islam – codzienne", title: "Dua przed jedzeniem", ar: "بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ", tr: "bismillahi wa ala barakati Allah", meaning: "W imię Boga i z błogosławieństwem Boga", task: "Mów to przed każdym posiłkiem przez cały tydzień." },
+    { id: "dua_after_eat", category: "Islam – codzienne", title: "Dua po jedzeniu", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا", tr: "alhamdu lillahil ladhi at'amana", meaning: "Chwała Bogu, który nas nakarmił", task: "Powiedz po zakończeniu posiłku." },
+    { id: "dua_sleep", category: "Islam – codzienne", title: "Dua przed snem", ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", tr: "bismika Allahumma amutu wa ahya", meaning: "W Twoje imię, o Boże, umieram i żyję", task: "Powiedz przed zaśnięciem każdej nocy." },
+    { id: "dua_wake", category: "Islam – codzienne", title: "Dua po przebudzeniu", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا", tr: "alhamdu lillahil ladhi ahyana ba'da ma amatana", meaning: "Chwała Bogu, który nas wskrzesił po tym, jak uśpił", task: "Mów po przebudzeniu zamiast sprawdzania telefonu." },
+    { id: "dua_mirror", category: "Islam – codzienne", title: "Dua przy lustrze", ar: "اللَّهُمَّ حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي", tr: "Allahumma hassanta khalqi fa hassin khuluqi", meaning: "Boże, upiększyłeś moje stworzenie, upiększy też mój charakter", task: "Powtarzaj patrząc w lustro rano." },
+    { id: "salat_times", category: "Islam – najważniejsze", title: "Pięć modlitw", ar: "فَجْر / ظُهْر / عَصْر / مَغْرِب / عِشَاء", tr: "fadżr / zuhr / asr / maghrib / isza", meaning: "Świt / Południe / Popołudnie / Zachód słońca / Noc", task: "Zapamiętaj nazwy i kolejność 5 modlitw dziennych." },
+    { id: "ramadan", category: "Islam – najważniejsze", title: "Ramadan", ar: "رَمَضَان مُبَارَك", tr: "ramadan mubarak", meaning: "Błogosławiony Ramadan", task: "Dowiedz się kiedy zaczyna się następny Ramadan i zaznacz w kalendarzu." },
+    { id: "eid", category: "Islam – najważniejsze", title: "Eid Mubarak", ar: "عِيدٌ مُبَارَكٌ", tr: "eid mubarak", meaning: "Błogosławione Święto", task: "Naucz się też: كُلَّ عَام وَأَنْتُم بِخَيْر (kullu am wa antum bikhajr) – Niech każdy rok przynosi Wam dobro." },
+    { id: "tawakkul", category: "Islam – wartości", title: "Tawakkul – zaufanie Bogu", ar: "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ", tr: "hasbunallahu wa ni'mal wakil", meaning: "Wystarczy nam Bóg – jakiż wspaniały opiekun", task: "Powiedz gdy czujesz stres lub niepewność." },
+    { id: "sabr", category: "Islam – wartości", title: "Cierpliwość (Sabr)", ar: "إِنَّ اللَّهَ مَعَ الصَّابِرِينَ", tr: "innallaha ma'as-sabirin", meaning: "Zaprawdę Bóg jest z cierpliwymi (Koran 2:153)", task: "Zapamiętaj werset i powiedz go gdy jesteś w trudnej chwili." },
+    { id: "shukr", category: "Islam – wartości", title: "Wdzięczność (Shukr)", ar: "لَئِنْ شَكَرْتُمْ لَأَزِيدَنَّكُمْ", tr: "la in shakartum la azidannakum", meaning: "Jeśli będziecie wdzięczni, dam wam więcej (Koran 14:7)", task: "Wypisz 3 rzeczy za które jesteś wdzięczny/a dziś." },
+    { id: "dua_stress", category: "Islam – codzienne", title: "Dua na trudne chwile", ar: "لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ", tr: "la ilaha illa anta subhanaka inni kuntu minaz-zalimin", meaning: "Nie ma boga prócz Ciebie, chwała Tobie, zaprawdę byłem z niesprawiedliwych (dua Jonasza)", task: "Powtórz 40 razy gdy czujesz się przytłoczony/a." }
   ],
   en: [
     { id: "hello", category: "Basics", title: "As-salamu alaikum", ar: "السلام عليكم", tr: "as-salamu alaikum", meaning: "Peace be upon you (greeting)", task: "Say this phrase aloud and add it to flashcards." },
@@ -177,7 +192,22 @@ const LESSONS_DATA = {
     { id: "poland_ar", category: "Poland & Indonesia", title: "Poland", ar: "بُولَنْدَا", tr: "bulanda", meaning: "Poland", task: "Write the word from memory." },
     { id: "warsaw_ar", category: "Poland & Indonesia", title: "Warsaw", ar: "وَارْسُو", tr: "warsaw", meaning: "Warsaw", task: "Find the letter و in the alphabet." },
     { id: "indonesia_ar", category: "Poland & Indonesia", title: "Indonesia", ar: "إِنْدُونِيسِيَا", tr: "indunisia", meaning: "Indonesia", task: "Say it 5 times aloud." },
-    { id: "surabaya_ar", category: "Poland & Indonesia", title: "Surabaya", ar: "سُورَابَايَا", tr: "surabaya", meaning: "Surabaya (city in Indonesia)", task: "Write the letters س ر ب on the canvas." }
+    { id: "surabaya_ar", category: "Poland & Indonesia", title: "Surabaya", ar: "سُورَابَايَا", tr: "surabaya", meaning: "Surabaya (city in Indonesia)", task: "Write the letters س ر ب on the canvas." },
+    { id: "shahada", category: "Islam – Essential", title: "Shahada", ar: "لَا إِلَٰهَ إِلَّا اللَّهُ مُحَمَّدٌ رَسُولُ اللَّهِ", tr: "la ilaha illallah, Muhammadun rasulullah", meaning: "There is no god but Allah, Muhammad is His messenger", task: "Repeat slowly understanding each word." },
+    { id: "fatiha", category: "Islam – Essential", title: "Al-Fatiha (opening)", ar: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", tr: "alhamdulillahi rabbil alamin", meaning: "All praise to God, Lord of all worlds (Al-Fatiha 1:2)", task: "Memorize this verse — it opens every prayer." },
+    { id: "ayat_kursi_intro", category: "Islam – Essential", title: "Ayat al-Kursi (opening)", ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ", tr: "Allahu la ilaha illa huwal hayyul qayyum", meaning: "Allah — there is no god but Him, the Living, the Eternal", task: "Ayat al-Kursi is the greatest verse in the Quran (2:255). Memorize its opening." },
+    { id: "dua_eat", category: "Islam – Daily", title: "Dua before eating", ar: "بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ", tr: "bismillahi wa ala barakati Allah", meaning: "In the name of Allah and with Allah's blessings", task: "Say this before every meal for a full week." },
+    { id: "dua_after_eat", category: "Islam – Daily", title: "Dua after eating", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا", tr: "alhamdulillahil ladhi at'amana", meaning: "Praise be to Allah who has fed us", task: "Say this after finishing your meal." },
+    { id: "dua_sleep", category: "Islam – Daily", title: "Dua before sleeping", ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", tr: "bismika Allahumma amutu wa ahya", meaning: "In Your name, O Allah, I die and I live", task: "Say this every night before sleeping." },
+    { id: "dua_wake", category: "Islam – Daily", title: "Dua after waking", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا", tr: "alhamdulillahil ladhi ahyana ba'da ma amatana", meaning: "Praise to Allah who revived us after He had put us to sleep", task: "Say this after waking up instead of checking your phone." },
+    { id: "dua_mirror", category: "Islam – Daily", title: "Dua at the mirror", ar: "اللَّهُمَّ حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي", tr: "Allahumma hassanta khalqi fa hassin khuluqi", meaning: "O Allah, You beautified my creation — beautify my character too", task: "Repeat this looking in the mirror each morning." },
+    { id: "salat_times", category: "Islam – Essential", title: "Five prayers", ar: "فَجْر / ظُهْر / عَصْر / مَغْرِب / عِشَاء", tr: "fajr / dhuhr / asr / maghrib / isha", meaning: "Dawn / Noon / Afternoon / Sunset / Night", task: "Memorize the names and order of the 5 daily prayers." },
+    { id: "ramadan", category: "Islam – Essential", title: "Ramadan", ar: "رَمَضَان مُبَارَك", tr: "ramadan mubarak", meaning: "Blessed Ramadan", task: "Find out when the next Ramadan starts and mark it in your calendar." },
+    { id: "eid", category: "Islam – Essential", title: "Eid Mubarak", ar: "عِيدٌ مُبَارَكٌ", tr: "eid mubarak", meaning: "Blessed celebration", task: "Learn also: كُلَّ عَام وَأَنْتُم بِخَيْر (kullu am wa antum bikhajr) – May you be well every year." },
+    { id: "tawakkul", category: "Islam – Values", title: "Tawakkul – trust in God", ar: "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ", tr: "hasbunallahu wa ni'mal wakil", meaning: "Allah is sufficient for us and He is the best disposer of affairs", task: "Say this when you feel stressed or uncertain." },
+    { id: "sabr", category: "Islam – Values", title: "Patience (Sabr)", ar: "إِنَّ اللَّهَ مَعَ الصَّابِرِينَ", tr: "innallaha ma'as-sabirin", meaning: "Indeed Allah is with the patient (Quran 2:153)", task: "Memorize this verse and say it in difficult moments." },
+    { id: "shukr", category: "Islam – Values", title: "Gratitude (Shukr)", ar: "لَئِنْ شَكَرْتُمْ لَأَزِيدَنَّكُمْ", tr: "la in shakartum la azidannakum", meaning: "If you are grateful, I will give you more (Quran 14:7)", task: "Write down 3 things you are grateful for today." },
+    { id: "dua_stress", category: "Islam – Daily", title: "Dua in hard times", ar: "لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ", tr: "la ilaha illa anta subhanaka inni kuntu minaz-zalimin", meaning: "There is no god but You, glory be to You, I was among the wrongdoers (Dua of Yunus)", task: "Repeat 40 times when feeling overwhelmed." }
   ]
 };
 
@@ -451,6 +481,7 @@ function unlockSpeech() {
 
 function init() {
   markActiveDay();
+  checkBadges();
   document.documentElement.dataset.theme = state.theme;
   applyThemeMeta();
   updateDocumentI18nMeta();
@@ -703,10 +734,21 @@ function home() {
         <div class="panel p-5">
           <div class="flex items-center justify-between gap-3">
             <h2 class="text-xl font-black">${tx("Odznaki", "Badges")}</h2>
-            <span class="text-sm font-bold text-amber-500">${state.badges.length}</span>
+            <span class="text-sm font-bold text-amber-500">${state.badges.length}/${BADGES_CATALOG.length}</span>
           </div>
-          <div class="mt-3 flex flex-wrap gap-2">
-            ${state.badges.map(b => `<span class="badge-unlocked text-2xl" title="${b}">🏆</span>`).join("") || `<p class="text-xs text-[var(--muted)]">${tx("Zdobądź pierwszą odznakę!", "Earn your first badge!")}</p>`}
+          <div class="mt-3 grid gap-2">
+            ${BADGES_CATALOG.map(b => {
+              const unlocked = state.badges.includes(b.id);
+              const label = state.lang === "pl" ? b.pl : b.en;
+              const criterion = state.lang === "pl" ? b.criterionPl : b.criterionEn;
+              return `<div class="flex items-center gap-2 ${unlocked ? "" : "opacity-40"}">
+                <span class="text-2xl">${unlocked ? b.icon : "🔒"}</span>
+                <div class="min-w-0">
+                  <p class="text-sm font-black leading-tight">${unlocked ? label : label}</p>
+                  <p class="text-xs text-[var(--muted)] leading-tight">${criterion}</p>
+                </div>
+              </div>`;
+            }).join("")}
           </div>
         </div>
       </aside>
@@ -843,12 +885,13 @@ function surahCard(surah) {
       <button class="absolute right-2 top-2 text-xl" data-fav-surah="${surah.number}" title="${tx("Ulubiona", "Favorite")}">${isFav ? "❤️" : "🤍"}</button>
       <div class="flex items-center justify-between pr-8">
         <span class="grid h-10 w-10 place-items-center rounded-full bg-emerald-100 text-sm font-black text-emerald-700">${surah.number}</span>
-        <span class="arabic text-2xl">${escapeHtml(surah.arName)}</span>
+        <button class="arabic text-2xl" data-say-ar="${escapeHtml(surah.arName)}" title="${tx("Wymowa", "Pronunciation")}">${escapeHtml(surah.arName)}</button>
       </div>
       <h2 class="mt-3 text-xl font-black">${escapeHtml(surah.enName)}</h2>
       <p class="text-sm text-[var(--muted)]">${escapeHtml(surah.meaning)}</p>
-      <div class="mt-4">
-        <button class="big-action w-full border border-[var(--line)]" data-read-surah="${surah.number}">${tx("Czytaj", "Read")}</button>
+      <div class="mt-4 flex gap-2">
+        <button class="big-action flex-1 border border-[var(--line)]" data-read-surah="${surah.number}">${tx("Czytaj", "Read")}</button>
+        <button class="speaker-btn" data-say-ar="${escapeHtml(surah.arName)}" title="${tx("Wymowa", "Pronunciation")}">🔊</button>
       </div>
     </article>
   `;
@@ -881,6 +924,10 @@ function renderSurahList() {
   }
   listEl.innerHTML = html;
 
+  listEl.querySelectorAll("[data-say-ar]").forEach(btn => btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    speakArabic(btn.dataset.sayAr);
+  }));
   listEl.querySelectorAll("[data-fav-surah]").forEach(btn => btn.addEventListener("click", () => {
     const num = Number(btn.dataset.favSurah);
     if (!state.quranSurahFavorites) state.quranSurahFavorites = [];
@@ -954,6 +1001,7 @@ async function addSurahByNumber() {
         addedAt: today()
       });
       saveState();
+      checkBadges();
       koran();
       numInput.value = "";
     }
@@ -1222,11 +1270,17 @@ function alphabet() {
   `;
   view.querySelectorAll("[data-letter-say]").forEach((button) => {
     button.addEventListener("click", () => {
-      openLetter(button.dataset.letterSay);
+      const letter = arabicAlphabet.find((item) => item.id === button.dataset.letterSay);
+      speakArabic(letter.forms.isolated);
+      button.closest("article").classList.add("ring-2", "ring-emerald-400");
+      setTimeout(() => button.closest("article").classList.remove("ring-2", "ring-emerald-400"), 700);
     });
   });
   view.querySelectorAll("[data-letter-info]").forEach((button) => {
-    button.addEventListener("click", () => openLetter(button.dataset.letterInfo));
+    button.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openLetter(button.dataset.letterInfo);
+    });
   });
   view.querySelectorAll("[data-say]").forEach((button) => {
     button.addEventListener("click", (event) => {
@@ -1262,8 +1316,8 @@ function openLetter(id) {
     </div>
     <div class="mt-5 grid gap-2 sm:grid-cols-2">
       <button id="playLetterBtn" class="big-action bg-amber-500 text-white">🔊 ${tx("Odtwórz", "Play")}</button>
-      <button id="markLearnedBtn" class="big-action ${isLearned ? "bg-emerald-100 text-emerald-700 border border-emerald-300" : "bg-emerald-500 text-white"}" data-mark-learned="${id}">
-        ${isLearned ? tx("✓ Poznana", "✓ Learned") : tx("Oznacz jako poznaną", "Mark as learned")}
+      <button id="markLearnedBtn" class="big-action ${isLearned ? "bg-emerald-100 text-emerald-700 border border-emerald-300" : "bg-emerald-500 text-white"}">
+        ${isLearned ? tx("✓ Poznana — cofnij", "✓ Learned — undo") : tx("Oznacz jako poznaną", "Mark as learned")}
       </button>
     </div>
   `;
@@ -1271,12 +1325,21 @@ function openLetter(id) {
   speakArabic(letter.forms.isolated);
   modalContent.querySelector("#playLetterBtn").addEventListener("click", () => speakArabic(letter.forms.isolated));
   modalContent.querySelector("#markLearnedBtn").addEventListener("click", (e) => {
-    if (!state.learnedLetters.includes(id)) {
-      markLetterLearned(id);
+    if (state.learnedLetters.includes(id)) {
+      state.learnedLetters = state.learnedLetters.filter(x => x !== id);
+      if (state.learnedLettersLog) state.learnedLettersLog = state.learnedLettersLog.filter(x => x.id !== id);
+      saveState();
       updateAlphabetCounter();
-      e.target.textContent = tx("✓ Poznana", "✓ Learned");
+      e.target.textContent = tx("Oznacz jako poznaną", "Mark as learned");
+      e.target.className = "big-action bg-emerald-500 text-white";
+      showLoveToast(tx(`Cofnięto: litera ${letterName(letter)}`, `Unmarked: letter ${letterName(letter)}`));
+    } else {
+      markLetterLearned(id);
+      checkBadges();
+      updateAlphabetCounter();
+      e.target.textContent = tx("✓ Poznana — cofnij", "✓ Learned — undo");
       e.target.className = "big-action bg-emerald-100 text-emerald-700 border border-emerald-300";
-      showLoveToast(tx(`Poznałeś/aś literę ${letterName(letter)}!`, `You learned the letter ${letterName(letter)}!`));
+      showLoveToast(tx(`Litera ${letterName(letter)} poznana!`, `Letter ${letterName(letter)} learned!`));
     }
   });
 }
@@ -1373,6 +1436,7 @@ function renderLessonCategory(cat, allLessons, unlocked) {
     if (!state.miniLessonsDone.includes(button.dataset.lesson)) state.miniLessonsDone.push(button.dataset.lesson);
     addPoints(18, false);
     saveState();
+    checkBadges();
     confetti();
     renderLessonCategory(cat, allLessons, unlocked);
   }));
@@ -1555,59 +1619,63 @@ function speech() {
   $("#recordBtn").addEventListener("click", toggleRecording);
 }
 
+function speakArabicGoogleTTS(text) {
+  const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=ar&client=gtx&ttsspeed=0.6`;
+  const audio = new Audio(url);
+  audio.play().catch(() => {
+    if (!state.ttsWarningShown) {
+      state.ttsWarningShown = true;
+      saveState();
+      showLoveToast(tx("Brak arabskiego TTS. Zainstaluj język arabski w systemie lub użyj Chrome.", "No Arabic TTS. Install Arabic language pack or use Chrome."));
+    }
+  });
+}
+
 function speakArabic(text) {
   const clean = String(text || "").trim();
-  if (!clean || !("speechSynthesis" in window)) return;
-  speechSynthesis.cancel();
+  if (!clean) return;
 
   const pickArabicVoice = () => {
+    if (!("speechSynthesis" in window)) return null;
     const voices = speechSynthesis.getVoices();
-    return voices.find((voice) => /^ar\b/i.test(voice.lang || ""))
-      || voices.find((voice) => (voice.name || "").toLowerCase().includes("arab"))
+    return voices.find(v => v.lang === "ar-SA")
+      || voices.find(v => v.lang === "ar-AE")
+      || voices.find(v => v.lang === "ar-EG")
+      || voices.find(v => /^ar\b/i.test(v.lang))
+      || voices.find(v => /arab/i.test(v.name))
       || null;
   };
 
-  const speakNow = () => {
-    const primaryVoice = pickArabicVoice();
-    if (!primaryVoice && !state.ttsWarningShown) {
-      state.ttsWarningShown = true;
-      saveState();
-      showLoveToast(tx("Brak arabskiego głosu TTS w systemie. Dźwięk może być niedokładny.", "No Arabic TTS voice installed. Sound may be inaccurate."));
+  const doSpeak = () => {
+    const voice = pickArabicVoice();
+    if (!voice) {
+      speakArabicGoogleTTS(clean);
+      return;
     }
-    const buildUtterance = (lang, voice = null, rate = 0.78) => {
-      const utterance = new SpeechSynthesisUtterance(clean);
-      utterance.lang = lang;
-      utterance.rate = rate;
-      utterance.pitch = 1;
-      utterance.volume = 1;
-      if (voice) utterance.voice = voice;
-      return utterance;
-    };
-
-    let triedFallback = false;
-    const utterance = buildUtterance(primaryVoice?.lang || "ar", primaryVoice);
-    utterance.onerror = () => {
-      if (triedFallback) return;
-      triedFallback = true;
-      speechSynthesis.cancel();
-      const fallback = buildUtterance("ar", null, 0.85);
-      fallback.onerror = () => {
-        const lastFallback = buildUtterance("", null, 0.9);
-        speechSynthesis.speak(lastFallback);
-      };
-      speechSynthesis.speak(fallback);
-    };
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(clean);
+    u.lang = voice.lang || "ar-SA";
+    u.voice = voice;
+    u.rate = 0.75;
+    u.pitch = 1;
+    u.volume = 1;
+    u.onerror = () => speakArabicGoogleTTS(clean);
     speechSynthesis.resume();
-    speechSynthesis.speak(utterance);
+    speechSynthesis.speak(u);
   };
-  if (!speechSynthesis.getVoices().length) {
-    speechSynthesis.onvoiceschanged = () => {
-      speechSynthesis.onvoiceschanged = null;
-      speakNow();
-    };
-    setTimeout(speakNow, 120);
+
+  if ("speechSynthesis" in window) {
+    if (!speechSynthesis.getVoices().length) {
+      speechSynthesis.onvoiceschanged = () => {
+        speechSynthesis.onvoiceschanged = null;
+        doSpeak();
+      };
+      setTimeout(doSpeak, 200);
+    } else {
+      doSpeak();
+    }
   } else {
-    speakNow();
+    speakArabicGoogleTTS(clean);
   }
 }
 
@@ -2315,6 +2383,7 @@ function renderQuiz() {
       state.quizHistory = state.quizHistory.slice(0, 20);
       state.points += 10;
       saveState();
+      checkBadges();
       confetti();
       setTimeout(renderQuiz, 650);
     } else {
@@ -2795,11 +2864,50 @@ function toggleFocusMode(content = "") {
   saveState();
 }
 
+const BADGES_CATALOG = [
+  { id: "first_letter", icon: "🅰️", pl: "Pierwsza litera", en: "First letter", criterionPl: "Poznaj pierwszą literę arabską", criterionEn: "Learn your first Arabic letter" },
+  { id: "five_letters", icon: "✋", pl: "Pięć liter", en: "Five letters", criterionPl: "Poznaj 5 liter", criterionEn: "Learn 5 letters" },
+  { id: "half_alphabet", icon: "⭐", pl: "Połowa alfabetu", en: "Half alphabet", criterionPl: "Poznaj 14 z 28 liter", criterionEn: "Learn 14 of 28 letters" },
+  { id: "full_alphabet", icon: "🏆", pl: "Mistrz alfabetu", en: "Alphabet master", criterionPl: "Poznaj wszystkie 28 liter", criterionEn: "Learn all 28 letters" },
+  { id: "first_surah", icon: "📖", pl: "Pierwsza sura", en: "First surah", criterionPl: "Dodaj pierwszą surę Koranu", criterionEn: "Add your first Quran surah" },
+  { id: "five_surahs", icon: "📚", pl: "Pięć sur", en: "Five surahs", criterionPl: "Dodaj 5 sur Koranu", criterionEn: "Add 5 Quran surahs" },
+  { id: "streak3", icon: "🔥", pl: "3 dni z rzędu", en: "3-day streak", criterionPl: "Ucz się 3 dni pod rząd", criterionEn: "Learn 3 days in a row" },
+  { id: "streak7", icon: "🔥🔥", pl: "Tydzień nauki", en: "Week streak", criterionPl: "Ucz się 7 dni pod rząd", criterionEn: "Learn 7 days in a row" },
+  { id: "hundred_points", icon: "💯", pl: "100 punktów", en: "100 points", criterionPl: "Zdobądź 100 punktów", criterionEn: "Earn 100 points" },
+  { id: "five_hundred_points", icon: "💎", pl: "500 punktów", en: "500 points", criterionPl: "Zdobądź 500 punktów", criterionEn: "Earn 500 points" },
+  { id: "first_quiz", icon: "🧠", pl: "Pierwszy quiz", en: "First quiz", criterionPl: "Odpowiedz poprawnie w quizie", criterionEn: "Answer correctly in a quiz" },
+  { id: "ten_flashcards", icon: "🃏", pl: "10 fiszek", en: "10 flashcards", criterionPl: "Miej 10 fiszek w kolekcji", criterionEn: "Have 10 flashcards in collection" },
+  { id: "first_lesson", icon: "📝", pl: "Pierwsza lekcja", en: "First lesson", criterionPl: "Zalicz pierwszą lekcję", criterionEn: "Complete your first lesson" },
+  { id: "bismillah", icon: "🌙", pl: "Bismillah", en: "Bismillah", criterionPl: "Zalicz lekcję Bismillah", criterionEn: "Complete the Bismillah lesson" },
+];
+
+function checkBadges() {
+  const ll = state.learnedLetters.length;
+  const sq = (state.quranSurahs || []).length;
+  const pts = state.points;
+  const fc = (state.customFlashcards || []).length + Object.keys(state.flashcards || {}).length;
+
+  if (ll >= 1) unlockBadge("first_letter", tx("Pierwsza litera", "First letter"));
+  if (ll >= 5) unlockBadge("five_letters", tx("Pięć liter", "Five letters"));
+  if (ll >= 14) unlockBadge("half_alphabet", tx("Połowa alfabetu", "Half alphabet"));
+  if (ll >= 28) unlockBadge("full_alphabet", tx("Mistrz alfabetu", "Alphabet master"));
+  if (sq >= 1) unlockBadge("first_surah", tx("Pierwsza sura", "First surah"));
+  if (sq >= 5) unlockBadge("five_surahs", tx("Pięć sur", "Five surahs"));
+  if (state.streak >= 3) unlockBadge("streak3", tx("3 dni z rzędu", "3-day streak"));
+  if (state.streak >= 7) unlockBadge("streak7", tx("Tydzień nauki", "Week streak"));
+  if (pts >= 100) unlockBadge("hundred_points", tx("100 punktów", "100 points"));
+  if (pts >= 500) unlockBadge("five_hundred_points", tx("500 punktów", "500 points"));
+  if (state.quizStats.correct >= 1) unlockBadge("first_quiz", tx("Pierwszy quiz", "First quiz"));
+  if (fc >= 10) unlockBadge("ten_flashcards", tx("10 fiszek", "10 flashcards"));
+  if ((state.miniLessonsDone || []).length >= 1) unlockBadge("first_lesson", tx("Pierwsza lekcja", "First lesson"));
+  if ((state.miniLessonsDone || []).includes("bismillah")) unlockBadge("bismillah", "Bismillah");
+}
+
 function unlockBadge(id, name) {
   if (state.badges.includes(id)) return;
   state.badges.push(id);
   saveState();
-  showLoveToast(`🏆 Odznaka: ${name}!`);
+  showLoveToast(`🏆 ${name}!`);
   confetti();
   triggerHaptic();
 }
