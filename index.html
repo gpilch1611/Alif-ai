@@ -28,6 +28,10 @@
           </span>
         </button>
         <div class="flex items-center gap-2">
+          <div id="searchContainer" class="hidden sm:flex items-center relative">
+             <input id="globalSearch" type="search" class="h-10 w-40 md:w-64 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-9 text-sm focus:w-72 transition-all" placeholder="Szukaj..." />
+             <span class="absolute left-3 text-[var(--muted)]">🔍</span>
+          </div>
           <button id="installBtn" class="hidden min-h-11 rounded-lg bg-emerald-500 px-4 font-semibold text-white shadow-sm">Zainstaluj</button>
           <button id="quickLangBtn" class="grid h-11 min-w-11 place-items-center rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm font-black" aria-label="Zmień język">PL</button>
           <button id="themeBtn" class="grid h-11 w-11 place-items-center rounded-lg border border-[var(--line)] bg-[var(--surface)] text-xl" aria-label="Zmień motyw">☾</button>
@@ -38,6 +42,17 @@
     <main class="mx-auto max-w-6xl px-4 py-5">
       <section id="view" aria-live="polite"></section>
     </main>
+
+    <div id="bottomSheet" class="bottom-sheet">
+      <div class="bottom-sheet-handle"></div>
+      <div id="bottomSheetContent" class="p-6"></div>
+    </div>
+    <div id="sheetOverlay" class="sheet-overlay"></div>
+
+    <div id="focusOverlay" class="focus-overlay hidden">
+      <button id="exitFocus" class="exit-focus">×</button>
+      <div id="focusContent"></div>
+    </div>
 
     <nav class="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--line)] bg-[var(--surface-soft)]/96 backdrop-blur">
       <div id="bottomNav" class="mx-auto grid max-w-6xl grid-cols-5 gap-1 px-2 py-2 sm:grid-cols-11"></div>

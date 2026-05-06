@@ -3,14 +3,18 @@ import { arabicAlphabet, words, dailyTasks } from "./data.js";
 const GROQ_API_KEY = "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";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
-const AI_SYSTEM_PROMPT_PL = `You are a warm, motivating and personal Arabic learning assistant inside the app 'Alif AI'. 
-The user is Abang / Gantengku / Hubby. His wife is Baby / babe / wifey / princess / guardian angel.
-Always reply ONLY in Polish language. Be friendly, encouraging, playful and personal. 
-When the user asks for flashcards, quizzes, stories, facts or any content - generate high-quality Arabic learning material and always offer buttons to add it directly to the correct section of the app (Fiszki, Książeczki, Nasza Przygoda, etc.).`;
+const AI_SYSTEM_PROMPT_PL = `Jesteś ciepłym, motywującym i osobistym asystentem do nauki arabskiego w aplikacji 'Alif AI'. 
+Użytkownik to Abang / Gantengku / Hubby. Jego żona to Baby / babe / wifey / princess / anioł stróż.
+Zawsze odpowiadaj TYLKO w języku polskim. Bądź przyjacielski, zabawny i bardzo osobisty. 
+NIGDY nie używaj surowych linków markdown ani nie generuj zbędnego kodu. 
+Twórz wysokiej jakości materiały edukacyjne (fiszki, quizy, historie). 
+Po wygenerowaniu treści, użytkownik będzie mógł ją dodać do sekcji Fiszki, Książeczki, Nasza Przygoda lub Kultura za pomocą przycisków w aplikacji.`;
 const AI_SYSTEM_PROMPT_EN = `You are a warm, motivating and personal Arabic learning assistant inside the app 'Alif AI'.
 The user is Abang / Gantengku / Hubby. His wife is Baby / babe / wifey / princess / guardian angel.
 Always reply ONLY in English language. Be friendly, encouraging, playful and personal.
-When the user asks for flashcards, quizzes, stories, facts or any content - generate high-quality Arabic learning material and always offer buttons to add it directly to the correct section of the app (Flashcards, Books, Our Adventure, etc.).`;
+NEVER use raw markdown links or generate unnecessary code.
+Provide high-quality Arabic learning material (flashcards, quizzes, stories).
+After generating content, the user will be able to add it to Flashcards, Books, Our Adventure, or Culture sections using app buttons.`;
 
 const $ = (selector) => document.querySelector(selector);
 const view = $("#view");
@@ -27,14 +31,18 @@ const THEME_COLOR = {
 
 const navItems = [
   ["home", "⌂", "navHome"],
+  ["koran", "📖", "navKoran"],
   ["alphabet", "ا", "navAlphabet"],
   ["lessons", "Aa", "navLessons"],
+  ["culture", "✦", "navCulture"]
+];
+
+const secondaryNavItems = [
   ["flashcards", "▣", "navFlashcards"],
   ["speech", "◉", "navSpeech"],
   ["writing", "✎", "navWriting"],
   ["adventure", "☆", "navAdventure"],
   ["books", "▤", "navBooks"],
-  ["culture", "✦", "navCulture"],
   ["games", "◎", "navGames"],
   ["settings", "⚙", "navSettings"]
 ];
@@ -52,7 +60,7 @@ const ROMANTIC_LINES = [
 
 const I18N = {
   pl: {
-    navHome: "Start", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navSettings: "Ustawienia",
+    navHome: "Start", navKoran: "Koran", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navSettings: "Ustawienia",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
     welcome: "Witaj w ألف AI", homeTitle: "Uczymy się arabskiego krok po kroku", homeLead: "Duże litery, spokojne powtórki, wymowa, pisanie i osobisty AI Assistant dla Abanga.",
@@ -61,10 +69,12 @@ const I18N = {
     addFlashcards: "Dodaj do fiszek", saveBook: "Zapisz jako nową książeczkę", addAdventure: "Dodaj do Naszej Przygody", addCulture: "Dodaj jako ciekawostkę",
     more: "Więcej", play: "Odtwórz", check: "Sprawdź", clear: "Wyczyść", next: "Następna", good: "dobrze", weak: "słabo", veryWeak: "bardzo słabo", attempts: "Historia prób",
     frontHint: "Dotknij karty, żeby ją odwrócić", hard: "Trudne", ok: "OK", easy: "Łatwe", noCards: "Nie ma kart w tym trybie",
-    correct: "Dobrze", wrong: "Źle", history: "Historia", stop: "Stop", record: "Rekord", score: "Wynik"
+    correct: "Dobrze", wrong: "Źle", history: "Historia", stop: "Stop", record: "Rekord", score: "Wynik",
+    koranTitle: "Mój Koran", koranAdd: "Dodaj Surę", koranNumber: "Numer (1-114)", koranEmpty: "Nie dodano jeszcze żadnej Sury.", koranOrder: "Sury są układane automatycznie.",
+    lessonCategories: "Kategorie Lekcji", lessonSelect: "Wybierz kategorię"
   },
   en: {
-    navHome: "Home", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navSettings: "Settings",
+    navHome: "Home", navKoran: "Quran", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navSettings: "Settings",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
     welcome: "Welcome to ألف AI", homeTitle: "We learn Arabic step by step", homeLead: "Big letters, calm reviews, pronunciation, writing and a personal AI Assistant for Abang.",
@@ -73,7 +83,9 @@ const I18N = {
     addFlashcards: "Add to flashcards", saveBook: "Save as new book", addAdventure: "Add to Our Adventure", addCulture: "Add as culture fact",
     more: "More", play: "Play", check: "Check", clear: "Clear", next: "Next", good: "good", weak: "weak", veryWeak: "very weak", attempts: "Attempt history",
     frontHint: "Tap the card to flip it", hard: "Hard", ok: "OK", easy: "Easy", noCards: "No cards in this mode",
-    correct: "Correct", wrong: "Wrong", history: "History", stop: "Stop", record: "Best", score: "Score"
+    correct: "Correct", wrong: "Wrong", history: "History", stop: "Stop", record: "Best", score: "Score",
+    koranTitle: "My Quran", koranAdd: "Add Surah", koranNumber: "Number (1-114)", koranEmpty: "No Surahs added yet.", koranOrder: "Surahs are sorted automatically.",
+    lessonCategories: "Lesson Categories", lessonSelect: "Choose a category"
   }
 };
 
@@ -87,16 +99,16 @@ const DAILY_TASKS_EN = [
 
 const LESSONS_DATA = {
   pl: [
-    { id: "hello", title: "Powitania", ar: "السلام عليكم", tr: "as-salamu alejkum", meaning: "Pokoj z Toba", task: "Powiedz zwrot na glos i dodaj go do fiszek." },
-    { id: "thanks", title: "Wdzięcznosc", ar: "شكرا", tr: "szukran", meaning: "Dziekuje", task: "Uzyj zwrotu w jednym polskim zdaniu." },
-    { id: "family", title: "Rodzina", ar: "أحب عائلتي", tr: "uhibbu a'ilati", meaning: "Kocham moja rodzine", task: "Przeczytaj wolno trzy razy." },
-    { id: "book", title: "Nauka", ar: "هذا كتاب", tr: "haza kitab", meaning: "To jest ksiazka", task: "Znajdz litere ك i ب." }
+    { id: "hello", category: "Podstawy", title: "Powitania", ar: "السلام عليكم", tr: "as-salamu alejkum", meaning: "Pokój z Tobą", task: "Powiedz zwrot na głos i dodaj go do fiszek." },
+    { id: "thanks", category: "Podstawy", title: "Wdzięczność", ar: "شكرا", tr: "szukran", meaning: "Dziękuję", task: "Użyj zwrotu w jednym polskim zdaniu." },
+    { id: "family", category: "Rodzina", title: "Rodzina", ar: "أحب عائلتي", tr: "uhibbu a'ilati", meaning: "Kocham moją rodzinę", task: "Przeczytaj wolno trzy razy." },
+    { id: "book", category: "Nauka", title: "Nauka", ar: "هذا كتاب", tr: "haza kitab", meaning: "To jest książka", task: "Znajdź literę ك i ب." }
   ],
   en: [
-    { id: "hello", title: "Greetings", ar: "السلام عليكم", tr: "as-salamu alejkum", meaning: "Peace be with you", task: "Say this phrase aloud and add it to flashcards." },
-    { id: "thanks", title: "Gratitude", ar: "شكرا", tr: "szukran", meaning: "Thank you", task: "Use this phrase in one short English sentence." },
-    { id: "family", title: "Family", ar: "أحب عائلتي", tr: "uhibbu a'ilati", meaning: "I love my family", task: "Read it slowly three times." },
-    { id: "book", title: "Learning", ar: "هذا كتاب", tr: "haza kitab", meaning: "This is a book", task: "Find the letters ك and ب." }
+    { id: "hello", category: "Basics", title: "Greetings", ar: "السلام عليكم", tr: "as-salamu alejkum", meaning: "Peace be with you", task: "Say this phrase aloud and add it to flashcards." },
+    { id: "thanks", category: "Basics", title: "Gratitude", ar: "شكرا", tr: "szukran", meaning: "Thank you", task: "Use this phrase in one short English sentence." },
+    { id: "family", category: "Family", title: "Family", ar: "أحب عائلتي", tr: "uhibbu a'ilati", meaning: "I love my family", task: "Read it slowly three times." },
+    { id: "book", category: "Learning", title: "Learning", ar: "هذا كتاب", tr: "haza kitab", meaning: "This is a book", task: "Find the letters ك and ب." }
   ]
 };
 
@@ -175,7 +187,17 @@ const defaultState = {
   quizHistory: [],
   memoryStats: { correct: 0, wrong: 0 },
   catchHistory: [],
-  pendingAdventurePhoto: null
+  pendingAdventurePhoto: null,
+  quranSurahs: [],
+  quranFavorites: [],
+  quranAudioCache: {},
+  quranReciter: "ar.alafasy",
+  badges: [],
+  gardenLevel: 0,
+  adventureNotes: {},
+  audioMemories: {},
+  lastSpacedRep: {},
+  focusMode: false
 };
 
 let state = loadState();
@@ -197,7 +219,8 @@ function localeTag() {
 }
 
 function letterName(letter) {
-  return state.lang === "pl" ? letter.polishName : (LETTER_NAMES_EN[letter.id] || letter.transliteration || letter.id);
+  let name = state.lang === "pl" ? letter.polishName : (LETTER_NAMES_EN[letter.id] || letter.transliteration || letter.id);
+  return name.replace(" głębokie", "").replace(" (emphatic)", "");
 }
 
 function letterPronunciationText(letter) {
@@ -507,14 +530,58 @@ function registerPwa() {
 }
 
 function renderNav() {
-  nav.innerHTML = navItems.map(([id, icon, labelKey]) => `
-    <button class="nav-btn ${route === id ? "active" : ""}" data-route="${id}">
-      <span class="text-xl">${icon}</span><span>${t(labelKey)}</span>
-    </button>
-  `).join("");
+  const allNav = `
+    <div class="mx-auto flex max-w-6xl flex-col items-center gap-2">
+      <div class="grid w-full grid-cols-5 gap-1">
+        ${navItems.map(([id, icon, labelKey]) => `
+          <button class="nav-btn haptic-feedback ${route === id ? "active" : ""}" data-route="${id}">
+            <span class="text-xl">${icon}</span><span class="truncate px-1">${t(labelKey)}</span>
+          </button>
+        `).join("")}
+      </div>
+      <div id="secondaryNav" class="hidden w-full grid-cols-4 gap-1 sm:grid-cols-7">
+        ${secondaryNavItems.map(([id, icon, labelKey]) => `
+          <button class="nav-btn haptic-feedback ${route === id ? "active" : ""}" data-route="${id}">
+            <span class="text-xl">${icon}</span><span class="truncate px-1">${t(labelKey)}</span>
+          </button>
+        `).join("")}
+      </div>
+      <button id="toggleNav" class="w-full rounded-b-lg bg-[var(--surface-soft)] py-1 text-xs font-bold text-[var(--muted)] opacity-60 haptic-feedback">•••</button>
+    </div>
+  `;
+  nav.innerHTML = allNav;
   nav.querySelectorAll("[data-route]").forEach((button) => {
-    button.addEventListener("click", () => setRoute(button.dataset.route));
+    button.addEventListener("click", () => {
+      triggerHaptic();
+      setRoute(button.dataset.route);
+    });
   });
+  const toggle = $("#toggleNav");
+  const secondary = $("#secondaryNav");
+  toggle.addEventListener("click", () => {
+    triggerHaptic();
+    const content = `
+      <div class="mb-6"><h2 class="text-2xl font-black text-center">${t("more")}</h2></div>
+      <div class="grid grid-cols-3 gap-4 pb-8">
+        ${secondaryNavItems.map(([id, icon, labelKey]) => `
+          <button class="flex flex-col items-center gap-2 p-4 panel haptic-feedback" data-sheet-route="${id}">
+            <span class="text-3xl">${icon}</span>
+            <span class="text-[10px] font-black uppercase tracking-wider">${t(labelKey)}</span>
+          </button>
+        `).join("")}
+      </div>
+    `;
+    openBottomSheet(content);
+    $("#bottomSheet").querySelectorAll("[data-sheet-route]").forEach(btn => btn.addEventListener("click", () => {
+      setRoute(btn.dataset.sheetRoute);
+      closeBottomSheet();
+    }));
+  });
+  if (secondaryNavItems.some(([id]) => id === route)) {
+    secondary.classList.remove("hidden");
+    secondary.classList.add("grid");
+    toggle.textContent = "▴";
+  }
 }
 
 function render() {
@@ -535,13 +602,14 @@ function render() {
   if (aiFabLabel) aiFabLabel.textContent = t("aiAssistant");
   const aiInput = $("#aiInput");
   if (aiInput) aiInput.placeholder = t("aiPlaceholder");
-  const views = { home, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, settings };
+  const views = { home, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, settings };
   (views[route] || home)();
 }
 
 function home() {
   const tasks = activeDailyTasks();
   const task = tasks[new Date().getDate() % tasks.length];
+  
   view.innerHTML = `
     <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
       <section class="panel romantic-hero p-5 sm:p-7">
@@ -558,6 +626,10 @@ function home() {
           ${statCard(t("level"), `${t("level")} ${level()}`, `${state.points} ${t("points")}`)}
           ${statCard(t("alphabetProgress"), `${progressPercent()}%`, `${state.learnedLetters.length}/28`)}
         </div>
+        <div class="mt-6">
+          <h3 class="font-black mb-2">${tx("Twój Ogród", "Your Garden")}</h3>
+          ${renderGarden()}
+        </div>
       </section>
       <aside class="grid gap-4">
         <div class="soft-panel p-5">
@@ -565,39 +637,59 @@ function home() {
           <p class="mt-2 text-[var(--muted)]">${task}</p>
           <button class="big-action mt-4 w-full bg-emerald-500 text-white" data-route="alphabet">${t("start")}</button>
         </div>
+        <div id="ayatOfDay" class="panel p-5">
+           <h2 class="text-xl font-black mb-3">✨ ${tx("Ayat Dnia", "Ayat of the Day")}</h2>
+           <div class="skeleton h-20 w-full mb-2"></div>
+        </div>
         <div class="panel p-5">
           <div class="flex items-center justify-between gap-3">
-            <h2 class="text-xl font-black">${t("progress")}</h2>
-            <span class="font-bold text-amber-500">${state.points} ${t("points")}</span>
+            <h2 class="text-xl font-black">${tx("Odznaki", "Badges")}</h2>
+            <span class="text-sm font-bold text-amber-500">${state.badges.length}</span>
           </div>
-          <div class="mt-4 h-4 overflow-hidden rounded-full bg-emerald-100">
-            <div class="h-full rounded-full bg-emerald-500" style="width:${progressPercent()}%"></div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            ${state.badges.map(b => `<span class="badge-unlocked text-2xl" title="${b}">🏆</span>`).join("") || `<p class="text-xs text-[var(--muted)]">${tx("Zdobądź pierwszą odznakę!", "Earn your first badge!")}</p>`}
           </div>
         </div>
-        ${installButtonHtml("shadow-sm")}
       </aside>
     </div>
     ${journeyWidget()}
     <div class="mt-4 grid gap-3 sm:grid-cols-5">
       ${quickLink(t("aiAssistant"), tx("Tworz fiszki, quizy i historie", "Create cards, quizzes and stories"), "ai")}
+      ${quickLink(t("navKoran"), tx("Czytaj i sluchaj Koranu", "Read and listen to Quran"), "koran")}
       ${quickLink(t("navLessons"), tx("Pierwsze slowa i zwroty", "First words and phrases"), "lessons")}
       ${quickLink(t("navCulture"), tx("Ciekawostka dnia", "Daily culture fact"), "culture")}
-      ${quickLink(t("navAdventure"), tx("Zdjecia i historie AI", "Photos and AI stories"), "adventure")}
       ${quickLink(t("navGames"), tx("Quiz, memory i lapanie liter", "Quiz, memory and catch game"), "games")}
     </div>
   `;
+  
+  loadAyatOfDay();
+  updateGarden();
+  
   view.querySelectorAll("[data-route]").forEach((button) => {
     button.addEventListener("click", () => {
       if (button.dataset.route === "ai") openAiChat();
       else setRoute(button.dataset.route);
     });
   });
-  bindInstallButtons();
-  $("#switchProfileBtn")?.addEventListener("click", () => {
-    state.profile = state.profile === "Princess" ? "Abang" : "Princess";
-    saveState();
-    render();
-  });
+}
+
+async function loadAyatOfDay() {
+  const container = $("#ayatOfDay");
+  try {
+    const randomAyah = Math.floor(Math.random() * 6236) + 1;
+    const res = await fetch(`https://api.alquran.cloud/v1/ayah/${randomAyah}/pl.bielawskiego`);
+    const data = await res.json();
+    if (data.code === 200) {
+      const a = data.data;
+      container.innerHTML = `
+        <h2 class="text-xl font-black mb-3">✨ ${tx("Ayat Dnia", "Ayat of the Day")}</h2>
+        <p class="arabic text-right text-lg mb-2">${escapeHtml(a.text)}</p>
+        <p class="text-xs text-[var(--muted)] italic">Sura ${a.surah.number}, Ayat ${a.numberInSurah}</p>
+      `;
+    }
+  } catch (e) {
+    container.innerHTML = `<p class="text-xs text-[var(--muted)]">${tx("Nie udało się pobrać wersetu.", "Could not load ayah.")}</p>`;
+  }
 }
 
 function journeyWidget() {
@@ -639,6 +731,171 @@ function statCard(title, value, hint) {
 
 function quickLink(title, text, routeName) {
   return `<button class="panel min-h-28 p-4 text-left" data-route="${routeName}"><strong class="block text-lg">${title}</strong><span class="text-sm text-[var(--muted)]">${text}</span></button>`;
+}
+
+const QURAN_RECITERS = [
+  { id: "ar.alafasy", name: "Mishary Rashid Alafasy" },
+  { id: "ar.abdulsamad", name: "Abdul Basit Abdus Samad" },
+  { id: "ar.minshawi", name: "Mohamed Siddiq al-Minshawi" }
+];
+
+async function thematicQuranSearch(query) {
+  const btn = $("#thematicSearchBtn");
+  btn.textContent = tx("Szukam...", "Searching...");
+  try {
+    const aiPrompt = `Znajdź w Koranie wersety związane z tematem: "${query}". Podaj numer sury i numer wersetu. Odpowiedz krótką listą, np: Sura 2, Werset 153.`;
+    const response = await askGroq([{ role: "user", content: aiPrompt }]);
+    openBottomSheet(`<h2 class="text-xl font-black mb-4">${tx("Wyniki wyszukiwania", "Search results")}</h2><div class="whitespace-pre-wrap">${escapeHtml(response)}</div>`);
+  } catch (e) {
+    showLoveToast("Błąd wyszukiwania AI");
+  } finally {
+    btn.textContent = tx("Szukaj", "Search");
+  }
+}
+
+function koran() {
+  view.innerHTML = `
+    <div class="mb-4">
+      <h1 class="text-3xl font-black">${t("koranTitle")}</h1>
+      <p class="text-[var(--muted)]">${t("koranOrder")}</p>
+    </div>
+    <div class="panel mb-4 p-5">
+      <div class="grid gap-3">
+        <div class="flex gap-2">
+          <input id="surahNumber" type="number" min="1" max="114" class="h-12 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4" placeholder="${t("koranNumber")}" />
+          <button id="addSurahBtn" class="big-action bg-emerald-500 text-white min-w-32">${t("koranAdd")}</button>
+        </div>
+        <div class="flex gap-2">
+          <input id="thematicInput" class="h-12 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4" placeholder="${tx("Szukaj tematu (np. cierpliwość)...", "Search theme (e.g. patience)...")}" />
+          <button id="thematicSearchBtn" class="big-action bg-amber-500 text-white min-w-32">${tx("Szukaj", "Search")}</button>
+        </div>
+        <select id="reciterSelect" class="h-12 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4">
+          ${QURAN_RECITERS.map(r => `<option value="${r.id}" ${state.quranReciter === r.id ? "selected" : ""}>${r.name}</option>`).join("")}
+        </select>
+      </div>
+    </div>
+    <div id="surahList" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      ${state.quranSurahs.length ? state.quranSurahs.sort((a, b) => a.number - b.number).map((surah) => `
+        <article class="panel p-5 relative">
+          <button class="absolute right-2 top-2 text-[var(--muted)]" data-remove-surah="${surah.number}">×</button>
+          <div class="flex items-center justify-between">
+            <span class="grid h-10 w-10 place-items-center rounded-full bg-emerald-100 text-sm font-black text-emerald-700">${surah.number}</span>
+            <span class="arabic text-2xl">${escapeHtml(surah.arName)}</span>
+          </div>
+          <h2 class="mt-3 text-xl font-black">${escapeHtml(surah.enName)}</h2>
+          <p class="text-sm text-[var(--muted)]">${escapeHtml(surah.meaning)}</p>
+          <div class="mt-4 flex gap-2">
+            <button class="big-action w-full border border-[var(--line)]" data-read-surah="${surah.number}">${tx("Czytaj", "Read")}</button>
+            <button class="speaker-btn" data-say-surah="${surah.number}">🔊</button>
+          </div>
+        </article>
+      `).join("") : `<div class="soft-panel col-span-full p-8 text-center text-[var(--muted)]">${t("koranEmpty")}</div>`}
+    </div>
+    <div id="surahContent" class="mt-6"></div>
+  `;
+  $("#addSurahBtn").addEventListener("click", addSurahByNumber);
+  $("#thematicSearchBtn").addEventListener("click", () => thematicQuranSearch($("#thematicInput").value));
+  $("#reciterSelect").addEventListener("change", (e) => {
+    state.quranReciter = e.target.value;
+    saveState();
+  });
+  view.querySelectorAll("[data-remove-surah]").forEach(btn => btn.addEventListener("click", (e) => {
+    state.quranSurahs = state.quranSurahs.filter(s => s.number !== Number(btn.dataset.removeSurah));
+    saveState();
+    koran();
+  }));
+  view.querySelectorAll("[data-read-surah]").forEach(btn => btn.addEventListener("click", () => openSurah(Number(btn.dataset.readSurah))));
+  view.querySelectorAll("[data-say-surah]").forEach(btn => btn.addEventListener("click", () => speakArabic(`Surah ${btn.dataset.saySurah}`)));
+}
+
+async function addSurahByNumber() {
+  const numInput = $("#surahNumber");
+  const num = Number(numInput.value);
+  if (!num || num < 1 || num > 114) return alert(tx("Numer musi być między 1 a 114.", "Number must be between 1 and 114."));
+  if (state.quranSurahs.some(s => s.number === num)) return alert(tx("Ta sura jest już dodana.", "This surah is already added."));
+  
+  const btn = $("#addSurahBtn");
+  btn.textContent = tx("Pobieram...", "Loading...");
+  try {
+    const res = await fetch(`https://api.alquran.cloud/v1/surah/${num}`);
+    const data = await res.json();
+    if (data.code === 200) {
+      const s = data.data;
+      state.quranSurahs.push({
+        number: s.number,
+        arName: s.name,
+        enName: s.englishName,
+        meaning: s.englishNameTranslation
+      });
+      saveState();
+      koran();
+      numInput.value = "";
+    }
+  } catch (e) {
+    alert(tx("Błąd podczas pobierania sury.", "Error fetching surah."));
+  } finally {
+    btn.textContent = t("koranAdd");
+  }
+}
+
+async function openSurah(num) {
+  const container = $("#surahContent");
+  container.innerHTML = `<div class="panel p-8 text-center">${tx("Ładowanie treści...", "Loading content...")}</div>`;
+  container.scrollIntoView({ behavior: "smooth" });
+  try {
+    const reciter = state.quranReciter || "ar.alafasy";
+    const res = await fetch(`https://api.alquran.cloud/v1/surah/${num}/${reciter}`);
+    const data = await res.json();
+    if (data.code === 200) {
+      const s = data.data;
+      container.innerHTML = `
+        <div class="panel p-5 sm:p-8">
+          <div class="mb-6 text-center">
+            <h2 class="arabic text-5xl">${escapeHtml(s.name)}</h2>
+            <p class="mt-2 font-black">${escapeHtml(s.englishName)} · ${escapeHtml(s.englishNameTranslation)}</p>
+            <div class="mt-4 flex justify-center gap-2">
+               <button id="playFullSurah" class="big-action bg-emerald-500 text-white">${tx("Odtwórz całość", "Play all")}</button>
+               <button id="toggleTajweed" class="big-action border border-[var(--line)]">${tx("Pokaż Tajweed", "Toggle Tajweed")}</button>
+            </div>
+          </div>
+          <div class="grid gap-6">
+            ${s.ayahs.map(ayah => `
+              <div class="soft-panel p-4 ayah-card" data-ayah-num="${ayah.number}">
+                <div class="flex items-start justify-between gap-4">
+                  <span class="text-xs font-black text-emerald-600">${ayah.numberInSurah}</span>
+                  <p class="arabic text-right text-3xl leading-loose quran-text">${escapeHtml(ayah.text)}</p>
+                </div>
+                <div class="mt-3 flex justify-end gap-2">
+                  <button class="speaker-btn haptic-feedback" data-play-audio="${ayah.audio}">▶️</button>
+                  <button class="speaker-btn haptic-feedback" data-fav-ayah="${ayah.number}">❤️</button>
+                  <button class="speaker-btn haptic-feedback" data-copy-ayah="${ayah.number}">📋</button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+      
+      container.querySelectorAll("[data-play-audio]").forEach(btn => btn.addEventListener("click", () => {
+        const audio = new Audio(btn.dataset.playAudio);
+        audio.play();
+        triggerHaptic();
+      }));
+
+      container.querySelectorAll("[data-fav-ayah]").forEach(btn => btn.addEventListener("click", () => {
+        const num = btn.dataset.favayah;
+        if (!state.quranFavorites.includes(num)) state.quranFavorites.push(num);
+        saveState();
+        showLoveToast(tx("Dodano do ulubionych", "Added to favorites"));
+      }));
+
+      $("#toggleTajweed").addEventListener("click", () => {
+        container.querySelectorAll(".quran-text").forEach(el => el.classList.toggle("quran-wavy-text"));
+      });
+    }
+  } catch (e) {
+    container.innerHTML = `<div class="panel p-8 text-center text-red-500">${tx("Nie udało się pobrać treści sury.", "Failed to fetch surah content.")}</div>`;
+  }
 }
 
 function settings() {
@@ -747,6 +1004,12 @@ function settings() {
     state.flashcards = {};
     state.customFlashcards = [];
     state.miniLessonsDone = [];
+    state.quizStats = { correct: 0, wrong: 0 };
+    state.quizHistory = [];
+    state.memoryStats = { correct: 0, wrong: 0 };
+    state.catchHistory = [];
+    state.writingAttempts = [];
+    state.recordings = {};
     saveState();
     render();
   });
@@ -789,18 +1052,18 @@ function importState(event) {
 function alphabet() {
   view.innerHTML = `
     <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-      <div><h1 class="text-3xl font-black">${tx("Alfabet arabski", "Arabic alphabet")}</h1><p class="text-[var(--muted)]">${tx("Kliknij litere, aby uslyszec wymowe. Uzyj 'Wiecej', aby zobaczyc formy i przyklad.", "Tap a letter to hear it. Use More to see forms and examples.")}</p></div>
+      <div><h1 class="text-3xl font-black">${tx("Alfabet arabski", "Arabic alphabet")}</h1><p class="text-[var(--muted)]">${tx("Kliknij litere, aby uslyszec wymowe. Uzyj 'i', aby zobaczyc formy i przyklad.", "Tap a letter to hear it. Use 'i' to see forms and examples.")}</p></div>
       <span id="alphabetLearnedCount" class="font-bold text-emerald-600">${state.learnedLetters.length}/28 ${tx("poznane", "learned")}</span>
     </div>
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
       ${arabicAlphabet.map((letter) => `
-        <article class="letter-tile relative">
-          <button class="absolute right-2 top-2 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-2 py-1 text-xs font-black" data-letter-info="${letter.id}" aria-label="${t("more")}">i</button>
-          <button class="speaker-btn absolute left-2 top-2" data-say="${letter.forms.isolated}" aria-label="${t("play")}">🔊</button>
-          <button class="grid w-full place-items-center pt-4" data-letter-say="${letter.id}">
-            <span class="arabic text-6xl">${letter.forms.isolated}</span>
-            <span class="font-black">${letterName(letter)}</span>
-            <span class="text-xs text-[var(--muted)]">${letter.transliteration}</span>
+        <article class="letter-tile relative overflow-hidden flex flex-col items-center justify-center p-2 h-36">
+          <button class="absolute right-1 top-1 z-10 grid h-7 w-7 place-items-center rounded-lg border border-[var(--line)] bg-[var(--surface)] text-[10px] font-black shadow-sm" data-letter-info="${letter.id}" aria-label="${t("more")}">i</button>
+          <button class="speaker-btn absolute left-1 top-1 z-10 scale-75" data-say="${escapeHtml(letter.forms.isolated)}" aria-label="${t("play")}">🔊</button>
+          <button class="flex flex-col items-center justify-center w-full h-full pt-6" data-letter-say="${letter.id}">
+            <span class="arabic text-5xl sm:text-6xl leading-none mb-1">${escapeHtml(letter.forms.isolated)}</span>
+            <span class="font-black text-xs sm:text-sm text-center leading-tight mt-auto w-full truncate">${escapeHtml(letterName(letter))}</span>
+            <span class="text-[10px] text-[var(--muted)] font-bold opacity-70">${escapeHtml(letter.transliteration)}</span>
           </button>
         </article>
       `).join("")}
@@ -831,12 +1094,12 @@ function openLetter(id) {
   updateAlphabetCounter();
   modalContent.innerHTML = `
     <div class="pr-12">
-      <p class="text-sm font-bold text-emerald-600">${letter.arabicName}</p>
-      <h2 class="text-3xl font-black">${letterName(letter)}</h2>
+      <p class="text-sm font-bold text-emerald-600">${escapeHtml(letter.arabicName)}</p>
+      <h2 class="text-3xl font-black">${escapeHtml(letterName(letter))}</h2>
     </div>
     <div class="my-5 grid place-items-center rounded-lg bg-emerald-500 py-7 text-white">
-      <span class="arabic text-8xl">${letter.forms.isolated}</span>
-      <span class="mt-2 font-bold">${letter.transliteration}</span>
+      <span class="arabic text-8xl">${escapeHtml(letter.forms.isolated)}</span>
+      <span class="mt-2 font-bold">${escapeHtml(letter.transliteration)}</span>
     </div>
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
       ${formBox(tx("Izolowana", "Isolated"), letter.forms.isolated)}
@@ -844,11 +1107,11 @@ function openLetter(id) {
       ${formBox(tx("Srodkowa", "Medial"), letter.forms.medial)}
       ${formBox(tx("Koncowa", "Final"), letter.forms.final)}
     </div>
-    <p class="mt-5 text-[var(--muted)]">${letterPronunciationText(letter)}</p>
+    <p class="mt-5 text-[var(--muted)]">${escapeHtml(letterPronunciationText(letter))}</p>
     <div class="soft-panel mt-5 p-4">
       <p class="text-sm font-bold text-[var(--muted)]">${tx("Przyklad", "Example")}</p>
-      <p class="arabic mt-1 text-5xl">${letter.example.ar}</p>
-      <p class="mt-2 font-bold">${letterExampleMeaning(letter)} <span class="text-[var(--muted)]">(${letter.example.tr})</span></p>
+      <p class="arabic mt-1 text-5xl">${escapeHtml(letter.example.ar)}</p>
+      <p class="mt-2 font-bold">${escapeHtml(letterExampleMeaning(letter))} <span class="text-[var(--muted)]">(${escapeHtml(letter.example.tr)})</span></p>
     </div>
   `;
   modal.showModal();
@@ -875,45 +1138,77 @@ function formBox(label, value) {
 function lessons() {
   const unlocked = state.learnedLetters.length >= arabicAlphabet.length;
   const lessonsData = LESSONS_DATA[state.lang] || LESSONS_DATA.pl;
+  
+  const categories = [...new Set(lessonsData.map(l => l.category))];
+
   view.innerHTML = `
     <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Pierwsze slowa i zwroty", "First words and phrases")}</h1>
-      <p class="text-[var(--muted)]">${unlocked ? tx("Alfabet opanowany, wiec lekcje sa otwarte.", "Alphabet completed, lessons are now unlocked.") : tx("Lekcje odblokuja sie po poznaniu wszystkich 28 liter alfabetu.", "Lessons unlock after you learn all 28 letters of the alphabet.")}</p>
+      <h1 class="text-3xl font-black">${tx("Lekcje i zwroty", "Lessons and phrases")}</h1>
+      <p class="text-[var(--muted)]">${unlocked ? tx("Wybierz kategorię, aby rozpocząć naukę.", "Choose a category to start learning.") : tx("Lekcje odblokują się po poznaniu wszystkich 28 liter alfabetu.", "Lessons unlock after you learn all 28 letters.")}</p>
     </div>
+    
     ${!unlocked ? `
-      <div class="soft-panel p-5">
+      <div class="soft-panel p-5 mb-4">
         <div class="mb-3 flex items-center justify-between gap-3">
           <strong>${state.learnedLetters.length}/28 ${tx("liter", "letters")}</strong>
           <span class="text-sm text-[var(--muted)]">${progressPercent()}%</span>
         </div>
         <div class="h-4 overflow-hidden rounded-full bg-emerald-100"><div class="h-full bg-emerald-500" style="width:${progressPercent()}%"></div></div>
-        <button class="big-action mt-4 bg-emerald-500 text-white" data-route="alphabet">${tx("Dokoncz alfabet", "Finish alphabet")}</button>
+        <button class="big-action mt-4 bg-emerald-500 text-white w-full" data-route="alphabet">${tx("Dokoncz alfabet", "Finish alphabet")}</button>
       </div>
     ` : ""}
-    <div class="mt-4 grid gap-3 sm:grid-cols-2">
-      ${lessonsData.map((lesson) => `
-        <article class="panel p-5 ${unlocked ? "" : "opacity-55"}">
-          <h2 class="text-xl font-black">${lesson.title}</h2>
-          <p class="arabic mt-4 text-5xl">${lesson.ar}</p>
-          <p class="mt-2 font-bold">${lesson.meaning}</p>
-          <p class="text-sm text-[var(--muted)]">${lesson.tr}</p>
-          <p class="mt-4 text-[var(--muted)]">${lesson.task}</p>
-          <div class="mt-4 grid gap-2 sm:grid-cols-2">
-            <button class="big-action bg-emerald-500 text-white" data-say="${lesson.ar}" ${unlocked ? "" : "disabled"}>${t("play")}</button>
-            <button class="big-action bg-amber-500 text-white" data-lesson="${lesson.id}" ${unlocked ? "" : "disabled"}>${tx("Zaliczone", "Completed")}</button>
-          </div>
-        </article>
+
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+      ${categories.map(cat => `
+        <button class="panel p-4 text-left hover:border-emerald-500 transition-colors" data-lesson-cat="${cat}">
+          <strong class="block text-lg">${escapeHtml(cat)}</strong>
+          <span class="text-sm text-[var(--muted)]">${lessonsData.filter(l => l.category === cat).length} ${tx("lekcje", "lessons")}</span>
+        </button>
       `).join("")}
     </div>
+
+    <div id="lessonsArea" class="grid gap-3 sm:grid-cols-2">
+       ${unlocked ? skeleton(4, "180px") : ""}
+    </div>
   `;
-  view.querySelectorAll("[data-route]").forEach((button) => button.addEventListener("click", () => setRoute(button.dataset.route)));
-  view.querySelectorAll("[data-say]").forEach((button) => button.addEventListener("click", () => speakArabic(button.dataset.say)));
-  view.querySelectorAll("[data-lesson]").forEach((button) => button.addEventListener("click", () => {
+
+  view.querySelectorAll("[data-lesson-cat]").forEach(btn => btn.addEventListener("click", () => {
+    triggerHaptic();
+    view.querySelectorAll("[data-lesson-cat]").forEach(b => b.classList.toggle("border-emerald-500", b === btn));
+    const area = $("#lessonsArea");
+    area.innerHTML = skeleton(2, "180px");
+    setTimeout(() => renderLessonCategory(btn.dataset.lessonCat, lessonsData, unlocked), 400);
+  }));
+
+  if (categories.length > 0 && unlocked) {
+    setTimeout(() => renderLessonCategory(categories[0], lessonsData, unlocked), 300);
+  }
+}
+
+function renderLessonCategory(cat, allLessons, unlocked) {
+  const filtered = allLessons.filter(l => l.category === cat);
+  const area = $("#lessonsArea");
+  area.innerHTML = filtered.map((lesson) => `
+    <article class="panel p-5 ${unlocked ? "" : "opacity-55"}">
+      <h2 class="text-xl font-black">${escapeHtml(lesson.title)}</h2>
+      <p class="arabic mt-4 text-5xl leading-tight">${escapeHtml(lesson.ar)}</p>
+      <p class="mt-2 font-bold">${escapeHtml(lesson.meaning)}</p>
+      <p class="text-sm text-[var(--muted)]">${escapeHtml(lesson.tr)}</p>
+      <p class="mt-4 text-[var(--muted)]">${escapeHtml(lesson.task)}</p>
+      <div class="mt-4 grid gap-2 sm:grid-cols-2">
+        <button class="big-action bg-emerald-500 text-white" data-say="${escapeHtml(lesson.ar)}" ${unlocked ? "" : "disabled"}>${t("play")}</button>
+        <button class="big-action bg-amber-500 text-white" data-lesson="${lesson.id}" ${unlocked ? "" : "disabled"}>${state.miniLessonsDone.includes(lesson.id) ? "✓" : tx("Zaliczone", "Completed")}</button>
+      </div>
+    </article>
+  `).join("");
+
+  area.querySelectorAll("[data-say]").forEach((button) => button.addEventListener("click", () => speakArabic(button.dataset.say)));
+  area.querySelectorAll("[data-lesson]").forEach((button) => button.addEventListener("click", () => {
     if (!state.miniLessonsDone.includes(button.dataset.lesson)) state.miniLessonsDone.push(button.dataset.lesson);
     addPoints(18, false);
     saveState();
     confetti();
-    lessons();
+    renderLessonCategory(cat, allLessons, unlocked);
   }));
 }
 
@@ -994,9 +1289,9 @@ function renderFlashCard() {
       <div class="flashcard-inner">
         <div class="flash-face flash-front">
           <div class="text-center">
-            <p class="arabic text-8xl">${card.front}</p>
+            <p class="arabic text-8xl">${escapeHtml(card.front)}</p>
             <button type="button" class="speaker-btn mt-4" data-say-card="${escapeHtml(card.front)}">🔊</button>
-            <p class="mt-3 text-sm font-bold text-[var(--muted)]">${card.hint}</p>
+            <p class="mt-3 text-sm font-bold text-[var(--muted)]">${escapeHtml(card.hint)}</p>
             <p class="mt-2 text-xs text-[var(--muted)]">${t("frontHint")}</p>
           </div>
         </div>
@@ -1325,22 +1620,22 @@ function setupCanvas() {
   canvas.height = Math.floor(rect.width * ratio);
   ctx.scale(ratio, ratio);
   ctx.clearRect(0, 0, rect.width, rect.width);
-  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--surface");
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--surface").trim() || "#ffffff";
   ctx.fillRect(0, 0, rect.width, rect.width);
   ctx.globalAlpha = 0.24;
-  ctx.fillStyle = "#047857";
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--emerald").trim() || "#047857";
   ctx.font = `${rect.width * 0.68}px serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(writingLetter.forms.isolated, rect.width / 2, rect.width / 2);
   ctx.globalAlpha = 0.18;
-  ctx.strokeStyle = "#EAB308";
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--gold").trim() || "#EAB308";
   ctx.lineWidth = Math.max(2, rect.width * 0.008);
   ctx.strokeText(writingLetter.forms.isolated, rect.width / 2, rect.width / 2);
   ctx.globalAlpha = 1;
   ctx.lineWidth = Math.max(8, rect.width * 0.025);
   ctx.lineCap = "round";
-  ctx.strokeStyle = "#EAB308";
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--gold").trim() || "#EAB308";
 
   writingGuideMask = document.createElement("canvas");
   writingGuideMask.width = Math.max(160, Math.floor(rect.width));
@@ -1453,7 +1748,7 @@ function adventure() {
           <article class="panel p-4">
             ${story.photo ? `<img src="${story.photo}" alt="${escapeHtml(story.title)}" class="mb-3 h-44 w-full rounded-lg object-cover" />` : ""}
             <div class="mb-2 flex items-center justify-between gap-3">
-              <strong>${story.title}</strong>
+              <strong>${escapeHtml(story.title)}</strong>
               <button class="rounded-lg bg-amber-500 px-3 py-2 font-bold text-white" data-regenerate-story="${story.id}">${tx("Nowa wersja", "New version")}</button>
             </div>
             <p class="whitespace-pre-wrap text-[var(--muted)]">${escapeHtml(story.text)}</p>
@@ -1468,11 +1763,20 @@ function adventure() {
     </div>
   `;
   $("#photoInput").addEventListener("change", (event) => {
-    [...event.target.files].forEach((file) => readFileAsDataUrl(file, (url) => {
-      state.pendingAdventurePhoto = url;
-      saveState();
-      adventure();
-    }));
+    const files = [...event.target.files];
+    if (files.length === 1) {
+      readFileAsDataUrl(files[0], (url) => {
+        state.pendingAdventurePhoto = url;
+        saveState();
+        adventure();
+      });
+    } else {
+      files.forEach((file) => readFileAsDataUrl(file, (url) => {
+        state.adventurePhotos.unshift(url);
+        saveState();
+        adventure();
+      }));
+    }
   });
   $("#generateStoryBtn").addEventListener("click", generateAdventureStory);
   $("#savePhotoOnlyBtn")?.addEventListener("click", () => {
@@ -1511,20 +1815,26 @@ function adventure() {
 }
 
 async function generateAdventureStory() {
-  const prompt = $("#storyPrompt").value.trim() || tx("Napisz krotka, ciepla historyjke o Abangu i jego zonie, z trzema prostymi arabskimi slowami.", "Write a short warm story about Abang and his wife, using three simple Arabic words.");
-  $("#generateStoryBtn").textContent = tx("Pisze...", "Writing...");
+  const promptValue = $("#storyPrompt").value.trim() || tx("Napisz krotka, ciepla historyjke o Abangu i jego zonie, z trzema prostymi arabskimi slowami.", "Write a short warm story about Abang and his wife, using three simple Arabic words.");
+  $("#generateStoryBtn").textContent = tx("Analizuję zdjęcie...", "Analyzing photo...");
+  
+  const hasPhoto = !!state.pendingAdventurePhoto;
+  const model = hasPhoto ? "llama-3.2-11b-vision-preview" : GROQ_MODEL;
+  
   try {
     const aiPrompt = tx(
-      `Stworz czysta, romantyczna, ciepla historyjke do sekcji Nasza Przygoda. Nie dodawaj surowych linkow markdown ani listy przyciskow. Dodaj 3 proste arabskie slowa z naturalnym objasnieniem w tekscie. ${prompt}`,
-      `Create a clean, romantic, warm story for the Our Adventure section. Do not add raw markdown links or button lists. Add 3 simple Arabic words with natural explanation inside the story. ${prompt}`
+      `Stworz czysta, romantyczna, ciepla historyjke do sekcji Nasza Przygoda. ${hasPhoto ? "OPISZ DOKŁADNIE CO WIDZISZ NA ZAŁĄCZONYM ZDJĘCIU i wpleć to w historię." : ""} Nie dodawaj surowych linkow markdown ani listy przyciskow. Dodaj 3 proste arabskie slowa z naturalnym objasnieniem w tekscie. ${promptValue}`,
+      `Create a clean, romantic, warm story for the Our Adventure section. ${hasPhoto ? "DESCRIBE EXACTLY WHAT YOU SEE IN THE ATTACHED PHOTO and weave it into the story." : ""} Do not add raw markdown links or button lists. Add 3 simple Arabic words with natural explanation inside the story. ${promptValue}`
     );
-    const text = cleanAiText(await askGroq([{ role: "user", content: aiPrompt }]));
-    const story = { id: crypto.randomUUID(), title: tx(`Historyjka ${new Date().toLocaleDateString(localeTag())}`, `Story ${new Date().toLocaleDateString(localeTag())}`), text, photo: state.pendingAdventurePhoto };
+    
+    const text = cleanAiText(await askGroq([{ role: "user", content: aiPrompt }], model, state.pendingAdventurePhoto));
+    const story = { id: crypto.randomUUID(), title: tx(`Przygoda ${new Date().toLocaleDateString(localeTag())}`, `Adventure ${new Date().toLocaleDateString(localeTag())}`), text, photo: state.pendingAdventurePhoto };
     state.adventureStories.unshift(story);
     if (state.pendingAdventurePhoto) state.adventurePhotos.unshift(state.pendingAdventurePhoto);
     state.pendingAdventurePhoto = null;
     saveState();
     adventure();
+    confetti();
   } catch (error) {
     $("#generateStoryBtn").textContent = tx("Blad AI", "AI error");
   }
@@ -1801,15 +2111,15 @@ function renderQuiz() {
     <h2 class="text-2xl font-black">Quiz</h2>
     <p class="mt-2 text-[var(--muted)]">${tx("Ktora to litera?", "Which letter is this?")}</p>
     <p class="mt-2 text-sm font-bold text-[var(--muted)]">${t("correct")}: ${state.quizStats.correct} · ${t("wrong")}: ${state.quizStats.wrong}</p>
-    <p class="arabic my-6 text-center text-8xl">${correct.forms.isolated}</p>
-    <button class="big-action mb-4 w-full bg-amber-500 text-white" data-say="${correct.forms.isolated}">🔊 ${t("play")}</button>
+    <p class="arabic my-6 text-center text-8xl">${escapeHtml(correct.forms.isolated)}</p>
+    <button class="big-action mb-4 w-full bg-amber-500 text-white" data-say="${escapeHtml(correct.forms.isolated)}">🔊 ${t("play")}</button>
     <div class="grid gap-2">
-      ${choices.map((choice) => `<button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-answer="${choice.id}">${letterName(choice)}</button>`).join("")}
+      ${choices.map((choice) => `<button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-answer="${choice.id}">${escapeHtml(letterName(choice))}</button>`).join("")}
     </div>
     <div class="mt-4">
       <h3 class="font-black">${t("history")}</h3>
       <div class="mt-2 grid gap-1 text-sm text-[var(--muted)]">
-        ${state.quizHistory.slice(0, 5).map((item) => `<p>${item.ok ? t("correct") : t("wrong")} · ${item.letter} · ${new Date(item.date).toLocaleTimeString(localeTag())}</p>`).join("") || `<p>${tx("Brak prob.", "No attempts yet.")}</p>`}
+        ${state.quizHistory.slice(0, 5).map((item) => `<p>${item.ok ? t("correct") : t("wrong")} · ${escapeHtml(item.letter)} · ${new Date(item.date).toLocaleTimeString(localeTag())}</p>`).join("") || `<p>${tx("Brak prob.", "No attempts yet.")}</p>`}
       </div>
     </div>
   `;
@@ -2026,7 +2336,9 @@ function renderAiMessages() {
     </article>
   `).join("");
   box.querySelectorAll("[data-ai-action]").forEach((button) => button.addEventListener("click", () => handleAiAction(button.dataset.aiAction, Number(button.dataset.messageIndex))));
-  box.scrollTop = box.scrollHeight;
+  requestAnimationFrame(() => {
+    box.scrollTop = box.scrollHeight;
+  });
 }
 
 function aiActionButtons(index) {
@@ -2072,28 +2384,73 @@ async function sendAiMessage(event) {
   renderAiMessages();
 }
 
-async function askGroq(messages) {
+async function askGroq(messages, model = GROQ_MODEL, imageData = null) {
+  const payload = {
+    model: model,
+    messages: [
+      { role: "system", content: aiSystemPrompt() },
+      ...messages
+    ],
+    temperature: 0.75,
+    max_tokens: 1100
+  };
+
+  if (imageData && model.includes("vision")) {
+    const lastIdx = payload.messages.length - 1;
+    const userContent = payload.messages[lastIdx].content;
+    payload.messages[lastIdx].content = [
+      { type: "text", text: userContent },
+      { type: "image_url", image_url: { url: imageData } }
+    ];
+  }
+
   const response = await fetch(GROQ_ENDPOINT, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${GROQ_API_KEY}`
     },
-    body: JSON.stringify({
-      model: GROQ_MODEL,
-      messages: [
-        { role: "system", content: aiSystemPrompt() },
-        ...messages
-      ],
-      temperature: 0.75,
-      max_tokens: 1100
-    })
+    body: JSON.stringify(payload)
   });
   if (!response.ok) {
     throw new Error(`Groq error ${response.status}`);
   }
   const data = await response.json();
   return data.choices?.[0]?.message?.content?.trim() || tx("Nie dostalem tresci odpowiedzi.", "I did not receive response content.");
+}
+
+function skeleton(count = 3, height = "120px") {
+  return Array.from({ length: count }, () => `<div class="skeleton w-full mb-3" style="height:${height}"></div>`).join("");
+}
+
+function initSearch() {
+  const input = $("#globalSearch");
+  if (!input) return;
+  input.addEventListener("input", (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    if (!q) {
+       render();
+       return;
+    }
+    const alphabetMatches = arabicAlphabet.filter(l => l.id.includes(q) || l.polishName.toLowerCase().includes(q) || l.transliteration.includes(q));
+    const wordMatches = words.filter(w => w.pl.toLowerCase().includes(q) || w.tr.includes(q) || w.ar.includes(q));
+    const surahMatches = state.quranSurahs.filter(s => s.enName.toLowerCase().includes(q) || s.arName.includes(q) || s.number === Number(q));
+
+    view.innerHTML = `
+      <div class="mb-4"><h1 class="text-3xl font-black">Wyniki dla: "${escapeHtml(q)}"</h1></div>
+      <div class="grid gap-6">
+        ${alphabetMatches.length ? `<section><h2 class="font-black mb-3">Alfabet</h2><div class="grid grid-cols-2 gap-2">${alphabetMatches.map(l => `<button class="panel p-4" data-letter-info="${l.id}">${escapeHtml(l.forms.isolated)} ${escapeHtml(l.polishName)}</button>`).join("")}</div></section>` : ""}
+        ${wordMatches.length ? `<section><h2 class="font-black mb-3">Słowniczek</h2><div class="grid grid-cols-2 gap-2">${wordMatches.map(w => `<button class="panel p-4 text-left">${escapeHtml(w.ar)} - ${escapeHtml(w.pl)}</button>`).join("")}</div></section>` : ""}
+        ${surahMatches.length ? `<section><h2 class="font-black mb-3">Koran</h2><div class="grid grid-cols-2 gap-2">${surahMatches.map(s => `<button class="panel p-4 text-left" data-read-surah="${s.number}">${s.number}. ${escapeHtml(s.enName)}</button>`).join("")}</div></section>` : ""}
+        ${!alphabetMatches.length && !wordMatches.length && !surahMatches.length ? `<p class="text-[var(--muted)]">Brak wyników.</p>` : ""}
+      </div>
+    `;
+    view.querySelectorAll("[data-letter-info]").forEach(btn => btn.addEventListener("click", () => openLetter(btn.dataset.letterInfo)));
+    view.querySelectorAll("[data-read-surah]").forEach(btn => btn.addEventListener("click", () => {
+       setRoute("koran");
+       setTimeout(() => openSurah(Number(btn.dataset.readSurah)), 100);
+    }));
+  });
 }
 
 function handleAiAction(action, messageIndex) {
@@ -2176,6 +2533,105 @@ function confetti() {
     else canvas.classList.add("hidden");
   };
   draw();
+}
+
+function triggerHaptic() {
+  if ("vibrate" in navigator) {
+    navigator.vibrate(10);
+  }
+}
+
+function openBottomSheet(content) {
+  const sheet = $("#bottomSheet");
+  const overlay = $("#sheetOverlay");
+  const container = $("#bottomSheetContent");
+  container.innerHTML = content;
+  sheet.classList.add("active");
+  overlay.classList.add("active");
+  triggerHaptic();
+}
+
+function closeBottomSheet() {
+  $("#bottomSheet").classList.remove("active");
+  $("#sheetOverlay").classList.remove("active");
+}
+
+function toggleFocusMode(content = "") {
+  state.focusMode = !state.focusMode;
+  const overlay = $("#focusOverlay");
+  const container = $("#focusContent");
+  if (state.focusMode) {
+    container.innerHTML = content || view.innerHTML;
+    overlay.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  } else {
+    overlay.classList.add("hidden");
+    document.body.style.overflow = "";
+  }
+  saveState();
+}
+
+function unlockBadge(id, name) {
+  if (state.badges.includes(id)) return;
+  state.badges.push(id);
+  saveState();
+  showLoveToast(`🏆 Odznaka: ${name}!`);
+  confetti();
+  triggerHaptic();
+}
+
+function updateGarden() {
+  const level = Math.floor(state.points / 500);
+  if (level > state.gardenLevel) {
+    state.gardenLevel = level;
+    saveState();
+    showLoveToast("🌴 Twój ogród urósł!");
+  }
+}
+
+function renderGarden() {
+  const items = ["🌴", "🌺", "🌵", "🌿", "🎋", "🍃"];
+  let html = '<div class="garden-container">';
+  for (let i = 0; i <= state.gardenLevel; i++) {
+    html += `<span class="garden-item">${items[i % items.length]}</span>`;
+  }
+  html += "</div>";
+  return html;
+}
+
+function init() {
+  registerPwa();
+  render();
+  initSearch();
+  $("#homeLogo").addEventListener("click", () => setRoute("home"));
+  $("#quickLangBtn").addEventListener("click", () => {
+    state.lang = state.lang === "pl" ? "en" : "pl";
+    saveState();
+    render();
+  });
+  $("#themeBtn").addEventListener("click", () => {
+    const idx = THEMES.indexOf(state.theme);
+    state.theme = THEMES[(idx + 1) % THEMES.length];
+    saveState();
+    render();
+  });
+  $("#installBtn").addEventListener("click", () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => (deferredPrompt = null));
+    }
+  });
+  $("#closeModal").addEventListener("click", () => modal.close());
+  $("#closeAi").addEventListener("click", () => $("#aiDialog").close());
+  $("#aiForm").addEventListener("submit", sendAiMessage);
+  
+  $("#sheetOverlay")?.addEventListener("click", closeBottomSheet);
+  $("#exitFocus")?.addEventListener("click", () => toggleFocusMode());
+
+  window.addEventListener("popstate", () => {
+    route = location.hash.slice(1) || "home";
+    render();
+  });
 }
 
 init();
