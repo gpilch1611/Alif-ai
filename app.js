@@ -1,4 +1,4 @@
-import { arabicAlphabet, words, dailyTasks } from "./data.js";
+import { arabicAlphabet, words, dailyTasks, quranSurahs as QURAN_SURAHS_LOCAL } from "./data.js";
 
 const GROQ_API_KEY = "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";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
@@ -193,7 +193,6 @@ const defaultState = {
   quranAudioCache: {},
   quranReciter: "ar.alafasy",
   badges: [],
-  gardenLevel: 0,
   adventureNotes: {},
   audioMemories: {},
   lastSpacedRep: {},
@@ -308,6 +307,7 @@ function loadState() {
     const next = { ...defaultState, ...parsed };
     if (!THEMES.includes(next.theme)) next.theme = "light";
     next.learnedLetters = [...new Set(next.learnedLetters || [])].filter((id) => arabicAlphabet.some((letter) => letter.id === id));
+    if (!next.quranSurahs || next.quranSurahs.length === 0) next.quranSurahs = [...QURAN_SURAHS_LOCAL];
     return next;
   } catch {
     return { ...defaultState };
@@ -533,41 +533,33 @@ function registerPwa() {
 }
 
 function renderNav() {
-  const allNav = `
-    <div class="mx-auto flex max-w-6xl flex-col items-center gap-2">
-      <div class="grid w-full grid-cols-5 gap-1">
-        ${navItems.map(([id, icon, labelKey]) => `
-          <button class="nav-btn haptic-feedback ${route === id ? "active" : ""}" data-route="${id}">
-            <span class="text-xl">${icon}</span><span class="truncate px-1">${t(labelKey)}</span>
-          </button>
-        `).join("")}
-      </div>
-      <div id="secondaryNav" class="hidden w-full grid-cols-4 gap-1 sm:grid-cols-7">
-        ${secondaryNavItems.map(([id, icon, labelKey]) => `
-          <button class="nav-btn haptic-feedback ${route === id ? "active" : ""}" data-route="${id}">
-            <span class="text-xl">${icon}</span><span class="truncate px-1">${t(labelKey)}</span>
-          </button>
-        `).join("")}
-      </div>
-      <button id="toggleNav" class="w-full rounded-b-lg bg-[var(--surface-soft)] py-1 text-xs font-bold text-[var(--muted)] opacity-60 haptic-feedback">•••</button>
-    </div>
-  `;
-  nav.innerHTML = allNav;
-  nav.querySelectorAll("[data-route]").forEach((button) => {
-    button.addEventListener("click", () => {
-      triggerHaptic();
-      setRoute(button.dataset.route);
-    });
+  const moreActive = secondaryNavItems.some(([id]) => id === route);
+  nav.innerHTML =
+    navItems.map(([id, icon, labelKey]) => `
+      <button class="nav-btn haptic-feedback ${route === id ? "active" : ""}" data-route="${id}">
+        <span class="text-xl">${icon}</span><span class="nav-label">${t(labelKey)}</span>
+      </button>
+    `).join("") +
+    secondaryNavItems.map(([id, icon, labelKey]) => `
+      <button class="nav-btn haptic-feedback ${route === id ? "active" : ""} nav-secondary" data-route="${id}">
+        <span class="text-xl">${icon}</span><span class="nav-label">${t(labelKey)}</span>
+      </button>
+    `).join("") +
+    `<button id="moreNavBtn" class="nav-btn haptic-feedback ${moreActive ? "active" : ""} nav-more">
+      <span class="text-xl">⋯</span><span class="nav-label">${t("more")}</span>
+    </button>`;
+
+  nav.querySelectorAll("[data-route]").forEach((btn) => {
+    btn.addEventListener("click", () => { triggerHaptic(); setRoute(btn.dataset.route); });
   });
-  const toggle = $("#toggleNav");
-  const secondary = $("#secondaryNav");
-  toggle.addEventListener("click", () => {
+
+  $("#moreNavBtn")?.addEventListener("click", () => {
     triggerHaptic();
     const content = `
       <div class="mb-6"><h2 class="text-2xl font-black text-center">${t("more")}</h2></div>
       <div class="grid grid-cols-3 gap-4 pb-8">
         ${secondaryNavItems.map(([id, icon, labelKey]) => `
-          <button class="flex flex-col items-center gap-2 p-4 panel haptic-feedback" data-sheet-route="${id}">
+          <button class="flex flex-col items-center gap-2 p-4 panel haptic-feedback ${route === id ? "active" : ""}" data-sheet-route="${id}">
             <span class="text-3xl">${icon}</span>
             <span class="text-[10px] font-black uppercase tracking-wider">${t(labelKey)}</span>
           </button>
@@ -580,11 +572,6 @@ function renderNav() {
       closeBottomSheet();
     }));
   });
-  if (secondaryNavItems.some(([id]) => id === route)) {
-    secondary.classList.remove("hidden");
-    secondary.classList.add("grid");
-    toggle.textContent = "▴";
-  }
 }
 
 function render() {
@@ -629,10 +616,6 @@ function home() {
           ${statCard(t("level"), `${t("level")} ${level()}`, `${state.points} ${t("points")}`)}
           ${statCard(t("alphabetProgress"), `${progressPercent()}%`, `${state.learnedLetters.length}/28`)}
         </div>
-        <div class="mt-6">
-          <h3 class="font-black mb-2">${tx("Twój Ogród", "Your Garden")}</h3>
-          ${renderGarden()}
-        </div>
       </section>
       <aside class="grid gap-4">
         <div class="soft-panel p-5">
@@ -666,8 +649,6 @@ function home() {
   `;
   
   loadAyatOfDay();
-  updateGarden();
-  
   view.querySelectorAll("[data-route]").forEach((button) => {
     button.addEventListener("click", () => {
       if (button.dataset.route === "ai") openAiChat();
@@ -2581,25 +2562,6 @@ function unlockBadge(id, name) {
   showLoveToast(`🏆 Odznaka: ${name}!`);
   confetti();
   triggerHaptic();
-}
-
-function updateGarden() {
-  const level = Math.floor(state.points / 500);
-  if (level > state.gardenLevel) {
-    state.gardenLevel = level;
-    saveState();
-    showLoveToast("🌴 Twój ogród urósł!");
-  }
-}
-
-function renderGarden() {
-  const items = ["🌴", "🌺", "🌵", "🌿", "🎋", "🍃"];
-  let html = '<div class="garden-container">';
-  for (let i = 0; i <= state.gardenLevel; i++) {
-    html += `<span class="garden-item">${items[i % items.length]}</span>`;
-  }
-  html += "</div>";
-  return html;
 }
 
 init();
