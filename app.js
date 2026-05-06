@@ -323,7 +323,12 @@ function localeTag() {
 
 function letterName(letter) {
   let name = state.lang === "pl" ? letter.polishName : (LETTER_NAMES_EN[letter.id] || letter.transliteration || letter.id);
-  return name.replace(" głębokie", "").replace(" (emphatic)", "");
+  return name
+    .replace(" głębokie", "")
+    .replace(" miękkie", "")
+    .replace(" lekkie", "")
+    .replace(" gardłowe", "")
+    .replace(" (emphatic)", "");
 }
 
 function letterPronunciationText(letter) {
@@ -749,24 +754,37 @@ function home() {
            <div class="skeleton h-20 w-full mb-2"></div>
         </div>
         <div class="panel p-5">
-          <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center justify-between gap-3 mb-3">
             <h2 class="text-xl font-black">${tx("Odznaki", "Badges")}</h2>
             <span class="text-sm font-bold text-amber-500">${state.badges.length}/${BADGES_CATALOG.length}</span>
           </div>
-          <div class="mt-3 grid gap-2">
+          <div class="grid grid-cols-7 gap-1.5">
             ${BADGES_CATALOG.map(b => {
               const unlocked = state.badges.includes(b.id);
               const label = state.lang === "pl" ? b.pl : b.en;
               const criterion = state.lang === "pl" ? b.criterionPl : b.criterionEn;
-              return `<div class="flex items-center gap-2 ${unlocked ? "" : "opacity-40"}">
-                <span class="text-2xl">${unlocked ? b.icon : "🔒"}</span>
-                <div class="min-w-0">
-                  <p class="text-sm font-black leading-tight">${unlocked ? label : label}</p>
-                  <p class="text-xs text-[var(--muted)] leading-tight">${criterion}</p>
-                </div>
+              return `<div class="flex flex-col items-center gap-0.5 group relative cursor-default" title="${label}: ${criterion}">
+                <span class="text-2xl ${unlocked ? "" : "grayscale opacity-25"}">${b.icon}</span>
               </div>`;
             }).join("")}
           </div>
+          <details class="mt-3">
+            <summary class="text-xs text-[var(--muted)] cursor-pointer">${tx("Pokaż szczegóły", "Show details")}</summary>
+            <div class="mt-2 grid gap-1.5">
+              ${BADGES_CATALOG.map(b => {
+                const unlocked = state.badges.includes(b.id);
+                const label = state.lang === "pl" ? b.pl : b.en;
+                const criterion = state.lang === "pl" ? b.criterionPl : b.criterionEn;
+                return `<div class="flex items-center gap-2 ${unlocked ? "" : "opacity-40"}">
+                  <span class="text-xl shrink-0">${b.icon}</span>
+                  <div class="min-w-0">
+                    <p class="text-xs font-black leading-tight">${label}</p>
+                    <p class="text-[10px] text-[var(--muted)] leading-tight">${criterion}</p>
+                  </div>
+                </div>`;
+              }).join("")}
+            </div>
+          </details>
         </div>
       </aside>
     </div>
@@ -1038,16 +1056,20 @@ async function openSurah(num) {
   try {
     const reciter = state.quranReciter || "ar.alafasy";
     const transEdition = state.lang === "pl" ? "pl.bielawskiego" : "en.asad";
-    const [resAudio, resTrans] = await Promise.all([
+    const [resAudio, resTrans, resTr] = await Promise.all([
       fetch(`https://api.alquran.cloud/v1/surah/${num}/${reciter}`),
-      fetch(`https://api.alquran.cloud/v1/surah/${num}/${transEdition}`)
+      fetch(`https://api.alquran.cloud/v1/surah/${num}/${transEdition}`),
+      fetch(`https://api.alquran.cloud/v1/surah/${num}/en.transliteration`)
     ]);
-    const [dataAudio, dataTrans] = await Promise.all([resAudio.json(), resTrans.json()]);
+    const [dataAudio, dataTrans, dataTr] = await Promise.all([resAudio.json(), resTrans.json(), resTr.json()]);
     if (dataAudio.code === 200) {
       const s = dataAudio.data;
       const transAyahs = dataTrans.code === 200 ? dataTrans.data.ayahs : [];
+      const trAyahs = dataTr.code === 200 ? dataTr.data.ayahs : [];
       const transMap = {};
+      const trMap = {};
       transAyahs.forEach(a => { transMap[a.numberInSurah] = a.text; });
+      trAyahs.forEach(a => { trMap[a.numberInSurah] = a.text; });
 
       container.innerHTML = `
         <div class="panel p-5 sm:p-8">
@@ -1058,14 +1080,15 @@ async function openSurah(num) {
                <button id="playFullSurah" class="big-action bg-emerald-500 text-white">${tx("Odtwórz całość", "Play all")}</button>
             </div>
           </div>
-          <div class="grid gap-6">
+          <div class="grid gap-4">
             ${s.ayahs.map(ayah => `
               <div class="soft-panel p-4 ayah-card" data-ayah-num="${ayah.number}" data-ayah-text="${escapeHtml(ayah.text)}">
-                <div class="flex items-start justify-between gap-4">
-                  <span class="text-xs font-black text-emerald-600">${ayah.numberInSurah}</span>
-                  <p class="arabic text-right text-3xl leading-loose">${escapeHtml(ayah.text)}</p>
+                <div class="flex items-start justify-between gap-4 mb-2">
+                  <span class="text-xs font-black text-emerald-600 mt-1 shrink-0">${ayah.numberInSurah}</span>
+                  <p class="arabic text-right text-2xl sm:text-3xl leading-loose">${escapeHtml(ayah.text)}</p>
                 </div>
-                ${transMap[ayah.numberInSurah] ? `<p class="mt-2 text-sm text-[var(--muted)] italic text-right">${escapeHtml(transMap[ayah.numberInSurah])}</p>` : ""}
+                ${trMap[ayah.numberInSurah] ? `<p class="text-xs text-amber-600 font-mono leading-relaxed mb-1 text-right">${escapeHtml(trMap[ayah.numberInSurah])}</p>` : ""}
+                ${transMap[ayah.numberInSurah] ? `<p class="text-sm text-[var(--muted)] italic text-right">${escapeHtml(transMap[ayah.numberInSurah])}</p>` : ""}
                 <div class="mt-3 flex justify-end gap-2">
                   <button class="speaker-btn haptic-feedback" data-play-audio="${ayah.audio}" title="${tx("Odtwórz", "Play")}">▶️</button>
                   <button class="speaker-btn haptic-feedback" data-fav-ayah="${ayah.number}" title="${tx("Ulubiony werset", "Favorite ayah")}">❤️</button>
@@ -1275,13 +1298,12 @@ function alphabet() {
     </div>
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
       ${arabicAlphabet.map((letter) => `
-        <article class="letter-tile relative overflow-hidden flex flex-col items-center justify-center p-2 h-36">
-          <button class="absolute right-1 top-1 z-10 grid h-7 w-7 place-items-center rounded-lg border border-[var(--line)] bg-[var(--surface)] text-[10px] font-black shadow-sm" data-letter-info="${letter.id}" aria-label="${t("more")}">i</button>
-          <button class="speaker-btn absolute left-1 top-1 z-10 scale-75" data-say="${escapeHtml(letter.forms.isolated)}" aria-label="${t("play")}">🔊</button>
-          <button class="flex flex-col items-center justify-center w-full h-full pt-6" data-letter-say="${letter.id}">
-            <span class="arabic text-5xl sm:text-6xl leading-none mb-1">${escapeHtml(letter.forms.isolated)}</span>
-            <span class="font-black text-xs sm:text-sm text-center leading-tight mt-auto w-full truncate">${escapeHtml(letterName(letter))}</span>
-            <span class="text-[10px] text-[var(--muted)] font-bold opacity-70">${escapeHtml(letter.transliteration)}</span>
+        <article class="letter-tile relative overflow-hidden flex flex-col items-center justify-center p-2 h-32">
+          <button class="absolute right-1 top-1 z-10 grid h-6 w-6 place-items-center rounded-md border border-[var(--line)] bg-[var(--surface)] text-[9px] font-black shadow-sm" data-letter-info="${letter.id}" aria-label="${t("more")}">i</button>
+          <button class="flex flex-col items-center justify-center w-full h-full pt-5 gap-0.5" data-letter-say="${letter.id}">
+            <span class="arabic text-4xl sm:text-5xl leading-tight">${escapeHtml(letter.forms.isolated)}</span>
+            <span class="font-black text-[11px] sm:text-xs text-center leading-tight w-full truncate px-1">${escapeHtml(letterName(letter))}</span>
+            <span class="text-[10px] text-[var(--muted)] font-mono leading-none">${escapeHtml(letter.transliteration)}</span>
           </button>
         </article>
       `).join("")}
@@ -2884,20 +2906,22 @@ function toggleFocusMode(content = "") {
 }
 
 const BADGES_CATALOG = [
-  { id: "first_letter", icon: "🅰️", pl: "Pierwsza litera", en: "First letter", criterionPl: "Poznaj pierwszą literę arabską", criterionEn: "Learn your first Arabic letter" },
-  { id: "five_letters", icon: "✋", pl: "Pięć liter", en: "Five letters", criterionPl: "Poznaj 5 liter", criterionEn: "Learn 5 letters" },
-  { id: "half_alphabet", icon: "⭐", pl: "Połowa alfabetu", en: "Half alphabet", criterionPl: "Poznaj 14 z 28 liter", criterionEn: "Learn 14 of 28 letters" },
-  { id: "full_alphabet", icon: "🏆", pl: "Mistrz alfabetu", en: "Alphabet master", criterionPl: "Poznaj wszystkie 28 liter", criterionEn: "Learn all 28 letters" },
-  { id: "first_surah", icon: "📖", pl: "Pierwsza sura", en: "First surah", criterionPl: "Dodaj pierwszą surę Koranu", criterionEn: "Add your first Quran surah" },
-  { id: "five_surahs", icon: "📚", pl: "Pięć sur", en: "Five surahs", criterionPl: "Dodaj 5 sur Koranu", criterionEn: "Add 5 Quran surahs" },
-  { id: "streak3", icon: "🔥", pl: "3 dni z rzędu", en: "3-day streak", criterionPl: "Ucz się 3 dni pod rząd", criterionEn: "Learn 3 days in a row" },
-  { id: "streak7", icon: "🔥🔥", pl: "Tydzień nauki", en: "Week streak", criterionPl: "Ucz się 7 dni pod rząd", criterionEn: "Learn 7 days in a row" },
-  { id: "hundred_points", icon: "💯", pl: "100 punktów", en: "100 points", criterionPl: "Zdobądź 100 punktów", criterionEn: "Earn 100 points" },
-  { id: "five_hundred_points", icon: "💎", pl: "500 punktów", en: "500 points", criterionPl: "Zdobądź 500 punktów", criterionEn: "Earn 500 points" },
-  { id: "first_quiz", icon: "🧠", pl: "Pierwszy quiz", en: "First quiz", criterionPl: "Odpowiedz poprawnie w quizie", criterionEn: "Answer correctly in a quiz" },
-  { id: "ten_flashcards", icon: "🃏", pl: "10 fiszek", en: "10 flashcards", criterionPl: "Miej 10 fiszek w kolekcji", criterionEn: "Have 10 flashcards in collection" },
-  { id: "first_lesson", icon: "📝", pl: "Pierwsza lekcja", en: "First lesson", criterionPl: "Zalicz pierwszą lekcję", criterionEn: "Complete your first lesson" },
-  { id: "bismillah", icon: "🌙", pl: "Bismillah", en: "Bismillah", criterionPl: "Zalicz lekcję Bismillah", criterionEn: "Complete the Bismillah lesson" },
+  { id: "first_letter",   icon: "🅰️", pl: "Pierwsza litera",     en: "First letter",       criterionPl: "Poznaj 1 literę arabską",           criterionEn: "Learn 1 Arabic letter" },
+  { id: "ten_letters",    icon: "✋",  pl: "Dziesięć liter",      en: "Ten letters",        criterionPl: "Poznaj 10 liter",                   criterionEn: "Learn 10 letters" },
+  { id: "half_alphabet",  icon: "⭐",  pl: "Połowa alfabetu",     en: "Half alphabet",      criterionPl: "Poznaj 14 z 28 liter",              criterionEn: "Learn 14 of 28 letters" },
+  { id: "full_alphabet",  icon: "🏆",  pl: "Mistrz alfabetu",     en: "Alphabet master",    criterionPl: "Poznaj wszystkie 28 liter",         criterionEn: "Learn all 28 letters" },
+  { id: "first_surah",    icon: "📖",  pl: "Pierwsza sura",       en: "First surah",        criterionPl: "Dodaj 1 surę Koranu",               criterionEn: "Add 1 Quran surah" },
+  { id: "ten_surahs",     icon: "📚",  pl: "Dziesięć sur",        en: "Ten surahs",         criterionPl: "Dodaj 10 sur Koranu",               criterionEn: "Add 10 Quran surahs" },
+  { id: "streak3",        icon: "🔥",  pl: "3 dni z rzędu",       en: "3-day streak",       criterionPl: "Ucz się 3 dni pod rząd",            criterionEn: "Learn 3 days in a row" },
+  { id: "streak7",        icon: "🔥🔥", pl: "Tydzień nauki",      en: "Week streak",        criterionPl: "Ucz się 7 dni pod rząd",            criterionEn: "Learn 7 days in a row" },
+  { id: "streak30",       icon: "💫",  pl: "Miesiąc nauki",       en: "Month streak",       criterionPl: "Ucz się 30 dni pod rząd",           criterionEn: "Learn 30 days in a row" },
+  { id: "pts500",         icon: "💯",  pl: "500 punktów",         en: "500 points",         criterionPl: "Zdobądź 500 punktów",               criterionEn: "Earn 500 points" },
+  { id: "pts2000",        icon: "💎",  pl: "2000 punktów",        en: "2000 points",        criterionPl: "Zdobądź 2000 punktów",              criterionEn: "Earn 2000 points" },
+  { id: "quiz10",         icon: "🧠",  pl: "10 poprawnych",       en: "10 correct",         criterionPl: "Odpowiedz poprawnie 10 razy w quizie", criterionEn: "Answer correctly 10 times in quiz" },
+  { id: "flashcards25",   icon: "🃏",  pl: "25 fiszek",           en: "25 flashcards",      criterionPl: "Miej 25 fiszek w kolekcji",         criterionEn: "Have 25 flashcards in collection" },
+  { id: "lessons10",      icon: "📝",  pl: "10 lekcji",           en: "10 lessons",         criterionPl: "Zalicz 10 lekcji",                  criterionEn: "Complete 10 lessons" },
+  { id: "bismillah",      icon: "🌙",  pl: "Bismillah",           en: "Bismillah",          criterionPl: "Zalicz lekcję Bismillah",           criterionEn: "Complete the Bismillah lesson" },
+  { id: "shahada_badge",  icon: "☪️",  pl: "Szahada",            en: "Shahada",            criterionPl: "Zalicz lekcję Szahada",             criterionEn: "Complete the Shahada lesson" },
 ];
 
 function checkBadges() {
@@ -2905,21 +2929,24 @@ function checkBadges() {
   const sq = (state.quranSurahs || []).length;
   const pts = state.points;
   const fc = (state.customFlashcards || []).length + Object.keys(state.flashcards || {}).length;
+  const ld = (state.miniLessonsDone || []).length;
 
-  if (ll >= 1) unlockBadge("first_letter", tx("Pierwsza litera", "First letter"));
-  if (ll >= 5) unlockBadge("five_letters", tx("Pięć liter", "Five letters"));
+  if (ll >= 1)  unlockBadge("first_letter",  tx("Pierwsza litera", "First letter"));
+  if (ll >= 10) unlockBadge("ten_letters",   tx("Dziesięć liter", "Ten letters"));
   if (ll >= 14) unlockBadge("half_alphabet", tx("Połowa alfabetu", "Half alphabet"));
   if (ll >= 28) unlockBadge("full_alphabet", tx("Mistrz alfabetu", "Alphabet master"));
-  if (sq >= 1) unlockBadge("first_surah", tx("Pierwsza sura", "First surah"));
-  if (sq >= 5) unlockBadge("five_surahs", tx("Pięć sur", "Five surahs"));
-  if (state.streak >= 3) unlockBadge("streak3", tx("3 dni z rzędu", "3-day streak"));
-  if (state.streak >= 7) unlockBadge("streak7", tx("Tydzień nauki", "Week streak"));
-  if (pts >= 100) unlockBadge("hundred_points", tx("100 punktów", "100 points"));
-  if (pts >= 500) unlockBadge("five_hundred_points", tx("500 punktów", "500 points"));
-  if (state.quizStats.correct >= 1) unlockBadge("first_quiz", tx("Pierwszy quiz", "First quiz"));
-  if (fc >= 10) unlockBadge("ten_flashcards", tx("10 fiszek", "10 flashcards"));
-  if ((state.miniLessonsDone || []).length >= 1) unlockBadge("first_lesson", tx("Pierwsza lekcja", "First lesson"));
-  if ((state.miniLessonsDone || []).includes("bismillah")) unlockBadge("bismillah", "Bismillah");
+  if (sq >= 1)  unlockBadge("first_surah",   tx("Pierwsza sura", "First surah"));
+  if (sq >= 10) unlockBadge("ten_surahs",    tx("Dziesięć sur", "Ten surahs"));
+  if (state.streak >= 3)  unlockBadge("streak3",  tx("3 dni z rzędu", "3-day streak"));
+  if (state.streak >= 7)  unlockBadge("streak7",  tx("Tydzień nauki", "Week streak"));
+  if (state.streak >= 30) unlockBadge("streak30", tx("Miesiąc nauki", "Month streak"));
+  if (pts >= 500)  unlockBadge("pts500",  tx("500 punktów", "500 points"));
+  if (pts >= 2000) unlockBadge("pts2000", tx("2000 punktów", "2000 points"));
+  if (state.quizStats.correct >= 10) unlockBadge("quiz10", tx("10 poprawnych", "10 correct"));
+  if (fc >= 25) unlockBadge("flashcards25", tx("25 fiszek", "25 flashcards"));
+  if (ld >= 10) unlockBadge("lessons10",   tx("10 lekcji", "10 lessons"));
+  if ((state.miniLessonsDone || []).includes("bismillah"))    unlockBadge("bismillah",     "Bismillah");
+  if ((state.miniLessonsDone || []).includes("shahada"))      unlockBadge("shahada_badge", tx("Szahada", "Shahada"));
 }
 
 function unlockBadge(id, name) {
