@@ -575,7 +575,23 @@ function registerPwa() {
     return;
   }
 
-  navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" }).catch(() => {});
+  navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" })
+    .then((reg) => {
+      reg.addEventListener("updatefound", () => {
+        const sw = reg.installing;
+        sw.addEventListener("statechange", () => {
+          if (sw.state === "installed" && navigator.serviceWorker.controller) {
+            sw.postMessage({ type: "SKIP_WAITING" });
+          }
+        });
+      });
+    })
+    .catch(() => {});
+
+  let reloading = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!reloading) { reloading = true; window.location.reload(); }
+  });
 }
 
 function renderNav() {
