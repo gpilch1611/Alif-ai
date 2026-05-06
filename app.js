@@ -35,6 +35,7 @@ const THEME_COLOR = {
 
 const navItems = [
   ["home", "⌂", "navHome"],
+  ["quran", "☽", "navQuran"],
   ["alphabet", "ا", "navAlphabet"],
   ["lessons", "Aa", "navLessons"],
   ["flashcards", "▣", "navFlashcards"],
@@ -43,7 +44,6 @@ const navItems = [
   ["adventure", "☆", "navAdventure"],
   ["books", "▤", "navBooks"],
   ["culture", "✦", "navCulture"],
-  ["quran", "☽", "navQuran"],
   ["games", "◎", "navGames"],
   ["settings", "⚙", "navSettings"]
 ];
@@ -134,7 +134,16 @@ const LESSONS_DATA = {
     { id: "love2", cat: "Uczucia", title: "Wahashtani / Asztaqtu ilayk", ar: "وَحَشْتَنِي / اشْتَقْتُ إِلَيْكَ", tr: "wahashtani / asztaqtu ilayk", meaning: "Tęskniłam za tobą / Stęskniłem się za tobą", task: "To piękne zdanie na powitanie po długiej rozłące. Poćwicz je." },
     { id: "islam1", cat: "Islam", title: "Bismillah", ar: "بِسْمِ اللَّهِ", tr: "bismillah", meaning: "W imię Allaha (zacznij każde działanie)", task: "Powiedz bismillah przed jedzeniem lub rozpoczęciem nauki." },
     { id: "islam2", cat: "Islam", title: "Alhamdulillah", ar: "الْحَمْدُ لِلَّهِ", tr: "alhamdulillah", meaning: "Chwała Allahowi (dziękczynienie)", task: "Powiedz alhamdulillah za coś dobrego, co się dziś zdarzyło." },
-    { id: "islam3", cat: "Islam", title: "Inszallah", ar: "إِنْ شَاءَ اللَّهُ", tr: "insza'allah", meaning: "Jeśli Allah zechce (o planach w przyszłości)", task: "Powiedz: غداً، إن شاء الله – jutro, insza'allah." }
+    { id: "islam3", cat: "Islam", title: "Inszallah", ar: "إِنْ شَاءَ اللَّهُ", tr: "insza'allah", meaning: "Jeśli Allah zechce (o planach w przyszłości)", task: "Powiedz: غداً، إن شاء الله – jutro, insza'allah." },
+    { id: "pillar1", cat: "Filary Islamu", title: "Szahada – wyznanie wiary", ar: "لَا إِلَٰهَ إِلَّا اللَّهُ مُحَمَّدٌ رَسُولُ اللَّهِ", tr: "la ilaha illallah, muhammadun rasulullah", meaning: "Nie ma boga oprócz Allaha, Muhammad jest Jego posłańcem", task: "To jest pierwszy i najważniejszy filar islamu. Naucz się go na pamięć i powtórz 3 razy." },
+    { id: "pillar2", cat: "Filary Islamu", title: "Salat – pięć modlitw", ar: "الصَّلَاةُ عِمَادُ الدِّينِ", tr: "as-salatu 'imadu d-din", meaning: "Modlitwa jest filarem religii", task: "Pięć modlitw: Fajr (świt), Dhuhr (południe), Asr (popołudnie), Maghrib (zachód), Isza (noc). Wymień je po arabsku." },
+    { id: "pillar3", cat: "Filary Islamu", title: "Zakat – jałmużna obowiązkowa", ar: "وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ", tr: "wa aqimu s-salata wa atu z-zakata", meaning: "I odprawiajcie modlitwę, i dawajcie jałmużnę", task: "Zakat to 2,5% majątku powyżej nisab. Przeczytaj ajet i zastanów się: komu możesz dziś pomóc?" },
+    { id: "pillar4", cat: "Filary Islamu", title: "Sawm – post w Ramadanie", ar: "شَهْرُ رَمَضَانَ الَّذِي أُنزِلَ فِيهِ الْقُرْآنُ", tr: "shahru ramadana lladhi unzila fihi l-quran", meaning: "Miesiąc Ramadan, w którym zesłany został Koran", task: "Post trwa od wschodu do zachodu słońca. Powiedz po arabsku: Ramadan Mubarak – صرمضان مبارك." },
+    { id: "pillar5", cat: "Filary Islamu", title: "Hadżdż – pielgrzymka", ar: "وَلِلَّهِ عَلَى النَّاسِ حِجُّ الْبَيْتِ", tr: "wa lillahi 'ala n-nasi hijju l-bayt", meaning: "Allah nakazał ludziom pielgrzymkę do Domu (Kaaby)", task: "Hadżdż jest obowiązkowy raz w życiu dla każdego zdolnego muzułmanina. Powiedz: لبيك اللهم لبيك (labbayk allahumma labbayk)." },
+    { id: "gram1", cat: "Gramatyka", title: "Rodzajnik ال (al-)", ar: "الْكِتَابُ – الْمَسْجِدُ – الرَّجُلُ", tr: "al-kitabu – al-masjidu – ar-rajulu", meaning: "książka – meczet – mężczyzna (z rodzajnikiem)", task: "ال (al-) to odpowiednik 'ten/ta/to'. Przed literami słonecznymi (ر، ن، ت...) 'l' znika: ar-rajul. Przed literami księżycowymi pozostaje: al-kitab. Poćwicz obydwa." },
+    { id: "gram2", cat: "Gramatyka", title: "Rodzaj: muzakkar i mu'annath", ar: "مُعَلِّمٌ – مُعَلِّمَةٌ", tr: "mu'allimun – mu'allimah", meaning: "nauczyciel – nauczycielka", task: "W arabskim każda rzeczownik ma rodzaj. Żeński często kończy się na ة (ta marbuta). Przykłady: طالب (uczeń) – طالبة (uczennica). Stwórz 3 pary słów." },
+    { id: "gram3", cat: "Gramatyka", title: "Zaimki osobowe", ar: "أَنَا – أَنْتَ – هُوَ – هِيَ – نَحْنُ", tr: "ana – anta – huwa – hiya – nahnu", meaning: "ja – ty (m.) – on – ona – my", task: "Powiedz po arabsku: أنا مسلم (ana muslim) – jestem muzułmaninem. أنت طالب (anta talib) – jesteś uczniem." },
+    { id: "gram4", cat: "Gramatyka", title: "Zdanie nominalne (isnad)", ar: "مُحَمَّدٌ رَسُولُ اللَّهِ", tr: "muhammadun rasulullahi", meaning: "Muhammad jest posłańcem Allaha", task: "W arabskim można zbudować zdanie bez czasownika 'być': Podmiot + Orzecznik. Np: البيت كبير (al-baytu kabirun) – Dom jest duży. Ułóż własne zdanie." }
   ],
   en: [
     { id: "hello", cat: "Greetings", title: "As-salamu alaykum", ar: "السَّلَامُ عَلَيْكُمْ", tr: "as-salamu alaykum", meaning: "Peace be upon you", task: "Say this greeting out loud. Use it as a hello." },
@@ -167,7 +176,16 @@ const LESSONS_DATA = {
     { id: "love2", cat: "Feelings", title: "Wahashtani / Ishtaqtu ilayk", ar: "وَحَشْتَنِي / اشْتَقْتُ إِلَيْكَ", tr: "wahashtani / ishtaqtu ilayk", meaning: "I missed you", task: "This is a beautiful phrase for reunion. Practice it." },
     { id: "islam1", cat: "Islam", title: "Bismillah", ar: "بِسْمِ اللَّهِ", tr: "bismillah", meaning: "In the name of Allah (start any action)", task: "Say bismillah before eating or starting your study." },
     { id: "islam2", cat: "Islam", title: "Alhamdulillah", ar: "الْحَمْدُ لِلَّهِ", tr: "alhamdulillah", meaning: "Praise be to Allah (gratitude)", task: "Say alhamdulillah for something good that happened today." },
-    { id: "islam3", cat: "Islam", title: "Insha'Allah", ar: "إِنْ شَاءَ اللَّهُ", tr: "insha'allah", meaning: "If Allah wills (for future plans)", task: "Say: غداً، إن شاء الله – tomorrow, insha'allah." }
+    { id: "islam3", cat: "Islam", title: "Insha'Allah", ar: "إِنْ شَاءَ اللَّهُ", tr: "insha'allah", meaning: "If Allah wills (for future plans)", task: "Say: غداً، إن شاء الله – tomorrow, insha'allah." },
+    { id: "pillar1", cat: "Pillars of Islam", title: "Shahada – Declaration of Faith", ar: "لَا إِلَٰهَ إِلَّا اللَّهُ مُحَمَّدٌ رَسُولُ اللَّهِ", tr: "la ilaha illallah, muhammadun rasulullah", meaning: "There is no god but Allah, Muhammad is His messenger", task: "This is the first and most important pillar of Islam. Memorize it and repeat it 3 times." },
+    { id: "pillar2", cat: "Pillars of Islam", title: "Salat – Five Daily Prayers", ar: "الصَّلَاةُ عِمَادُ الدِّينِ", tr: "as-salatu 'imadu d-din", meaning: "Prayer is the pillar of religion", task: "Five prayers: Fajr (dawn), Dhuhr (noon), Asr (afternoon), Maghrib (sunset), Isha (night). Name them all in Arabic." },
+    { id: "pillar3", cat: "Pillars of Islam", title: "Zakat – Obligatory Charity", ar: "وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ", tr: "wa aqimu s-salata wa atu z-zakata", meaning: "Establish prayer and give zakat", task: "Zakat is 2.5% of wealth above nisab threshold. Read this verse and think: who can you help today?" },
+    { id: "pillar4", cat: "Pillars of Islam", title: "Sawm – Fasting in Ramadan", ar: "شَهْرُ رَمَضَانَ الَّذِي أُنزِلَ فِيهِ الْقُرْآنُ", tr: "shahru ramadana lladhi unzila fihi l-quran", meaning: "The month of Ramadan in which the Quran was revealed", task: "Fasting runs from dawn to sunset. Say in Arabic: Ramadan Mubarak – رمضان مبارك." },
+    { id: "pillar5", cat: "Pillars of Islam", title: "Hajj – Pilgrimage", ar: "وَلِلَّهِ عَلَى النَّاسِ حِجُّ الْبَيْتِ", tr: "wa lillahi 'ala n-nasi hijju l-bayt", meaning: "And pilgrimage to the House is a duty to Allah upon people", task: "Hajj is obligatory once in a lifetime for every capable Muslim. Say: لبيك اللهم لبيك (labbayk allahumma labbayk)." },
+    { id: "gram1", cat: "Grammar", title: "Definite Article ال (al-)", ar: "الْكِتَابُ – الْمَسْجِدُ – الرَّجُلُ", tr: "al-kitabu – al-masjidu – ar-rajulu", meaning: "the book – the mosque – the man", task: "ال (al-) means 'the'. Before sun letters (ر، ن، ت...) the 'l' assimilates: ar-rajul. Before moon letters it stays: al-kitab. Practice both patterns." },
+    { id: "gram2", cat: "Grammar", title: "Gender: Mudhakkar and Mu'annath", ar: "مُعَلِّمٌ – مُعَلِّمَةٌ", tr: "mu'allimun – mu'allimah", meaning: "male teacher – female teacher", task: "Every Arabic noun has a gender. Feminine often ends in ة (ta marbuta). Examples: طالب (male student) – طالبة (female student). Create 3 word pairs." },
+    { id: "gram3", cat: "Grammar", title: "Personal Pronouns", ar: "أَنَا – أَنْتَ – هُوَ – هِيَ – نَحْنُ", tr: "ana – anta – huwa – hiya – nahnu", meaning: "I – you (m.) – he – she – we", task: "Say in Arabic: أنا مسلم (ana muslim) – I am a Muslim. أنت طالب (anta talib) – You are a student." },
+    { id: "gram4", cat: "Grammar", title: "Nominal Sentence (Jumlah Ismiyyah)", ar: "مُحَمَّدٌ رَسُولُ اللَّهِ", tr: "muhammadun rasulullahi", meaning: "Muhammad is the messenger of Allah", task: "In Arabic you can form a sentence without the verb 'to be': Subject + Predicate. E.g: البيت كبير (al-baytu kabirun) – The house is big. Create your own sentence." }
   ]
 };
 
@@ -179,30 +197,39 @@ const LETTER_NAMES_EN = {
 };
 
 const WORD_MEANINGS_EN = {
-  mama: "mom",
-  baba: "dad",
-  kitab: "book",
-  bait: "house",
-  shams: "sun",
-  qamar: "moon",
-  salam: "peace / hello",
-  islam: "Islam",
-  quran: "Quran",
-  masjid: "mosque",
-  polska: "Poland",
-  warsaw: "Warsaw",
-  lublin: "Lublin",
-  indonesia: "Indonesia",
-  batik: "batik",
-  borobudur: "Borobudur",
-  orangutan: "orangutan",
-  pierogi: "pierogi",
-  zloty: "zloty",
-  halal: "halal",
-  rahma: "mercy",
-  nur: "light",
-  woda: "water",
-  ryz: "rice"
+  mama: "mom", baba: "dad", kitab: "book", bait: "house", shams: "sun",
+  qamar: "moon", salam: "peace / hello", islam: "Islam", quran: "Quran",
+  masjid: "mosque", polska: "Poland", warsaw: "Warsaw", lublin: "Lublin",
+  indonesia: "Indonesia", batik: "batik", borobudur: "Borobudur",
+  orangutan: "orangutan", pierogi: "pierogi", zloty: "zloty", halal: "halal",
+  rahma: "mercy", nur: "light", woda: "water", ryz: "rice",
+  hubb: "love", qalb: "heart", bayt: "house", walad: "boy/child",
+  bint: "girl", rijal: "man", imra: "woman", yad: "hand",
+  ayn_word: "eye", kalb: "dog", qitta: "cat", samak: "fish",
+  tayyib: "good / great", shukran: "thank you", afwan: "you're welcome",
+  ahlan: "welcome", marhaba: "hello", sabah: "morning", masa: "evening", lail: "night",
+  nabi: "prophet", rasul: "messenger", iman: "faith", taqwa: "God-consciousness",
+  tawhid: "monotheism / oneness of God", jannah: "paradise / heaven",
+  nar: "fire / hell", akhira: "afterlife / hereafter", dunya: "this world",
+  qadar: "divine decree / destiny", ikhlas_w: "sincerity", sabr: "patience",
+  tawbah: "repentance", barakah: "blessing", maghfirah: "forgiveness",
+  hidayah: "guidance", ummah: "Muslim community", dua_w: "supplication / personal prayer",
+  dhikr: "remembrance of God", tawakkul: "trust in God", istighfar: "seeking forgiveness",
+  salat: "prayer (ritual)", zakat_w: "obligatory charity", sawm: "fasting",
+  hajj_w: "pilgrimage to Mecca", wudu: "ablution / purification",
+  qibla: "direction of prayer", kaaba: "the Kaaba in Mecca", adhan: "call to prayer",
+  haram_w: "forbidden", sunnah_w: "Prophet's tradition", hadith_w: "hadith / narration",
+  imam_w: "imam / prayer leader", surah_w: "Quran chapter", ayah_w: "Quran verse",
+  tajwid: "Quran recitation rules", hafiz_w: "one who memorized the Quran", tafsir: "Quran interpretation",
+  ibrahim_w: "Ibrahim (Abraham)", musa_w: "Musa (Moses)", isa_w: "Isa (Jesus)",
+  muhammad_w: "Muhammad ﷺ", yusuf_w: "Yusuf (Joseph)", adam_w: "Adam",
+  bahr: "sea", jabal: "mountain", nahr: "river", sama: "sky / heaven",
+  ard_w: "earth / land", shajara: "tree", matar: "rain", najm: "star", rih: "wind",
+  ilm: "knowledge / science", aql: "mind / intellect", hikmah: "wisdom",
+  qalam: "pen", kitab_w: "book / scripture", bayt_w: "house / home",
+  wajh: "face", ras: "head", bab: "door", tariq: "road / path",
+  yawm: "day", layla: "night (one night)", waqt: "time", amal: "deed / work",
+  khayr: "goodness", haqq: "truth / right", nafs: "soul / self"
 };
 
 let deferredInstall = null;
@@ -249,7 +276,8 @@ const defaultState = {
   pendingAdventurePhoto: null,
   surahProgress: {},
   learnedSurahs: {},
-  customSurahs: []
+  customSurahs: [],
+  activityLog: []
 };
 
 let state = loadState();
@@ -366,7 +394,17 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    if (e.name === "QuotaExceededError" || e.code === 22 || e.code === 1014) {
+      state.recordings = {};
+      state.adventurePhotos = state.adventurePhotos.slice(0, 3);
+      state.writingAttempts = state.writingAttempts.slice(0, 5);
+      state.aiMessages = state.aiMessages.slice(-10);
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+    }
+  }
 }
 
 function today() {
@@ -389,7 +427,34 @@ function markActiveDay() {
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
   state.streak = state.lastActive === yesterday ? state.streak + 1 : 1;
   state.lastActive = now;
+  if (!state.activityLog) state.activityLog = [];
+  if (!state.activityLog.includes(now)) state.activityLog.push(now);
+  if (state.activityLog.length > 365) state.activityLog = state.activityLog.slice(-365);
   saveState();
+}
+
+function activityGraph() {
+  const log = new Set(state.activityLog || []);
+  const days = 35;
+  const cells = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+    cells.push(`<div class="act-cell ${log.has(d) ? "active" : ""}" title="${d}"></div>`);
+  }
+  const activeDays = [...log].filter((d) => {
+    const then = new Date(d);
+    const diff = (Date.now() - then) / 86400000;
+    return diff <= 35;
+  }).length;
+  return `
+    <div class="soft-panel p-4">
+      <div class="flex items-center justify-between gap-2 mb-3">
+        <p class="text-sm font-black">${tx("Aktywność (35 dni)", "Activity (35 days)")}</p>
+        <span class="text-xs font-bold text-emerald-600">${activeDays} ${tx("dni nauki", "days studied")}</span>
+      </div>
+      <div class="act-grid">${cells.join("")}</div>
+    </div>
+  `;
 }
 
 function addPoints(amount, rerender = true) {
@@ -575,7 +640,27 @@ function registerPwa() {
     return;
   }
 
-  navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" }).catch(() => {});
+  navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" })
+    .then((reg) => {
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") reg.update();
+      });
+      setInterval(() => reg.update(), 5 * 60 * 1000);
+      reg.addEventListener("updatefound", () => {
+        const sw = reg.installing;
+        sw.addEventListener("statechange", () => {
+          if (sw.state === "installed" && navigator.serviceWorker.controller) {
+            sw.postMessage({ type: "SKIP_WAITING" });
+          }
+        });
+      });
+    })
+    .catch(() => {});
+
+  let reloading = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!reloading) { reloading = true; window.location.reload(); }
+  });
 }
 
 function renderNav() {
@@ -607,13 +692,19 @@ function render() {
   if (aiFabLabel) aiFabLabel.textContent = t("aiAssistant");
   const aiInput = $("#aiInput");
   if (aiInput) aiInput.placeholder = t("aiPlaceholder");
-  const views = { home, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, quran, games, settings };
+  const views = { home, alphabet, lessons, dictionary, flashcards, speech, writing, adventure, books, culture, quran, games, settings };
   (views[route] || home)();
 }
 
 function home() {
   const tasks = activeDailyTasks();
   const task = tasks[new Date().getDate() % tasks.length];
+  const allSurahs = [...surahs, ...(state.customSurahs || [])];
+  const totalAyat = allSurahs.reduce((s, sr) => s + sr.ayat.length, 0);
+  const learnedAyat = Object.values(state.surahProgress || {}).reduce((s, a) => s + (Array.isArray(a) ? a.length : 0), 0);
+  const quranPct = totalAyat ? Math.round((learnedAyat / totalAyat) * 100) : 0;
+  const lastSurah = allSurahs.find((sr) => (state.surahProgress[sr.id] || []).length > 0 && (state.surahProgress[sr.id] || []).length < sr.ayat.length)
+    || allSurahs.find((sr) => !(state.surahProgress[sr.id] || []).length);
   view.innerHTML = `
     <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
       <section class="panel romantic-hero p-5 sm:p-7">
@@ -629,33 +720,39 @@ function home() {
           ${statCard(t("streak"), `${state.streak} ${tx("dni", "days")}`, tx("Codzienna obecność", "Daily presence"))}
           ${statCard(t("level"), `${t("level")} ${level()}`, `${state.points} ${t("points")}`)}
           ${statCard(t("alphabetProgress"), `${progressPercent()}%`, `${state.learnedLetters.length}/28`)}
-          ${statCard(t("navQuran"), `${Object.keys(state.surahProgress || {}).filter((id) => state.surahProgress[id]?.length > 0).length}/${surahs.length}`, tx("sur", "surahs"))}
+          ${statCard(t("navQuran"), `${quranPct}%`, `${learnedAyat}/${totalAyat} ${tx("ajetów", "ayat")}`)}
         </div>
       </section>
       <aside class="grid gap-4">
         <div class="soft-panel p-5">
           <h2 class="text-xl font-black">${t("todayTask")}</h2>
           <p class="mt-2 text-[var(--muted)]">${task}</p>
-          <button class="big-action mt-4 w-full bg-emerald-500 text-white" data-route="alphabet">${t("start")}</button>
+          <button class="big-action mt-4 w-full bg-emerald-500 text-white" data-route="quran">${t("start")}</button>
         </div>
-        <div class="panel p-5">
+        ${lastSurah ? `
+        <div class="panel p-5 border-2 border-emerald-400">
+          <p class="text-xs font-bold text-emerald-600 mb-1">${tx("Kontynuuj naukę Koranu", "Continue Quran learning")}</p>
           <div class="flex items-center justify-between gap-3">
-            <h2 class="text-xl font-black">${t("progress")}</h2>
-            <span class="font-bold text-amber-500">${state.points} ${t("points")}</span>
+            <div>
+              <p class="font-black">${state.lang === "pl" ? lastSurah.namePl : lastSurah.nameEn}</p>
+              <p class="arabic text-2xl">${lastSurah.name}</p>
+            </div>
+            <button class="big-action bg-emerald-500 text-white shrink-0" data-route="quran">☽ ${tx("Otwórz", "Open")}</button>
           </div>
-          <div class="mt-4 h-4 overflow-hidden rounded-full bg-emerald-100">
-            <div class="h-full rounded-full bg-emerald-500" style="width:${progressPercent()}%"></div>
+          <div class="mt-3 h-2 overflow-hidden rounded-full bg-emerald-100">
+            <div class="h-full rounded-full bg-emerald-500" style="width:${Math.round(((state.surahProgress[lastSurah.id] || []).length / lastSurah.ayat.length) * 100)}%"></div>
           </div>
-        </div>
+        </div>` : ""}
+        ${activityGraph()}
         ${installButtonHtml("shadow-sm")}
       </aside>
     </div>
     ${journeyWidget()}
     <div class="mt-4 grid gap-3 sm:grid-cols-6">
+      ${quickLink(t("navQuran"), tx("Kontynuuj naukę sur", "Continue surah learning"), "quran")}
       ${quickLink(t("aiAssistant"), tx("Twórz fiszki, quizy i historie", "Create cards, quizzes and stories"), "ai")}
-      ${quickLink(t("navLessons"), tx("Słowa i zwroty", "Words and phrases"), "lessons")}
-      ${quickLink(t("navQuran"), tx("Ucz się sur Koranu", "Learn Quran surahs"), "quran")}
-      ${quickLink(t("navCulture"), tx("Ciekawostka dnia", "Daily culture fact"), "culture")}
+      ${quickLink(t("navLessons"), tx("Słowa, zwroty i gramatyka", "Words, phrases and grammar"), "lessons")}
+      ${quickLink(t("navCulture"), tx("Ciekawostka islamska dnia", "Islamic culture fact"), "culture")}
       ${quickLink(t("navAdventure"), tx("Zdjęcia i historie AI", "Photos and AI stories"), "adventure")}
       ${quickLink(t("navGames"), tx("Quiz, memory i łapanie liter", "Quiz, memory and catch game"), "games")}
     </div>
@@ -959,8 +1056,9 @@ function lessons() {
         <h1 class="text-3xl font-black">${tx("Słowa i zwroty", "Words and Phrases")}</h1>
         <p class="text-[var(--muted)]">${tx("Kliknij literę, żeby usłyszeć. Zalicz lekcję, żeby zdobyć punkty.", "Tap to hear. Complete lessons to earn points.")}</p>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-wrap">
         <span class="font-bold text-emerald-600">${totalDone}/${lessonsData.length} ${tx("zaliczone", "done")}</span>
+        <button id="dictBtn" class="big-action border border-[var(--line)] bg-[var(--surface)] px-4">📖 ${tx("Słowniczek", "Dictionary")}</button>
         <button id="aiLessonBtn" class="big-action bg-amber-500 text-white px-4">${t("addLesson")}</button>
       </div>
     </div>
@@ -1006,7 +1104,71 @@ function lessons() {
       button.closest("article")?.classList.add("done");
     }
   }));
+  $("#dictBtn").addEventListener("click", () => { route = "dictionary"; render(); });
   $("#aiLessonBtn").addEventListener("click", generateAiLesson);
+}
+
+const WORD_CATS = {
+  nabi: "Islam", rasul: "Islam", iman: "Islam", taqwa: "Islam", tawhid: "Islam", jannah: "Islam", nar: "Islam", akhira: "Islam", dunya: "Islam", qadar: "Islam", ikhlas_w: "Islam", sabr: "Islam", tawbah: "Islam", barakah: "Islam", maghfirah: "Islam", hidayah: "Islam", ummah: "Islam", dua_w: "Islam", dhikr: "Islam", tawakkul: "Islam", istighfar: "Islam",
+  salat: "Ibadah", zakat_w: "Ibadah", sawm: "Ibadah", hajj_w: "Ibadah", wudu: "Ibadah", qibla: "Ibadah", kaaba: "Ibadah", adhan: "Ibadah", haram_w: "Ibadah", sunnah_w: "Ibadah", hadith_w: "Ibadah", imam_w: "Ibadah",
+  surah_w: "Koran", ayah_w: "Koran", tajwid: "Koran", hafiz_w: "Koran", tafsir: "Koran",
+  ibrahim_w: "Prorocy", musa_w: "Prorocy", isa_w: "Prorocy", muhammad_w: "Prorocy", yusuf_w: "Prorocy", adam_w: "Prorocy",
+  bahr: "Natura", jabal: "Natura", nahr: "Natura", sama: "Natura", ard_w: "Natura", shajara: "Natura", matar: "Natura", najm: "Natura", rih: "Natura",
+  ilm: "Wiedza", aql: "Wiedza", hikmah: "Wiedza", qalam: "Wiedza", kitab_w: "Wiedza",
+  bayt_w: "Codzienne", wajh: "Codzienne", ras: "Codzienne", bab: "Codzienne", tariq: "Codzienne", yawm: "Codzienne", layla: "Codzienne", waqt: "Codzienne", amal: "Codzienne", khayr: "Codzienne", haqq: "Codzienne", nafs: "Codzienne"
+};
+
+function dictionary() {
+  const cats = ["Islam", "Ibadah", "Koran", "Prorocy", "Natura", "Wiedza", "Codzienne"];
+  view.innerHTML = `
+    <div class="mb-4">
+      <button class="mb-2 text-sm font-bold text-[var(--muted)]" id="dictBackBtn">← ${tx("Lekcje", "Lessons")}</button>
+      <h1 class="text-3xl font-black">${tx("Słowniczek arabski", "Arabic Dictionary")}</h1>
+      <p class="text-[var(--muted)]">${tx("Wszystkich słów", "Total words")}: ${words.length}</p>
+    </div>
+    <div class="mb-4 flex gap-2 flex-wrap">
+      <input id="dictSearch" type="search" class="dict-search flex-1 min-w-48" placeholder="${tx("Szukaj po arabsku, tr. lub tłumaczeniu...", "Search Arabic, transliteration or translation...")}">
+      <select id="dictFilter" class="dict-filter">
+        <option value="">${tx("Wszystkie kategorie", "All categories")}</option>
+        ${cats.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("")}
+        <option value="Podstawowe">${tx("Podstawowe", "Basic")}</option>
+      </select>
+    </div>
+    <div id="dictList" class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      ${words.map((w) => {
+        const cat = WORD_CATS[w.id] || "Podstawowe";
+        const meaning = state.lang === "pl" ? (w.pl || w.tr) : (w.en || w.pl || w.tr);
+        return `<div class="dict-entry soft-panel p-3 flex items-center gap-3" data-cat="${escapeHtml(cat)}" data-ar="${escapeHtml(w.ar)}" data-tr="${escapeHtml(w.tr)}" data-pl="${escapeHtml(w.pl || "")}">
+          <button class="speaker-btn shrink-0" data-say="${escapeHtml(w.ar)}" aria-label="${t("play")}">🔊</button>
+          <div class="min-w-0 flex-1">
+            <span class="arabic text-2xl">${w.ar}</span>
+            <span class="ml-2 text-sm font-bold">${escapeHtml(meaning)}</span>
+            <p class="text-xs text-[var(--muted)] truncate">${escapeHtml(w.tr)} · ${escapeHtml(cat)}</p>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+  `;
+
+  view.querySelector("#dictBackBtn").addEventListener("click", () => setRoute("lessons"));
+  view.querySelectorAll("[data-say]").forEach((btn) => btn.addEventListener("click", (e) => { e.stopPropagation(); speakArabic(e.currentTarget.dataset.say); }));
+
+  const searchInput = view.querySelector("#dictSearch");
+  const filterSelect = view.querySelector("#dictFilter");
+  const dictList = view.querySelector("#dictList");
+
+  function applyFilter() {
+    const q = searchInput.value.toLowerCase();
+    const cat = filterSelect.value;
+    dictList.querySelectorAll(".dict-entry").forEach((entry) => {
+      const matchCat = !cat || entry.dataset.cat === cat;
+      const matchQ = !q || entry.dataset.ar.includes(q) || entry.dataset.tr.toLowerCase().includes(q) || entry.dataset.pl.toLowerCase().includes(q);
+      entry.style.display = matchCat && matchQ ? "" : "none";
+    });
+  }
+
+  searchInput.addEventListener("input", applyFilter);
+  filterSelect.addEventListener("change", applyFilter);
 }
 
 async function generateAiLesson() {
@@ -1143,8 +1305,10 @@ function renderFlashCard() {
   const translation = card.translation || back.translation || (state.lang === "pl" ? "Fiszka Alif AI" : "Alif AI card");
   const transliteration = card.transliteration || back.transliteration || card.hint || "";
   const meta = state.flashcards[card.id];
+  const daysUntil = meta?.due ? Math.ceil((meta.due - Date.now()) / 86400000) : null;
+  const dueStr = daysUntil !== null ? (daysUntil <= 0 ? tx("dziś!", "today!") : `${tx("za", "in")} ${daysUntil}d`) : "–";
   const historyTag = meta
-    ? `<span class="flash-stat">${tx("powtórzenia", "reps")}: ${meta.repetitions} · ${tx("EF", "EF")}: ${meta.ef?.toFixed(1) ?? "2.5"}</span>`
+    ? `<span class="flash-stat">${tx("reps", "reps")}: ${meta.repetitions} · EF: ${meta.ef?.toFixed(1) ?? "2.5"} · ${tx("wróci", "next")}: ${dueStr}</span>`
     : `<span class="flash-stat text-amber-600">${tx("nowa karta", "new card")}</span>`;
 
   const exampleWord = card.exampleWord;
@@ -1325,6 +1489,7 @@ function startSpeech(sample) {
     $("#speechText").textContent = tx("Ta przegladarka nie obsluguje SpeechRecognition.", "This browser does not support SpeechRecognition.");
     return;
   }
+  if (recognition) { try { recognition.abort(); } catch {} recognition = null; }
   recognition = new SpeechRecognition();
   recognition.lang = "ar-SA";
   recognition.interimResults = false;
@@ -1345,8 +1510,8 @@ function startSpeech(sample) {
 
 async function toggleRecording() {
   const button = $("#recordBtn");
-  if (mediaRecorder && mediaRecorder.state === "recording") {
-    mediaRecorder.stop();
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    try { mediaRecorder.stop(); } catch {}
     button.textContent = tx("Nagraj", "Record");
     return;
   }
@@ -1490,8 +1655,10 @@ function writingMessage(score) {
 
 function setupCanvas() {
   const canvas = $("#writingCanvas");
-  const ctx = canvas.getContext("2d");
+  if (!canvas) return;
   const rect = canvas.getBoundingClientRect();
+  if (rect.width < 10) { requestAnimationFrame(setupCanvas); return; }
+  const ctx = canvas.getContext("2d");
   const ratio = window.devicePixelRatio || 1;
   writingInk = 0;
   writingLastPoint = null;
@@ -2096,9 +2263,10 @@ function openSurah(id, allSurahs) {
           </div>
         `).join("")}
       </div>
-      <div class="mt-5 grid gap-2 sm:grid-cols-2">
+      <div class="mt-5 grid gap-2 sm:grid-cols-3">
+        <button id="drillSurahBtn" class="big-action bg-blue-600 text-white">☽ ${tx("Ćwicz", "Practice")}</button>
         <button id="learnSurahBtn" class="big-action bg-emerald-500 text-white">${t("quranLearn")}</button>
-        <button id="surahAiBtn" class="big-action bg-amber-500 text-white">✦ ${tx("Ciekawostka AI", "AI Insight")}</button>
+        <button id="surahAiBtn" class="big-action bg-amber-500 text-white">✦ AI</button>
       </div>
       <div id="surahAiResult"></div>
     </div>
@@ -2140,6 +2308,7 @@ function openSurah(id, allSurahs) {
     $("#learnSurahBtn").className = "big-action border border-[var(--line)] bg-[var(--surface)]";
   });
 
+  $("#drillSurahBtn").addEventListener("click", () => openSurahDrill(surah, allSurahs));
   $("#surahAiBtn").addEventListener("click", () => generateSurahFact(surah));
   detail.scrollIntoView({ behavior: "smooth" });
 }
@@ -2161,6 +2330,82 @@ async function generateSurahFact(surah) {
   }
   btn.textContent = `✦ ${tx("Ciekawostka AI", "AI Insight")}`;
   btn.disabled = false;
+}
+
+function openSurahDrill(surah, allSurahs) {
+  const detail = $("#surahDetail");
+  let idx = 0;
+
+  function renderStep() {
+    const ayah = surah.ayat[idx];
+    const total = surah.ayat.length;
+    const isLast = idx === total - 1;
+    const pct = Math.round((idx / total) * 100);
+    detail.innerHTML = `
+      <div class="panel p-5">
+        <div class="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <p class="text-sm font-bold text-[var(--muted)]">${state.lang === "pl" ? surah.namePl : surah.nameEn} · ${tx("Ćwicz", "Practice")}</p>
+            <p class="text-xs text-[var(--muted)]">${tx("Ajet", "Ayah")} ${idx + 1} / ${total}</p>
+          </div>
+          <button id="drillClose" class="big-action border border-[var(--line)] bg-[var(--surface)] text-sm">✕ ${tx("Zamknij", "Close")}</button>
+        </div>
+        <div class="mb-5 h-2 overflow-hidden rounded-full bg-emerald-100">
+          <div class="h-full rounded-full bg-emerald-500 transition-all" style="width:${pct}%"></div>
+        </div>
+        <div class="drill-card soft-panel p-6 text-center">
+          <p class="text-xs font-bold text-emerald-600 mb-3">${tx("Ajet", "Ayah")} ${ayah.n}</p>
+          <p class="arabic text-4xl leading-loose mb-3">${ayah.ar}</p>
+          <button class="speaker-btn mb-3" data-say="${escapeHtml(ayah.ar)}">🔊</button>
+          <div id="drillReveal" class="hidden mt-2">
+            <div class="soft-panel p-4 text-left rounded-lg">
+              <p class="font-bold text-emerald-700 mb-1">${escapeHtml(ayah.tr)}</p>
+              <p class="text-sm text-[var(--muted)]">${escapeHtml(state.lang === "pl" ? ayah.pl : ayah.en)}</p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 grid gap-2">
+          <button id="drillRevealBtn" class="big-action bg-amber-500 text-white">${tx("Pokaż tłumaczenie", "Show translation")}</button>
+          <button id="drillNextBtn" class="big-action bg-emerald-500 text-white hidden">${isLast ? tx("Ukończ ✓", "Finish ✓") : tx("Następny ajet →", "Next ayah →")}</button>
+        </div>
+      </div>
+    `;
+
+    detail.querySelector("[data-say]")?.addEventListener("click", (e) => { e.stopPropagation(); speakArabic(e.currentTarget.dataset.say); });
+    detail.querySelector("#drillClose").addEventListener("click", () => openSurah(surah.id, allSurahs));
+    detail.querySelector("#drillRevealBtn").addEventListener("click", () => {
+      detail.querySelector("#drillReveal").classList.remove("hidden");
+      detail.querySelector("#drillRevealBtn").classList.add("hidden");
+      detail.querySelector("#drillNextBtn").classList.remove("hidden");
+    });
+    detail.querySelector("#drillNextBtn").addEventListener("click", () => {
+      if (!state.surahProgress) state.surahProgress = {};
+      const prog = state.surahProgress[surah.id] || [];
+      if (!prog.includes(ayah.n)) prog.push(ayah.n);
+      state.surahProgress[surah.id] = prog;
+      addPoints(2, false);
+      saveState();
+      if (isLast) {
+        detail.innerHTML = `
+          <div class="panel p-8 text-center">
+            <p class="text-5xl mb-4">🌙</p>
+            <h2 class="text-2xl font-black mb-2">${tx("Brawo!", "Well done!")}</h2>
+            <p class="text-[var(--muted)] mb-1">${tx("Sura ukończona:", "Surah completed:")} <strong>${state.lang === "pl" ? surah.namePl : surah.nameEn}</strong></p>
+            <p class="arabic text-3xl mb-5">${surah.name}</p>
+            <button id="drillDoneBtn" class="big-action bg-emerald-500 text-white w-full">${tx("Wróć do sury", "Back to surah")}</button>
+          </div>
+        `;
+        confetti();
+        detail.querySelector("#drillDoneBtn").addEventListener("click", () => openSurah(surah.id, allSurahs));
+      } else {
+        idx++;
+        renderStep();
+      }
+    });
+    detail.scrollIntoView({ behavior: "smooth" });
+  }
+
+  renderStep();
 }
 
 async function addCustomSurahByNumber(allSurahs) {
@@ -2297,7 +2542,7 @@ function renderMemory() {
       first = null;
       if (matched === letters.length) {
         state.points += 25;
-        state.memoryBest = Math.max(state.memoryBest, state.points);
+        state.memoryBest = (state.memoryBest || 0) + 1;
         saveState();
         confetti();
       }
@@ -2525,28 +2770,20 @@ function handleAiAction(action, messageIndex) {
   if (action === "flashcards") {
     addAiFlashcards(message.content);
     setRoute("flashcards");
-  }
-  if (action === "book") {
-    saveInteractiveBook(tx(`Ksiazeczka AI ${new Date().toLocaleDateString(localeTag())}`, `AI Book ${new Date().toLocaleDateString(localeTag())}`), message.content);
+  } else if (action === "book") {
+    saveInteractiveBook(tx(`Książeczka AI ${new Date().toLocaleDateString(localeTag())}`, `AI Book ${new Date().toLocaleDateString(localeTag())}`), message.content);
     setRoute("books");
-  }
-  if (action === "adventure") {
+  } else if (action === "adventure") {
     state.adventureStories.unshift({ id: crypto.randomUUID(), title: tx(`Historia AI ${new Date().toLocaleDateString(localeTag())}`, `AI Story ${new Date().toLocaleDateString(localeTag())}`), text: message.content });
     saveState();
     setRoute("adventure");
-  }
-  if (action === "culture") {
+  } else if (action === "culture") {
     state.cultureFacts.unshift({ id: crypto.randomUUID(), date: today(), title: tx("Ciekawostka AI", "AI fact"), text: cleanAiText(message.content) });
     saveState();
     setRoute("culture");
-  }
-  if (action === "lesson") {
+  } else if (action === "lesson") {
     addAiFlashcards(message.content);
-    setRoute("flashcards");
-  }
-  if (action === "book") {
-    saveInteractiveBook(tx(`Książeczka AI ${new Date().toLocaleDateString(localeTag())}`, `AI Book ${new Date().toLocaleDateString(localeTag())}`), message.content);
-    setRoute("books");
+    setRoute("lessons");
   }
   $("#aiDialog").close();
   confetti();
