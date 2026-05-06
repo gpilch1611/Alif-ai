@@ -387,6 +387,7 @@ function init() {
   mountAiAssistant();
   mountProfileGate();
   scheduleRomanticToast();
+  initSearch();
   window.addEventListener("hashchange", () => {
     route = location.hash.replace("#", "") || "home";
     render();
@@ -418,6 +419,8 @@ function bindGlobalEvents() {
   });
   $("#installBtn").addEventListener("click", promptInstall);
   $("#installBtn").textContent = t("install");
+  $("#sheetOverlay")?.addEventListener("click", closeBottomSheet);
+  $("#exitFocus")?.addEventListener("click", () => toggleFocusMode());
 }
 
 function isStandalone() {
@@ -704,12 +707,12 @@ function journeyWidget() {
       <div class="relative z-10 grid gap-5 lg:grid-cols-[1fr_1.3fr_1fr] lg:items-center">
         <div>
           <p class="text-sm font-black text-emerald-700">${tx("Dwa miasta, jedno serce", "Two cities, one heart")}</p>
-          <h2 class="mt-1 text-2xl font-black">Myslenice - Surabaya</h2>
+          <h2 class="mt-1 text-2xl font-black">Borzęta - Surabaya</h2>
           <button id="switchProfileBtn" class="mt-3 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm font-black">${tx("Profil", "Profile")}: ${activeProfileLabel()}</button>
         </div>
         <div>
           <div class="mb-3 flex justify-between gap-3 text-sm font-black">
-            <span>Myslenice ${myslenice}</span>
+            <span>Borzęta ${myslenice}</span>
             <span>Surabaya ${surabaya}</span>
           </div>
           <div class="journey-line"></div>
@@ -2597,41 +2600,6 @@ function renderGarden() {
   }
   html += "</div>";
   return html;
-}
-
-function init() {
-  registerPwa();
-  render();
-  initSearch();
-  $("#homeLogo").addEventListener("click", () => setRoute("home"));
-  $("#quickLangBtn").addEventListener("click", () => {
-    state.lang = state.lang === "pl" ? "en" : "pl";
-    saveState();
-    render();
-  });
-  $("#themeBtn").addEventListener("click", () => {
-    const idx = THEMES.indexOf(state.theme);
-    state.theme = THEMES[(idx + 1) % THEMES.length];
-    saveState();
-    render();
-  });
-  $("#installBtn").addEventListener("click", () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(() => (deferredPrompt = null));
-    }
-  });
-  $("#closeModal").addEventListener("click", () => modal.close());
-  $("#closeAi").addEventListener("click", () => $("#aiDialog").close());
-  $("#aiForm").addEventListener("submit", sendAiMessage);
-  
-  $("#sheetOverlay")?.addEventListener("click", closeBottomSheet);
-  $("#exitFocus")?.addEventListener("click", () => toggleFocusMode());
-
-  window.addEventListener("popstate", () => {
-    route = location.hash.slice(1) || "home";
-    render();
-  });
 }
 
 init();
