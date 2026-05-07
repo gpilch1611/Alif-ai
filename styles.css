@@ -15,6 +15,11 @@
   --shadow-soft: 0 14px 34px rgba(15, 23, 42, 0.08);
   --shadow-pop: 0 20px 42px rgba(15, 23, 42, 0.13);
   --romantic: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(234, 179, 8, 0.1));
+  /* Theme-agnostic semantic variables (used by new components) */
+  --panel: var(--surface);
+  --border: var(--line);
+  --accent: #10b981;
+  --accent2: #059669;
 }
 
 [data-theme="light"] {
@@ -26,6 +31,10 @@
   --line: rgba(148, 163, 184, 0.34);
   --romantic: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(234, 179, 8, 0.1));
   --emoji-opacity: 0.09;
+  --panel: var(--surface);
+  --border: var(--line);
+  --accent: #10b981;
+  --accent2: #059669;
 }
 
 [data-theme="dark"] {
@@ -38,6 +47,10 @@
   --shadow-soft: 0 18px 38px rgba(0, 0, 0, 0.38);
   --shadow-pop: 0 26px 58px rgba(0, 0, 0, 0.52);
   --emoji-opacity: 0.11;
+  --panel: var(--surface);
+  --border: var(--line);
+  --accent: #10b981;
+  --accent2: #059669;
 }
 
 [data-theme="romantic"] {
@@ -53,6 +66,10 @@
   --shadow-pop: 0 24px 62px rgba(96, 39, 27, 0.2);
   --romantic: linear-gradient(135deg, rgba(230, 87, 135, 0.24), rgba(247, 143, 179, 0.28), rgba(255, 216, 202, 0.38));
   --emoji-opacity: 0.34;
+  --panel: var(--surface);
+  --border: var(--line);
+  --accent: #e65787;
+  --accent2: #f28eb0;
 }
 
 * {
@@ -297,8 +314,8 @@ select {
 
 .letter-tile:hover {
   transform: translateY(-2px);
-  border-color: rgba(16, 185, 129, 0.5);
-  box-shadow: 0 16px 34px rgba(16, 185, 129, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.12);
 }
 
 .romantic-hero {
@@ -460,10 +477,12 @@ select {
   padding: 22px;
 }
 
-.writing-canvas {
+.writing-canvas,
+#writingCanvas {
   width: 100%;
   aspect-ratio: 1 / 1;
   max-height: 62dvh;
+  min-height: 280px;
   border-radius: 14px;
   border: 2px solid var(--line);
   background: var(--surface);
@@ -565,6 +584,7 @@ select {
 
 .ai-dialog {
   width: min(94vw, 760px);
+  max-height: 100dvh;
   border: 0;
   padding: 0;
   color: var(--text);
@@ -618,7 +638,7 @@ h3 {
 }
 
 .ai-messages {
-  height: min(62vh, 560px);
+  height: min(62dvh, 560px);
   overflow: auto;
   padding: 16px;
   display: grid;
@@ -984,5 +1004,516 @@ h3 {
     width: 62px;
     height: 62px;
   }
+}
+
+/* ============================================================
+   Mobile nav labels — very small screens (≤ 360px)
+   ============================================================ */
+@media (max-width: 360px) {
+  .nav-label { font-size: 9px; }
+  .nav-btn { min-width: 52px; padding: 4px 2px; }
+}
+
+/* ============================================================
+   PC Sidebar — replaces bottom nav on large screens (≥ 1024px)
+   ============================================================ */
+@media (min-width: 1024px) {
+  #bottomNav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 220px;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    border-top: none;
+    padding: 16px 0;
+    z-index: 100;
+  }
+
+  #bottomNav .nav-btn {
+    flex-direction: row;
+    gap: 12px;
+    justify-content: flex-start;
+    padding: 12px 20px;
+    height: auto;
+    min-height: 48px;
+    border-radius: 12px;
+    margin: 2px 8px;
+  }
+
+  #bottomNav .nav-label {
+    font-size: 14px;
+    white-space: normal;
+    opacity: 1;
+    display: block;
+  }
+
+  /* secondary items always visible in sidebar */
+  #bottomNav .nav-secondary {
+    display: flex;
+  }
+
+  /* "More" button hidden in sidebar */
+  #bottomNav .nav-more {
+    display: none;
+  }
+
+  /* Main content area shifted right to avoid sidebar overlap */
+  #view {
+    margin-left: 220px;
+  }
+
+  /* AI FAB clear of sidebar */
+  #aiFab {
+    bottom: 24px;
+    right: 24px;
+  }
+
+  /* App header padding so title doesn't hide behind sidebar */
+  #appHeader {
+    padding-left: 236px;
+  }
+}
+
+/* ============================================================
+   Focus-visible accessibility styles
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+}
+
+/* ============================================================
+   Dark mode contrast fix for hardcoded Tailwind emerald classes
+   ============================================================ */
+[data-theme="dark"] .bg-emerald-600,
+[data-theme="dark"] .bg-emerald-500 {
+  color: #ffffff;
+}
+
+/* ============================================================
+   Tasbeeh / Dhikr counter
+   ============================================================ */
+.dhikr-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 32px 16px;
+}
+
+.dhikr-btn {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  background: var(--accent);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.dhikr-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dhikr-count {
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.dhikr-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 600px;
+  width: 100%;
+}
+
+@media (max-width: 639px) {
+  .dhikr-grid { grid-template-columns: 1fr; }
+  .dhikr-btn { width: 120px; height: 120px; }
+}
+
+/* ============================================================
+   99 Imion Allaha (Asma ul-Husna)
+   ============================================================ */
+.asma-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.asma-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.asma-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.asma-number {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.asma-arabic {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 6px;
+  direction: rtl;
+}
+
+.asma-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.asma-meaning {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ============================================================
+   Czasy modlitw (Prayer times) & Qibla compass
+   ============================================================ */
+.prayer-widget {
+  background: var(--panel);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+}
+
+.prayer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.prayer-row:last-child {
+  border-bottom: none;
+}
+
+.prayer-name {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.prayer-time {
+  font-family: monospace;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.prayer-row.next-prayer {
+  background: var(--accent);
+  margin: 0 -20px;
+  padding: 12px 20px;
+  border-radius: 0;
+}
+
+.prayer-row.next-prayer .prayer-name,
+.prayer-row.next-prayer .prayer-time {
+  color: white;
+}
+
+.qibla-compass {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qibla-needle {
+  width: 4px;
+  height: 80px;
+  background: linear-gradient(to bottom, var(--accent) 50%, #ccc 50%);
+  border-radius: 2px;
+  transform-origin: center bottom;
+  transition: transform 0.5s ease;
+  position: absolute;
+  bottom: 50%;
+}
+
+/* ============================================================
+   Seerah timeline
+   ============================================================ */
+.seerah-timeline {
+  position: relative;
+  padding-left: 32px;
+}
+
+.seerah-timeline::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  opacity: 0.3;
+}
+
+.seerah-event {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.seerah-event::before {
+  content: '';
+  position: absolute;
+  left: -26px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.seerah-year {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.seerah-title {
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.seerah-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ============================================================
+   Tajweed rules
+   ============================================================ */
+.tajweed-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.tajweed-rule-name {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.tajweed-arabic-example {
+  font-size: 1.5rem;
+  direction: rtl;
+  text-align: right;
+  background: var(--bg);
+  padding: 12px;
+  border-radius: 8px;
+  margin: 8px 0;
+  line-height: 2;
+}
+
+.tajweed-highlight {
+  background: #fbbf24;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+/* ============================================================
+   Hifz tracker
+   ============================================================ */
+.hifz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.hifz-surah {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 12px;
+}
+
+.hifz-surah.memorized {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.hifz-surah.in-progress {
+  border-color: #fbbf24;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+[data-theme="dark"] .hifz-surah.in-progress {
+  background: #422006;
+  color: #fef3c7;
+}
+
+.hifz-surah.not-started {
+  opacity: 0.6;
+}
+
+/* ============================================================
+   Filary islamu (Pillars of Islam)
+   ============================================================ */
+.pillar-card {
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.pillar-card:hover {
+  transform: translateY(-4px);
+}
+
+.pillar-number {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.pillar-arabic {
+  font-size: 1.6rem;
+  direction: rtl;
+  color: var(--text);
+  margin: 8px 0;
+}
+
+.pillar-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pillar-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+/* ============================================================
+   Islamski kalendarz widget (Hijri calendar)
+   ============================================================ */
+.hijri-widget {
+  background: linear-gradient(135deg, var(--accent), var(--accent2, #059669));
+  color: white;
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.hijri-date {
+  font-size: 1.4rem;
+  font-weight: 900;
+}
+
+.hijri-month {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.hijri-gregorian {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   Korzenie arabskie (Arabic roots)
+   ============================================================ */
+.root-family {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.root-header {
+  font-size: 2rem;
+  direction: rtl;
+  text-align: right;
+  color: var(--accent);
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.root-derivatives {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.root-word {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.root-word .ar {
+  font-size: 1.1rem;
+  direction: rtl;
+  color: var(--text);
+}
+
+.root-word .tr {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.root-word .meaning {
+  color: var(--muted);
 }
 
