@@ -44,6 +44,7 @@ const secondaryNavItems = [
   ["adventure", "☆", "navAdventure"],
   ["books", "▤", "navBooks"],
   ["games", "◎", "navGames"],
+  ["badges", "🏆", "navBadges"],
   ["settings", "⚙", "navSettings"]
 ];
 
@@ -60,7 +61,7 @@ const ROMANTIC_LINES = [
 
 const I18N = {
   pl: {
-    navHome: "Start", navKoran: "Koran", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navSettings: "Ustawienia",
+    navHome: "Start", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
     welcome: "Witaj w ألف AI", homeTitle: "Uczymy się arabskiego krok po kroku", homeLead: "Duże litery, spokojne powtórki, wymowa, pisanie i osobisty AI Assistant dla Abanga.",
@@ -70,11 +71,11 @@ const I18N = {
     more: "Więcej", play: "Odtwórz", check: "Sprawdź", clear: "Wyczyść", next: "Następna", good: "dobrze", weak: "słabo", veryWeak: "bardzo słabo", attempts: "Historia prób",
     frontHint: "Dotknij karty, żeby ją odwrócić", hard: "Trudne", ok: "OK", easy: "Łatwe", noCards: "Nie ma kart w tym trybie",
     correct: "Dobrze", wrong: "Źle", history: "Historia", stop: "Stop", record: "Rekord", score: "Wynik",
-    koranTitle: "Mój Koran", koranAdd: "Dodaj Surę", koranNumber: "Numer (1-114)", koranEmpty: "Nie dodano jeszcze żadnej Sury.", koranOrder: "Sury są układane automatycznie.",
+    koranTitle: "Mój Qur'an", koranAdd: "Dodaj Surę", koranNumber: "Numer (1-114)", koranEmpty: "Nie dodano jeszcze żadnej Sury.", koranOrder: "Sortuj i filtruj sury według potrzeb.",
     lessonCategories: "Kategorie Lekcji", lessonSelect: "Wybierz kategorię"
   },
   en: {
-    navHome: "Home", navKoran: "Quran", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navSettings: "Settings",
+    navHome: "Home", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
     welcome: "Welcome to ألف AI", homeTitle: "We learn Arabic step by step", homeLead: "Big letters, calm reviews, pronunciation, writing and a personal AI Assistant for Abang.",
@@ -84,7 +85,7 @@ const I18N = {
     more: "More", play: "Play", check: "Check", clear: "Clear", next: "Next", good: "good", weak: "weak", veryWeak: "very weak", attempts: "Attempt history",
     frontHint: "Tap the card to flip it", hard: "Hard", ok: "OK", easy: "Easy", noCards: "No cards in this mode",
     correct: "Correct", wrong: "Wrong", history: "History", stop: "Stop", record: "Best", score: "Score",
-    koranTitle: "My Quran", koranAdd: "Add Surah", koranNumber: "Number (1-114)", koranEmpty: "No Surahs added yet.", koranOrder: "Surahs are sorted automatically.",
+    koranTitle: "My Qur'an", koranAdd: "Add Surah", koranNumber: "Number (1-114)", koranEmpty: "No Surahs added yet.", koranOrder: "Sort and filter surahs as you need.",
     lessonCategories: "Lesson Categories", lessonSelect: "Choose a category"
   }
 };
@@ -297,6 +298,7 @@ const defaultState = {
   lastSpacedRep: {},
   focusMode: false,
   quranSurahFavorites: [],
+  quranTab: "surahs",
   ayatCache: null,
   learnedLettersLog: [],
   ttsWarningShown: false
@@ -322,7 +324,12 @@ function localeTag() {
 
 function letterName(letter) {
   let name = state.lang === "pl" ? letter.polishName : (LETTER_NAMES_EN[letter.id] || letter.transliteration || letter.id);
-  return name.replace(" głębokie", "").replace(" (emphatic)", "");
+  return name
+    .replace(" głębokie", "")
+    .replace(" miękkie", "")
+    .replace(" lekkie", "")
+    .replace(" gardłowe", "")
+    .replace(" (emphatic)", "");
 }
 
 function letterPronunciationText(letter) {
@@ -696,7 +703,7 @@ function render() {
   if (aiFabLabel) aiFabLabel.textContent = t("aiAssistant");
   const aiInput = $("#aiInput");
   if (aiInput) aiInput.placeholder = t("aiPlaceholder");
-  const views = { home, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, settings };
+  const views = { home, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings };
   (views[route] || home)();
 }
 
@@ -731,26 +738,18 @@ function home() {
            <h2 class="text-xl font-black mb-3">✨ ${tx("Ayat Dnia", "Ayat of the Day")}</h2>
            <div class="skeleton h-20 w-full mb-2"></div>
         </div>
-        <div class="panel p-5">
-          <div class="flex items-center justify-between gap-3">
-            <h2 class="text-xl font-black">${tx("Odznaki", "Badges")}</h2>
-            <span class="text-sm font-bold text-amber-500">${state.badges.length}/${BADGES_CATALOG.length}</span>
+        <button class="panel p-4 text-left w-full flex items-center justify-between gap-3 active:scale-95 transition-transform" data-route="badges">
+          <div>
+            <h2 class="text-base font-black">${tx("Odznaki", "Badges")}</h2>
+            <p class="text-xs text-[var(--muted)] mt-0.5">${tx("Twoje osiągnięcia i cele", "Your achievements and goals")}</p>
           </div>
-          <div class="mt-3 grid gap-2">
-            ${BADGES_CATALOG.map(b => {
-              const unlocked = state.badges.includes(b.id);
-              const label = state.lang === "pl" ? b.pl : b.en;
-              const criterion = state.lang === "pl" ? b.criterionPl : b.criterionEn;
-              return `<div class="flex items-center gap-2 ${unlocked ? "" : "opacity-40"}">
-                <span class="text-2xl">${unlocked ? b.icon : "🔒"}</span>
-                <div class="min-w-0">
-                  <p class="text-sm font-black leading-tight">${unlocked ? label : label}</p>
-                  <p class="text-xs text-[var(--muted)] leading-tight">${criterion}</p>
-                </div>
-              </div>`;
-            }).join("")}
+          <div class="flex items-center gap-2 shrink-0">
+            <div class="flex gap-0.5">
+              ${BADGES_CATALOG.slice(0, 5).map(b => `<span class="text-lg ${state.badges.includes(b.id) ? "" : "grayscale opacity-25"}">${b.icon}</span>`).join("")}
+            </div>
+            <span class="text-sm font-black text-amber-500">${state.badges.length}/${BADGES_CATALOG.length}</span>
           </div>
-        </div>
+        </button>
       </aside>
     </div>
     ${journeyWidget()}
@@ -864,6 +863,21 @@ const QURAN_RECITERS = [
   { id: "ar.minshawi", name: "Mohamed Siddiq al-Minshawi" }
 ];
 
+const DUA_DATA = [
+  { id: "before_eating", ar: "بِسْمِ اللَّهِ", tr: "Bismillah", pl: "W imię Boga (przed jedzeniem)", en: "In the name of God (before eating)" },
+  { id: "after_eating", ar: "الْحَمْدُ لِلَّهِ", tr: "Alhamdulillah", pl: "Chwała Bogu (po jedzeniu)", en: "Praise be to God (after eating)" },
+  { id: "entering_home", ar: "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلِجِ وَخَيْرَ الْمَخْرَجِ", tr: "Allahumma inni as'aluka khayra l-mawlaji wa-khayra l-makhraji", pl: "Dua wchodząc do domu", en: "Dua when entering home" },
+  { id: "leaving_home", ar: "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ", tr: "Bismillahi tawakkaltu 'ala Allah", pl: "Dua wychodząc z domu", en: "Dua when leaving home" },
+  { id: "morning", ar: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ", tr: "Asbahna wa-asbahal-mulku lillah", pl: "Dua poranna", en: "Morning dua" },
+  { id: "evening", ar: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ", tr: "Amsayna wa-amsal-mulku lillah", pl: "Dua wieczorna", en: "Evening dua" },
+  { id: "sleeping", ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", tr: "Bismika Allahumma amutu wa-ahya", pl: "Dua przed snem", en: "Dua before sleeping" },
+  { id: "waking", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا", tr: "Alhamdulillahi l-ladhi ahyana ba'da ma amatana", pl: "Dua po przebudzeniu", en: "Dua upon waking" },
+  { id: "travel", ar: "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا", tr: "Subhanal-ladhi sakhkhara lana hadha", pl: "Dua w podróży", en: "Travel dua" },
+  { id: "anxiety", ar: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ", tr: "Allahumma inni a'udhu bika minal-hammi wal-hazan", pl: "Dua przy smutku i trosce", en: "Dua for anxiety and grief" },
+  { id: "forgiveness", ar: "رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ", tr: "Rabbi ghfir li wa-tub 'alayya", pl: "Prośba o przebaczenie", en: "Seeking forgiveness" },
+  { id: "parents", ar: "رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا", tr: "Rabbi rhamhuma kama rabbayani saghira", pl: "Dua za rodziców", en: "Dua for parents" },
+];
+
 async function thematicQuranSearch(query) {
   const btn = $("#thematicSearchBtn");
   btn.textContent = tx("Szukam...", "Searching...");
@@ -880,16 +894,24 @@ async function thematicQuranSearch(query) {
 
 function surahCard(surah) {
   const isFav = (state.quranSurahFavorites || []).includes(surah.number);
+  const revType = surah.revelationType === "Meccan" ? tx("Mekkańska 🕌", "Meccan 🕌") : surah.revelationType === "Medinan" ? tx("Medyńska 🕋", "Medinan 🕋") : "";
+  const ayahCount = surah.numberOfAyahs ? `${surah.numberOfAyahs} ${tx("wersetów", "ayahs")}` : "";
   return `
-    <article class="panel p-5 relative">
-      <button class="absolute right-2 top-2 text-xl" data-fav-surah="${surah.number}" title="${tx("Ulubiona", "Favorite")}">${isFav ? "❤️" : "🤍"}</button>
-      <div class="flex items-center justify-between pr-8">
-        <span class="grid h-10 w-10 place-items-center rounded-full bg-emerald-100 text-sm font-black text-emerald-700">${surah.number}</span>
-        <button class="arabic text-2xl" data-say-ar="${escapeHtml(surah.arName)}" title="${tx("Wymowa", "Pronunciation")}">${escapeHtml(surah.arName)}</button>
+    <article class="panel p-4 relative flex flex-col gap-2">
+      <div class="flex items-center gap-3">
+        <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-100 text-sm font-black text-emerald-700">${surah.number}</span>
+        <div class="flex-1 min-w-0">
+          <button class="arabic text-2xl leading-tight block" data-say-ar="${escapeHtml(surah.arName)}">${escapeHtml(surah.arName)}</button>
+          <p class="text-xs font-black">${escapeHtml(surah.enName)}</p>
+        </div>
+        <button class="text-xl shrink-0" data-fav-surah="${surah.number}">${isFav ? "❤️" : "🤍"}</button>
       </div>
-      <h2 class="mt-3 text-xl font-black">${escapeHtml(surah.enName)}</h2>
       <p class="text-sm text-[var(--muted)]">${escapeHtml(surah.meaning)}</p>
-      <div class="mt-4 flex gap-2">
+      <div class="flex gap-2 text-xs text-[var(--muted)]">
+        ${ayahCount ? `<span class="soft-panel px-2 py-0.5">${ayahCount}</span>` : ""}
+        ${revType ? `<span class="soft-panel px-2 py-0.5">${revType}</span>` : ""}
+      </div>
+      <div class="flex gap-2 mt-1">
         <button class="big-action flex-1 border border-[var(--line)]" data-read-surah="${surah.number}">${tx("Czytaj", "Read")}</button>
         <button class="speaker-btn" data-say-ar="${escapeHtml(surah.arName)}" title="${tx("Wymowa", "Pronunciation")}">🔊</button>
       </div>
@@ -901,12 +923,25 @@ function renderSurahList() {
   if (!state.quranSurahFavorites) state.quranSurahFavorites = [];
   const sortVal = $("#surahSort")?.value || "number";
   const favNums = state.quranSurahFavorites;
-  const favSurahs = state.quranSurahs.filter(s => favNums.includes(s.number)).sort((a, b) => a.number - b.number);
-  let rest = state.quranSurahs.filter(s => !favNums.includes(s.number));
-  if (sortVal === "alpha") rest = [...rest].sort((a, b) => a.enName.localeCompare(b.enName));
-  else rest = [...rest].sort((a, b) => a.number - b.number);
 
-  const allSorted = sortVal === "favfirst" ? [...favSurahs, ...rest] : rest;
+  let surahs = [...state.quranSurahs];
+
+  // Filter
+  if (sortVal === "short") surahs = surahs.filter(s => s.numberOfAyahs && s.numberOfAyahs <= 20);
+  else if (sortVal === "medium") surahs = surahs.filter(s => s.numberOfAyahs && s.numberOfAyahs > 20 && s.numberOfAyahs <= 100);
+  else if (sortVal === "long") surahs = surahs.filter(s => s.numberOfAyahs && s.numberOfAyahs > 100);
+  else if (sortVal === "meccan") surahs = surahs.filter(s => s.revelationType === "Meccan");
+  else if (sortVal === "medinan") surahs = surahs.filter(s => s.revelationType === "Medinan");
+
+  // Sort
+  if (sortVal === "alpha") surahs = surahs.sort((a, b) => a.enName.localeCompare(b.enName));
+  else if (sortVal === "favfirst") surahs = surahs.sort((a, b) => {
+    const aF = favNums.includes(a.number) ? 0 : 1;
+    const bF = favNums.includes(b.number) ? 0 : 1;
+    return aF - bF || a.number - b.number;
+  });
+  else surahs = surahs.sort((a, b) => a.number - b.number);
+
   const listEl = $("#surahList");
   if (!listEl) return;
 
@@ -915,14 +950,12 @@ function renderSurahList() {
     return;
   }
 
-  let html = "";
-  if (favSurahs.length && sortVal !== "favfirst") {
-    html += `<div class="col-span-full"><p class="mb-2 font-black text-emerald-600">${tx("Ulubione", "Favorites")}</p><div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">${favSurahs.map(surahCard).join("")}</div><hr class="my-4 border-[var(--line)]" /></div>`;
-    html += rest.map(surahCard).join("");
-  } else {
-    html = allSorted.map(surahCard).join("");
+  if (!surahs.length) {
+    listEl.innerHTML = `<div class="soft-panel col-span-full p-6 text-center text-[var(--muted)]">${tx("Brak sur w tej kategorii. Dodaj więcej sur.", "No surahs in this category. Add more surahs.")}</div>`;
+    return;
   }
-  listEl.innerHTML = html;
+
+  listEl.innerHTML = surahs.map(surahCard).join("");
 
   listEl.querySelectorAll("[data-say-ar]").forEach(btn => btn.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -931,11 +964,9 @@ function renderSurahList() {
   listEl.querySelectorAll("[data-fav-surah]").forEach(btn => btn.addEventListener("click", () => {
     const num = Number(btn.dataset.favSurah);
     if (!state.quranSurahFavorites) state.quranSurahFavorites = [];
-    if (state.quranSurahFavorites.includes(num)) {
-      state.quranSurahFavorites = state.quranSurahFavorites.filter(n => n !== num);
-    } else {
-      state.quranSurahFavorites.push(num);
-    }
+    const idx = state.quranSurahFavorites.indexOf(num);
+    if (idx === -1) state.quranSurahFavorites.push(num);
+    else state.quranSurahFavorites.splice(idx, 1);
     saveState();
     renderSurahList();
   }));
@@ -943,41 +974,107 @@ function renderSurahList() {
 }
 
 function koran() {
+  const activeTab = state.quranTab || "surahs";
   view.innerHTML = `
-    <div class="mb-4">
-      <h1 class="text-3xl font-black">${t("koranTitle")}</h1>
-      <p class="text-[var(--muted)]">${t("koranOrder")}</p>
-    </div>
-    <div class="panel mb-4 p-5">
-      <div class="grid gap-3">
-        <div class="flex gap-2">
-          <input id="surahNumber" type="number" min="1" max="114" class="h-12 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4" placeholder="${t("koranNumber")}" />
-          <button id="addSurahBtn" class="big-action bg-emerald-500 text-white min-w-32">${t("koranAdd")}</button>
-        </div>
-        <div class="flex gap-2">
-          <input id="thematicInput" class="h-12 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4" placeholder="${tx("Szukaj tematu (np. cierpliwość)...", "Search theme (e.g. patience)...")}" />
-          <button id="thematicSearchBtn" class="big-action bg-amber-500 text-white min-w-32">${tx("Szukaj", "Search")}</button>
-        </div>
-        <div class="flex gap-2">
-          <select id="reciterSelect" class="h-12 flex-1 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4">
-            ${QURAN_RECITERS.map(r => `<option value="${r.id}" ${state.quranReciter === r.id ? "selected" : ""}>${r.name}</option>`).join("")}
-          </select>
-          <select id="surahSort" class="h-12 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3">
-            <option value="number">${tx("Nr 1→114", "No. 1→114")}</option>
-            <option value="favfirst">${tx("Ulubione pierwsze", "Favorites first")}</option>
-            <option value="alpha">${tx("Alfabetycznie", "Alphabetically")}</option>
-          </select>
-        </div>
+    <div class="page-header sticky top-0 z-10 bg-[var(--bg)] pb-0">
+      <h1 class="text-2xl font-black px-4 pt-4">${t("koranTitle")}</h1>
+      <div class="flex border-b border-[var(--line)] mt-3 px-4 gap-0 overflow-x-auto">
+        <button class="tab-btn ${activeTab === "surahs" ? "tab-active" : ""} px-4 py-2 text-sm font-black border-b-2 ${activeTab === "surahs" ? "border-emerald-500 text-emerald-600" : "border-transparent text-[var(--muted)]"} shrink-0" data-tab="surahs">${tx("Sury", "Surahs")}</button>
+        <button class="tab-btn ${activeTab === "dua" ? "tab-active" : ""} px-4 py-2 text-sm font-black border-b-2 ${activeTab === "dua" ? "border-emerald-500 text-emerald-600" : "border-transparent text-[var(--muted)]"} shrink-0" data-tab="dua">${tx("Dua", "Dua")}</button>
+        <button class="tab-btn ${activeTab === "favayahs" ? "tab-active" : ""} px-4 py-2 text-sm font-black border-b-2 ${activeTab === "favayahs" ? "border-emerald-500 text-emerald-600" : "border-transparent text-[var(--muted)]"} shrink-0" data-tab="favayahs">${tx("Ulubione wersety", "Fav. ayahs")}</button>
       </div>
     </div>
-    <div id="surahList" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
-    <div id="surahContent" class="mt-6"></div>
+
+    <div class="p-4 pb-28">
+      <!-- SURAHS TAB -->
+      <div id="tabSurahs" class="${activeTab === "surahs" ? "" : "hidden"}">
+        <div class="panel mb-4 p-4">
+          <div class="grid gap-2">
+            <div class="flex gap-2">
+              <input id="surahNumber" type="number" min="1" max="114" class="h-10 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm" placeholder="${t("koranNumber")}" />
+              <button id="addSurahBtn" class="big-action bg-emerald-500 text-white shrink-0">${t("koranAdd")}</button>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <select id="reciterSelect" class="h-10 flex-1 min-w-0 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm">
+                ${QURAN_RECITERS.map(r => `<option value="${r.id}" ${state.quranReciter === r.id ? "selected" : ""}>${r.name}</option>`).join("")}
+              </select>
+              <select id="surahSort" class="h-10 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm">
+                <option value="number">${tx("Nr 1→114", "No. 1→114")}</option>
+                <option value="short">${tx("Krótkie (≤20)", "Short (≤20)")}</option>
+                <option value="medium">${tx("Średnie (21-100)", "Medium (21-100)")}</option>
+                <option value="long">${tx("Długie (>100)", "Long (>100)")}</option>
+                <option value="meccan">${tx("Mekkańskie 🕌", "Meccan 🕌")}</option>
+                <option value="medinan">${tx("Medyńskie 🕋", "Medinan 🕋")}</option>
+                <option value="favfirst">${tx("Ulubione pierwsze", "Favorites first")}</option>
+                <option value="alpha">${tx("Alfabetycznie", "A-Z")}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div id="surahList" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+        <div id="surahContent" class="mt-6"></div>
+      </div>
+
+      <!-- DUA TAB -->
+      <div id="tabDua" class="${activeTab === "dua" ? "" : "hidden"}">
+        <p class="text-sm text-[var(--muted)] mb-4">${tx("Codzienne dua — krótkie modlitwy do zapamiętania.", "Daily duas — short supplications to memorize.")}</p>
+        <div class="grid gap-3">
+          ${DUA_DATA.map(dua => `
+            <div class="panel p-4">
+              <p class="text-sm font-black text-emerald-600 mb-1">${state.lang === "pl" ? dua.pl : dua.en}</p>
+              <p class="arabic text-right text-xl leading-loose mb-1">${escapeHtml(dua.ar)}</p>
+              <p class="text-xs text-amber-600 font-mono mb-2" dir="ltr">${escapeHtml(dua.tr)}</p>
+              <button class="speaker-btn" data-say-ar="${escapeHtml(dua.ar)}" title="${tx("Wymowa", "Pronunciation")}">🔊 ${tx("Odsłuchaj", "Listen")}</button>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <!-- FAV AYAHS TAB -->
+      <div id="tabFavayahs" class="${activeTab === "favayahs" ? "" : "hidden"}">
+        ${(state.quranFavorites || []).length === 0
+          ? `<div class="soft-panel p-8 text-center text-[var(--muted)]">${tx("Brak ulubionych wersetów. Czytaj sury i klikaj ❤️.", "No favorite ayahs yet. Read surahs and tap ❤️.")}</div>`
+          : `<div class="grid gap-3">
+              ${(state.quranFavorites || []).map(num => `
+                <div class="panel p-4 flex items-center justify-between gap-3">
+                  <span class="text-sm font-black text-emerald-600">${tx("Werset", "Ayah")} ${num}</span>
+                  <button class="text-red-400 text-sm" data-remove-fav-ayah="${num}">✕</button>
+                </div>
+              `).join("")}
+            </div>`
+        }
+      </div>
+    </div>
   `;
-  renderSurahList();
-  $("#addSurahBtn").addEventListener("click", addSurahByNumber);
-  $("#thematicSearchBtn").addEventListener("click", () => thematicQuranSearch($("#thematicInput").value));
-  $("#reciterSelect").addEventListener("change", (e) => { state.quranReciter = e.target.value; saveState(); });
-  $("#surahSort").addEventListener("change", renderSurahList);
+
+  // Tab switching
+  view.querySelectorAll("[data-tab]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.quranTab = btn.dataset.tab;
+      saveState();
+      koran();
+    });
+  });
+
+  if (activeTab === "surahs") {
+    renderSurahList();
+    $("#addSurahBtn").addEventListener("click", addSurahByNumber);
+    $("#reciterSelect").addEventListener("change", (e) => { state.quranReciter = e.target.value; saveState(); });
+    $("#surahSort").addEventListener("change", renderSurahList);
+  }
+
+  if (activeTab === "dua") {
+    view.querySelectorAll("[data-say-ar]").forEach(btn => btn.addEventListener("click", () => speakArabic(btn.dataset.sayAr)));
+  }
+
+  if (activeTab === "favayahs") {
+    view.querySelectorAll("[data-remove-fav-ayah]").forEach(btn => btn.addEventListener("click", () => {
+      const num = btn.dataset.removeFavAyah;
+      state.quranFavorites = (state.quranFavorites || []).filter(n => n !== num);
+      saveState();
+      koran();
+    }));
+  }
 }
 
 async function addSurahByNumber() {
@@ -998,6 +1095,8 @@ async function addSurahByNumber() {
         arName: s.name,
         enName: s.englishName,
         meaning: s.englishNameTranslation,
+        numberOfAyahs: s.numberOfAyahs,
+        revelationType: s.revelationType,
         addedAt: today()
       });
       saveState();
@@ -1019,16 +1118,20 @@ async function openSurah(num) {
   try {
     const reciter = state.quranReciter || "ar.alafasy";
     const transEdition = state.lang === "pl" ? "pl.bielawskiego" : "en.asad";
-    const [resAudio, resTrans] = await Promise.all([
+    const [resAudio, resTrans, resTr] = await Promise.all([
       fetch(`https://api.alquran.cloud/v1/surah/${num}/${reciter}`),
-      fetch(`https://api.alquran.cloud/v1/surah/${num}/${transEdition}`)
+      fetch(`https://api.alquran.cloud/v1/surah/${num}/${transEdition}`),
+      fetch(`https://api.alquran.cloud/v1/surah/${num}/en.transliteration`)
     ]);
-    const [dataAudio, dataTrans] = await Promise.all([resAudio.json(), resTrans.json()]);
+    const [dataAudio, dataTrans, dataTr] = await Promise.all([resAudio.json(), resTrans.json(), resTr.json()]);
     if (dataAudio.code === 200) {
       const s = dataAudio.data;
       const transAyahs = dataTrans.code === 200 ? dataTrans.data.ayahs : [];
+      const trAyahs = dataTr.code === 200 ? dataTr.data.ayahs : [];
       const transMap = {};
+      const trMap = {};
       transAyahs.forEach(a => { transMap[a.numberInSurah] = a.text; });
+      trAyahs.forEach(a => { trMap[a.numberInSurah] = a.text; });
 
       container.innerHTML = `
         <div class="panel p-5 sm:p-8">
@@ -1039,14 +1142,15 @@ async function openSurah(num) {
                <button id="playFullSurah" class="big-action bg-emerald-500 text-white">${tx("Odtwórz całość", "Play all")}</button>
             </div>
           </div>
-          <div class="grid gap-6">
+          <div class="grid gap-4">
             ${s.ayahs.map(ayah => `
               <div class="soft-panel p-4 ayah-card" data-ayah-num="${ayah.number}" data-ayah-text="${escapeHtml(ayah.text)}">
-                <div class="flex items-start justify-between gap-4">
-                  <span class="text-xs font-black text-emerald-600">${ayah.numberInSurah}</span>
-                  <p class="arabic text-right text-3xl leading-loose">${escapeHtml(ayah.text)}</p>
+                <div class="flex items-start justify-between gap-4 mb-2">
+                  <span class="text-xs font-black text-emerald-600 mt-1 shrink-0">${ayah.numberInSurah}</span>
+                  <p class="arabic text-right text-2xl sm:text-3xl leading-loose">${escapeHtml(ayah.text)}</p>
                 </div>
-                ${transMap[ayah.numberInSurah] ? `<p class="mt-2 text-sm text-[var(--muted)] italic text-right">${escapeHtml(transMap[ayah.numberInSurah])}</p>` : ""}
+                ${trMap[ayah.numberInSurah] ? `<p class="text-xs text-amber-600 font-mono leading-relaxed mb-1" dir="ltr">${escapeHtml(trMap[ayah.numberInSurah])}</p>` : ""}
+                ${transMap[ayah.numberInSurah] ? `<p class="text-sm text-[var(--muted)] italic" dir="ltr">${escapeHtml(transMap[ayah.numberInSurah])}</p>` : ""}
                 <div class="mt-3 flex justify-end gap-2">
                   <button class="speaker-btn haptic-feedback" data-play-audio="${ayah.audio}" title="${tx("Odtwórz", "Play")}">▶️</button>
                   <button class="speaker-btn haptic-feedback" data-fav-ayah="${ayah.number}" title="${tx("Ulubiony werset", "Favorite ayah")}">❤️</button>
@@ -1095,6 +1199,37 @@ async function openSurah(num) {
   } catch (e) {
     container.innerHTML = `<div class="panel p-8 text-center text-red-500">${tx("Nie udało się pobrać treści sury.", "Failed to fetch surah content.")}</div>`;
   }
+}
+
+function badges() {
+  const unlocked = state.badges.length;
+  const total = BADGES_CATALOG.length;
+  view.innerHTML = `
+    <div class="page-header sticky top-0 z-10 flex items-center gap-3 p-4 bg-[var(--bg)]">
+      <h1 class="text-2xl font-black">${tx("Odznaki", "Badges")}</h1>
+      <span class="ml-auto text-sm font-black text-amber-500">${unlocked}/${total}</span>
+    </div>
+    <div class="p-4 pb-28">
+      <div class="w-full bg-[var(--line)] rounded-full h-2 mb-6">
+        <div class="bg-amber-400 h-2 rounded-full transition-all" style="width:${Math.round(unlocked/total*100)}%"></div>
+      </div>
+      <div class="grid gap-3">
+        ${BADGES_CATALOG.map(b => {
+          const isUnlocked = state.badges.includes(b.id);
+          const label = state.lang === "pl" ? b.pl : b.en;
+          const criterion = state.lang === "pl" ? b.criterionPl : b.criterionEn;
+          return `<div class="panel p-4 flex items-center gap-4 ${isUnlocked ? "" : "opacity-50"}">
+            <span class="text-4xl shrink-0 ${isUnlocked ? "" : "grayscale"}">${b.icon}</span>
+            <div class="min-w-0 flex-1">
+              <p class="font-black leading-tight">${label}</p>
+              <p class="text-xs text-[var(--muted)] leading-tight mt-0.5">${criterion}</p>
+            </div>
+            ${isUnlocked ? `<span class="text-emerald-500 text-lg shrink-0">✓</span>` : `<span class="text-[var(--muted)] text-lg shrink-0">🔒</span>`}
+          </div>`;
+        }).join("")}
+      </div>
+    </div>
+  `;
 }
 
 function settings() {
@@ -1256,13 +1391,12 @@ function alphabet() {
     </div>
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
       ${arabicAlphabet.map((letter) => `
-        <article class="letter-tile relative overflow-hidden flex flex-col items-center justify-center p-2 h-36">
-          <button class="absolute right-1 top-1 z-10 grid h-7 w-7 place-items-center rounded-lg border border-[var(--line)] bg-[var(--surface)] text-[10px] font-black shadow-sm" data-letter-info="${letter.id}" aria-label="${t("more")}">i</button>
-          <button class="speaker-btn absolute left-1 top-1 z-10 scale-75" data-say="${escapeHtml(letter.forms.isolated)}" aria-label="${t("play")}">🔊</button>
-          <button class="flex flex-col items-center justify-center w-full h-full pt-6" data-letter-say="${letter.id}">
-            <span class="arabic text-5xl sm:text-6xl leading-none mb-1">${escapeHtml(letter.forms.isolated)}</span>
-            <span class="font-black text-xs sm:text-sm text-center leading-tight mt-auto w-full truncate">${escapeHtml(letterName(letter))}</span>
-            <span class="text-[10px] text-[var(--muted)] font-bold opacity-70">${escapeHtml(letter.transliteration)}</span>
+        <article class="letter-tile relative overflow-hidden flex flex-col items-center justify-center p-2 h-32">
+          <button class="absolute right-1 top-1 z-10 grid h-6 w-6 place-items-center rounded-md border border-[var(--line)] bg-[var(--surface)] text-[9px] font-black shadow-sm" data-letter-info="${letter.id}" aria-label="${t("more")}">i</button>
+          <button class="flex flex-col items-center justify-center w-full h-full pt-5 gap-0.5" data-letter-say="${letter.id}">
+            <span class="arabic text-4xl sm:text-5xl leading-tight">${escapeHtml(letter.forms.isolated)}</span>
+            <span class="font-black text-[11px] sm:text-xs text-center leading-tight w-full truncate px-1">${escapeHtml(letterName(letter))}</span>
+            <span class="text-[10px] text-[var(--muted)] font-mono leading-none">${escapeHtml(letter.transliteration)}</span>
           </button>
         </article>
       `).join("")}
@@ -1635,48 +1769,40 @@ function speakArabic(text) {
   const clean = String(text || "").trim();
   if (!clean) return;
 
-  const pickArabicVoice = () => {
-    if (!("speechSynthesis" in window)) return null;
-    const voices = speechSynthesis.getVoices();
-    return voices.find(v => v.lang === "ar-SA")
-      || voices.find(v => v.lang === "ar-AE")
-      || voices.find(v => v.lang === "ar-EG")
-      || voices.find(v => /^ar\b/i.test(v.lang))
-      || voices.find(v => /arab/i.test(v.name))
-      || null;
-  };
-
-  const doSpeak = () => {
-    const voice = pickArabicVoice();
-    if (!voice) {
-      speakArabicGoogleTTS(clean);
-      return;
-    }
+  // Always try Web Speech API first - even without a specific Arabic voice,
+  // setting lang="ar-SA" lets the browser use built-in TTS
+  if ("speechSynthesis" in window) {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(clean);
-    u.lang = voice.lang || "ar-SA";
-    u.voice = voice;
+    u.lang = "ar-SA";
     u.rate = 0.75;
     u.pitch = 1;
     u.volume = 1;
+
+    // Try to find an Arabic voice to improve quality
+    const voices = speechSynthesis.getVoices();
+    const arabicVoice = voices.find(v => v.lang === "ar-SA")
+      || voices.find(v => v.lang === "ar-AE")
+      || voices.find(v => v.lang === "ar-EG")
+      || voices.find(v => /^ar\b/i.test(v.lang))
+      || voices.find(v => /arab/i.test(v.name));
+    if (arabicVoice) u.voice = arabicVoice;
+
     u.onerror = () => speakArabicGoogleTTS(clean);
     speechSynthesis.resume();
     speechSynthesis.speak(u);
-  };
 
-  if ("speechSynthesis" in window) {
-    if (!speechSynthesis.getVoices().length) {
+    // If voices not loaded yet, try again after they load
+    if (!voices.length) {
       speechSynthesis.onvoiceschanged = () => {
         speechSynthesis.onvoiceschanged = null;
-        doSpeak();
+        speakArabic(clean);
       };
-      setTimeout(doSpeak, 200);
-    } else {
-      doSpeak();
     }
-  } else {
-    speakArabicGoogleTTS(clean);
+    return;
   }
+
+  speakArabicGoogleTTS(clean);
 }
 
 function startSpeech(sample) {
@@ -2865,20 +2991,22 @@ function toggleFocusMode(content = "") {
 }
 
 const BADGES_CATALOG = [
-  { id: "first_letter", icon: "🅰️", pl: "Pierwsza litera", en: "First letter", criterionPl: "Poznaj pierwszą literę arabską", criterionEn: "Learn your first Arabic letter" },
-  { id: "five_letters", icon: "✋", pl: "Pięć liter", en: "Five letters", criterionPl: "Poznaj 5 liter", criterionEn: "Learn 5 letters" },
-  { id: "half_alphabet", icon: "⭐", pl: "Połowa alfabetu", en: "Half alphabet", criterionPl: "Poznaj 14 z 28 liter", criterionEn: "Learn 14 of 28 letters" },
-  { id: "full_alphabet", icon: "🏆", pl: "Mistrz alfabetu", en: "Alphabet master", criterionPl: "Poznaj wszystkie 28 liter", criterionEn: "Learn all 28 letters" },
-  { id: "first_surah", icon: "📖", pl: "Pierwsza sura", en: "First surah", criterionPl: "Dodaj pierwszą surę Koranu", criterionEn: "Add your first Quran surah" },
-  { id: "five_surahs", icon: "📚", pl: "Pięć sur", en: "Five surahs", criterionPl: "Dodaj 5 sur Koranu", criterionEn: "Add 5 Quran surahs" },
-  { id: "streak3", icon: "🔥", pl: "3 dni z rzędu", en: "3-day streak", criterionPl: "Ucz się 3 dni pod rząd", criterionEn: "Learn 3 days in a row" },
-  { id: "streak7", icon: "🔥🔥", pl: "Tydzień nauki", en: "Week streak", criterionPl: "Ucz się 7 dni pod rząd", criterionEn: "Learn 7 days in a row" },
-  { id: "hundred_points", icon: "💯", pl: "100 punktów", en: "100 points", criterionPl: "Zdobądź 100 punktów", criterionEn: "Earn 100 points" },
-  { id: "five_hundred_points", icon: "💎", pl: "500 punktów", en: "500 points", criterionPl: "Zdobądź 500 punktów", criterionEn: "Earn 500 points" },
-  { id: "first_quiz", icon: "🧠", pl: "Pierwszy quiz", en: "First quiz", criterionPl: "Odpowiedz poprawnie w quizie", criterionEn: "Answer correctly in a quiz" },
-  { id: "ten_flashcards", icon: "🃏", pl: "10 fiszek", en: "10 flashcards", criterionPl: "Miej 10 fiszek w kolekcji", criterionEn: "Have 10 flashcards in collection" },
-  { id: "first_lesson", icon: "📝", pl: "Pierwsza lekcja", en: "First lesson", criterionPl: "Zalicz pierwszą lekcję", criterionEn: "Complete your first lesson" },
-  { id: "bismillah", icon: "🌙", pl: "Bismillah", en: "Bismillah", criterionPl: "Zalicz lekcję Bismillah", criterionEn: "Complete the Bismillah lesson" },
+  { id: "first_letter",   icon: "🅰️", pl: "Pierwsza litera",     en: "First letter",       criterionPl: "Poznaj 1 literę arabską",           criterionEn: "Learn 1 Arabic letter" },
+  { id: "ten_letters",    icon: "✋",  pl: "Dziesięć liter",      en: "Ten letters",        criterionPl: "Poznaj 10 liter",                   criterionEn: "Learn 10 letters" },
+  { id: "half_alphabet",  icon: "⭐",  pl: "Połowa alfabetu",     en: "Half alphabet",      criterionPl: "Poznaj 14 z 28 liter",              criterionEn: "Learn 14 of 28 letters" },
+  { id: "full_alphabet",  icon: "🏆",  pl: "Mistrz alfabetu",     en: "Alphabet master",    criterionPl: "Poznaj wszystkie 28 liter",         criterionEn: "Learn all 28 letters" },
+  { id: "first_surah",    icon: "📖",  pl: "Pierwsza sura",       en: "First surah",        criterionPl: "Dodaj 1 surę Koranu",               criterionEn: "Add 1 Quran surah" },
+  { id: "ten_surahs",     icon: "📚",  pl: "Dziesięć sur",        en: "Ten surahs",         criterionPl: "Dodaj 10 sur Koranu",               criterionEn: "Add 10 Quran surahs" },
+  { id: "streak3",        icon: "🔥",  pl: "3 dni z rzędu",       en: "3-day streak",       criterionPl: "Ucz się 3 dni pod rząd",            criterionEn: "Learn 3 days in a row" },
+  { id: "streak7",        icon: "🔥🔥", pl: "Tydzień nauki",      en: "Week streak",        criterionPl: "Ucz się 7 dni pod rząd",            criterionEn: "Learn 7 days in a row" },
+  { id: "streak30",       icon: "💫",  pl: "Miesiąc nauki",       en: "Month streak",       criterionPl: "Ucz się 30 dni pod rząd",           criterionEn: "Learn 30 days in a row" },
+  { id: "pts500",         icon: "💯",  pl: "500 punktów",         en: "500 points",         criterionPl: "Zdobądź 500 punktów",               criterionEn: "Earn 500 points" },
+  { id: "pts2000",        icon: "💎",  pl: "2000 punktów",        en: "2000 points",        criterionPl: "Zdobądź 2000 punktów",              criterionEn: "Earn 2000 points" },
+  { id: "quiz10",         icon: "🧠",  pl: "10 poprawnych",       en: "10 correct",         criterionPl: "Odpowiedz poprawnie 10 razy w quizie", criterionEn: "Answer correctly 10 times in quiz" },
+  { id: "flashcards25",   icon: "🃏",  pl: "25 fiszek",           en: "25 flashcards",      criterionPl: "Miej 25 fiszek w kolekcji",         criterionEn: "Have 25 flashcards in collection" },
+  { id: "lessons10",      icon: "📝",  pl: "10 lekcji",           en: "10 lessons",         criterionPl: "Zalicz 10 lekcji",                  criterionEn: "Complete 10 lessons" },
+  { id: "bismillah",      icon: "🌙",  pl: "Bismillah",           en: "Bismillah",          criterionPl: "Zalicz lekcję Bismillah",           criterionEn: "Complete the Bismillah lesson" },
+  { id: "shahada_badge",  icon: "☪️",  pl: "Szahada",            en: "Shahada",            criterionPl: "Zalicz lekcję Szahada",             criterionEn: "Complete the Shahada lesson" },
 ];
 
 function checkBadges() {
@@ -2886,21 +3014,24 @@ function checkBadges() {
   const sq = (state.quranSurahs || []).length;
   const pts = state.points;
   const fc = (state.customFlashcards || []).length + Object.keys(state.flashcards || {}).length;
+  const ld = (state.miniLessonsDone || []).length;
 
-  if (ll >= 1) unlockBadge("first_letter", tx("Pierwsza litera", "First letter"));
-  if (ll >= 5) unlockBadge("five_letters", tx("Pięć liter", "Five letters"));
+  if (ll >= 1)  unlockBadge("first_letter",  tx("Pierwsza litera", "First letter"));
+  if (ll >= 10) unlockBadge("ten_letters",   tx("Dziesięć liter", "Ten letters"));
   if (ll >= 14) unlockBadge("half_alphabet", tx("Połowa alfabetu", "Half alphabet"));
   if (ll >= 28) unlockBadge("full_alphabet", tx("Mistrz alfabetu", "Alphabet master"));
-  if (sq >= 1) unlockBadge("first_surah", tx("Pierwsza sura", "First surah"));
-  if (sq >= 5) unlockBadge("five_surahs", tx("Pięć sur", "Five surahs"));
-  if (state.streak >= 3) unlockBadge("streak3", tx("3 dni z rzędu", "3-day streak"));
-  if (state.streak >= 7) unlockBadge("streak7", tx("Tydzień nauki", "Week streak"));
-  if (pts >= 100) unlockBadge("hundred_points", tx("100 punktów", "100 points"));
-  if (pts >= 500) unlockBadge("five_hundred_points", tx("500 punktów", "500 points"));
-  if (state.quizStats.correct >= 1) unlockBadge("first_quiz", tx("Pierwszy quiz", "First quiz"));
-  if (fc >= 10) unlockBadge("ten_flashcards", tx("10 fiszek", "10 flashcards"));
-  if ((state.miniLessonsDone || []).length >= 1) unlockBadge("first_lesson", tx("Pierwsza lekcja", "First lesson"));
-  if ((state.miniLessonsDone || []).includes("bismillah")) unlockBadge("bismillah", "Bismillah");
+  if (sq >= 1)  unlockBadge("first_surah",   tx("Pierwsza sura", "First surah"));
+  if (sq >= 10) unlockBadge("ten_surahs",    tx("Dziesięć sur", "Ten surahs"));
+  if (state.streak >= 3)  unlockBadge("streak3",  tx("3 dni z rzędu", "3-day streak"));
+  if (state.streak >= 7)  unlockBadge("streak7",  tx("Tydzień nauki", "Week streak"));
+  if (state.streak >= 30) unlockBadge("streak30", tx("Miesiąc nauki", "Month streak"));
+  if (pts >= 500)  unlockBadge("pts500",  tx("500 punktów", "500 points"));
+  if (pts >= 2000) unlockBadge("pts2000", tx("2000 punktów", "2000 points"));
+  if (state.quizStats.correct >= 10) unlockBadge("quiz10", tx("10 poprawnych", "10 correct"));
+  if (fc >= 25) unlockBadge("flashcards25", tx("25 fiszek", "25 flashcards"));
+  if (ld >= 10) unlockBadge("lessons10",   tx("10 lekcji", "10 lessons"));
+  if ((state.miniLessonsDone || []).includes("bismillah"))    unlockBadge("bismillah",     "Bismillah");
+  if ((state.miniLessonsDone || []).includes("shahada"))      unlockBadge("shahada_badge", tx("Szahada", "Shahada"));
 }
 
 function unlockBadge(id, name) {
