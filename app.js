@@ -993,41 +993,107 @@ function renderSurahList() {
 }
 
 function koran() {
+  const activeTab = state.quranTab || "surahs";
   view.innerHTML = `
-    <div class="mb-4">
-      <h1 class="text-3xl font-black">${t("koranTitle")}</h1>
-      <p class="text-[var(--muted)]">${t("koranOrder")}</p>
-    </div>
-    <div class="panel mb-4 p-5">
-      <div class="grid gap-3">
-        <div class="flex gap-2">
-          <input id="surahNumber" type="number" min="1" max="114" class="h-12 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4" placeholder="${t("koranNumber")}" />
-          <button id="addSurahBtn" class="big-action bg-emerald-500 text-white min-w-32">${t("koranAdd")}</button>
-        </div>
-        <div class="flex gap-2">
-          <input id="thematicInput" class="h-12 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4" placeholder="${tx("Szukaj tematu (np. cierpliwość)...", "Search theme (e.g. patience)...")}" />
-          <button id="thematicSearchBtn" class="big-action bg-amber-500 text-white min-w-32">${tx("Szukaj", "Search")}</button>
-        </div>
-        <div class="flex gap-2">
-          <select id="reciterSelect" class="h-12 flex-1 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4">
-            ${QURAN_RECITERS.map(r => `<option value="${r.id}" ${state.quranReciter === r.id ? "selected" : ""}>${r.name}</option>`).join("")}
-          </select>
-          <select id="surahSort" class="h-12 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3">
-            <option value="number">${tx("Nr 1→114", "No. 1→114")}</option>
-            <option value="favfirst">${tx("Ulubione pierwsze", "Favorites first")}</option>
-            <option value="alpha">${tx("Alfabetycznie", "Alphabetically")}</option>
-          </select>
-        </div>
+    <div class="page-header sticky top-0 z-10 bg-[var(--bg)] pb-0">
+      <h1 class="text-2xl font-black px-4 pt-4">${t("koranTitle")}</h1>
+      <div class="flex border-b border-[var(--line)] mt-3 px-4 gap-0 overflow-x-auto">
+        <button class="tab-btn ${activeTab === "surahs" ? "tab-active" : ""} px-4 py-2 text-sm font-black border-b-2 ${activeTab === "surahs" ? "border-emerald-500 text-emerald-600" : "border-transparent text-[var(--muted)]"} shrink-0" data-tab="surahs">${tx("Sury", "Surahs")}</button>
+        <button class="tab-btn ${activeTab === "dua" ? "tab-active" : ""} px-4 py-2 text-sm font-black border-b-2 ${activeTab === "dua" ? "border-emerald-500 text-emerald-600" : "border-transparent text-[var(--muted)]"} shrink-0" data-tab="dua">${tx("Dua", "Dua")}</button>
+        <button class="tab-btn ${activeTab === "favayahs" ? "tab-active" : ""} px-4 py-2 text-sm font-black border-b-2 ${activeTab === "favayahs" ? "border-emerald-500 text-emerald-600" : "border-transparent text-[var(--muted)]"} shrink-0" data-tab="favayahs">${tx("Ulubione wersety", "Fav. ayahs")}</button>
       </div>
     </div>
-    <div id="surahList" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
-    <div id="surahContent" class="mt-6"></div>
+
+    <div class="p-4 pb-28">
+      <!-- SURAHS TAB -->
+      <div id="tabSurahs" class="${activeTab === "surahs" ? "" : "hidden"}">
+        <div class="panel mb-4 p-4">
+          <div class="grid gap-2">
+            <div class="flex gap-2">
+              <input id="surahNumber" type="number" min="1" max="114" class="h-10 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm" placeholder="${t("koranNumber")}" />
+              <button id="addSurahBtn" class="big-action bg-emerald-500 text-white shrink-0">${t("koranAdd")}</button>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <select id="reciterSelect" class="h-10 flex-1 min-w-0 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm">
+                ${QURAN_RECITERS.map(r => `<option value="${r.id}" ${state.quranReciter === r.id ? "selected" : ""}>${r.name}</option>`).join("")}
+              </select>
+              <select id="surahSort" class="h-10 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm">
+                <option value="number">${tx("Nr 1→114", "No. 1→114")}</option>
+                <option value="short">${tx("Krótkie (≤20)", "Short (≤20)")}</option>
+                <option value="medium">${tx("Średnie (21-100)", "Medium (21-100)")}</option>
+                <option value="long">${tx("Długie (>100)", "Long (>100)")}</option>
+                <option value="meccan">${tx("Mekkańskie 🕌", "Meccan 🕌")}</option>
+                <option value="medinan">${tx("Medyńskie 🕋", "Medinan 🕋")}</option>
+                <option value="favfirst">${tx("Ulubione pierwsze", "Favorites first")}</option>
+                <option value="alpha">${tx("Alfabetycznie", "A-Z")}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div id="surahList" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+        <div id="surahContent" class="mt-6"></div>
+      </div>
+
+      <!-- DUA TAB -->
+      <div id="tabDua" class="${activeTab === "dua" ? "" : "hidden"}">
+        <p class="text-sm text-[var(--muted)] mb-4">${tx("Codzienne dua — krótkie modlitwy do zapamiętania.", "Daily duas — short supplications to memorize.")}</p>
+        <div class="grid gap-3">
+          ${DUA_DATA.map(dua => `
+            <div class="panel p-4">
+              <p class="text-sm font-black text-emerald-600 mb-1">${state.lang === "pl" ? dua.pl : dua.en}</p>
+              <p class="arabic text-right text-xl leading-loose mb-1">${escapeHtml(dua.ar)}</p>
+              <p class="text-xs text-amber-600 font-mono mb-2" dir="ltr">${escapeHtml(dua.tr)}</p>
+              <button class="speaker-btn" data-say-ar="${escapeHtml(dua.ar)}" title="${tx("Wymowa", "Pronunciation")}">🔊 ${tx("Odsłuchaj", "Listen")}</button>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <!-- FAV AYAHS TAB -->
+      <div id="tabFavayahs" class="${activeTab === "favayahs" ? "" : "hidden"}">
+        ${(state.quranFavorites || []).length === 0
+          ? `<div class="soft-panel p-8 text-center text-[var(--muted)]">${tx("Brak ulubionych wersetów. Czytaj sury i klikaj ❤️.", "No favorite ayahs yet. Read surahs and tap ❤️.")}</div>`
+          : `<div class="grid gap-3">
+              ${(state.quranFavorites || []).map(num => `
+                <div class="panel p-4 flex items-center justify-between gap-3">
+                  <span class="text-sm font-black text-emerald-600">${tx("Werset", "Ayah")} ${num}</span>
+                  <button class="text-red-400 text-sm" data-remove-fav-ayah="${num}">✕</button>
+                </div>
+              `).join("")}
+            </div>`
+        }
+      </div>
+    </div>
   `;
-  renderSurahList();
-  $("#addSurahBtn").addEventListener("click", addSurahByNumber);
-  $("#thematicSearchBtn").addEventListener("click", () => thematicQuranSearch($("#thematicInput").value));
-  $("#reciterSelect").addEventListener("change", (e) => { state.quranReciter = e.target.value; saveState(); });
-  $("#surahSort").addEventListener("change", renderSurahList);
+
+  // Tab switching
+  view.querySelectorAll("[data-tab]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.quranTab = btn.dataset.tab;
+      saveState();
+      koran();
+    });
+  });
+
+  if (activeTab === "surahs") {
+    renderSurahList();
+    $("#addSurahBtn").addEventListener("click", addSurahByNumber);
+    $("#reciterSelect").addEventListener("change", (e) => { state.quranReciter = e.target.value; saveState(); });
+    $("#surahSort").addEventListener("change", renderSurahList);
+  }
+
+  if (activeTab === "dua") {
+    view.querySelectorAll("[data-say-ar]").forEach(btn => btn.addEventListener("click", () => speakArabic(btn.dataset.sayAr)));
+  }
+
+  if (activeTab === "favayahs") {
+    view.querySelectorAll("[data-remove-fav-ayah]").forEach(btn => btn.addEventListener("click", () => {
+      const num = btn.dataset.removeFavAyah;
+      state.quranFavorites = (state.quranFavorites || []).filter(n => n !== num);
+      saveState();
+      koran();
+    }));
+  }
 }
 
 async function addSurahByNumber() {
@@ -1722,48 +1788,40 @@ function speakArabic(text) {
   const clean = String(text || "").trim();
   if (!clean) return;
 
-  const pickArabicVoice = () => {
-    if (!("speechSynthesis" in window)) return null;
-    const voices = speechSynthesis.getVoices();
-    return voices.find(v => v.lang === "ar-SA")
-      || voices.find(v => v.lang === "ar-AE")
-      || voices.find(v => v.lang === "ar-EG")
-      || voices.find(v => /^ar\b/i.test(v.lang))
-      || voices.find(v => /arab/i.test(v.name))
-      || null;
-  };
-
-  const doSpeak = () => {
-    const voice = pickArabicVoice();
-    if (!voice) {
-      speakArabicGoogleTTS(clean);
-      return;
-    }
+  // Always try Web Speech API first - even without a specific Arabic voice,
+  // setting lang="ar-SA" lets the browser use built-in TTS
+  if ("speechSynthesis" in window) {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(clean);
-    u.lang = voice.lang || "ar-SA";
-    u.voice = voice;
+    u.lang = "ar-SA";
     u.rate = 0.75;
     u.pitch = 1;
     u.volume = 1;
+
+    // Try to find an Arabic voice to improve quality
+    const voices = speechSynthesis.getVoices();
+    const arabicVoice = voices.find(v => v.lang === "ar-SA")
+      || voices.find(v => v.lang === "ar-AE")
+      || voices.find(v => v.lang === "ar-EG")
+      || voices.find(v => /^ar\b/i.test(v.lang))
+      || voices.find(v => /arab/i.test(v.name));
+    if (arabicVoice) u.voice = arabicVoice;
+
     u.onerror = () => speakArabicGoogleTTS(clean);
     speechSynthesis.resume();
     speechSynthesis.speak(u);
-  };
 
-  if ("speechSynthesis" in window) {
-    if (!speechSynthesis.getVoices().length) {
+    // If voices not loaded yet, try again after they load
+    if (!voices.length) {
       speechSynthesis.onvoiceschanged = () => {
         speechSynthesis.onvoiceschanged = null;
-        doSpeak();
+        speakArabic(clean);
       };
-      setTimeout(doSpeak, 200);
-    } else {
-      doSpeak();
     }
-  } else {
-    speakArabicGoogleTTS(clean);
+    return;
   }
+
+  speakArabicGoogleTTS(clean);
 }
 
 function startSpeech(sample) {
