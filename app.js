@@ -41,12 +41,12 @@ const navItems = [
   ["home",    "⌂",  "navHome"],
   ["islam",   "☪",  "navIslam"],
   ["lessons", "Aa", "navLessons"],
-  ["games",   "◎",  "navGames"]
+  ["games",   "◎",  "navGames"],
+  ["prayer",  "🕌", "navPrayer"]
 ];
 
 const secondaryNavItems = [
   ["adventure", "☆",  "navAdventure"],
-  ["books",     "▤",  "navBooks"],
   ["culture",   "✦",  "navCulture"],
   ["badges",    "🏆", "navBadges"],
   ["settings",  "⚙",  "navSettings"]
@@ -331,6 +331,8 @@ let dhikrGameTimer = null;
 let catchScore = 0;
 let catchMisses = 0;
 let speechUnlocked = false;
+let prayerClockInterval = null;
+let compassWatchId = null;
 
 const defaultState = {
   lang: "pl",
@@ -686,7 +688,14 @@ function renderNav() {
     </button>`;
 
   nav.querySelectorAll("[data-route]").forEach((btn) => {
-    btn.addEventListener("click", () => { triggerHaptic(); setRoute(btn.dataset.route); });
+    btn.addEventListener("click", () => {
+      triggerHaptic();
+      if (btn.dataset.route === "games") {
+        state.activeGame = null;
+        saveState();
+      }
+      setRoute(btn.dataset.route);
+    });
   });
 
   $("#moreNavBtn")?.addEventListener("click", () => {
@@ -719,6 +728,14 @@ function render() {
     clearInterval(dhikrGameTimer);
     dhikrGameTimer = null;
   }
+  if (prayerClockInterval) {
+    clearInterval(prayerClockInterval);
+    prayerClockInterval = null;
+  }
+  if (compassWatchId !== null) {
+    try { window.removeEventListener('deviceorientationabsolute', compassWatchId); window.removeEventListener('deviceorientation', compassWatchId); } catch {}
+    compassWatchId = null;
+  }
   renderNav();
   const currentThemeMeta = themeMeta(state.theme);
   $("#themeBtn").textContent = currentThemeMeta.icon;
@@ -737,6 +754,7 @@ function render() {
   const flashcards = () => { state.activeGame = "flashcards"; games(); };
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
+  const books = () => setRoute("adventure");
   const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq };
   (views[route] || home)();
 }
@@ -787,11 +805,11 @@ function muallaf() {
     <div class="grid gap-3 sm:grid-cols-2">
       ${[
         { icon: "🕌", pl: "Znajdź lokalny meczet — imam pomoże Ci z podstawami bezpłatnie.", en: "Find a local mosque — the imam will help you with the basics free of charge." },
-        { icon: "📱", pl: "Aplikacje: Muslim Pro (czasy modlitw, qibla), Tarteel (Quran z wymową).", en: "Apps: Muslim Pro (prayer times, qibla), Tarteel (Quran with pronunciation)." },
         { icon: "🤝", pl: "Nie musisz ogłaszać swojej konwersji — to między tobą a Allahem.", en: "You don't need to announce your conversion — it is between you and Allah." },
         { icon: "📖", pl: "Zacznij od krótkiej sury Al-Ikhlas (112) — 4 wersety, serce teologii islamu.", en: "Start with the short surah Al-Ikhlas (112) — 4 verses, the heart of Islamic theology." },
         { icon: "💚", pl: "Błędy w wymowie są wybaczalne — Allah wie, co jest w sercu.", en: "Pronunciation mistakes are forgivable — Allah knows what is in the heart." },
         { icon: "🌍", pl: "Indonesia, Pakistan, Nigeria, Turcja — muzułmanie są wszędzie. Nie jesteś sam.", en: "Indonesia, Pakistan, Nigeria, Turkey — Muslims are everywhere. You are not alone." },
+        { icon: "🤲", pl: "Modlitwa (salat) może być uczona stopniowo — ważna jest intencja, nie perfekcja.", en: "Prayer (salat) can be learned gradually — what matters is intention, not perfection." },
       ].map(tip => `
         <div class="panel p-4 flex gap-3 items-start">
           <span class="text-2xl">${tip.icon}</span>
@@ -1223,18 +1241,18 @@ const SURAH_LIST = [
 ];
 
 const SURAH_EXTRA = {
-  1:   { badge: "Fard ✓",       tip_pl: "Recytowana w każdej rak'ah — bez niej modlitwa nieważna", tip_en: "Recited in every rak'ah — prayer invalid without it" },
-  2:   { badge: "Ayat al-Kursi",tip_pl: "Zawiera Ayat al-Kursi (2:255) — recytuj po każdej modlitwie", tip_en: "Contains Ayat al-Kursi (2:255) — recite after every prayer" },
-  18:  { badge: "Piątek 🌙",    tip_pl: "Recytuj co piątek — ochrona przed Dajjalem (Muslim 809)", tip_en: "Recite every Friday — protection from Dajjal (Muslim 809)" },
-  36:  { badge: "Serce ♥",      tip_pl: "Ya-Sin — Serce Koranu (at-Tirmidhi 2812)", tip_en: "Ya-Sin — Heart of the Quran (at-Tirmidhi 2812)" },
-  44:  { badge: "Noc piątku",   tip_pl: "Recytuj w nocy czwartku/piątku — wielka nagroda", tip_en: "Recite on Thursday/Friday night — great reward" },
-  55:  { badge: "Oblubienica",  tip_pl: "Az-Zahra — Oblubienica Koranu, 31× 'Które łaski Pana swego odrzucicie?'", tip_en: "Az-Zahra — Bride of the Quran, 31× 'Which favors of your Lord will you deny?'" },
-  56:  { badge: "Bogactwo",     tip_pl: "Recytuj każdej nocy — chroni przed ubóstwem (Ibn Masud)", tip_en: "Recite every night — protects from poverty (Ibn Masud)" },
-  67:  { badge: "Tarcza 🛡",    tip_pl: "Al-Mulk — chroni przed karą grobu, recytuj przed snem (Abu Dawud 1400)", tip_en: "Al-Mulk — protects from grave punishment, recite before sleep (Abu Dawud 1400)" },
-  110: { badge: "Pożegnanie",   tip_pl: "Jedna z ostatnich objawień — Prorok ﷺ wiedział, że czas mu się kończy", tip_en: "One of the last revelations — the Prophet ﷺ knew his time was near" },
-  112: { badge: "1/3 Koranu",   tip_pl: "Równoważna 1/3 Koranu w nagrodzie — recytuj 3× = cały Koran (Bukhari 5013)", tip_en: "Equivalent to 1/3 of the Quran in reward — recite 3× = whole Quran (Bukhari 5013)" },
-  113: { badge: "Schronienie",  tip_pl: "Al-Mu'awwidhatain — recytuj rano ×3, wieczorem ×3 (Abu Dawud 5082)", tip_en: "Al-Mu'awwidhatain — recite ×3 morning and evening (Abu Dawud 5082)" },
-  114: { badge: "Schronienie",  tip_pl: "Recytuj razem z Al-Falaq rano i wieczorem ×3", tip_en: "Recite together with Al-Falaq morning and evening ×3" },
+  1:   { badge_pl: "Fard ✓",       badge_en: "Obligatory ✓", tip_pl: "Recytowana w każdej rak'ah — bez niej modlitwa nieważna", tip_en: "Recited in every rak'ah — prayer invalid without it" },
+  2:   { badge_pl: "Ayat al-Kursi",badge_en: "Ayat al-Kursi",tip_pl: "Zawiera Ayat al-Kursi (2:255) — recytuj po każdej modlitwie", tip_en: "Contains Ayat al-Kursi (2:255) — recite after every prayer" },
+  18:  { badge_pl: "Piątek 🌙",    badge_en: "Friday 🌙",    tip_pl: "Recytuj co piątek — ochrona przed Dajjalem (Muslim 809)", tip_en: "Recite every Friday — protection from Dajjal (Muslim 809)" },
+  36:  { badge_pl: "Serce ♥",      badge_en: "Heart ♥",      tip_pl: "Ya-Sin — Serce Koranu (at-Tirmidhi 2812)", tip_en: "Ya-Sin — Heart of the Quran (at-Tirmidhi 2812)" },
+  44:  { badge_pl: "Noc piątku",   badge_en: "Friday night", tip_pl: "Recytuj w nocy czwartku/piątku — wielka nagroda", tip_en: "Recite on Thursday/Friday night — great reward" },
+  55:  { badge_pl: "Oblubienica",  badge_en: "Bride",        tip_pl: "Az-Zahra — Oblubienica Koranu, 31× 'Które łaski Pana swego odrzucicie?'", tip_en: "Az-Zahra — Bride of the Quran, 31× 'Which favors of your Lord will you deny?'" },
+  56:  { badge_pl: "Bogactwo",     badge_en: "Wealth",       tip_pl: "Recytuj każdej nocy — chroni przed ubóstwem (Ibn Masud)", tip_en: "Recite every night — protects from poverty (Ibn Masud)" },
+  67:  { badge_pl: "Tarcza 🛡",    badge_en: "Shield 🛡",    tip_pl: "Al-Mulk — chroni przed karą grobu, recytuj przed snem (Abu Dawud 1400)", tip_en: "Al-Mulk — protects from grave punishment, recite before sleep (Abu Dawud 1400)" },
+  110: { badge_pl: "Pożegnanie",   badge_en: "Farewell",     tip_pl: "Jedna z ostatnich objawień — Prorok ﷺ wiedział, że czas mu się kończy", tip_en: "One of the last revelations — the Prophet ﷺ knew his time was near" },
+  112: { badge_pl: "1/3 Koranu",   badge_en: "1/3 Quran",   tip_pl: "Równoważna 1/3 Koranu w nagrodzie — recytuj 3× = cały Koran (Bukhari 5013)", tip_en: "Equivalent to 1/3 of the Quran in reward — recite 3× = whole Quran (Bukhari 5013)" },
+  113: { badge_pl: "Schronienie",  badge_en: "Refuge",       tip_pl: "Al-Mu'awwidhatain — recytuj rano ×3, wieczorem ×3 (Abu Dawud 5082)", tip_en: "Al-Mu'awwidhatain — recite ×3 morning and evening (Abu Dawud 5082)" },
+  114: { badge_pl: "Schronienie",  badge_en: "Refuge",       tip_pl: "Recytuj razem z Al-Falaq rano i wieczorem ×3", tip_en: "Recite together with Al-Falaq morning and evening ×3" },
 };
 
 const ESSENTIAL_SURAHS = [1, 112, 113, 114, 67, 36, 55, 18, 2, 56];
@@ -1356,7 +1374,7 @@ function surahCard(surah) {
       <div class="flex flex-wrap gap-1 mt-0.5">
         <span class="surah-badge" style="background:var(--bg)">${surah.numberOfAyahs} ${tx("w.", "ay.")}</span>
         <span class="surah-badge" style="background:var(--bg)">${revIcon}</span>
-        ${extra ? `<span class="surah-badge surah-badge--islamic">${extra.badge}</span>` : ""}
+        ${extra ? `<span class="surah-badge surah-badge--islamic">${state.lang === "pl" ? extra.badge_pl : extra.badge_en}</span>` : ""}
       </div>
       ${extra ? `<p class="text-[10px] text-[var(--muted)] italic leading-tight">${state.lang === "pl" ? extra.tip_pl : extra.tip_en}</p>` : ""}
       <button class="big-action w-full text-sm border border-[var(--line)] mt-0.5" data-read-surah="${surah.number}">▶ ${tx("Czytaj", "Read")}</button>
@@ -1878,11 +1896,11 @@ function alphabet() {
     </div>
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
       ${arabicAlphabet.map((letter) => `
-        <article class="letter-tile relative overflow-hidden flex flex-col items-center justify-center p-2 h-32">
+        <article class="letter-tile relative overflow-hidden flex flex-col items-center justify-center p-2">
           <button class="absolute right-1 top-1 z-10 grid h-6 w-6 place-items-center rounded-md border border-[var(--line)] bg-[var(--surface)] text-[9px] font-black shadow-sm" data-letter-info="${letter.id}" aria-label="${t("more")}">i</button>
-          <button class="flex flex-col items-center justify-center w-full h-full pt-5 gap-0.5" data-letter-say="${letter.id}">
-            <span class="arabic text-4xl sm:text-5xl leading-tight">${escapeHtml(letter.forms.isolated)}</span>
-            <span class="font-black text-[11px] sm:text-xs text-center leading-tight w-full truncate px-1">${escapeHtml(letterName(letter))}</span>
+          <button class="flex flex-col items-center justify-center w-full h-full pt-4 gap-1" data-letter-say="${letter.id}">
+            <span class="arabic text-4xl leading-tight">${escapeHtml(letter.forms.isolated)}</span>
+            <span class="font-black text-[11px] text-center leading-tight w-full truncate px-1 mt-1">${escapeHtml(letterName(letter))}</span>
             <span class="text-[10px] text-[var(--muted)] font-mono leading-none">${escapeHtml(letter.transliteration)}</span>
           </button>
         </article>
@@ -1993,8 +2011,8 @@ function lessons() {
     const tabBar = document.createElement("div");
     tabBar.className = "flex gap-1 mb-5";
     tabBar.innerHTML = `
-      <button class="px-3 py-2 text-sm font-black rounded-full border bg-[var(--accent)] text-white border-[var(--accent)]" data-lessons-tab="alphabet">ا ${tx("Alfabet", "Alphabet")}</button>
-      <button class="px-3 py-2 text-sm font-black rounded-full border border-[var(--border)] text-[var(--muted)]" data-lessons-tab="lessons">Aa ${tx("Lekcje", "Lessons")}</button>
+      <button class="px-3 py-2 text-sm font-black rounded-full border bg-[var(--accent)] text-white border-[var(--accent)]" data-lessons-tab="alphabet">${tx("Alfabet", "Alphabet")}</button>
+      <button class="px-3 py-2 text-sm font-black rounded-full border border-[var(--border)] text-[var(--muted)]" data-lessons-tab="lessons">${tx("Lekcje", "Lessons")}</button>
     `;
     view.insertBefore(tabBar, view.firstChild);
     view.querySelectorAll("[data-lessons-tab]").forEach(btn => btn.addEventListener("click", () => {
@@ -2013,8 +2031,8 @@ function lessons() {
 
   view.innerHTML = `
     <div class="flex gap-1 mb-4">
-      <button class="px-3 py-2 text-sm font-black rounded-full border border-[var(--border)] text-[var(--muted)]" data-lessons-tab="alphabet">ا ${tx("Alfabet", "Alphabet")}</button>
-      <button class="px-3 py-2 text-sm font-black rounded-full border bg-[var(--accent)] text-white border-[var(--accent)]" data-lessons-tab="lessons">Aa ${tx("Lekcje", "Lessons")}</button>
+      <button class="px-3 py-2 text-sm font-black rounded-full border border-[var(--border)] text-[var(--muted)]" data-lessons-tab="alphabet">${tx("Alfabet", "Alphabet")}</button>
+      <button class="px-3 py-2 text-sm font-black rounded-full border bg-[var(--accent)] text-white border-[var(--accent)]" data-lessons-tab="lessons">${tx("Lekcje", "Lessons")}</button>
     </div>
     <div class="mb-4">
       <h1 class="text-3xl font-black">${tx("Lekcje i zwroty", "Lessons and phrases")}</h1>
@@ -2097,12 +2115,11 @@ function flashcards() {
   view.innerHTML = `
     <div class="mb-4">
       <h1 class="text-3xl font-black">${tx("Fiszki", "Flashcards")}</h1>
-      <p class="text-[var(--muted)]">${tx("Prosty SM-2: latwe karty wracaja pozniej, trudne szybciej. AI moze dopisywac wlasne fiszki.", "Simple SM-2: easy cards return later, difficult cards return sooner. AI can add custom cards.")}</p>
+      <p class="text-[var(--muted)]">${tx("Prosty SM-2: łatwe karty wracają później, trudne szybciej.", "Simple SM-2: easy cards return later, difficult ones sooner.")}</p>
     </div>
     <div class="mb-3 flex flex-wrap gap-2">
       <button class="tab-btn active" data-tab="letters">${tx("Litery", "Letters")}</button>
-      <button class="tab-btn" data-tab="words">${tx("Slowa", "Words")}</button>
-      <button class="tab-btn" data-tab="ai">AI</button>
+      <button class="tab-btn" data-tab="words">${tx("Słowa", "Words")}</button>
     </div>
     <div class="mb-4 flex flex-wrap gap-2">
       <button class="mode-btn active" data-mode="random">${tx("Losowo", "Random")}</button>
@@ -2157,7 +2174,7 @@ function buildFlashDeck(tab, mode) {
 function renderFlashCard() {
   const area = $("#flashArea");
   if (!flashDeck.length) {
-    area.innerHTML = `<div class="panel p-6 text-center"><h2 class="text-2xl font-black">${t("noCards")}</h2><p class="mt-2 text-[var(--muted)]">${tx("Wroc do losowych albo popros AI Assistanta o nowe fiszki.", "Go back to random mode or ask the AI Assistant for new cards.")}</p><button id="openAiFromFlash" class="big-action mt-4 bg-emerald-500 text-white">${tx("Popros AI", "Ask AI")}</button></div>`;
+    area.innerHTML = `<div class="panel p-6 text-center"><h2 class="text-2xl font-black">${t("noCards")}</h2><p class="mt-2 text-[var(--muted)]">${tx("Wróć do trybu losowego lub wybierz inny zestaw.", "Go back to random mode or choose a different set.")}</p></div>`;
     $("#openAiFromFlash")?.addEventListener("click", openAiChat);
     return;
   }
@@ -2959,7 +2976,12 @@ function readFileAsDataUrl(file, callback) {
 }
 
 function culture() {
-  const fact = state.cultureFacts.find((item) => item.date === today());
+  const todayFact = state.cultureFacts.find((item) => item.date === today());
+  const hasToday = !!todayFact;
+  const btnClass = hasToday
+    ? "big-action border border-[var(--line)] bg-[var(--surface)] text-[var(--muted)] cursor-not-allowed"
+    : "big-action bg-emerald-500 text-white";
+  const btnLabel = hasToday ? tx("✓ Wygenerowano dziś", "✓ Generated today") : tx("Generuj AI", "Generate AI");
   view.innerHTML = `
     <div class="mb-4">
       <h1 class="text-3xl font-black">${tx("Kultura i ciekawostki", "Culture and facts")}</h1>
@@ -2969,14 +2991,14 @@ function culture() {
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="text-sm font-bold text-emerald-600">${tx("Ciekawostka dnia", "Fact of the day")}</p>
-          <h2 class="text-2xl font-black">${fact ? fact.title : tx("Wygeneruj dzisiejsza ciekawostke", "Generate today's fact")}</h2>
+          <h2 class="text-2xl font-black">${todayFact ? todayFact.title : tx("Brak ciekawostki na dziś", "No fact for today yet")}</h2>
         </div>
-        <button id="generateCultureBtn" class="big-action bg-emerald-500 text-white">${fact ? tx("Odswiez AI", "Refresh AI") : tx("Generuj AI", "Generate AI")}</button>
+        <button id="generateCultureBtn" class="${btnClass}" ${hasToday ? "disabled" : ""}>${btnLabel}</button>
       </div>
-      <p class="mt-4 whitespace-pre-wrap text-[var(--muted)]">${fact ? escapeHtml(fact.text) : tx("AI przygotuje krotka ciekawostke z mini-slowkiem arabskim i prostym przykladem.", "AI will prepare a short fact with one Arabic mini-word and a simple example.")}</p>
+      <p class="mt-4 whitespace-pre-wrap text-[var(--muted)]">${todayFact ? escapeHtml(todayFact.text) : tx("AI przygotuje krótką ciekawostkę z mini-słówkiem arabskim. Jedna ciekawostka na dzień.", "AI will prepare a short fact with an Arabic mini-word. One fact per day.")}</p>
     </section>
     <div class="mt-4 grid gap-3 sm:grid-cols-2">
-      ${state.cultureFacts.slice(0, 8).map((item) => `
+      ${state.cultureFacts.slice(0, 10).map((item) => `
         <article class="soft-panel p-4">
           <p class="text-xs font-bold text-[var(--muted)]">${item.date}</p>
           <h3 class="mt-1 font-black">${item.title}</h3>
@@ -2985,22 +3007,33 @@ function culture() {
       `).join("")}
     </div>
   `;
-  $("#generateCultureBtn").addEventListener("click", generateCultureFact);
+  if (!hasToday) {
+    $("#generateCultureBtn").addEventListener("click", generateCultureFact);
+  }
 }
 
 async function generateCultureFact() {
   const button = $("#generateCultureBtn");
+  if (!button || button.disabled) return;
   button.textContent = tx("Myślę...", "Thinking...");
+  button.disabled = true;
   try {
+    const prevTitles = state.cultureFacts.slice(0, 15).map(f => f.title).filter(Boolean);
+    const avoidNote = prevTitles.length
+      ? tx(
+          `NIE powtarzaj tematów: ${prevTitles.join(', ')}. Wybierz zupełnie inny temat.`,
+          `Do NOT repeat these topics: ${prevTitles.join(', ')}. Choose a completely different topic.`
+        )
+      : '';
     const prompt = tx(
-      `Napisz JEDNĄ krótką ciekawostkę (2-4 zdania) o kulturze arabskiej, islamie lub Indonezji. NIE generuj listy fiszek. NIE używaj nagłówków.
+      `Napisz JEDNĄ krótką ciekawostkę (2-4 zdania) o kulturze arabskiej, islamie lub Indonezji. NIE generuj listy fiszek. NIE używaj nagłówków. ${avoidNote}
 Format odpowiedzi:
 TYTUŁ: [krótki tytuł 3-5 słów]
 FAKT: [2-4 zdania ciekawostki]
 SŁOWO: [jedno arabskie słowo]
 WYMOWA: [transliteracja]
 ZNACZENIE: [polskie tłumaczenie]`,
-      `Write ONE short culture fact (2-4 sentences) about Arabic culture, Islam or Indonesia. Do NOT generate flashcard lists. Do NOT use headers.
+      `Write ONE short culture fact (2-4 sentences) about Arabic culture, Islam or Indonesia. Do NOT generate flashcard lists. Do NOT use headers. ${avoidNote}
 Response format:
 TITLE: [short title 3-5 words]
 FACT: [2-4 sentences]
@@ -3143,7 +3176,7 @@ function renderQuiz() {
     <h2 class="text-2xl font-black">Quiz</h2>
     <p class="mt-2 text-[var(--muted)]">${tx("Ktora to litera?", "Which letter is this?")}</p>
     <p class="mt-2 text-sm font-bold text-[var(--muted)]">${t("correct")}: ${state.quizStats.correct} · ${t("wrong")}: ${state.quizStats.wrong}</p>
-    <p class="arabic my-6 text-center text-8xl">${escapeHtml(correct.forms.isolated)}</p>
+    <p class="arabic my-4 text-center text-7xl">${escapeHtml(correct.forms.isolated)}</p>
     <button class="big-action mb-4 w-full bg-amber-500 text-white" data-say="${escapeHtml(correct.forms.isolated)}">🔊 ${t("play")}</button>
     <div class="grid gap-2">
       ${choices.map((choice) => `<button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-answer="${choice.id}">${escapeHtml(letterName(choice))}</button>`).join("")}
@@ -3558,14 +3591,8 @@ function renderAiMessages() {
   });
 }
 
-function aiActionButtons(index) {
-  return `
-    <div class="mt-3 flex flex-wrap gap-2">
-      <button class="ai-chip" data-ai-action="flashcards" data-message-index="${index}">${t("addFlashcards")}</button>
-      <button class="ai-chip" data-ai-action="book" data-message-index="${index}">${t("saveBook")}</button>
-      <button class="ai-chip" data-ai-action="culture" data-message-index="${index}">${t("addCulture")}</button>
-    </div>
-  `;
+function aiActionButtons(_index) {
+  return '';
 }
 
 async function sendAiMessage(event) {
@@ -3582,8 +3609,8 @@ async function sendAiMessage(event) {
   renderAiMessages();
   try {
     const appContext = tx(
-      `Kontekst aplikacji: uzytkownik ma ${state.points} punktow, poziom ${level()}, zna ${state.learnedLetters.length}/28 liter. Sekcje: Alfabet, Lekcje, Fiszki, Wymowa, Pisanie, Nasza Przygoda, Ksiazeczki, Kultura, Gry.`,
-      `App context: user has ${state.points} points, level ${level()}, knows ${state.learnedLetters.length}/28 letters. Sections: Alphabet, Lessons, Flashcards, Speech, Writing, Our Adventure, Books, Culture, Games.`
+      `Kontekst aplikacji: uzytkownik ma ${state.points} punktow, poziom ${level()}, zna ${state.learnedLetters.length}/28 liter. Sekcje: Alfabet, Lekcje, Fiszki, Wymowa, Pisanie, Nasza Przygoda, Kultura, Gry, Qur'an, Islam.`,
+      `App context: user has ${state.points} points, level ${level()}, knows ${state.learnedLetters.length}/28 letters. Sections: Alphabet, Lessons, Flashcards, Speech, Writing, Our Adventure, Culture, Games, Qur'an, Islam.`
     );
     const recent = state.aiMessages.filter((message) => message.content !== aiThinking).slice(-8);
     const answer = await askGroq([
@@ -3854,8 +3881,8 @@ const BADGES_CATALOG = [
   { id: "ten_letters",    icon: "✋",  pl: "Dziesięć liter",      en: "Ten letters",        criterionPl: "Poznaj 10 liter",                   criterionEn: "Learn 10 letters" },
   { id: "half_alphabet",  icon: "⭐",  pl: "Połowa alfabetu",     en: "Half alphabet",      criterionPl: "Poznaj 14 z 28 liter",              criterionEn: "Learn 14 of 28 letters" },
   { id: "full_alphabet",  icon: "🏆",  pl: "Mistrz alfabetu",     en: "Alphabet master",    criterionPl: "Poznaj wszystkie 28 liter",         criterionEn: "Learn all 28 letters" },
-  { id: "first_surah",    icon: "📖",  pl: "Pierwsza sura",       en: "First surah",        criterionPl: "Dodaj 1 surę Koranu",               criterionEn: "Add 1 Quran surah" },
-  { id: "ten_surahs",     icon: "📚",  pl: "Dziesięć sur",        en: "Ten surahs",         criterionPl: "Dodaj 10 sur Koranu",               criterionEn: "Add 10 Quran surahs" },
+  { id: "first_surah",    icon: "📖",  pl: "Pierwsza sura",       en: "First surah",        criterionPl: "Dodaj 1 surę do ulubionych ❤️",     criterionEn: "Add 1 surah to favorites ❤️" },
+  { id: "ten_surahs",     icon: "📚",  pl: "Dziesięć sur",        en: "Ten surahs",         criterionPl: "Dodaj 10 sur do ulubionych ❤️",     criterionEn: "Add 10 surahs to favorites ❤️" },
   { id: "streak3",        icon: "🔥",  pl: "3 dni z rzędu",       en: "3-day streak",       criterionPl: "Ucz się 3 dni pod rząd",            criterionEn: "Learn 3 days in a row" },
   { id: "streak7",        icon: "🔥🔥", pl: "Tydzień nauki",      en: "Week streak",        criterionPl: "Ucz się 7 dni pod rząd",            criterionEn: "Learn 7 days in a row" },
   { id: "streak30",       icon: "💫",  pl: "Miesiąc nauki",       en: "Month streak",       criterionPl: "Ucz się 30 dni pod rząd",           criterionEn: "Learn 30 days in a row" },
@@ -3924,6 +3951,7 @@ function hijriWidget() {
   const monthName = monthNames ? (state.lang === 'pl' ? monthNames.pl : monthNames.en) : '';
   const gregStr = new Date().toLocaleDateString(state.lang === 'pl' ? 'pl-PL' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' });
   return `<div class="hijri-widget">
+    <div class="hijri-label">${tx("Kalendarz islamski (Hidżra)", "Islamic Calendar (Hijri)")}</div>
     <div class="hijri-date">${h.day} ${monthName} ${h.year} H</div>
     <div class="hijri-month" style="direction:rtl">${monthNames?.ar || ''} — ${monthNames?.tr || ''}</div>
     <div class="hijri-gregorian">${gregStr}</div>
@@ -4008,8 +4036,8 @@ function dhikr() {
 // PRAYER TIMES — Borzęta (Poland) + Surabaya (Indonesia)
 // ============================================================
 const PRAYER_LOCATIONS = [
-  { id: 'borzeta', label: 'Borzęta 🇵🇱', lat: '49.7166', lng: '20.0000', method: 3 },
-  { id: 'surabaya', label: 'Surabaya 🇮🇩', lat: '-7.2575', lng: '112.7521', method: 3 }
+  { id: 'polska', label: 'Polska 🇵🇱', city: 'Poland', tz: 'Europe/Warsaw', lat: '52.2297', lng: '21.0122', method: 3 },
+  { id: 'surabaya', label: 'Surabaya 🇮🇩', city: 'Surabaya', tz: 'Asia/Jakarta', lat: '-7.2575', lng: '112.7521', method: 3 }
 ];
 const PRAYER_NAMES = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 const PRAYER_NAMES_PL = ['Fadżr', 'Wschód', 'Dhuhr', 'Asr', 'Maghrib', 'Isza'];
@@ -4030,7 +4058,15 @@ async function fetchQibla(loc) {
   return data.data?.direction || null;
 }
 
-function prayerTimesCard(label, timings, qibla, nextKey) {
+function formatLocalTime(tz) {
+  try {
+    return new Intl.DateTimeFormat(state.lang === 'pl' ? 'pl-PL' : 'en-GB', {
+      timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+    }).format(new Date());
+  } catch { return '--:--:--'; }
+}
+
+function prayerTimesCard(label, timings, qibla, nextKey, tz, locId) {
   const names = PRAYER_NAMES;
   const namesPL = PRAYER_NAMES_PL;
   const prayerRows = names.map((name, i) => {
@@ -4041,18 +4077,30 @@ function prayerTimesCard(label, timings, qibla, nextKey) {
       <span class="prayer-time">${time}</span>
     </div>`;
   }).join('');
+
   const qiblaHtml = qibla !== null ? `
     <div class="mt-4 flex items-center gap-4">
-      <div class="qibla-compass">
-        <div class="qibla-needle" style="transform:rotate(${qibla}deg)"></div>
+      <div class="qibla-compass" id="compass-${locId}">
+        <div class="qibla-compass-inner">
+          <div class="qibla-needle" id="needle-${locId}" style="transform:rotate(${qibla}deg)"></div>
+          <div class="qibla-compass-n">N</div>
+        </div>
       </div>
       <div>
         <p class="font-bold">${tx("Kierunek Qibla", "Qibla Direction")}</p>
         <p class="text-[var(--muted)] text-sm">${Math.round(qibla)}° ${tx("od północy", "from north")}</p>
+        <p class="text-xs text-[var(--muted)] mt-1" id="compass-status-${locId}">${tx("Obróć urządzenie ku Mekce", "Point device toward Mecca")}</p>
       </div>
     </div>` : '';
+
   return `<div class="prayer-widget">
-    <h2 class="text-xl font-black mb-3">${label}</h2>
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-xl font-black">${label}</h2>
+      <div class="text-right">
+        <div id="clock-${locId}" class="text-2xl font-black font-mono text-[var(--accent)]">${formatLocalTime(tz)}</div>
+        <div class="text-xs text-[var(--muted)]">${tz.replace('_', ' ')}</div>
+      </div>
+    </div>
     ${prayerRows}
     ${qiblaHtml}
   </div>`;
@@ -4072,25 +4120,88 @@ function getNextPrayer(timings) {
 }
 
 async function prayer() {
+  if (prayerClockInterval) { clearInterval(prayerClockInterval); prayerClockInterval = null; }
+  if (compassWatchId !== null) { try { window.removeEventListener('deviceorientationabsolute', compassWatchId); window.removeEventListener('deviceorientation', compassWatchId); } catch {} compassWatchId = null; }
+
   view.innerHTML = `
     <div class="mb-4">
       <h1 class="text-3xl font-black">${tx("Czasy Modlitw", "Prayer Times")} 🕌</h1>
-      <p class="text-[var(--muted)]">${tx("Dwie lokalizacje na żywo — Borzęta i Surabaya", "Two live locations — Borzęta and Surabaya")}</p>
+      <p class="text-[var(--muted)]">${tx("Dwie lokalizacje na żywo — Polska i Surabaya", "Two live locations — Poland and Surabaya")}</p>
     </div>
     <div class="grid gap-4 lg:grid-cols-2">
-      <div id="prayerBorzeta" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
+      <div id="prayerPolska" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
       <div id="prayerSurabaya" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
     </div>
   `;
+
+  const results = {};
   for (const loc of PRAYER_LOCATIONS) {
     try {
       const [timings, qibla] = await Promise.all([fetchPrayerTimes(loc), fetchQibla(loc)]);
       const nextKey = getNextPrayer(timings);
-      const el = $(`#prayer${loc.id.charAt(0).toUpperCase() + loc.id.slice(1)}`);
-      if (el) el.innerHTML = prayerTimesCard(loc.label, timings, qibla, nextKey);
+      const elId = `prayer${loc.id.charAt(0).toUpperCase() + loc.id.slice(1)}`;
+      const el = $(`#${elId}`);
+      if (el) el.innerHTML = prayerTimesCard(loc.label, timings, qibla, nextKey, loc.tz, loc.id);
+      results[loc.id] = { qibla };
     } catch {
-      const el = $(`#prayer${loc.id.charAt(0).toUpperCase() + loc.id.slice(1)}`);
+      const elId = `prayer${loc.id.charAt(0).toUpperCase() + loc.id.slice(1)}`;
+      const el = $(`#${elId}`);
       if (el) el.innerHTML = `<p class="text-[var(--muted)]">${tx("Błąd ładowania. Sprawdź połączenie.", "Load error. Check your connection.")}</p>`;
+    }
+  }
+
+  // Live clocks — update every second
+  prayerClockInterval = setInterval(() => {
+    for (const loc of PRAYER_LOCATIONS) {
+      const clockEl = $(`#clock-${loc.id}`);
+      if (clockEl) clockEl.textContent = formatLocalTime(loc.tz);
+    }
+  }, 1000);
+
+  // Live compass using device orientation
+  const orientationHandler = (e) => {
+    let heading = null;
+    if (e.webkitCompassHeading !== undefined) {
+      heading = e.webkitCompassHeading;
+    } else if (e.absolute && e.alpha !== null) {
+      heading = 360 - e.alpha;
+    } else if (e.alpha !== null) {
+      heading = 360 - e.alpha;
+    }
+    if (heading === null) return;
+    for (const loc of PRAYER_LOCATIONS) {
+      const qiblaDir = results[loc.id]?.qibla;
+      if (qiblaDir === undefined || qiblaDir === null) continue;
+      const needle = $(`#needle-${loc.id}`);
+      const statusEl = $(`#compass-status-${loc.id}`);
+      if (needle) {
+        const angle = qiblaDir - heading;
+        needle.style.transform = `rotate(${angle}deg)`;
+      }
+      if (statusEl) statusEl.textContent = tx("Kompas na żywo ✓", "Live compass ✓");
+    }
+  };
+  compassWatchId = orientationHandler;
+
+  if (typeof DeviceOrientationEvent !== 'undefined') {
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      // iOS 13+ requires permission
+      const permBtn = document.createElement('button');
+      permBtn.className = 'big-action bg-emerald-500 text-white mt-4 w-full';
+      permBtn.textContent = tx('Włącz kompas live (wymagane uprawnienie)', 'Enable live compass (permission required)');
+      permBtn.addEventListener('click', async () => {
+        try {
+          const perm = await DeviceOrientationEvent.requestPermission();
+          if (perm === 'granted') {
+            window.addEventListener('deviceorientation', orientationHandler);
+            permBtn.remove();
+          }
+        } catch {}
+      });
+      view.appendChild(permBtn);
+    } else {
+      window.addEventListener('deviceorientationabsolute', orientationHandler, true);
+      window.addEventListener('deviceorientation', orientationHandler, true);
     }
   }
 }
@@ -4138,6 +4249,22 @@ function tajweed() {
       <h1 class="text-3xl font-black">${tx("Zasady Tadżwid", "Tajweed Rules")} 🔤</h1>
       <p class="text-[var(--muted)]">${tx("تَجْوِيد — Reguły prawidłowej recytacji Koranu", "تَجْوِيد — Rules for correct Quran recitation")}</p>
     </div>
+    <div class="panel p-5 mb-5">
+      <h2 class="text-lg font-black mb-2">${tx("Czym jest Tadżwid?", "What is Tajweed?")}</h2>
+      <p class="text-sm text-[var(--muted)] mb-3">${tx(
+        "Tadżwid (تَجْوِيد) to zbiór zasad poprawnej recytacji Koranu. Słowo dosłownie oznacza \"ulepszanie\" lub \"robienie czegoś dobrze\". Dzięki tadżwidowi każda litera arabska wymawiana jest dokładnie tak, jak za czasów Proroka ﷺ, z właściwą długością samogłosek, akcentem i właściwościami głosek.",
+        "Tajweed (تَجْوِيد) is the set of rules for correct Quran recitation. The word literally means \"to improve\" or \"to do something well.\" Through tajweed, every Arabic letter is pronounced exactly as in the time of the Prophet ﷺ, with the right vowel lengths, emphasis, and phonetic properties."
+      )}</p>
+      <p class="text-sm text-[var(--muted)] mb-3">${tx(
+        "Dla amatora: nie musisz znać wszystkich zasad naraz. Zacznij od słuchania recytatorów (np. Mishary Rashida al-Afasy) i stopniowo ucz się reguł. Każdy błąd popełniony w dobrej wierze jest wybaczalny — ważna jest intencja uczenia się.",
+        "For a beginner: you don't need to know all the rules at once. Start by listening to reciters (e.g., Mishary Rashid al-Afasy) and gradually learn the rules. Every mistake made in good faith is forgivable — what matters is the intention to learn."
+      )}</p>
+      <div class="grid gap-2 sm:grid-cols-3 text-center text-sm">
+        <div class="soft-panel p-3"><p class="font-black text-[var(--accent)]">${tx("1. Makharaj", "1. Makhraj")}</p><p class="text-[var(--muted)] text-xs">${tx("Miejsce wymowy litery", "Place of articulation")}</p></div>
+        <div class="soft-panel p-3"><p class="font-black text-[var(--accent)]">${tx("2. Sifat", "2. Sifaat")}</p><p class="text-[var(--muted)] text-xs">${tx("Właściwości głoski", "Phonetic properties")}</p></div>
+        <div class="soft-panel p-3"><p class="font-black text-[var(--accent)]">${tx("3. Madda", "3. Madd")}</p><p class="text-[var(--muted)] text-xs">${tx("Przedłużenie samogłoski", "Vowel elongation")}</p></div>
+      </div>
+    </div>
     ${tajweedRules.map(rule => `
       <div class="tajweed-card" style="border-left: 4px solid ${rule.color || 'var(--accent)'}">
         <div class="tajweed-rule-name" style="color:${rule.color || 'var(--accent)'}">${state.lang === 'pl' ? rule.name_pl : rule.name_en}</div>
@@ -4160,6 +4287,24 @@ function seerah() {
       <h1 class="text-3xl font-black">${tx("Seerah — Życie Proroka ﷺ", "Seerah — Life of the Prophet ﷺ")} 🌙</h1>
       <p class="text-[var(--muted)]">${tx("Kluczowe wydarzenia z życia Proroka Muhammada ﷺ", "Key events from the life of Prophet Muhammad ﷺ")}</p>
     </div>
+    <div class="panel p-5 mb-5">
+      <h2 class="text-lg font-black mb-2">${tx("Czym jest Seerah?", "What is Seerah?")}</h2>
+      <p class="text-sm text-[var(--muted)] mb-3">${tx(
+        "Seerah (سِيرَة) to biografia Proroka Muhammada ﷺ. Słowo oznacza dosłownie \"droga\" lub \"sposób życia\". Seerah obejmuje jego narodziny (~570 n.e.), dzieciństwo, wiek dorosły, objawienie Koranu, emigrację do Medyny i budowę pierwszej wspólnoty muzułmańskiej.",
+        "Seerah (سِيرَة) is the biography of Prophet Muhammad ﷺ. The word literally means \"path\" or \"way of life.\" Seerah covers his birth (~570 CE), childhood, adulthood, the revelation of the Quran, the migration to Medina, and the building of the first Muslim community."
+      )}</p>
+      <p class="text-sm text-[var(--muted)] mb-3">${tx(
+        "Dlaczego Seerah jest ważna? Poznanie życia Proroka ﷺ pomaga zrozumieć Koran w kontekście, uczyć się od jego przykładu (sunna) i umacniać wiarę. Jego życie to praktyczny przewodnik islamu — jak się modlić, jak traktować innych, jak zachować się w trudnościach.",
+        "Why does Seerah matter? Knowing the life of the Prophet ﷺ helps understand the Quran in context, learn from his example (sunnah), and strengthen faith. His life is a practical guide to Islam — how to pray, how to treat others, how to behave in hardship."
+      )}</p>
+      <div class="grid gap-2 sm:grid-cols-2 text-sm">
+        <div class="soft-panel p-3"><p class="font-black">🕌 ${tx("Mekka → Medyna", "Mecca → Medina")}</p><p class="text-[var(--muted)] text-xs">${tx("Hidżra (622 n.e.) — punkt zwrotny islamu", "Hijra (622 CE) — turning point of Islam")}</p></div>
+        <div class="soft-panel p-3"><p class="font-black">📖 ${tx("Pierwsze objawienie", "First Revelation")}</p><p class="text-[var(--muted)] text-xs">${tx("610 n.e., jaskinia Hira — Iqra! (Czytaj!)", "610 CE, Cave of Hira — Iqra! (Read!)")}</p></div>
+        <div class="soft-panel p-3"><p class="font-black">⚔️ ${tx("Bitwy islamu", "Battles of Islam")}</p><p class="text-[var(--muted)] text-xs">${tx("Badr, Uhud, Khandaq — obrona wspólnoty", "Badr, Uhud, Khandaq — defense of the community")}</p></div>
+        <div class="soft-panel p-3"><p class="font-black">🌙 ${tx("Śmierć Proroka ﷺ", "Death of the Prophet ﷺ")}</p><p class="text-[var(--muted)] text-xs">${tx("632 n.e. — Medyna, po ostatniej pielgrzymce", "632 CE — Medina, after the Farewell Pilgrimage")}</p></div>
+      </div>
+    </div>
+    <h2 class="text-xl font-black mb-3">${tx("Kalendarium", "Timeline")}</h2>
     <div class="seerah-timeline">
       ${seerahTimeline.map(ev => `
         <div class="seerah-event">
