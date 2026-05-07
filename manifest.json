@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Alif AI - Arabic alphabet learning",
+  "name": "Alif AI - Islam & arabski",
   "short_name": "Alif AI",
-  "description": "Offline PWA for learning the Arabic alphabet.",
+  "description": "Offline PWA do nauki islamu przez arabski — Koran, litery, dhikr, historia islamu i więcej.",
   "lang": "en",
   "dir": "ltr",
   "start_url": "./index.html",
@@ -63,7 +63,7 @@
     {
       "name": "Quiz",
       "url": "./index.html#games",
-      "description": "Play quiz or memory"
+      "description": "Quiz, Filary Islamu, Sury i więcej"
     }
   ]
 }

@@ -3,15 +3,15 @@ import { arabicAlphabet, words, dailyTasks, asmaulHusna, islamicHadith, seerahTi
 const GROQ_API_KEY = "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";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
-const AI_SYSTEM_PROMPT_PL = `Jesteś ciepłym, motywującym asystentem do nauki arabskiego w aplikacji 'Alif AI'.
+const AI_SYSTEM_PROMPT_PL = `Jesteś ciepłym, motywującym asystentem do nauki islamu i arabskiego w aplikacji 'Alif AI'. Arabski to klucz do Koranu — pomagasz użytkownikowi uczyć się liter, sur, dhikru, historii islamu i arabskich słów.
 Zawsze odpowiadaj TYLKO w języku polskim. Bądź przyjacielski, pomocny i zachęcający.
 NIGDY nie używaj surowych linków markdown ani nie generuj zbędnego kodu.
-Twórz wysokiej jakości materiały edukacyjne (fiszki, quizy, historie).
+Twórz wysokiej jakości materiały edukacyjne (fiszki, quizy, historie, ciekawostki o islamie).
 Po wygenerowaniu treści, użytkownik będzie mógł ją dodać do sekcji Fiszki, Książeczki, Nasza Przygoda lub Kultura za pomocą przycisków w aplikacji.`;
-const AI_SYSTEM_PROMPT_EN = `You are a warm, motivating Arabic learning assistant inside the app 'Alif AI'.
+const AI_SYSTEM_PROMPT_EN = `You are a warm, motivating Islamic learning assistant inside the app 'Alif AI'. Arabic is the key to the Quran — help the user learn Arabic letters, surahs, dhikr, Islamic history and prayers.
 Always reply ONLY in English. Be friendly, encouraging and helpful.
 NEVER use raw markdown links or generate unnecessary code.
-Provide high-quality Arabic learning material (flashcards, quizzes, stories).
+Provide high-quality Islamic and Arabic learning material (flashcards, quizzes, stories, surahs, hadiths, dhikr, pillars of Islam).
 After generating content, the user will be able to add it to Flashcards, Books, Our Adventure, or Culture sections using app buttons.`;
 
 const $ = (selector) => document.querySelector(selector);
@@ -121,7 +121,10 @@ const I18N = {
     navHome: "Start", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navSeerah: "Seerah", navPillars: "Filary", navRoots: "Korzenie",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
-    welcome: "Witaj w ألف AI", homeTitle: "Uczymy się arabskiego krok po kroku", homeLead: "Duże litery, spokojne powtórki, wymowa, pisanie — i osobisty AI Assistant do nauki arabskiego.",
+    welcome: "Witaj w ألف AI", homeTitle: "Islam — krok po kroku", homeLead: "Arabski jest narzędziem — bo czytanie Koranu w oryginale to obowiązek każdego muzułmanina. Ucz się liter, sur, dhikru, historii islamu i modlitw.",
+    pillarsQuiz: "Quiz: Filary Islamu", pillarsQuizDesc: "5 Filarów i 6 Filarów Imanu",
+    surahQuiz: "Quiz: Sury Koranu", surahQuizDesc: "Rozpoznaj arabskie nazwy sur",
+    dhikrGame: "Szybki Dhikr", dhikrGameDesc: "33 razy — jak najszybciej!", dhikrGameStart: "Dotknij aby zacząć", dhikrGameResult: "Czas",
     streak: "Seria dni", level: "Poziom", alphabetProgress: "Alfabet", todayTask: "Dzisiejsze zadanie", start: "Zaczynam", progress: "Postęp", points: "pkt",
     aiAssistant: "AI Assistant", aiPlaceholder: "Poproś o fiszki, quiz, historyjkę albo ciekawostkę...", send: "Wyślij", aiHello: "Cześć! Jestem Twoim Alif AI Assistantem. Mogę stworzyć fiszki, mini-lekcję, quiz, historyjkę albo ciekawostkę dnia.",
     addFlashcards: "Dodaj do fiszek", saveBook: "Zapisz jako nową książeczkę", addAdventure: "Dodaj do Naszej Przygody", addCulture: "Dodaj jako ciekawostkę",
@@ -135,7 +138,10 @@ const I18N = {
     navHome: "Home", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navSeerah: "Seerah", navPillars: "Pillars", navRoots: "Roots",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
-    welcome: "Welcome to ألف AI", homeTitle: "We learn Arabic step by step", homeLead: "Big letters, calm reviews, pronunciation, writing — and a personal AI Assistant for learning Arabic.",
+    welcome: "Welcome to ألف AI", homeTitle: "Islam — step by step", homeLead: "Arabic is the key — reading the Quran in the original is every Muslim's obligation. Learn letters, surahs, dhikr, Islamic history and prayers.",
+    pillarsQuiz: "Pillars Quiz", pillarsQuizDesc: "5 Pillars & 6 Pillars of Iman",
+    surahQuiz: "Surah Quiz", surahQuizDesc: "Recognise Arabic surah names",
+    dhikrGame: "Dhikr Speed", dhikrGameDesc: "33 taps — as fast as you can!", dhikrGameStart: "Tap to start", dhikrGameResult: "Time",
     streak: "Daily streak", level: "Level", alphabetProgress: "Alphabet", todayTask: "Today's task", start: "Start", progress: "Progress", points: "pts",
     aiAssistant: "AI Assistant", aiPlaceholder: "Ask for flashcards, a quiz, a story or a culture fact...", send: "Send", aiHello: "Hi! I am your Alif AI Assistant. I can create flashcards, mini-lessons, quizzes, stories, or a daily culture fact.",
     addFlashcards: "Add to flashcards", saveBook: "Save as new book", addAdventure: "Add to Our Adventure", addCulture: "Add as culture fact",
@@ -315,6 +321,7 @@ let mediaRecorder = null;
 let audioChunks = [];
 let currentSpeechSample = null;
 let catchTimer = null;
+let dhikrGameTimer = null;
 let catchScore = 0;
 let catchMisses = 0;
 let speechUnlocked = false;
@@ -363,7 +370,14 @@ const defaultState = {
   hifzProgress: {},
   dhikrCounts: { subhana: 0, alhamdu: 0, allahu: 0 },
   groqApiKey: "",
-  surahFilter: "all"
+  surahFilter: "all",
+  pillarsQuizStats: { correct: 0, wrong: 0 },
+  pillarsQuizHistory: [],
+  surahQuizStats: { correct: 0, wrong: 0 },
+  surahQuizHistory: [],
+  surahQuizBest: 0,
+  dhikrGameBest: null,
+  dhikrGameHistory: []
 };
 
 let state = loadState();
@@ -691,6 +705,10 @@ function render() {
     clearInterval(catchTimer);
     catchTimer = null;
   }
+  if (dhikrGameTimer) {
+    clearInterval(dhikrGameTimer);
+    dhikrGameTimer = null;
+  }
   renderNav();
   const currentThemeMeta = themeMeta(state.theme);
   $("#themeBtn").textContent = currentThemeMeta.icon;
@@ -744,17 +762,17 @@ function islam() {
 function home() {
   const tasks = activeDailyTasks();
   const task = tasks[new Date().getDate() % tasks.length];
-  
+
   view.innerHTML = `
     <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
       <section class="panel romantic-hero p-5 sm:p-7">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p class="font-bold text-emerald-600">${t("welcome")}</p>
-            <h1 class="mt-2 text-3xl font-black sm:text-5xl">${t("homeTitle")} 🌸</h1>
-            <p class="mt-3 max-w-2xl text-[var(--muted)]">${t("homeLead")} 💕</p>
+            <h1 class="mt-2 text-3xl font-black sm:text-4xl">${t("homeTitle")} ☪️</h1>
+            <p class="mt-3 max-w-2xl text-sm text-[var(--muted)]">${t("homeLead")}</p>
           </div>
-          <div class="grid h-28 w-28 shrink-0 place-items-center rounded-lg bg-emerald-500 text-7xl text-white shadow-sm arabic">ا</div>
+          <div class="grid h-28 w-28 shrink-0 place-items-center rounded-lg bg-emerald-500 text-5xl text-white shadow-sm">☪</div>
         </div>
         <div class="mt-7 grid gap-3 sm:grid-cols-3">
           ${statCard(t("streak"), `${state.streak} ${tx("dni", "days")}`, tx("Codzienna obecnosc", "Daily presence"))}
@@ -788,16 +806,41 @@ function home() {
         </button>
       </aside>
     </div>
-    ${journeyWidget()}
-    <div class="mt-4 grid gap-3 sm:grid-cols-5">
-      ${quickLink(t("aiAssistant"), tx("Tworz fiszki, quizy i historie", "Create cards, quizzes and stories"), "ai")}
-      ${quickLink(tx("Islam", "Islam"), tx("Qur'an, dhikr, filary i więcej", "Qur'an, dhikr, pillars and more"), "islam")}
-      ${quickLink(t("navLessons"), tx("Pierwsze slowa i zwroty", "First words and phrases"), "lessons")}
-      ${quickLink(t("navAlphabet"), tx("Litery arabskie od podstaw", "Arabic letters from the start"), "alphabet")}
-      ${quickLink(t("navGames"), tx("Quiz, memory i lapanie liter", "Quiz, memory and catch game"), "games")}
+
+    <div class="mt-4 grid gap-5">
+      ${sectionGroup(tx("Nauka Arabskiego", "Learning Arabic"), "#10B981", [
+        { route: "alphabet", icon: "ا", label: t("navAlphabet") },
+        { route: "lessons",  icon: "Aa", label: t("navLessons") },
+        { route: "flashcards", icon: "▣", label: t("navFlashcards") },
+        { route: "speech",   icon: "◉", label: t("navSpeech") },
+        { route: "writing",  icon: "✎", label: t("navWriting") },
+        { route: "roots",    icon: "🌿", label: t("navRoots") },
+      ])}
+      ${sectionGroup(tx("Wiedza Islamska", "Islamic Knowledge"), "#F59E0B", [
+        { route: "islam",   icon: "☪", label: t("navIslam") },
+        { route: "koran",   icon: "📖", label: t("navKoran") },
+        { route: "tajweed", icon: "🔤", label: t("navTajweed") },
+        { route: "pillars", icon: "⭐", label: t("navPillars") },
+        { route: "seerah",  icon: "🌙", label: t("navSeerah") },
+        { route: "asmaul",  icon: "✨", label: t("navAsmaul") },
+      ])}
+      ${sectionGroup(tx("Praktyka i Narzędzia", "Practice & Tools"), "#3B82F6", [
+        { route: "prayer",    icon: "🕌", label: t("navPrayer") },
+        { route: "dhikr",     icon: "📿", label: t("navDhikr") },
+        { route: "ai",        icon: "✦", label: t("aiAssistant") },
+        { route: "adventure", icon: "☆", label: t("navAdventure") },
+        { route: "books",     icon: "▤", label: t("navBooks") },
+        { route: "culture",   icon: "✦", label: t("navCulture") },
+      ])}
+      ${sectionGroup(tx("Gry i Odznaki", "Games & Badges"), "#8B5CF6", [
+        { route: "games",  icon: "◎", label: t("navGames") },
+        { route: "badges", icon: "🏆", label: t("navBadges") },
+      ])}
     </div>
+
+    ${journeyWidget()}
   `;
-  
+
   loadAyatOfDay();
   view.querySelectorAll("[data-route]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -890,6 +933,22 @@ function statCard(title, value, hint) {
 
 function quickLink(title, text, routeName) {
   return `<button class="panel min-h-28 p-4 text-left" data-route="${routeName}"><strong class="block text-lg">${title}</strong><span class="text-sm text-[var(--muted)]">${text}</span></button>`;
+}
+
+function sectionGroup(title, accentColor, items) {
+  return `
+    <div>
+      <h2 class="text-xs font-black uppercase tracking-widest mb-2" style="color:${accentColor}">${title}</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        ${items.map(item => `
+          <button class="panel p-3 text-left flex items-center gap-2 min-h-14 active:scale-95 transition-transform" data-route="${item.route}">
+            <span class="text-xl shrink-0">${item.icon}</span>
+            <span class="text-xs font-black leading-tight">${item.label}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
 }
 
 const QURAN_RECITERS = [
@@ -2747,18 +2806,24 @@ async function generateCultureFact() {
 function games() {
   view.innerHTML = `
     <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Quizy i Gry", "Quizzes and Games")}</h1>
-      <p class="text-[var(--muted)]">${tx("Szybki quiz, Memory Match i prosta gra Lap litere.", "Quick quiz, Memory Match and a simple Catch the Letter game.")}</p>
+      <h1 class="text-3xl font-black">${tx("Quizy i Gry", "Quizzes & Games")}</h1>
+      <p class="text-[var(--muted)]">${tx("Quiz liter, Memory Match, Filary Islamu, Sury Koranu, Łap literę, Szybki Dhikr.", "Letter quiz, Memory Match, Pillars of Islam, Surah quiz, Catch the Letter, Dhikr Speed.")}</p>
     </div>
     <div class="grid gap-4 lg:grid-cols-2">
       <section class="panel p-5" id="quizBox"></section>
       <section class="panel p-5" id="memoryBox"></section>
+      <section class="panel p-5" id="pillarsQuizBox"></section>
+      <section class="panel p-5" id="surahQuizBox"></section>
       <section class="panel p-5 lg:col-span-2" id="catchBox"></section>
+      <section class="panel p-5 lg:col-span-2" id="dhikrGameBox"></section>
     </div>
   `;
   renderQuiz();
   renderMemory();
+  renderPillarsQuiz();
+  renderSurahQuiz();
   renderCatchGame();
+  renderDhikrGame();
 }
 
 function renderQuiz() {
@@ -2940,6 +3005,190 @@ function spawnFallingLetter(arena) {
     }
   });
   arena.appendChild(button);
+}
+
+function renderPillarsQuiz() {
+  const allPillars = [
+    ...pillarsOfIslam.map(p => ({ ...p, category: tx("Filary Islamu", "Pillars of Islam") })),
+    ...pillarsOfIman.map(p => ({ ...p, category: tx("Filary Imanu", "Pillars of Iman") }))
+  ];
+  const correct = allPillars[Math.floor(Math.random() * allPillars.length)];
+  const others = allPillars.filter(p => !(p.n === correct.n && p.category === correct.category));
+  const choices = [correct, ...others.sort(() => Math.random() - 0.5).slice(0, 3)].sort(() => Math.random() - 0.5);
+  const correctLabel = state.lang === "pl" ? correct.pl : correct.en;
+
+  $("#pillarsQuizBox").innerHTML = `
+    <h2 class="text-2xl font-black">${t("pillarsQuiz")}</h2>
+    <p class="mt-1 text-[var(--muted)] text-sm">${t("pillarsQuizDesc")}</p>
+    <p class="mt-2 text-sm font-bold text-[var(--muted)]">${t("correct")}: ${state.pillarsQuizStats.correct} · ${t("wrong")}: ${state.pillarsQuizStats.wrong}</p>
+    <div class="my-5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 p-4 text-center">
+      <p class="arabic text-3xl text-amber-700 mb-1">${escapeHtml(correct.ar)}</p>
+      <p class="text-xs text-[var(--muted)]">${escapeHtml(correct.tr)} · ${correct.category}</p>
+    </div>
+    <div class="grid gap-2">
+      ${choices.map(c => `<button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-pillar-id="${c.n}-${c.category}">${escapeHtml(state.lang === "pl" ? c.pl : c.en)}</button>`).join("")}
+    </div>
+    <div class="mt-4">
+      <h3 class="font-black text-sm">${t("history")}</h3>
+      <div class="mt-2 grid gap-1 text-sm text-[var(--muted)]">
+        ${state.pillarsQuizHistory.slice(0, 5).map(item => `<p>${item.ok ? t("correct") : t("wrong")} · ${escapeHtml(item.name)} · ${new Date(item.date).toLocaleTimeString(localeTag())}</p>`).join("") || `<p>${tx("Brak prób.", "No attempts yet.")}</p>`}
+      </div>
+    </div>
+  `;
+
+  const correctKey = `${correct.n}-${correct.category}`;
+  $("#pillarsQuizBox").querySelectorAll("[data-pillar-id]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.pillarId === correctKey) {
+        btn.className = "big-action bg-emerald-500 text-white";
+        state.pillarsQuizStats.correct += 1;
+        state.pillarsQuizHistory.unshift({ ok: true, name: correctLabel, date: new Date().toISOString() });
+        state.pillarsQuizHistory = state.pillarsQuizHistory.slice(0, 20);
+        state.points += 15;
+        saveState();
+        checkBadges();
+        confetti();
+        setTimeout(renderPillarsQuiz, 650);
+      } else {
+        btn.className = "big-action bg-red-500 text-white";
+        state.pillarsQuizStats.wrong += 1;
+        state.pillarsQuizHistory.unshift({ ok: false, name: correctLabel, date: new Date().toISOString() });
+        state.pillarsQuizHistory = state.pillarsQuizHistory.slice(0, 20);
+        saveState();
+      }
+    });
+  });
+}
+
+function renderSurahQuiz() {
+  const pool = SURAH_LIST.filter(s => s.number >= 78);
+  const correct = pool[Math.floor(Math.random() * pool.length)];
+  const others = SURAH_LIST.filter(s => s.number !== correct.number);
+  const choices = [correct, ...others.sort(() => Math.random() - 0.5).slice(0, 3)].sort(() => Math.random() - 0.5);
+  const streak = state.surahQuizBest;
+
+  $("#surahQuizBox").innerHTML = `
+    <h2 class="text-2xl font-black">${t("surahQuiz")}</h2>
+    <p class="mt-1 text-[var(--muted)] text-sm">${t("surahQuizDesc")}</p>
+    <p class="mt-2 text-sm font-bold text-[var(--muted)]">${t("correct")}: ${state.surahQuizStats.correct} · ${t("wrong")}: ${state.surahQuizStats.wrong} · ${t("record")}: ${streak}</p>
+    <p class="surah-quiz-name">${escapeHtml(correct.arName)}</p>
+    <p class="text-center text-xs text-[var(--muted)] -mt-2 mb-4">${tx("Sura", "Surah")} ${correct.number}</p>
+    <div class="grid gap-2">
+      ${choices.map(c => `<button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-surah-num="${c.number}">${escapeHtml(c.meaning)} (${escapeHtml(c.enName)})</button>`).join("")}
+    </div>
+    <div class="mt-4">
+      <h3 class="font-black text-sm">${t("history")}</h3>
+      <div class="mt-2 grid gap-1 text-sm text-[var(--muted)]">
+        ${state.surahQuizHistory.slice(0, 5).map(item => `<p>${item.ok ? t("correct") : t("wrong")} · ${escapeHtml(item.name)} · ${new Date(item.date).toLocaleTimeString(localeTag())}</p>`).join("") || `<p>${tx("Brak prób.", "No attempts yet.")}</p>`}
+      </div>
+    </div>
+  `;
+
+  let currentStreak = 0;
+  $("#surahQuizBox").querySelectorAll("[data-surah-num]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (parseInt(btn.dataset.surahNum) === correct.number) {
+        btn.className = "big-action bg-emerald-500 text-white";
+        state.surahQuizStats.correct += 1;
+        currentStreak += 1;
+        if (currentStreak > state.surahQuizBest) { state.surahQuizBest = currentStreak; }
+        state.surahQuizHistory.unshift({ ok: true, name: correct.arName, date: new Date().toISOString() });
+        state.surahQuizHistory = state.surahQuizHistory.slice(0, 20);
+        state.points += 20;
+        saveState();
+        checkBadges();
+        confetti();
+        setTimeout(renderSurahQuiz, 650);
+      } else {
+        btn.className = "big-action bg-red-500 text-white";
+        state.surahQuizStats.wrong += 1;
+        currentStreak = 0;
+        state.surahQuizHistory.unshift({ ok: false, name: correct.arName, date: new Date().toISOString() });
+        state.surahQuizHistory = state.surahQuizHistory.slice(0, 20);
+        saveState();
+      }
+    });
+  });
+}
+
+const DHIKR_PHRASES = [
+  { ar: "سُبْحَانَ اللَّهِ", tr: "Subhanallah", pl: "Chwała Allahowi", en: "Glory be to Allah" },
+  { ar: "الْحَمْدُ لِلَّهِ", tr: "Alhamdulillah", pl: "Chwała Allahowi (dziękczynienie)", en: "All praise to Allah" },
+  { ar: "اللَّهُ أَكْبَر", tr: "Allahu Akbar", pl: "Allah jest Największy", en: "Allah is the Greatest" }
+];
+
+function renderDhikrGame() {
+  const phrase = DHIKR_PHRASES[Math.floor(Math.random() * DHIKR_PHRASES.length)];
+  let count = 0;
+  let startTime = null;
+  let elapsed = 0;
+  const TARGET = 33;
+
+  const bestText = state.dhikrGameBest !== null
+    ? `${t("record")}: ${state.dhikrGameBest.toFixed(1)}s`
+    : tx("Brak rekordu", "No record yet");
+
+  $("#dhikrGameBox").innerHTML = `
+    <h2 class="text-2xl font-black">${t("dhikrGame")}</h2>
+    <p class="mt-1 text-[var(--muted)] text-sm">${t("dhikrGameDesc")}</p>
+    <p class="mt-2 text-sm font-bold text-[var(--muted)]">${bestText}</p>
+    <div class="mt-5 flex flex-col items-center gap-4">
+      <div class="dhikr-ring" id="dhikrRing">
+        <div class="dhikr-ring-inner" id="dhikrCount">0</div>
+      </div>
+      <button class="dhikr-game-btn" id="dhikrBtn">
+        <span class="arabic text-2xl">${escapeHtml(phrase.ar)}</span>
+        <span class="text-xs mt-1 opacity-80">${escapeHtml(phrase.tr)}</span>
+      </button>
+      <p class="text-sm text-[var(--muted)]">${state.lang === "pl" ? phrase.pl : phrase.en}</p>
+      <p id="dhikrTimer" class="text-2xl font-black tabular-nums">0.0s</p>
+    </div>
+    <div class="mt-4">
+      <h3 class="font-black text-sm">${t("history")}</h3>
+      <div class="mt-2 grid gap-1 text-sm text-[var(--muted)]" id="dhikrHistory">
+        ${state.dhikrGameHistory.slice(0, 5).map(item => `<p>${escapeHtml(item.phrase)} · ${item.seconds.toFixed(1)}s · ${new Date(item.date).toLocaleTimeString(localeTag())}</p>`).join("") || `<p>${tx("Brak prób.", "No attempts yet.")}</p>`}
+      </div>
+    </div>
+  `;
+
+  const btn = $("#dhikrGameBox #dhikrBtn");
+  const countEl = $("#dhikrGameBox #dhikrCount");
+  const ringEl = $("#dhikrGameBox #dhikrRing");
+  const timerEl = $("#dhikrGameBox #dhikrTimer");
+
+  btn.addEventListener("click", () => {
+    if (count === 0) {
+      startTime = Date.now();
+      if (dhikrGameTimer) clearInterval(dhikrGameTimer);
+      dhikrGameTimer = setInterval(() => {
+        elapsed = (Date.now() - startTime) / 1000;
+        if (timerEl) timerEl.textContent = elapsed.toFixed(1) + "s";
+      }, 100);
+    }
+    if (count >= TARGET) return;
+    count += 1;
+    countEl.textContent = count;
+    const pct = (count / TARGET) * 100;
+    ringEl.style.background = `conic-gradient(var(--accent) ${pct}%, var(--line) ${pct}%)`;
+
+    if (count >= TARGET) {
+      clearInterval(dhikrGameTimer);
+      dhikrGameTimer = null;
+      const seconds = (Date.now() - startTime) / 1000;
+      const pts = Math.max(5, Math.round(100 / seconds * TARGET));
+      if (state.dhikrGameBest === null || seconds < state.dhikrGameBest) {
+        state.dhikrGameBest = seconds;
+      }
+      state.dhikrGameHistory.unshift({ phrase: phrase.tr, seconds, date: new Date().toISOString() });
+      state.dhikrGameHistory = state.dhikrGameHistory.slice(0, 20);
+      state.points += pts;
+      saveState();
+      confetti();
+      btn.textContent = `${seconds.toFixed(1)}s — +${pts} ${t("points")}`;
+      btn.disabled = true;
+      setTimeout(renderDhikrGame, 2000);
+    }
+  });
 }
 
 function mountAiAssistant() {
