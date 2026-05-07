@@ -1517,3 +1517,64 @@ a:focus-visible {
   color: var(--muted);
 }
 
+/* ============================================================
+   Surah filter chips
+   ============================================================ */
+.surah-chips-bar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0 6px;
+  scrollbar-width: none;
+}
+.surah-chips-bar::-webkit-scrollbar { display: none; }
+
+.surah-chip {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.surah-chip.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+.surah-chip:hover:not(.active) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ============================================================
+   Surah group header
+   ============================================================ */
+.surah-group-header {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--accent);
+  padding: 14px 0 6px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   Surah badge (na kartach)
+   ============================================================ */
+.surah-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  line-height: 1.4;
+}
+

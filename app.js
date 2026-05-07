@@ -367,7 +367,8 @@ const defaultState = {
   ttsWarningShown: false,
   hifzProgress: {},
   dhikrCounts: { subhana: 0, alhamdu: 0, allahu: 0 },
-  groqApiKey: ""
+  groqApiKey: "",
+  surahFilter: "all"
 };
 
 let state = loadState();
@@ -992,6 +993,32 @@ const SURAH_LIST = [
   {number:114,arName:"الناس",    enName:"An-Nas",        meaning:"The Mankind",              numberOfAyahs:6,   revelationType:"Meccan"},
 ];
 
+const SURAH_EXTRA = {
+  1:   { badge: "Fard ✓",       tip_pl: "Recytowana w każdej rak'ah — bez niej modlitwa nieważna", tip_en: "Recited in every rak'ah — prayer invalid without it" },
+  2:   { badge: "Ayat al-Kursi",tip_pl: "Zawiera Ayat al-Kursi (2:255) — recytuj po każdej modlitwie", tip_en: "Contains Ayat al-Kursi (2:255) — recite after every prayer" },
+  18:  { badge: "Piątek 🌙",    tip_pl: "Recytuj co piątek — ochrona przed Dajjalem (Muslim 809)", tip_en: "Recite every Friday — protection from Dajjal (Muslim 809)" },
+  36:  { badge: "Serce ♥",      tip_pl: "Ya-Sin — Serce Koranu (at-Tirmidhi 2812)", tip_en: "Ya-Sin — Heart of the Quran (at-Tirmidhi 2812)" },
+  44:  { badge: "Noc piątku",   tip_pl: "Recytuj w nocy czwartku/piątku — wielka nagroda", tip_en: "Recite on Thursday/Friday night — great reward" },
+  55:  { badge: "Oblubienica",  tip_pl: "Az-Zahra — Oblubienica Koranu, 31× 'Które łaski Pana swego odrzucicie?'", tip_en: "Az-Zahra — Bride of the Quran, 31× 'Which favors of your Lord will you deny?'" },
+  56:  { badge: "Bogactwo",     tip_pl: "Recytuj każdej nocy — chroni przed ubóstwem (Ibn Masud)", tip_en: "Recite every night — protects from poverty (Ibn Masud)" },
+  67:  { badge: "Tarcza 🛡",    tip_pl: "Al-Mulk — chroni przed karą grobu, recytuj przed snem (Abu Dawud 1400)", tip_en: "Al-Mulk — protects from grave punishment, recite before sleep (Abu Dawud 1400)" },
+  110: { badge: "Pożegnanie",   tip_pl: "Jedna z ostatnich objawień — Prorok ﷺ wiedział, że czas mu się kończy", tip_en: "One of the last revelations — the Prophet ﷺ knew his time was near" },
+  112: { badge: "1/3 Koranu",   tip_pl: "Równoważna 1/3 Koranu w nagrodzie — recytuj 3× = cały Koran (Bukhari 5013)", tip_en: "Equivalent to 1/3 of the Quran in reward — recite 3× = whole Quran (Bukhari 5013)" },
+  113: { badge: "Schronienie",  tip_pl: "Al-Mu'awwidhatain — recytuj rano ×3, wieczorem ×3 (Abu Dawud 5082)", tip_en: "Al-Mu'awwidhatain — recite ×3 morning and evening (Abu Dawud 5082)" },
+  114: { badge: "Schronienie",  tip_pl: "Recytuj razem z Al-Falaq rano i wieczorem ×3", tip_en: "Recite together with Al-Falaq morning and evening ×3" },
+};
+
+const ESSENTIAL_SURAHS = [1, 112, 113, 114, 67, 36, 55, 18, 2, 56];
+
+const SURAH_LENGTH_GROUPS = [
+  { key: "xs",      labelPl: "Bardzo krótkie (≤6)",    labelEn: "Very short (≤6)",      min: 1,   max: 6   },
+  { key: "short",   labelPl: "Krótkie (7–12)",          labelEn: "Short (7–12)",         min: 7,   max: 12  },
+  { key: "smed",    labelPl: "Krótko-średnie (13–20)",  labelEn: "Short-medium (13–20)", min: 13,  max: 20  },
+  { key: "med",     labelPl: "Średnie (21–50)",         labelEn: "Medium (21–50)",       min: 21,  max: 50  },
+  { key: "medlong", labelPl: "Średnio-długie (51–100)", labelEn: "Medium-long (51–100)", min: 51,  max: 100 },
+  { key: "long",    labelPl: "Długie (>100)",           labelEn: "Long (>100)",          min: 101, max: 999 },
+];
+
 const DUA_DATA = [
   {
     id: "bismillah", category: tx("Jedzenie", "Food"),
@@ -1086,74 +1113,47 @@ const DUA_DATA = [
 
 function surahCard(surah) {
   const isFav = (state.quranSurahFavorites || []).includes(surah.number);
-  const revType = surah.revelationType === "Meccan" ? tx("Mekkańska 🕋", "Meccan 🕋") : surah.revelationType === "Medinan" ? tx("Medyńska 🕌", "Medinan 🕌") : "";
-  const ayahCount = surah.numberOfAyahs ? `${surah.numberOfAyahs} ${tx("wersetów", "ayahs")}` : "";
+  const extra = SURAH_EXTRA[surah.number];
+  const revIcon = surah.revelationType === "Meccan" ? "🕋" : "🕌";
   return `
-    <article class="panel p-4 relative flex flex-col gap-2">
-      <div class="flex items-center gap-3">
-        <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-100 text-sm font-black text-emerald-700">${surah.number}</span>
-        <div class="flex-1 min-w-0">
-          <button class="arabic text-2xl leading-tight block" data-say-ar="${escapeHtml(surah.arName)}">${escapeHtml(surah.arName)}</button>
-          <p class="text-xs font-black">${escapeHtml(surah.enName)}</p>
-        </div>
-        <button class="text-xl shrink-0" data-fav-surah="${surah.number}">${isFav ? "❤️" : "🤍"}</button>
+    <article class="panel p-3 flex flex-col gap-1.5 relative">
+      <div class="flex items-start justify-between">
+        <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-emerald-100 text-xs font-black text-emerald-700">${surah.number}</span>
+        <button class="text-base leading-none ${isFav ? "" : "opacity-30"} transition-opacity" data-fav-surah="${surah.number}">❤️</button>
       </div>
-      <p class="text-sm text-[var(--muted)]">${escapeHtml(surah.meaning)}</p>
-      <div class="flex gap-2 text-xs text-[var(--muted)]">
-        ${ayahCount ? `<span class="soft-panel px-2 py-0.5">${ayahCount}</span>` : ""}
-        ${revType ? `<span class="soft-panel px-2 py-0.5">${revType}</span>` : ""}
+      <button class="arabic text-xl leading-snug text-right block w-full" data-say-ar="${escapeHtml(surah.arName)}">${escapeHtml(surah.arName)}</button>
+      <p class="text-xs font-black leading-none">${escapeHtml(surah.enName)}</p>
+      <p class="text-[11px] text-[var(--muted)] leading-none">${escapeHtml(surah.meaning)}</p>
+      <div class="flex flex-wrap gap-1 mt-0.5">
+        <span class="surah-badge" style="background:var(--bg)">${surah.numberOfAyahs} ${tx("w.", "ay.")}</span>
+        <span class="surah-badge" style="background:var(--bg)">${revIcon}</span>
+        ${extra ? `<span class="surah-badge" style="background:#fef3c7;color:#92400e">${extra.badge}</span>` : ""}
       </div>
-      <div class="flex gap-2 mt-1">
-        <button class="big-action flex-1 border border-[var(--line)]" data-read-surah="${surah.number}">${tx("Czytaj", "Read")}</button>
-        <button class="speaker-btn" data-say-ar="${escapeHtml(surah.arName)}" title="${tx("Wymowa", "Pronunciation")}">🔊</button>
-      </div>
+      ${extra ? `<p class="text-[10px] text-[var(--muted)] italic leading-tight">${state.lang === "pl" ? extra.tip_pl : extra.tip_en}</p>` : ""}
+      <button class="big-action w-full text-sm border border-[var(--line)] mt-0.5" data-read-surah="${surah.number}">▶ ${tx("Czytaj", "Read")}</button>
     </article>
   `;
 }
 
-function renderSurahList() {
-  if (!state.quranSurahFavorites) state.quranSurahFavorites = [];
-  const sortVal = $("#surahSort")?.value || "number";
-  const searchVal = ($("#surahSearch")?.value || "").toLowerCase().trim();
-  const favNums = state.quranSurahFavorites;
+function renderSurahFilterChips(activeFilter) {
+  const chips = [
+    { key: "all",      labelPl: "Wszystkie",    labelEn: "All"          },
+    { key: "essential",labelPl: "Esencjalne ⭐", labelEn: "Essential ⭐"  },
+    { key: "meccan",   labelPl: "Mekka 🕋",     labelEn: "Meccan 🕋"    },
+    { key: "medinan",  labelPl: "Medyna 🕌",    labelEn: "Medinan 🕌"   },
+    { key: "favfirst", labelPl: "Ulubione ❤️",  labelEn: "Favorites ❤️" },
+    ...SURAH_LENGTH_GROUPS.map(g => ({ key: g.key, labelPl: g.labelPl, labelEn: g.labelEn })),
+    { key: "alpha",    labelPl: "A→Z",           labelEn: "A→Z"          },
+  ];
+  return `<div class="surah-chips-bar" id="surahChipsBar">${chips.map(c =>
+    `<button class="surah-chip${activeFilter === c.key ? " active" : ""}" data-chip="${c.key}">${state.lang === "pl" ? c.labelPl : c.labelEn}</button>`
+  ).join("")}</div>`;
+}
 
-  let surahs = [...SURAH_LIST];
-
-  // Search filter
-  if (searchVal) {
-    surahs = surahs.filter(s =>
-      s.enName.toLowerCase().includes(searchVal) ||
-      s.meaning.toLowerCase().includes(searchVal) ||
-      String(s.number).includes(searchVal) ||
-      s.arName.includes(searchVal)
-    );
-  }
-
-  // Category filters
-  if (sortVal === "short")   surahs = surahs.filter(s => s.numberOfAyahs <= 20);
-  else if (sortVal === "medium") surahs = surahs.filter(s => s.numberOfAyahs > 20 && s.numberOfAyahs <= 100);
-  else if (sortVal === "long")   surahs = surahs.filter(s => s.numberOfAyahs > 100);
-  else if (sortVal === "meccan") surahs = surahs.filter(s => s.revelationType === "Meccan");
-  else if (sortVal === "medinan") surahs = surahs.filter(s => s.revelationType === "Medinan");
-  else if (sortVal === "favfirst") surahs = surahs.sort((a, b) => {
-    const aF = favNums.includes(a.number) ? 0 : 1;
-    const bF = favNums.includes(b.number) ? 0 : 1;
-    return aF - bF || a.number - b.number;
-  });
-  else if (sortVal === "alpha") surahs = surahs.sort((a, b) => a.enName.localeCompare(b.enName));
-  // default: already sorted by number
-
+function bindSurahListEvents() {
   const listEl = $("#surahList");
   if (!listEl) return;
-
-  if (!surahs.length) {
-    listEl.innerHTML = `<div class="soft-panel col-span-full p-6 text-center text-[var(--muted)]">${tx("Brak wyników. Zmień filtr.", "No results. Change the filter.")}</div>`;
-    return;
-  }
-
-  listEl.innerHTML = surahs.map(surahCard).join("");
-
-  listEl.querySelectorAll("[data-say-ar]").forEach(btn => btn.addEventListener("click", (e) => {
+  listEl.querySelectorAll("[data-say-ar]").forEach(btn => btn.addEventListener("click", e => {
     e.stopPropagation();
     speakArabic(btn.dataset.sayAr);
   }));
@@ -1167,6 +1167,61 @@ function renderSurahList() {
     renderSurahList();
   }));
   listEl.querySelectorAll("[data-read-surah]").forEach(btn => btn.addEventListener("click", () => openSurah(Number(btn.dataset.readSurah))));
+}
+
+function renderSurahList() {
+  if (!state.quranSurahFavorites) state.quranSurahFavorites = [];
+  const filter = state.surahFilter || "all";
+  const searchVal = ($("#surahSearch")?.value || "").toLowerCase().trim();
+  const favNums = state.quranSurahFavorites;
+  let surahs = [...SURAH_LIST];
+  const listEl = $("#surahList");
+  if (!listEl) return;
+
+  // Search overrides grouping — show flat results
+  if (searchVal) {
+    surahs = surahs.filter(s =>
+      s.enName.toLowerCase().includes(searchVal) ||
+      s.meaning.toLowerCase().includes(searchVal) ||
+      String(s.number).includes(searchVal) ||
+      s.arName.includes(searchVal)
+    );
+    listEl.innerHTML = surahs.length
+      ? surahs.map(surahCard).join("")
+      : `<div class="soft-panel col-span-full p-6 text-center text-[var(--muted)]">${tx("Brak wyników. Zmień wyszukiwanie.", "No results. Try a different search.")}</div>`;
+    bindSurahListEvents();
+    return;
+  }
+
+  // Apply chip filter
+  if      (filter === "essential") surahs = surahs.filter(s => ESSENTIAL_SURAHS.includes(s.number));
+  else if (filter === "meccan")    surahs = surahs.filter(s => s.revelationType === "Meccan");
+  else if (filter === "medinan")   surahs = surahs.filter(s => s.revelationType === "Medinan");
+  else if (filter === "favfirst")  surahs = surahs.sort((a, b) => (favNums.includes(a.number) ? 0 : 1) - (favNums.includes(b.number) ? 0 : 1) || a.number - b.number);
+  else if (filter === "alpha")     surahs = surahs.sort((a, b) => a.enName.localeCompare(b.enName));
+  else {
+    const grp = SURAH_LENGTH_GROUPS.find(g => g.key === filter);
+    if (grp) surahs = surahs.filter(s => s.numberOfAyahs >= grp.min && s.numberOfAyahs <= grp.max);
+  }
+
+  if (filter === "all") {
+    // Grouped display by length category
+    let html = "";
+    for (const grp of SURAH_LENGTH_GROUPS) {
+      const grpSurahs = surahs.filter(s => s.numberOfAyahs >= grp.min && s.numberOfAyahs <= grp.max);
+      if (!grpSurahs.length) continue;
+      html += `<div class="col-span-full">
+        <div class="surah-group-header">${state.lang === "pl" ? grp.labelPl : grp.labelEn} <span style="font-weight:400;opacity:0.6">(${grpSurahs.length})</span></div>
+        <div class="grid gap-2 sm:grid-cols-3 lg:grid-cols-4">${grpSurahs.map(surahCard).join("")}</div>
+      </div>`;
+    }
+    listEl.innerHTML = html;
+  } else {
+    listEl.innerHTML = surahs.length
+      ? surahs.map(surahCard).join("")
+      : `<div class="soft-panel col-span-full p-6 text-center text-[var(--muted)]">${tx("Brak wyników. Zmień filtr.", "No results. Change the filter.")}</div>`;
+  }
+  bindSurahListEvents();
 }
 
 function koran() {
@@ -1185,28 +1240,17 @@ function koran() {
     <div class="p-4 pb-28">
       <!-- SURAHS TAB -->
       <div id="tabSurahs" class="${activeTab !== "surahs" ? "hidden" : ""}">
-        <div class="panel mb-4 p-3">
+        <div class="mb-3">
           <input id="surahSearch" type="search" class="h-10 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm mb-2" placeholder="${tx("Szukaj sury...", "Search surah...")}">
-          <div class="flex gap-2">
-            <div class="flex-1 min-w-0">
-              <p class="text-xs text-[var(--muted)] mb-1 font-black">${tx("Głos odsłuchu", "Reciter voice")}</p>
-              <select id="reciterSelect" class="h-10 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm">
-                ${QURAN_RECITERS.map(r => `<option value="${r.id}" ${state.quranReciter === r.id ? "selected" : ""}>${r.name}</option>`).join("")}
-              </select>
-            </div>
-            <select id="surahSort" class="h-10 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm">
-              <option value="number">${tx("Kolejność (1→114)", "Order (1→114)")}</option>
-              <option value="short">${tx("Krótkie (≤20 wersetów)", "Short (≤20 ayahs)")}</option>
-              <option value="medium">${tx("Średnie (21–100)", "Medium (21–100)")}</option>
-              <option value="long">${tx("Długie (>100)", "Long (>100)")}</option>
-              <option value="meccan">${tx("Mekkańskie 🕋", "Meccan 🕋")}</option>
-              <option value="medinan">${tx("Medyńskie 🕌", "Medinan 🕌")}</option>
-              <option value="favfirst">${tx("Ulubione pierwsze ❤️", "Favorites first ❤️")}</option>
-              <option value="alpha">${tx("Alfabetycznie A→Z", "Alphabetically A→Z")}</option>
+          ${renderSurahFilterChips(state.surahFilter || "all")}
+          <div class="mt-2 flex items-center justify-end gap-2">
+            <span class="text-xs text-[var(--muted)] font-black">${tx("Recytator:", "Reciter:")}</span>
+            <select id="reciterSelect" class="h-9 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-xs">
+              ${QURAN_RECITERS.map(r => `<option value="${r.id}" ${state.quranReciter === r.id ? "selected" : ""}>${r.name}</option>`).join("")}
             </select>
           </div>
         </div>
-        <div id="surahList" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+        <div id="surahList" class="grid gap-2 sm:grid-cols-3 lg:grid-cols-4"></div>
         <div id="surahContent" class="mt-6"></div>
       </div>
 
@@ -1287,8 +1331,14 @@ function koran() {
   if (activeTab === "surahs") {
     renderSurahList();
     $("#surahSearch").addEventListener("input", renderSurahList);
-    $("#reciterSelect").addEventListener("change", (e) => { state.quranReciter = e.target.value; saveState(); });
-    $("#surahSort").addEventListener("change", renderSurahList);
+    $("#reciterSelect").addEventListener("change", e => { state.quranReciter = e.target.value; saveState(); });
+    view.querySelectorAll("[data-chip]").forEach(btn => btn.addEventListener("click", () => {
+      state.surahFilter = btn.dataset.chip;
+      saveState();
+      // Update active chip visually
+      view.querySelectorAll("[data-chip]").forEach(b => b.classList.toggle("active", b.dataset.chip === state.surahFilter));
+      renderSurahList();
+    }));
   }
 
   if (activeTab === "dua") {
