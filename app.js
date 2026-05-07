@@ -1,6 +1,7 @@
-import { arabicAlphabet, words, dailyTasks, quranSurahs as QURAN_SURAHS_LOCAL } from "./data.js";
+import { arabicAlphabet, words, dailyTasks, quranSurahs as QURAN_SURAHS_LOCAL, asmaulHusna, islamicHadith, seerahTimeline, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, arabicRoots } from "./data.js";
 
-const GROQ_API_KEY = "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";
+const GROQ_API_KEY_DEFAULT = "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";
+function getGroqApiKey() { return (typeof state !== 'undefined' && state.groqApiKey) ? state.groqApiKey : GROQ_API_KEY_DEFAULT; }
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
 const AI_SYSTEM_PROMPT_PL = `Jesteś ciepłym, motywującym i osobistym asystentem do nauki arabskiego w aplikacji 'Alif AI'. 
@@ -45,6 +46,13 @@ const secondaryNavItems = [
   ["books", "▤", "navBooks"],
   ["games", "◎", "navGames"],
   ["badges", "🏆", "navBadges"],
+  ["dhikr", "📿", "navDhikr"],
+  ["prayer", "🕌", "navPrayer"],
+  ["asmaul", "☪", "navAsmaul"],
+  ["tajweed", "🔤", "navTajweed"],
+  ["seerah", "🌙", "navSeerah"],
+  ["pillars", "⭐", "navPillars"],
+  ["roots", "🌿", "navRoots"],
   ["settings", "⚙", "navSettings"]
 ];
 
@@ -61,7 +69,7 @@ const ROMANTIC_LINES = [
 
 const I18N = {
   pl: {
-    navHome: "Start", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia",
+    navHome: "Start", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navSeerah: "Seerah", navPillars: "Filary", navRoots: "Korzenie",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
     welcome: "Witaj w ألف AI", homeTitle: "Uczymy się arabskiego krok po kroku", homeLead: "Duże litery, spokojne powtórki, wymowa, pisanie i osobisty AI Assistant dla Abanga.",
@@ -75,7 +83,7 @@ const I18N = {
     lessonCategories: "Kategorie Lekcji", lessonSelect: "Wybierz kategorię"
   },
   en: {
-    navHome: "Home", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings",
+    navHome: "Home", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navSeerah: "Seerah", navPillars: "Pillars", navRoots: "Roots",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
     welcome: "Welcome to ألف AI", homeTitle: "We learn Arabic step by step", homeLead: "Big letters, calm reviews, pronunciation, writing and a personal AI Assistant for Abang.",
@@ -103,7 +111,7 @@ const LESSONS_DATA = {
     { id: "hello", category: "Podstawy", title: "As-salamu alejkum", ar: "السلام عليكم", tr: "as-salamu alejkum", meaning: "Pokój z Tobą (powitanie)", task: "Powiedz zwrot na głos i dodaj go do fiszek." },
     { id: "bismillah", category: "Podstawy", title: "Bismillah", ar: "بِسْمِ اللَّهِ", tr: "bismillah", meaning: "W imię Boga", task: "Powtórz przed każdym posiłkiem przez tydzień." },
     { id: "thanks", category: "Podstawy", title: "Dziękuję", ar: "شُكْرًا", tr: "szukran", meaning: "Dziękuję", task: "Użyj zwrotu w zdaniu po polsku, zamieniając 'dziękuję'." },
-    { id: "sorry", category: "Podstawy", title: "Przepraszam", ar: "آسِف", tr: "asif", meaning: "Przepraszam", task: "Powiedz na głos trzy razy." },
+    { id: "sorry", category: "Podstawy", title: "Przepraszam", ar: "آسِف", tr: "asif", meaning: "Przepraszam", task: "Powiedz na głos trzy razy. Mężczyzna: آسِف (asif) • Kobieta: آسِفَة (asifa)." },
     { id: "yes", category: "Podstawy", title: "Tak / Nie", ar: "نَعَم / لا", tr: "na'am / la", meaning: "Tak / Nie", task: "Odpowiedz na 3 pytania używając tylko نعم lub لا." },
     { id: "howru", category: "Podstawy", title: "Jak się masz?", ar: "كَيْفَ حَالُكَ؟", tr: "kajfa haluk?", meaning: "Jak się masz?", task: "Naucz się też odpowiedzi: بِخَيْرٍ شُكْرًا (bikhajrin szukran) – Dobrze, dziękuję." },
     { id: "welcome", category: "Podstawy", title: "Witaj / Proszę", ar: "أَهْلًا وَسَهْلًا", tr: "ahlan wa sahlan", meaning: "Witaj, bądź jak u siebie", task: "Powiedz na głos i dodaj do fiszek." },
@@ -115,13 +123,14 @@ const LESSONS_DATA = {
     { id: "wife", category: "Rodzina", title: "Żona", ar: "زَوْجَةٌ", tr: "zawdża", meaning: "żona / małżonka", task: "Powtórz 3 razy i dodaj do fiszek." },
     { id: "child", category: "Rodzina", title: "Dziecko", ar: "طِفْلٌ", tr: "tifl", meaning: "dziecko", task: "Znajdź litery ط ف ل w alfabecie." },
     { id: "color_red", category: "Kolory", title: "Czerwony", ar: "أَحْمَر", tr: "ahmar", meaning: "czerwony", task: "Dotknij 3 czerwonych rzeczy w pokoju i powiedz 'ahmar'." },
-    { id: "color_green", category: "Kolory", title: "Zielony", ar: "أَخْضَر", tr: "achdar", meaning: "zielony", task: "Kolor islamu – powtórz 5 razy." },
+    { id: "color_green", category: "Kolory", title: "Zielony", ar: "أَخْضَر", tr: "achdar", meaning: "zielony", task: "Symbol raju i islamu — Prorok ﷺ lubił zielony. Powtórz 5 razy." },
     { id: "color_white", category: "Kolory", title: "Biały", ar: "أَبْيَض", tr: "abjad", meaning: "biały", task: "Powiedz: koszula jest biała = القميص أبيض." },
     { id: "color_black", category: "Kolory", title: "Czarny", ar: "أَسْوَد", tr: "aswad", meaning: "czarny", task: "Dodaj do fiszek i naucz się na pamięć." },
     { id: "color_blue", category: "Kolory", title: "Niebieski", ar: "أَزْرَق", tr: "azrak", meaning: "niebieski", task: "Jak kolor nieba – powiedz patrząc w okno." },
     { id: "num1", category: "Liczby", title: "Jeden", ar: "وَاحِد", tr: "wahid", meaning: "jeden (1)", task: "Policz do 5 po arabsku razem z AI." },
     { id: "num2", category: "Liczby", title: "Dwa", ar: "اثْنَان", tr: "isnan", meaning: "dwa (2)", task: "Powiedz: mam dwa... = عِنْدِي اثْنَان..." },
     { id: "num3", category: "Liczby", title: "Trzy", ar: "ثَلَاثَة", tr: "salasa", meaning: "trzy (3)", task: "Napisz po arabsku i transliteruj." },
+    { id: "num4", category: "Liczby", title: "Cztery", ar: "أَرْبَعَة", tr: "arba'a", meaning: "cztery (4)", task: "Ile rakat ma modlitwa Dhuhr? Cztery — arba'a! Zapamiętaj przez skojarzenie." },
     { id: "num5", category: "Liczby", title: "Pięć", ar: "خَمْسَة", tr: "chamsa", meaning: "pięć (5)", task: "Liczba modlitw w islamie – zapamiętaj przez skojarzenie." },
     { id: "bread", category: "Jedzenie", title: "Chleb", ar: "خُبْز", tr: "chubz", meaning: "chleb", task: "Znajdź literę خ i ب w alfabecie." },
     { id: "water", category: "Jedzenie", title: "Woda", ar: "مَاء", tr: "ma", meaning: "woda", task: "Powiedz 'ma' za każdym razem gdy pijesz wodę przez jeden dzień." },
@@ -140,12 +149,12 @@ const LESSONS_DATA = {
     { id: "indonesia_ar", category: "Polska i Indonezja", title: "Indonezja", ar: "إِنْدُونِيسِيَا", tr: "indunisia", meaning: "Indonezja", task: "Kraj kochany od zawsze – powiedz na głos 5 razy." },
     { id: "surabaya_ar", category: "Polska i Indonezja", title: "Surabaya", ar: "سُورَابَايَا", tr: "surabaja", meaning: "Surabaya (miasto w Indonezji)", task: "Napisz na canvasie litery س ر ب." },
     { id: "shahada", category: "Islam – najważniejsze", title: "Szahada", ar: "لَا إِلَٰهَ إِلَّا اللَّهُ مُحَمَّدٌ رَسُولُ اللَّهِ", tr: "la ilaha illallah, Muhammadun rasulullah", meaning: "Nie ma boga prócz Allaha, Muhammad jest posłańcem Allaha", task: "Powtórz wolno i ze zrozumieniem każde słowo." },
-    { id: "fatiha", category: "Islam – najważniejsze", title: "Al-Fatiha (wstęp)", ar: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", tr: "alhamdu lillahi rabbil alamin", meaning: "Chwała Bogu, Panu światów (werset 2 Al-Fatiha)", task: "Naucz się tego wersetu na pamięć – to pierwszy werset modlitwy." },
+    { id: "fatiha", category: "Islam – najważniejsze", title: "Al-Fatiha (wstęp)", ar: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", tr: "alhamdu lillahi rabbil alamin", meaning: "Chwała Bogu, Panu światów (Al-Fatiha 1:2)", task: "Zapamiętaj ten werset — jest recytowany w każdej rak'ah modlitwy." },
     { id: "ayat_kursi_intro", category: "Islam – najważniejsze", title: "Ajet al-Kursi (początek)", ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ", tr: "Allahu la ilaha illa huwal hayyul qayyum", meaning: "Bóg — nie ma boga prócz Niego, Żyjącego, Samopodtrzymującego", task: "Ajet al-Kursi to najpotężniejszy werset Koranu (2:255). Zapamiętaj jego początek." },
     { id: "dua_eat", category: "Islam – codzienne", title: "Dua przed jedzeniem", ar: "بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ", tr: "bismillahi wa ala barakati Allah", meaning: "W imię Boga i z błogosławieństwem Boga", task: "Mów to przed każdym posiłkiem przez cały tydzień." },
-    { id: "dua_after_eat", category: "Islam – codzienne", title: "Dua po jedzeniu", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا", tr: "alhamdu lillahil ladhi at'amana", meaning: "Chwała Bogu, który nas nakarmił", task: "Powiedz po zakończeniu posiłku." },
+    { id: "dua_after_eat", category: "Islam – codzienne", title: "Dua po jedzeniu", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ", tr: "alhamdu lillahil ladhi at'amana wa saqana wa ja'alana muslimin", meaning: "Chwała Bogu, który nas nakarmił, napoił i uczynił muzułmanami", task: "Powiedz po zakończeniu posiłku." },
     { id: "dua_sleep", category: "Islam – codzienne", title: "Dua przed snem", ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", tr: "bismika Allahumma amutu wa ahya", meaning: "W Twoje imię, o Boże, umieram i żyję", task: "Powiedz przed zaśnięciem każdej nocy." },
-    { id: "dua_wake", category: "Islam – codzienne", title: "Dua po przebudzeniu", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا", tr: "alhamdu lillahil ladhi ahyana ba'da ma amatana", meaning: "Chwała Bogu, który nas wskrzesił po tym, jak uśpił", task: "Mów po przebudzeniu zamiast sprawdzania telefonu." },
+    { id: "dua_wake", category: "Islam – codzienne", title: "Dua po przebudzeniu", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", tr: "alhamdu lillahil ladhi ahyana ba'da ma amatana wa-ilayhin-nushur", meaning: "Chwała Bogu, który nas wskrzesił po tym, jak uśpił — i do Niego jest nasze zmartwychwstanie", task: "Mów po przebudzeniu zamiast sprawdzania telefonu." },
     { id: "dua_mirror", category: "Islam – codzienne", title: "Dua przy lustrze", ar: "اللَّهُمَّ حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي", tr: "Allahumma hassanta khalqi fa hassin khuluqi", meaning: "Boże, upiększyłeś moje stworzenie, upiększy też mój charakter", task: "Powtarzaj patrząc w lustro rano." },
     { id: "salat_times", category: "Islam – najważniejsze", title: "Pięć modlitw", ar: "فَجْر / ظُهْر / عَصْر / مَغْرِب / عِشَاء", tr: "fadżr / zuhr / asr / maghrib / isza", meaning: "Świt / Południe / Popołudnie / Zachód słońca / Noc", task: "Zapamiętaj nazwy i kolejność 5 modlitw dziennych." },
     { id: "ramadan", category: "Islam – najważniejsze", title: "Ramadan", ar: "رَمَضَان مُبَارَك", tr: "ramadan mubarak", meaning: "Błogosławiony Ramadan", task: "Dowiedz się kiedy zaczyna się następny Ramadan i zaznacz w kalendarzu." },
@@ -159,7 +168,7 @@ const LESSONS_DATA = {
     { id: "hello", category: "Basics", title: "As-salamu alaikum", ar: "السلام عليكم", tr: "as-salamu alaikum", meaning: "Peace be upon you (greeting)", task: "Say this phrase aloud and add it to flashcards." },
     { id: "bismillah", category: "Basics", title: "Bismillah", ar: "بِسْمِ اللَّهِ", tr: "bismillah", meaning: "In the name of God", task: "Repeat before every meal for one week." },
     { id: "thanks", category: "Basics", title: "Thank you", ar: "شُكْرًا", tr: "shukran", meaning: "Thank you", task: "Use this phrase in one short sentence today." },
-    { id: "sorry", category: "Basics", title: "Sorry", ar: "آسِف", tr: "asif", meaning: "Sorry / I apologize", task: "Say it out loud three times." },
+    { id: "sorry", category: "Basics", title: "Sorry", ar: "آسِف", tr: "asif", meaning: "Sorry / I apologize", task: "Say it out loud three times. Male: آسِف (asif) • Female: آسِفَة (asifa)." },
     { id: "yes", category: "Basics", title: "Yes / No", ar: "نَعَم / لا", tr: "na'am / la", meaning: "Yes / No", task: "Answer 3 questions using only نعم or لا." },
     { id: "howru", category: "Basics", title: "How are you?", ar: "كَيْفَ حَالُكَ؟", tr: "kayfa haluk?", meaning: "How are you?", task: "Learn the reply: بِخَيْرٍ شُكْرًا (bikhayrin shukran) – Fine, thank you." },
     { id: "welcome", category: "Basics", title: "Welcome", ar: "أَهْلًا وَسَهْلًا", tr: "ahlan wa sahlan", meaning: "Welcome, make yourself at home", task: "Say it aloud and add to flashcards." },
@@ -171,13 +180,14 @@ const LESSONS_DATA = {
     { id: "wife", category: "Family", title: "Wife", ar: "زَوْجَةٌ", tr: "zawja", meaning: "wife / spouse", task: "Repeat 3 times and add to flashcards." },
     { id: "child", category: "Family", title: "Child", ar: "طِفْلٌ", tr: "tifl", meaning: "child", task: "Find the letters ط ف ل in the alphabet." },
     { id: "color_red", category: "Colors", title: "Red", ar: "أَحْمَر", tr: "ahmar", meaning: "red", task: "Touch 3 red things and say 'ahmar'." },
-    { id: "color_green", category: "Colors", title: "Green", ar: "أَخْضَر", tr: "akhdar", meaning: "green", task: "Color of Islam – repeat 5 times." },
+    { id: "color_green", category: "Colors", title: "Green", ar: "أَخْضَر", tr: "akhdar", meaning: "green", task: "Symbol of paradise and Islam — the Prophet ﷺ favored green. Repeat 5 times." },
     { id: "color_white", category: "Colors", title: "White", ar: "أَبْيَض", tr: "abyad", meaning: "white", task: "Say: the shirt is white = القميص أبيض." },
     { id: "color_black", category: "Colors", title: "Black", ar: "أَسْوَد", tr: "aswad", meaning: "black", task: "Add to flashcards and memorize." },
     { id: "color_blue", category: "Colors", title: "Blue", ar: "أَزْرَق", tr: "azraq", meaning: "blue", task: "Color of the sky – say it looking out the window." },
     { id: "num1", category: "Numbers", title: "One", ar: "وَاحِد", tr: "wahid", meaning: "one (1)", task: "Count to 5 in Arabic with AI's help." },
     { id: "num2", category: "Numbers", title: "Two", ar: "اثْنَان", tr: "ithnan", meaning: "two (2)", task: "Say: I have two... = عِنْدِي اثْنَان..." },
     { id: "num3", category: "Numbers", title: "Three", ar: "ثَلَاثَة", tr: "thalatha", meaning: "three (3)", task: "Write it down and transliterate it." },
+    { id: "num4", category: "Numbers", title: "Four", ar: "أَرْبَعَة", tr: "arba'a", meaning: "four (4)", task: "How many rak'ahs in Dhuhr prayer? Four — arba'a! Remember through association." },
     { id: "num5", category: "Numbers", title: "Five", ar: "خَمْسَة", tr: "khamsa", meaning: "five (5)", task: "Number of daily prayers in Islam – remember by association." },
     { id: "bread", category: "Food", title: "Bread", ar: "خُبْز", tr: "khubz", meaning: "bread", task: "Find the letters خ and ب in the alphabet." },
     { id: "water", category: "Food", title: "Water", ar: "مَاء", tr: "ma'", meaning: "water", task: "Say 'ma' every time you drink water today." },
@@ -195,12 +205,12 @@ const LESSONS_DATA = {
     { id: "indonesia_ar", category: "Poland & Indonesia", title: "Indonesia", ar: "إِنْدُونِيسِيَا", tr: "indunisia", meaning: "Indonesia", task: "Say it 5 times aloud." },
     { id: "surabaya_ar", category: "Poland & Indonesia", title: "Surabaya", ar: "سُورَابَايَا", tr: "surabaya", meaning: "Surabaya (city in Indonesia)", task: "Write the letters س ر ب on the canvas." },
     { id: "shahada", category: "Islam – Essential", title: "Shahada", ar: "لَا إِلَٰهَ إِلَّا اللَّهُ مُحَمَّدٌ رَسُولُ اللَّهِ", tr: "la ilaha illallah, Muhammadun rasulullah", meaning: "There is no god but Allah, Muhammad is His messenger", task: "Repeat slowly understanding each word." },
-    { id: "fatiha", category: "Islam – Essential", title: "Al-Fatiha (opening)", ar: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", tr: "alhamdulillahi rabbil alamin", meaning: "All praise to God, Lord of all worlds (Al-Fatiha 1:2)", task: "Memorize this verse — it opens every prayer." },
+    { id: "fatiha", category: "Islam – Essential", title: "Al-Fatiha (opening)", ar: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", tr: "alhamdulillahi rabbil alamin", meaning: "All praise to God, Lord of all worlds (Al-Fatiha 1:2)", task: "Memorize this verse — it is recited in every rak'ah of prayer." },
     { id: "ayat_kursi_intro", category: "Islam – Essential", title: "Ayat al-Kursi (opening)", ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ", tr: "Allahu la ilaha illa huwal hayyul qayyum", meaning: "Allah — there is no god but Him, the Living, the Eternal", task: "Ayat al-Kursi is the greatest verse in the Quran (2:255). Memorize its opening." },
     { id: "dua_eat", category: "Islam – Daily", title: "Dua before eating", ar: "بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ", tr: "bismillahi wa ala barakati Allah", meaning: "In the name of Allah and with Allah's blessings", task: "Say this before every meal for a full week." },
-    { id: "dua_after_eat", category: "Islam – Daily", title: "Dua after eating", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا", tr: "alhamdulillahil ladhi at'amana", meaning: "Praise be to Allah who has fed us", task: "Say this after finishing your meal." },
+    { id: "dua_after_eat", category: "Islam – Daily", title: "Dua after eating", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ", tr: "alhamdulillahil ladhi at'amana wa saqana wa ja'alana muslimin", meaning: "Praise be to Allah who has fed us, given us drink, and made us Muslims", task: "Say this after finishing your meal." },
     { id: "dua_sleep", category: "Islam – Daily", title: "Dua before sleeping", ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", tr: "bismika Allahumma amutu wa ahya", meaning: "In Your name, O Allah, I die and I live", task: "Say this every night before sleeping." },
-    { id: "dua_wake", category: "Islam – Daily", title: "Dua after waking", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا", tr: "alhamdulillahil ladhi ahyana ba'da ma amatana", meaning: "Praise to Allah who revived us after He had put us to sleep", task: "Say this after waking up instead of checking your phone." },
+    { id: "dua_wake", category: "Islam – Daily", title: "Dua after waking", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", tr: "alhamdulillahil ladhi ahyana ba'da ma amatana wa-ilayhin-nushur", meaning: "Praise to Allah who revived us after He had put us to sleep — and to Him is the resurrection", task: "Say this after waking up instead of checking your phone." },
     { id: "dua_mirror", category: "Islam – Daily", title: "Dua at the mirror", ar: "اللَّهُمَّ حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي", tr: "Allahumma hassanta khalqi fa hassin khuluqi", meaning: "O Allah, You beautified my creation — beautify my character too", task: "Repeat this looking in the mirror each morning." },
     { id: "salat_times", category: "Islam – Essential", title: "Five prayers", ar: "فَجْر / ظُهْر / عَصْر / مَغْرِب / عِشَاء", tr: "fajr / dhuhr / asr / maghrib / isha", meaning: "Dawn / Noon / Afternoon / Sunset / Night", task: "Memorize the names and order of the 5 daily prayers." },
     { id: "ramadan", category: "Islam – Essential", title: "Ramadan", ar: "رَمَضَان مُبَارَك", tr: "ramadan mubarak", meaning: "Blessed Ramadan", task: "Find out when the next Ramadan starts and mark it in your calendar." },
@@ -301,7 +311,10 @@ const defaultState = {
   quranTab: "surahs",
   ayatCache: null,
   learnedLettersLog: [],
-  ttsWarningShown: false
+  ttsWarningShown: false,
+  hifzProgress: {},
+  dhikrCounts: { subhana: 0, alhamdu: 0, allahu: 0 },
+  groqApiKey: ""
 };
 
 let state = loadState();
@@ -425,7 +438,13 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch(e) {
+    if (e.name === 'QuotaExceededError' || e.code === 22) {
+      showLoveToast(tx("⚠️ Pamięć urządzenia jest pełna. Usuń stare zdjęcia lub PDF-y w Ustawieniach.", "⚠️ Device storage is full. Remove old photos or PDFs in Settings."));
+    }
+  }
 }
 
 function today() {
@@ -703,7 +722,7 @@ function render() {
   if (aiFabLabel) aiFabLabel.textContent = t("aiAssistant");
   const aiInput = $("#aiInput");
   if (aiInput) aiInput.placeholder = t("aiPlaceholder");
-  const views = { home, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings };
+  const views = { home, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, roots };
   (views[route] || home)();
 }
 
@@ -734,10 +753,12 @@ function home() {
           <p class="mt-2 text-[var(--muted)]">${task}</p>
           <button class="big-action mt-4 w-full bg-emerald-500 text-white" data-route="alphabet">${t("start")}</button>
         </div>
+        ${hijriWidget()}
         <div id="ayatOfDay" class="panel p-5">
            <h2 class="text-xl font-black mb-3">✨ ${tx("Ayat Dnia", "Ayat of the Day")}</h2>
            <div class="skeleton h-20 w-full mb-2"></div>
         </div>
+        ${hadithOfDayWidget()}
         <button class="panel p-4 text-left w-full flex items-center justify-between gap-3 active:scale-95 transition-transform" data-route="badges">
           <div>
             <h2 class="text-base font-black">${tx("Odznaki", "Badges")}</h2>
@@ -759,6 +780,12 @@ function home() {
       ${quickLink(t("navLessons"), tx("Pierwsze slowa i zwroty", "First words and phrases"), "lessons")}
       ${quickLink(t("navCulture"), tx("Ciekawostka dnia", "Daily culture fact"), "culture")}
       ${quickLink(t("navGames"), tx("Quiz, memory i lapanie liter", "Quiz, memory and catch game"), "games")}
+    </div>
+    <div class="mt-3 grid gap-3 sm:grid-cols-4">
+      ${quickLink(t("navDhikr"), tx("Subhanallah, Alhamdulillah, Allahu Akbar", "Subhanallah, Alhamdulillah, Allahu Akbar"), "dhikr")}
+      ${quickLink(t("navPrayer"), tx("Czasy modlitw — Borzęta i Surabaya", "Prayer times — Borzęta & Surabaya"), "prayer")}
+      ${quickLink(t("navAsmaul"), tx("Poznaj 99 pięknych Imion Boga", "Learn the 99 Beautiful Names of God"), "asmaul")}
+      ${quickLink(t("navSeerah"), tx("Życie Proroka Muhammada ﷺ", "Life of the Prophet Muhammad ﷺ"), "seerah")}
     </div>
   `;
   
@@ -865,13 +892,13 @@ const QURAN_RECITERS = [
 
 const DUA_DATA = [
   { id: "before_eating", ar: "بِسْمِ اللَّهِ", tr: "Bismillah", pl: "W imię Boga (przed jedzeniem)", en: "In the name of God (before eating)" },
-  { id: "after_eating", ar: "الْحَمْدُ لِلَّهِ", tr: "Alhamdulillah", pl: "Chwała Bogu (po jedzeniu)", en: "Praise be to God (after eating)" },
+  { id: "after_eating", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ", tr: "Alhamdulillahil-ladhi at'amana wa saqana wa ja'alana muslimin", pl: "Chwała Bogu, który nas nakarmił, napoił i uczynił muzułmanami (po jedzeniu)", en: "Praise be to Allah who fed us, gave us drink and made us Muslims (after eating)" },
   { id: "entering_home", ar: "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلِجِ وَخَيْرَ الْمَخْرَجِ", tr: "Allahumma inni as'aluka khayra l-mawlaji wa-khayra l-makhraji", pl: "Dua wchodząc do domu", en: "Dua when entering home" },
   { id: "leaving_home", ar: "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ", tr: "Bismillahi tawakkaltu 'ala Allah", pl: "Dua wychodząc z domu", en: "Dua when leaving home" },
   { id: "morning", ar: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ", tr: "Asbahna wa-asbahal-mulku lillah", pl: "Dua poranna", en: "Morning dua" },
   { id: "evening", ar: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ", tr: "Amsayna wa-amsal-mulku lillah", pl: "Dua wieczorna", en: "Evening dua" },
   { id: "sleeping", ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", tr: "Bismika Allahumma amutu wa-ahya", pl: "Dua przed snem", en: "Dua before sleeping" },
-  { id: "waking", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا", tr: "Alhamdulillahi l-ladhi ahyana ba'da ma amatana", pl: "Dua po przebudzeniu", en: "Dua upon waking" },
+  { id: "waking", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", tr: "Alhamdulillahi l-ladhi ahyana ba'da ma amatana wa-ilayhin-nushur", pl: "Dua po przebudzeniu", en: "Dua upon waking" },
   { id: "travel", ar: "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا", tr: "Subhanal-ladhi sakhkhara lana hadha", pl: "Dua w podróży", en: "Travel dua" },
   { id: "anxiety", ar: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ", tr: "Allahumma inni a'udhu bika minal-hammi wal-hazan", pl: "Dua przy smutku i trosce", en: "Dua for anxiety and grief" },
   { id: "forgiveness", ar: "رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ", tr: "Rabbi ghfir li wa-tub 'alayya", pl: "Prośba o przebaczenie", en: "Seeking forgiveness" },
@@ -894,7 +921,7 @@ async function thematicQuranSearch(query) {
 
 function surahCard(surah) {
   const isFav = (state.quranSurahFavorites || []).includes(surah.number);
-  const revType = surah.revelationType === "Meccan" ? tx("Mekkańska 🕌", "Meccan 🕌") : surah.revelationType === "Medinan" ? tx("Medyńska 🕋", "Medinan 🕋") : "";
+  const revType = surah.revelationType === "Meccan" ? tx("Mekkańska 🕋", "Meccan 🕋") : surah.revelationType === "Medinan" ? tx("Medyńska 🕌", "Medinan 🕌") : "";
   const ayahCount = surah.numberOfAyahs ? `${surah.numberOfAyahs} ${tx("wersetów", "ayahs")}` : "";
   return `
     <article class="panel p-4 relative flex flex-col gap-2">
@@ -1003,8 +1030,8 @@ function koran() {
                 <option value="short">${tx("Krótkie (≤20)", "Short (≤20)")}</option>
                 <option value="medium">${tx("Średnie (21-100)", "Medium (21-100)")}</option>
                 <option value="long">${tx("Długie (>100)", "Long (>100)")}</option>
-                <option value="meccan">${tx("Mekkańskie 🕌", "Meccan 🕌")}</option>
-                <option value="medinan">${tx("Medyńskie 🕋", "Medinan 🕋")}</option>
+                <option value="meccan">${tx("Mekkańskie 🕋", "Meccan 🕋")}</option>
+                <option value="medinan">${tx("Medyńskie 🕌", "Medinan 🕌")}</option>
                 <option value="favfirst">${tx("Ulubione pierwsze", "Favorites first")}</option>
                 <option value="alpha">${tx("Alfabetycznie", "A-Z")}</option>
               </select>
@@ -1286,6 +1313,12 @@ function settings() {
           <button id="clearAllBtn" class="big-action bg-red-600 text-white">${t("clearData")}</button>
         </div>
       </section>
+      <section class="panel p-5">
+        <h2 class="text-xl font-black">${tx("Klucz API Groq", "Groq API Key")}</h2>
+        <p class="mt-2 text-[var(--muted)] text-sm">${tx("Opcjonalnie — wklej własny klucz z groq.com. Klucz jest przechowywany tylko na Twoim urządzeniu.", "Optional — paste your own key from groq.com. The key is stored only on your device.")}</p>
+        <input id="groqApiKeyInput" type="password" class="mt-3 block w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3 text-sm" placeholder="gsk_..." value="${escapeHtml(state.groqApiKey || '')}" />
+        <button id="saveGroqKeyBtn" class="big-action mt-3 w-full bg-emerald-500 text-white">${tx("Zapisz klucz", "Save key")}</button>
+      </section>
       <section class="panel p-5 lg:col-span-2">
         <h2 class="text-xl font-black">${tx("Historia AI", "AI history")}</h2>
         <div class="mt-3 grid gap-2">
@@ -1318,6 +1351,11 @@ function settings() {
   }));
   $("#exportStateBtn").addEventListener("click", exportState);
   $("#importStateFile").addEventListener("change", importState);
+  $("#saveGroqKeyBtn")?.addEventListener("click", () => {
+    state.groqApiKey = $("#groqApiKeyInput").value.trim();
+    saveState();
+    showLoveToast(tx("✅ Klucz Groq zapisany", "✅ Groq key saved"));
+  });
   $("#resetTodayBtn").addEventListener("click", () => {
     state.lastActive = "";
     saveState();
@@ -1361,7 +1399,7 @@ function exportState() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `alif-ai-progress-${today()}.json`;
+  link.download = `alif-ai-backup-${today()}.json`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -2786,7 +2824,7 @@ async function askGroq(messages, model = GROQ_MODEL, imageData = null) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${GROQ_API_KEY}`
+      "Authorization": `Bearer ${getGroqApiKey()}`
     },
     body: JSON.stringify(payload)
   });
@@ -3041,6 +3079,349 @@ function unlockBadge(id, name) {
   showLoveToast(`🏆 ${name}!`);
   confetti();
   triggerHaptic();
+}
+
+// ============================================================
+// HIJRI CALENDAR (local algorithm — Umm al-Qura approximation)
+// ============================================================
+function gregorianToHijri(gDate) {
+  const JD = Math.floor((gDate / 86400000) + 2440587.5);
+  let l = JD - 1948440 + 10632;
+  const n = Math.floor((l - 1) / 10631);
+  l = l - 10631 * n + 354;
+  const j = Math.floor((10985 - l) / 5316) * Math.floor((50 * l) / 17719) + Math.floor(l / 5670) * Math.floor((43 * l) / 15238);
+  l = l - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50) - Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
+  const month = Math.floor((24 * l) / 709);
+  const day = l - Math.floor((709 * month) / 24);
+  const year = 30 * n + j - 30;
+  return { year, month, day };
+}
+
+function hijriWidget() {
+  const h = gregorianToHijri(Date.now());
+  const monthNames = islamicMonths[h.month - 1];
+  const monthName = monthNames ? (state.lang === 'pl' ? monthNames.pl : monthNames.en) : '';
+  const gregStr = new Date().toLocaleDateString(state.lang === 'pl' ? 'pl-PL' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+  return `<div class="hijri-widget">
+    <div class="hijri-date">${h.day} ${monthName} ${h.year} H</div>
+    <div class="hijri-month" style="direction:rtl">${monthNames?.ar || ''} — ${monthNames?.tr || ''}</div>
+    <div class="hijri-gregorian">${gregStr}</div>
+  </div>`;
+}
+
+function hadithOfDayWidget() {
+  const idx = new Date().getDate() % islamicHadith.length;
+  const h = islamicHadith[idx];
+  if (!h) return '';
+  return `<div class="panel p-4 cursor-pointer" data-route="seerah">
+    <h3 class="text-sm font-black text-[var(--accent)] mb-1">📜 ${tx("Hadis Dnia", "Hadith of the Day")}</h3>
+    <p class="text-base font-bold arabic text-right leading-relaxed mb-1">${h.ar}</p>
+    <p class="text-xs text-[var(--muted)] italic">${state.lang === 'pl' ? h.pl : h.en}</p>
+    <p class="text-xs text-[var(--muted)] mt-1 font-bold">${h.source}</p>
+  </div>`;
+}
+
+// ============================================================
+// DHIKR COUNTER
+// ============================================================
+function dhikr() {
+  const counts = state.dhikrCounts || { subhana: 0, alhamdu: 0, allahu: 0 };
+  const items = [
+    { key: 'subhana', ar: 'سُبْحَانَ اللَّهِ', tr: 'Subhanallah', pl: 'Chwała Bogu', en: 'Glory be to God', target: 33, color: '#10b981' },
+    { key: 'alhamdu', ar: 'الْحَمْدُ لِلَّهِ', tr: 'Alhamdulillah', pl: 'Chwała Bogu (dzięki)', en: 'All praise to God', target: 33, color: '#3b82f6' },
+    { key: 'allahu', ar: 'اللَّهُ أَكْبَرُ', tr: 'Allahu Akbar', pl: 'Bóg jest Największy', en: 'God is the Greatest', target: 34, color: '#8b5cf6' }
+  ];
+  view.innerHTML = `
+    <div class="mb-4">
+      <h1 class="text-3xl font-black">${tx("Licznik Dhikr", "Dhikr Counter")} 📿</h1>
+      <p class="text-[var(--muted)]">${tx("Subhanallah (33) · Alhamdulillah (33) · Allahu Akbar (34) = 100", "Subhanallah (33) · Alhamdulillah (33) · Allahu Akbar (34) = 100")}</p>
+    </div>
+    <div class="dhikr-grid">
+      ${items.map(item => {
+        const count = counts[item.key] || 0;
+        const done = count >= item.target;
+        return `<div class="panel p-5 text-center">
+          <p class="text-3xl arabic font-bold mb-2" style="direction:rtl">${item.ar}</p>
+          <p class="text-sm font-bold text-[var(--accent)] mb-1">${item.tr}</p>
+          <p class="text-xs text-[var(--muted)] mb-4">${state.lang === 'pl' ? item.pl : item.en}</p>
+          <button class="dhikr-btn ${done ? 'opacity-50' : ''}" style="background:${item.color}" data-dhikr="${item.key}">
+            <span class="dhikr-count">${count}</span>
+            <span style="font-size:12px;opacity:0.8">/ ${item.target}</span>
+          </button>
+          ${done ? `<p class="mt-3 text-emerald-500 font-black">${tx("✅ Ukończono!", "✅ Done!")}</p>` : ''}
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="mt-6 flex gap-3">
+      <button id="resetDhikrBtn" class="big-action flex-1 border border-[var(--line)] bg-[var(--surface)]">${tx("Resetuj licznik", "Reset counter")}</button>
+    </div>
+    <div class="panel p-5 mt-4">
+      <h2 class="text-lg font-black mb-3">${tx("Łączny dhikr", "Total dhikr")}</h2>
+      <div class="text-4xl font-black text-center text-[var(--accent)]">${(counts.subhana || 0) + (counts.alhamdu || 0) + (counts.allahu || 0)}</div>
+      <p class="text-center text-[var(--muted)] text-sm mt-1">${tx("Stuknięcia w tej sesji", "Taps this session")}</p>
+    </div>
+  `;
+  view.querySelectorAll("[data-dhikr]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.dhikr;
+      const target = items.find(i => i.key === key)?.target || 33;
+      if (!state.dhikrCounts) state.dhikrCounts = { subhana: 0, alhamdu: 0, allahu: 0 };
+      state.dhikrCounts[key] = (state.dhikrCounts[key] || 0) + 1;
+      if (state.dhikrCounts[key] === target) {
+        showLoveToast(tx(`🤲 ${items.find(i=>i.key===key).tr} ukończony!`, `🤲 ${items.find(i=>i.key===key).tr} complete!`));
+        triggerHaptic();
+      }
+      triggerHaptic();
+      saveState();
+      dhikr();
+    });
+  });
+  $("#resetDhikrBtn")?.addEventListener("click", () => {
+    state.dhikrCounts = { subhana: 0, alhamdu: 0, allahu: 0 };
+    saveState();
+    dhikr();
+  });
+}
+
+// ============================================================
+// PRAYER TIMES — Borzęta (Poland) + Surabaya (Indonesia)
+// ============================================================
+const PRAYER_LOCATIONS = [
+  { id: 'borzeta', label: 'Borzęta 🇵🇱', lat: '49.7166', lng: '20.0000', method: 3 },
+  { id: 'surabaya', label: 'Surabaya 🇮🇩', lat: '-7.2575', lng: '112.7521', method: 3 }
+];
+const PRAYER_NAMES = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+const PRAYER_NAMES_PL = ['Fadżr', 'Wschód', 'Dhuhr', 'Asr', 'Maghrib', 'Isza'];
+
+async function fetchPrayerTimes(loc) {
+  const today = new Date();
+  const d = today.getDate(), m = today.getMonth() + 1, y = today.getFullYear();
+  const url = `https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${loc.lat}&longitude=${loc.lng}&method=${loc.method}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  return data.data?.timings || null;
+}
+
+async function fetchQibla(loc) {
+  const url = `https://api.aladhan.com/v1/qibla/${loc.lat}/${loc.lng}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  return data.data?.direction || null;
+}
+
+function prayerTimesCard(label, timings, qibla, nextKey) {
+  const names = PRAYER_NAMES;
+  const namesPL = PRAYER_NAMES_PL;
+  const prayerRows = names.map((name, i) => {
+    const time = timings?.[name] || '--:--';
+    const isNext = name === nextKey;
+    return `<div class="prayer-row ${isNext ? 'next-prayer' : ''}">
+      <span class="prayer-name">${state.lang === 'pl' ? namesPL[i] : name}${isNext ? ' ⟵' : ''}</span>
+      <span class="prayer-time">${time}</span>
+    </div>`;
+  }).join('');
+  const qiblaHtml = qibla !== null ? `
+    <div class="mt-4 flex items-center gap-4">
+      <div class="qibla-compass">
+        <div class="qibla-needle" style="transform:rotate(${qibla}deg)"></div>
+      </div>
+      <div>
+        <p class="font-bold">${tx("Kierunek Qibla", "Qibla Direction")}</p>
+        <p class="text-[var(--muted)] text-sm">${Math.round(qibla)}° ${tx("od północy", "from north")}</p>
+      </div>
+    </div>` : '';
+  return `<div class="prayer-widget">
+    <h2 class="text-xl font-black mb-3">${label}</h2>
+    ${prayerRows}
+    ${qiblaHtml}
+  </div>`;
+}
+
+function getNextPrayer(timings) {
+  if (!timings) return null;
+  const now = new Date();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  for (const name of PRAYER_NAMES) {
+    const t = timings[name];
+    if (!t) continue;
+    const [h, m] = t.split(':').map(Number);
+    if (h * 60 + m > nowMins) return name;
+  }
+  return 'Fajr';
+}
+
+async function prayer() {
+  view.innerHTML = `
+    <div class="mb-4">
+      <h1 class="text-3xl font-black">${tx("Czasy Modlitw", "Prayer Times")} 🕌</h1>
+      <p class="text-[var(--muted)]">${tx("Dwie lokalizacje na żywo — Borzęta i Surabaya", "Two live locations — Borzęta and Surabaya")}</p>
+    </div>
+    <div class="grid gap-4 lg:grid-cols-2">
+      <div id="prayerBorzeta" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
+      <div id="prayerSurabaya" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
+    </div>
+  `;
+  for (const loc of PRAYER_LOCATIONS) {
+    try {
+      const [timings, qibla] = await Promise.all([fetchPrayerTimes(loc), fetchQibla(loc)]);
+      const nextKey = getNextPrayer(timings);
+      const el = $(`#prayer${loc.id.charAt(0).toUpperCase() + loc.id.slice(1)}`);
+      if (el) el.innerHTML = prayerTimesCard(loc.label, timings, qibla, nextKey);
+    } catch {
+      const el = $(`#prayer${loc.id.charAt(0).toUpperCase() + loc.id.slice(1)}`);
+      if (el) el.innerHTML = `<p class="text-[var(--muted)]">${tx("Błąd ładowania. Sprawdź połączenie.", "Load error. Check your connection.")}</p>`;
+    }
+  }
+}
+
+// ============================================================
+// 99 NAMES OF ALLAH — Asma ul-Husna
+// ============================================================
+function asmaul() {
+  let search = '';
+  function renderList() {
+    const filtered = asmaulHusna.filter(n =>
+      !search || n.tr.toLowerCase().includes(search) ||
+      (state.lang === 'pl' ? n.pl : n.en).toLowerCase().includes(search)
+    );
+    return filtered.map(n => `
+      <div class="asma-card">
+        <div class="asma-number">${n.n}</div>
+        <div class="asma-arabic">${n.ar}</div>
+        <div class="asma-name">${n.tr}</div>
+        <div class="asma-meaning">${state.lang === 'pl' ? n.pl : n.en}</div>
+        <div class="text-xs text-[var(--muted)] mt-1 italic">${state.lang === 'pl' ? (n.tafsir_pl || '') : (n.tafsir_en || '')}</div>
+      </div>
+    `).join('');
+  }
+  view.innerHTML = `
+    <div class="mb-4">
+      <h1 class="text-3xl font-black">☪ ${tx("99 Imion Allaha", "99 Names of Allah")}</h1>
+      <p class="text-[var(--muted)]">${tx("أَسْمَاءُ اللَّهِ الْحُسْنَى — Asma ul-Husna", "أَسْمَاءُ اللَّهِ الْحُسْنَى — Asma ul-Husna")}</p>
+    </div>
+    <input id="asmaSearch" type="search" class="w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3 mb-4" placeholder="${tx("Szukaj imienia...", "Search name...")}" />
+    <div id="asmaGrid" class="asma-grid">${renderList()}</div>
+  `;
+  $("#asmaSearch")?.addEventListener("input", e => {
+    search = e.target.value.toLowerCase();
+    $("#asmaGrid").innerHTML = renderList();
+  });
+}
+
+// ============================================================
+// TAJWEED — Rules of Quran Recitation
+// ============================================================
+function tajweed() {
+  view.innerHTML = `
+    <div class="mb-4">
+      <h1 class="text-3xl font-black">${tx("Zasady Tadżwid", "Tajweed Rules")} 🔤</h1>
+      <p class="text-[var(--muted)]">${tx("تَجْوِيد — Reguły prawidłowej recytacji Koranu", "تَجْوِيد — Rules for correct Quran recitation")}</p>
+    </div>
+    ${tajweedRules.map(rule => `
+      <div class="tajweed-card" style="border-left: 4px solid ${rule.color || 'var(--accent)'}">
+        <div class="tajweed-rule-name" style="color:${rule.color || 'var(--accent)'}">${state.lang === 'pl' ? rule.name_pl : rule.name_en}</div>
+        <p class="text-[var(--muted)] text-sm mb-3">${state.lang === 'pl' ? rule.desc_pl : rule.desc_en}</p>
+        ${rule.example_ar ? `<div class="tajweed-arabic-example">${rule.example_ar}
+          <div class="text-sm text-[var(--muted)] mt-1 text-left" style="direction:ltr">${rule.example_tr || ''}</div>
+        </div>` : ''}
+        ${rule.letters ? `<p class="text-xs text-[var(--muted)] mt-2"><strong>${tx("Litery:", "Letters:")}</strong> ${rule.letters}</p>` : ''}
+      </div>
+    `).join('')}
+  `;
+}
+
+// ============================================================
+// SEERAH — Life of the Prophet ﷺ
+// ============================================================
+function seerah() {
+  view.innerHTML = `
+    <div class="mb-4">
+      <h1 class="text-3xl font-black">${tx("Seerah — Życie Proroka ﷺ", "Seerah — Life of the Prophet ﷺ")} 🌙</h1>
+      <p class="text-[var(--muted)]">${tx("Kluczowe wydarzenia z życia Proroka Muhammada ﷺ", "Key events from the life of Prophet Muhammad ﷺ")}</p>
+    </div>
+    <div class="seerah-timeline">
+      ${seerahTimeline.map(ev => `
+        <div class="seerah-event">
+          <div class="seerah-year">${ev.year}${ev.hijri ? ` / ${ev.hijri} H` : ''}</div>
+          <div class="seerah-title">${state.lang === 'pl' ? ev.pl : ev.en}</div>
+          <div class="seerah-desc">${state.lang === 'pl' ? (ev.desc_pl || '') : (ev.desc_en || '')}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="panel p-5 mt-6">
+      <h2 class="text-xl font-black mb-4">${tx("Hadisy Dnia", "Daily Hadiths")}</h2>
+      ${islamicHadith.slice(0, 5).map(h => `
+        <div class="mb-4 pb-4 border-b border-[var(--border)]">
+          <p class="text-base font-bold arabic text-right leading-relaxed" style="direction:rtl">${h.ar}</p>
+          <p class="text-sm text-[var(--muted)] mt-1 italic">${state.lang === 'pl' ? h.pl : h.en}</p>
+          <p class="text-xs font-bold text-[var(--accent)] mt-1">${h.source}</p>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ============================================================
+// PILLARS OF ISLAM & IMAN
+// ============================================================
+function pillars() {
+  view.innerHTML = `
+    <div class="mb-4">
+      <h1 class="text-3xl font-black">${tx("Filary Islamu i Imanu", "Pillars of Islam & Iman")} ⭐</h1>
+      <p class="text-[var(--muted)]">${tx("5 Filarów Islamu + 6 Filarów Wiary", "5 Pillars of Islam + 6 Pillars of Faith")}</p>
+    </div>
+    <h2 class="text-xl font-black mb-4">${tx("5 Filarów Islamu", "5 Pillars of Islam")}</h2>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+      ${pillarsOfIslam.map(p => `
+        <div class="pillar-card">
+          <div class="pillar-number">${p.n}</div>
+          <div class="pillar-arabic">${p.ar}</div>
+          <div class="pillar-name">${p.tr}</div>
+          <div class="pillar-name text-[var(--muted)]">${state.lang === 'pl' ? p.pl : p.en}</div>
+          <div class="pillar-desc">${state.lang === 'pl' ? p.desc_pl : p.desc_en}</div>
+        </div>
+      `).join('')}
+    </div>
+    <h2 class="text-xl font-black mb-4">${tx("6 Filarów Imanu (Wiary)", "6 Pillars of Iman (Faith)")}</h2>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      ${pillarsOfIman.map(p => `
+        <div class="pillar-card">
+          <div class="pillar-number">${p.n}</div>
+          <div class="pillar-arabic">${p.ar}</div>
+          <div class="pillar-name">${p.tr}</div>
+          <div class="pillar-name text-[var(--muted)]">${state.lang === 'pl' ? p.pl : p.en}</div>
+          <div class="pillar-desc">${state.lang === 'pl' ? p.desc_pl : p.desc_en}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ============================================================
+// ARABIC ROOTS
+// ============================================================
+function roots() {
+  view.innerHTML = `
+    <div class="mb-4">
+      <h1 class="text-3xl font-black">${tx("Korzenie Arabskie", "Arabic Roots")} 🌿</h1>
+      <p class="text-[var(--muted)]">${tx("جَذْر — Jak z jednego korzenia powstają dziesiątki słów", "جَذْر — How dozens of words grow from one root")}</p>
+    </div>
+    ${arabicRoots.map(fam => `
+      <div class="root-family">
+        <div class="root-header">${fam.root_ar} <span class="text-base text-[var(--muted)] font-normal">(${fam.tr})</span></div>
+        <p class="text-sm text-[var(--muted)] mb-3">${tx("Znaczenie korzenia:", "Root meaning:")} <strong>${state.lang === 'pl' ? fam.meaning_pl : fam.meaning_en}</strong></p>
+        <div class="root-derivatives">
+          ${fam.words.map(w => `
+            <div class="root-word">
+              <div class="ar">${w.ar}</div>
+              <div class="tr">${w.tr}</div>
+              <div class="meaning">${state.lang === 'pl' ? w.pl : w.en}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('')}
+  `;
 }
 
 init();
