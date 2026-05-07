@@ -47,6 +47,33 @@ const secondaryNavItems = [
 ];
 
 const ROMANTIC_LINES = [
+  // short
+  "Miss you 💕",
+  "Habibi ❤️",
+  "Thinking of you 🌸",
+  "Sayang 🌺",
+  "I miss you so much 💙",
+  "You are my calm 🌿",
+  "Rindu 💕",
+  "Always you ❤️",
+  "My favourite person 🌸",
+  "Can't wait 🛫",
+  "Counting the days 📅",
+  "Forever and always 💕",
+  "You, always 🌺",
+  "Home is you 🏡❤️",
+  "Miss your smile 🌸",
+  "Near or far ❤️",
+  "All of you 💕",
+  "Just you 🌟",
+  "Worth every mile 💙",
+  "Cinta ❤️",
+  "My heart, your home 🏡",
+  "Still you 💕",
+  "Every single day 🌸",
+  "You first 🌺",
+  "Always on my mind 💭❤️",
+  // long
   "Distance means nothing when someone means everything — 10 700 km feels like nothing, habibi ❤️",
   "Somewhere across the ocean, someone is thinking of you right now 🌊💕",
   "Two cities, one heart. Borzęta and Surabaya are closer than the world thinks 🌸",
@@ -74,7 +101,17 @@ const ROMANTIC_LINES = [
   "Some things are worth every kilometer of waiting, habibi 🌸",
   "The plane ticket is just a formality — my heart is already there 🛫",
   "Rindu itu nyata — missing you is real, vivid, and makes me learn faster 📖💕",
-  "They say love conquers all — apparently that includes 10 700 km ❤️"
+  "They say love conquers all — apparently that includes 10 700 km ❤️",
+  "Every time I learn a new Arabic word I wonder if you'd smile hearing me say it 🌸",
+  "Somewhere there's a window where someone is looking at the same moon as me tonight 🌙💕",
+  "The best thing about learning Arabic is imagining the day I use it with you 💙",
+  "Timezone difference: huge. Love: bigger 🌍❤️",
+  "11.06.2026 — just a date on a calendar that holds a whole universe of feeling 🗓️🌸",
+  "I'd cross 10 700 km again and again without hesitation, habibi 💕",
+  "Some loves are big enough to fill the space between continents ❤️",
+  "Counting hours, not because I'm impatient, but because every hour matters 🕰️💕",
+  "This distance is just a story we'll laugh about one day, sayang 🌺",
+  "If missing you were an Arabic word, it would be the most beautiful one in the alphabet 📖❤️"
 ];
 
 const I18N = {
