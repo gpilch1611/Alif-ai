@@ -547,6 +547,56 @@ export const halalHaramData = {
 // ISLAMIC FAQ — islamfaq
 // ============================================================
 export const islamicFaq = [
+  // ── basics ──
+  { id: "salam", tab: "basics", verdict: "info",
+    qPl: "Jak przywitać się z muzułmaninem?",
+    qEn: "How to greet a Muslim?",
+    aPl: "As-salamu alaykum (السَّلاَمُ عَلَيْكُمْ) — «Pokój z wami». Odpowiedź: Wa alaykum as-salam (وَعَلَيْكُمُ السَّلاَم) — «I z wami pokój». To powitanie jest sunną Proroka ﷺ i wyrazem dobrej woli. Niemuzułmanie mogą je spokojnie używać — to kulturowy gest szacunku. W Indonezji jest codziennym zwrotem między wszystkimi ludźmi, nie tylko muzułmanami.",
+    aEn: "As-salamu alaykum (السَّلاَمُ عَلَيْكُمْ) — 'Peace be upon you'. Response: Wa alaykum as-salam — 'And upon you peace'. This greeting is the sunnah of the Prophet ﷺ and an expression of goodwill. Non-Muslims can use it freely — it is a cultural gesture of respect. In Indonesia it is a daily phrase used among all people, not just Muslims.",
+    ref: "" },
+
+  { id: "inshallah", tab: "basics", verdict: "info",
+    qPl: "Dlaczego muzułmanie ciągle mówią 'Inshallah'?",
+    qEn: "Why do Muslims keep saying 'Inshallah'?",
+    aPl: "Inshallah (إِن شَاءَ ٱللَّٰهُ) znaczy «jeśli Allah zechce». To nie jest wymówka ani lenistwo — to wyraz wiary, że przyszłość należy do Boga. Quran nakazuje muzułmanom dodawać Inshallah przy planach: «Nie mów nigdy: zrobię to jutro, bez dodania Inshallah» (18:23-24). Mówiąc Inshallah muzułmanin przyznaje, że dołoży wszelkich starań — ale ostateczny wynik należy do Allaha.",
+    aEn: "Inshallah (إِن شَاءَ ٱللَّٰهُ) means 'if Allah wills'. It is not an excuse or laziness — it is an expression of faith that the future belongs to God. The Quran instructs Muslims to add Inshallah to plans: 'Never say of anything: I will do that tomorrow, without adding Inshallah' (18:23-24). By saying Inshallah a Muslim acknowledges they will do their best — but the final outcome belongs to Allah.",
+    ref: "Quran 18:23-24" },
+
+  { id: "ramadan_respect", tab: "basics", verdict: "info",
+    qPl: "Jak szanować Ramadan jeśli nie jestem muzułmaninem?",
+    qEn: "How to respect Ramadan if I am not Muslim?",
+    aPl: "Nie musisz pościć. Możesz: złożyć życzenia «Ramadan Mubarak» (błogosławiony Ramadan) lub «Ramadan Kareem» (hojny Ramadan), pytać z ciekawością — muzułmanie chętnie tłumaczą, unikać jedzenia przy poszącym współpracowniku jeśli sam to proponuje. W Polsce nikt nie oczekuje że będziesz pościć — wystarczy życzliwość. Ramadan kończy się ucztą (Eid al-Fitr) — życzenia na Eid to też piękny gest.",
+    aEn: "You don't need to fast. You can: offer wishes 'Ramadan Mubarak' (blessed Ramadan) or 'Ramadan Kareem' (generous Ramadan), ask with genuine curiosity — Muslims are happy to explain, avoid eating in front of a fasting colleague if they themselves request it. In Poland no one expects you to fast — kindness is enough. Ramadan ends with a feast (Eid al-Fitr) — Eid wishes are also a lovely gesture.",
+    ref: "" },
+
+  { id: "mosque_visit", tab: "basics", verdict: "info",
+    qPl: "Czy mogę wejść do meczetu jako niemuzułmanin?",
+    qEn: "Can I enter a mosque as a non-Muslim?",
+    aPl: "Tak — większość meczetów na świecie wita niemuzułmanów, szczególnie poza godzinami modlitw. Zasady: zdejmij buty przed wejściem, ubierz się skromnie (kobiety zakrywają włosy i ramiona, mężczyźni unikają szortów), zachowuj ciszę gdy trwa modlitwa, nie wchodź na obszar modlitwy bez zaproszenia. Wiele meczetów w Polsce organizuje dni otwarte. W Indonezji meczety są szczególnie przyjazne dla gości — to jedno z bardziej otwartych krajów muzułmańskich.",
+    aEn: "Yes — most mosques around the world welcome non-Muslims, especially outside of prayer times. Rules: remove shoes at the entrance, dress modestly (women cover hair and shoulders, men avoid shorts), maintain silence when prayer is taking place, do not enter the prayer area without an invitation. Many mosques in Poland organise open days. In Indonesia mosques are particularly welcoming to visitors — it is one of the more open Muslim-majority countries.",
+    ref: "" },
+
+  { id: "dua", tab: "basics", verdict: "info",
+    qPl: "Co to jest dua i jak się modlić w islamie?",
+    qEn: "What is dua and how do Muslims pray?",
+    aPl: "W islamie są dwa rodzaje modlitwy: Salat (الصَّلَاة) — 5 codziennych modlitw z określonymi ruchami i słowami arabskimi, wymaga wudu (ablucji); i Dua (دُعَاء) — osobista prośba do Allaha w dowolnym języku, w dowolnym czasie, w dowolnej pozycji. Dua jest sercem islamu — bezpośrednia rozmowa z Bogiem. Prorok ﷺ powiedział: «Dua jest esencją kultu» (Tirmidhi 3371). Możesz rozmawiać z Allahem po polsku — On rozumie każdy język.",
+    aEn: "In Islam there are two types of prayer: Salat (الصَّلَاة) — 5 daily prayers with specific movements and Arabic words, requires wudu (ablution); and Dua (دُعَاء) — personal supplication to Allah in any language, at any time, in any position. Dua is the heart of Islam — a direct conversation with God. The Prophet ﷺ said: 'Dua is the essence of worship' (Tirmidhi 3371). You can talk to Allah in Polish — He understands every language.",
+    ref: "Tirmidhi 3371" },
+
+  { id: "christmas", tab: "basics", verdict: "complex",
+    qPl: "Czy muzułmanie mogą brać udział w Bożym Narodzeniu lub Wielkanocy?",
+    qEn: "Can Muslims participate in Christmas or Easter?",
+    aPl: "Uczeni są podzieleni. Ogólna zasada: uczestniczenie w rodzinnych spotkaniach i wymianie prezentów — wielu uczonych dopuszcza jako kulturowy gest, nie religijny. Uczestniczenie w ceremonii kościelnej (msza, liturgia) — większość uczonych odradza, bo to czynna praktyka innej wiary. W praktyce miliony muzułmanów w Polsce i Europie spotykają się z chrześcijańską rodziną przy Wigilii bez udziału w mszy. Islam nakazuje szanować rodziców i rodzinę.",
+    aEn: "Scholars are divided. General principle: attending family gatherings and exchanging gifts — many scholars permit this as a cultural gesture, not a religious one. Attending a church ceremony (mass, liturgy) — most scholars discourage as it is active practice of another faith. In practice millions of Muslims in Poland and Europe spend Christmas Eve with Christian family without attending mass. Islam commands honouring parents and family.",
+    ref: "Quran 31:15" },
+
+  { id: "convert_steps", tab: "basics", verdict: "info",
+    qPl: "Jak formalnie przejść na islam?",
+    qEn: "How to formally convert to Islam?",
+    aPl: "Wystarczy wypowiedzieć Szahadę szczerze: «Aszhadu an la ilaha illallah, wa aszhadu anna Muhammadan rasulullah.» Formalnie: najlepiej w obecności świadków (np. w meczecie), choć nie jest to warunek — Allah jest świadkiem. Wiele meczetów wydaje zaświadczenie konwersji (Certificate of Reversion) — przydatne w krajach muzułmańskich. Po szahadzie wszystkie poprzednie grzechy są przebaczone — nowy start. Islam uważa każdego za urodzonego w stanie fitra (czystości) — dlatego mówi się «revert» zamiast «convert».",
+    aEn: "It suffices to sincerely say the Shahada: 'Ashhadu an la ilaha illallah, wa ashhadu anna Muhammadan rasulullah.' Formally: best done in the presence of witnesses (e.g. at a mosque), though this is not a condition — Allah is the witness. Many mosques issue a Certificate of Reversion — useful in Muslim-majority countries. After the Shahada all previous sins are forgiven — a new start. Islam considers everyone born in a state of fitra (purity) — that is why people say 'revert' rather than 'convert'.",
+    ref: "" },
+
   // ── myths ──
   { id: "worship_muhammad", tab: "myths", verdict: "false",
     qPl: "Czy muzułmanie czczą Muhammada jak boga?",

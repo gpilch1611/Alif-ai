@@ -1,18 +1,28 @@
-import { arabicAlphabet, words, dailyTasks, asmaulHusna, islamicHadith, seerahTimeline, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, arabicRoots, newMuslimSteps, halalHaramData, islamicFaq } from "./data.js";
+import { arabicAlphabet, words, dailyTasks, asmaulHusna, islamicHadith, seerahTimeline, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, newMuslimSteps, halalHaramData, islamicFaq } from "./data.js";
 
 const GROQ_API_KEY = "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";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
-const AI_SYSTEM_PROMPT_PL = `Jesteś ciepłym, motywującym asystentem do nauki islamu i arabskiego w aplikacji 'Alif AI'. Arabski to klucz do Koranu — pomagasz użytkownikowi uczyć się liter, sur, dhikru, historii islamu i arabskich słów.
-Zawsze odpowiadaj TYLKO w języku polskim. Bądź przyjacielski, pomocny i zachęcający.
+const AI_SYSTEM_PROMPT_PL = `Jesteś ekspertem od języka arabskiego, islamu i kultury muzułmańskiej w aplikacji 'Alif AI'. Pomagasz osobom uczącym się arabskiego i islamu — zwłaszcza konwertytom i nowicjuszom.
+Zawsze odpowiadaj TYLKO w języku polskim. Bądź przyjacielski, ciepły i zachęcający.
 NIGDY nie używaj surowych linków markdown ani nie generuj zbędnego kodu.
-Twórz wysokiej jakości materiały edukacyjne (fiszki, quizy, historie, ciekawostki o islamie).
-Po wygenerowaniu treści, użytkownik będzie mógł ją dodać do sekcji Fiszki, Książeczki, Nasza Przygoda lub Kultura za pomocą przycisków w aplikacji.`;
-const AI_SYSTEM_PROMPT_EN = `You are a warm, motivating Islamic learning assistant inside the app 'Alif AI'. Arabic is the key to the Quran — help the user learn Arabic letters, surahs, dhikr, Islamic history and prayers.
-Always reply ONLY in English. Be friendly, encouraging and helpful.
+
+Zasady generowania treści:
+FISZKI: Format WYŁĄCZNIE "arabskie_słowo — polskie_tłumaczenie", jedna para na linię, BEZ numerów, BEZ "Strona przednia/tylna", BEZ zdań.
+Przykład poprawny: كِتَاب — książka
+BAJKA/HISTORIA: każda arabska linia, BEZPOŚREDNIO pod nią polskie tłumaczenie, pusta linia między parami. Na końcu słowniczek.
+CIEKAWOSTKA: jeden krótki fakt (2-4 zdania), NIE lista fiszek.
+ISLAM/MODLITWA/KORAN: odpowiadaj merytorycznie, z szacunkiem i precyzją.`;
+const AI_SYSTEM_PROMPT_EN = `You are an expert in Arabic language, Islam and Muslim culture inside the app 'Alif AI'. You help people learning Arabic and Islam — especially converts and beginners.
+Always reply ONLY in English. Be friendly, warm and encouraging.
 NEVER use raw markdown links or generate unnecessary code.
-Provide high-quality Islamic and Arabic learning material (flashcards, quizzes, stories, surahs, hadiths, dhikr, pillars of Islam).
-After generating content, the user will be able to add it to Flashcards, Books, Our Adventure, or Culture sections using app buttons.`;
+
+Content generation rules:
+FLASHCARDS: Format ONLY "arabic_word — english_translation", one pair per line, NO numbers, NO "Front/Back" labels, NO sentences.
+Correct example: كِتَاب — book
+STORY/BOOK: each Arabic line, IMMEDIATELY followed by English translation on next line, blank line between pairs. Mini glossary at end.
+CULTURE FACT: one short fact (2-4 sentences), NOT a list of flashcards.
+ISLAM/PRAYER/QURAN: answer accurately, with respect and precision.`;
 
 const $ = (selector) => document.querySelector(selector);
 const view = $("#view");
@@ -28,25 +38,21 @@ const THEME_COLOR = {
 };
 
 const navItems = [
-  ["home",     "⌂",  "navHome"],
-  ["islam",    "☪",  "navIslam"],
-  ["alphabet", "ا",  "navAlphabet"],
-  ["lessons",  "Aa", "navLessons"],
-  ["games",    "◎",  "navGames"]
+  ["home",    "⌂",  "navHome"],
+  ["islam",   "☪",  "navIslam"],
+  ["lessons", "Aa", "navLessons"],
+  ["games",   "◎",  "navGames"]
 ];
 
 const secondaryNavItems = [
-  ["flashcards", "▣",  "navFlashcards"],
-  ["speech",     "◉",  "navSpeech"],
-  ["writing",    "✎",  "navWriting"],
-  ["adventure",  "☆",  "navAdventure"],
-  ["books",      "▤",  "navBooks"],
-  ["culture",    "✦",  "navCulture"],
-  ["badges",     "🏆", "navBadges"],
-  ["settings",   "⚙",  "navSettings"]
+  ["adventure", "☆",  "navAdventure"],
+  ["books",     "▤",  "navBooks"],
+  ["culture",   "✦",  "navCulture"],
+  ["badges",    "🏆", "navBadges"],
+  ["settings",  "⚙",  "navSettings"]
 ];
 
-const ISLAM_ROUTES = ["islam","koran","dhikr","prayer","asmaul","tajweed","seerah","pillars","roots","muallaf","halalharam","islamfaq"];
+const ISLAM_ROUTES = ["islam","koran","dhikr","prayer","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq"];
 
 const ROMANTIC_LINES = [
   // short
@@ -377,7 +383,11 @@ const defaultState = {
   surahQuizHistory: [],
   surahQuizBest: 0,
   dhikrGameBest: null,
-  dhikrGameHistory: []
+  dhikrGameHistory: [],
+  gameHistory: [],
+  activeGame: null,
+  lessonsTab: "alphabet",
+  faqTab: "basics"
 };
 
 let state = loadState();
@@ -722,7 +732,12 @@ function render() {
   if (aiFabLabel) aiFabLabel.textContent = t("aiAssistant");
   const aiInput = $("#aiInput");
   if (aiInput) aiInput.placeholder = t("aiPlaceholder");
-  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, roots, muallaf, halalharam, islamfaq };
+  // flashcards/speech/writing/alphabet redirect into their hub
+  const alphabet = () => { state.lessonsTab = "alphabet"; lessons(); };
+  const flashcards = () => { state.activeGame = "flashcards"; games(); };
+  const speech = () => { state.activeGame = "speech"; games(); };
+  const writing = () => { state.activeGame = "writing"; games(); };
+  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq };
   (views[route] || home)();
 }
 
@@ -845,12 +860,13 @@ function halalharam() {
 
 function islamfaq() {
   const tabs = [
-    { id: "myths",     labelPl: "🔍 Mity i fakty",  labelEn: "🔍 Myths & facts" },
-    { id: "women",     labelPl: "👩 Kobiety",        labelEn: "👩 Women" },
-    { id: "religions", labelPl: "🕊 Religie",        labelEn: "🕊 Religions" },
-    { id: "terrorism", labelPl: "⚠ Terroryzm",      labelEn: "⚠ Terrorism" },
+    { id: "basics",    labelPl: "📚 Podstawy",       labelEn: "📚 Basics" },
+    { id: "myths",     labelPl: "🔍 Mity i fakty",   labelEn: "🔍 Myths & facts" },
+    { id: "women",     labelPl: "👩 Kobiety",         labelEn: "👩 Women" },
+    { id: "religions", labelPl: "🕊 Religie",         labelEn: "🕊 Religions" },
+    { id: "terrorism", labelPl: "⚠ Terroryzm",       labelEn: "⚠ Terrorism" },
   ];
-  const activeTab = state.faqTab || "myths";
+  const activeTab = state.faqTab || "basics";
   const verdictLabel = { false: tx("MIT", "MYTH"), complex: tx("ZŁOŻONE", "COMPLEX"), info: tx("FAKT", "FACT") };
 
   const filtered = islamicFaq.filter(q => q.tab === activeTab);
@@ -910,7 +926,6 @@ function islam() {
     { route: "asmaul",  icon: "☪",  titlePl: "99 Imion Allaha",  titleEn: "99 Names of Allah",descPl: "Asma ul-Husna — piękne imiona Boga",                    descEn: "Asma ul-Husna — beautiful Names of God" },
     { route: "seerah",  icon: "🌙", titlePl: "Seerah",            titleEn: "Seerah",           descPl: "Życie Proroka Muhammada ﷺ",                             descEn: "Life of Prophet Muhammad ﷺ" },
     { route: "tajweed", icon: "🔤", titlePl: "Tadżwid",           titleEn: "Tajweed",          descPl: "8 zasad prawidłowej recytacji",                         descEn: "8 rules for correct Quran recitation" },
-    { route: "roots",      icon: "🌿", titlePl: "Korzenie arabskie", titleEn: "Arabic roots",     descPl: "Jak z jednego korzenia rośnie 10 słów",                       descEn: "How one root grows 10+ words" },
     { route: "muallaf",    icon: "🌱", titlePl: "Nowy muzułmanin",  titleEn: "New Muslim",       descPl: "Pierwsze kroki, szahada i nie musisz być perfekcyjny",        descEn: "First steps, shahada and you don't need to be perfect" },
     { route: "halalharam", icon: "⚖",  titlePl: "Halal & Haram",   titleEn: "Halal & Haram",   descPl: "Jedzenie, napoje, zachowanie — co wolno, czego nie",          descEn: "Food, drinks, behaviour — what is and isn't allowed" },
     { route: "islamfaq",   icon: "❓", titlePl: "FAQ islamu",       titleEn: "Islam FAQ",        descPl: "Mity, islamofobia, kobiety, terroryzm, inne religie",         descEn: "Myths, Islamophobia, women, terrorism, other religions" },
@@ -983,37 +998,6 @@ function home() {
           </div>
         </button>
       </aside>
-    </div>
-
-    <div class="mt-4 grid gap-5">
-      ${sectionGroup(tx("Nauka Arabskiego", "Learning Arabic"), "#10B981", [
-        { route: "alphabet", icon: "ا", label: t("navAlphabet") },
-        { route: "lessons",  icon: "Aa", label: t("navLessons") },
-        { route: "flashcards", icon: "▣", label: t("navFlashcards") },
-        { route: "speech",   icon: "◉", label: t("navSpeech") },
-        { route: "writing",  icon: "✎", label: t("navWriting") },
-        { route: "roots",    icon: "🌿", label: t("navRoots") },
-      ])}
-      ${sectionGroup(tx("Wiedza Islamska", "Islamic Knowledge"), "#F59E0B", [
-        { route: "islam",   icon: "☪", label: t("navIslam") },
-        { route: "koran",   icon: "📖", label: t("navKoran") },
-        { route: "tajweed", icon: "🔤", label: t("navTajweed") },
-        { route: "pillars", icon: "⭐", label: t("navPillars") },
-        { route: "seerah",  icon: "🌙", label: t("navSeerah") },
-        { route: "asmaul",  icon: "✨", label: t("navAsmaul") },
-      ])}
-      ${sectionGroup(tx("Praktyka i Narzędzia", "Practice & Tools"), "#3B82F6", [
-        { route: "prayer",    icon: "🕌", label: t("navPrayer") },
-        { route: "dhikr",     icon: "📿", label: t("navDhikr") },
-        { route: "ai",        icon: "✦", label: t("aiAssistant") },
-        { route: "adventure", icon: "☆", label: t("navAdventure") },
-        { route: "books",     icon: "▤", label: t("navBooks") },
-        { route: "culture",   icon: "✦", label: t("navCulture") },
-      ])}
-      ${sectionGroup(tx("Gry i Odznaki", "Games & Badges"), "#8B5CF6", [
-        { route: "games",  icon: "◎", label: t("navGames") },
-        { route: "badges", icon: "🏆", label: t("navBadges") },
-      ])}
     </div>
 
     ${journeyWidget()}
@@ -1113,21 +1097,7 @@ function quickLink(title, text, routeName) {
   return `<button class="panel min-h-28 p-4 text-left" data-route="${routeName}"><strong class="block text-lg">${title}</strong><span class="text-sm text-[var(--muted)]">${text}</span></button>`;
 }
 
-function sectionGroup(title, accentColor, items) {
-  return `
-    <div>
-      <h2 class="text-xs font-black uppercase tracking-widest mb-2" style="color:${accentColor}">${title}</h2>
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        ${items.map(item => `
-          <button class="panel p-3 text-left flex items-center gap-2 min-h-14 active:scale-95 transition-transform" data-route="${item.route}">
-            <span class="text-xl shrink-0">${item.icon}</span>
-            <span class="text-xs font-black leading-tight">${item.label}</span>
-          </button>
-        `).join('')}
-      </div>
-    </div>
-  `;
-}
+
 
 const QURAN_RECITERS = [
   { id: "ar.alafasy", name: "Mishary Rashid Alafasy" },
@@ -2016,17 +1986,41 @@ function formBox(label, value) {
 }
 
 function lessons() {
+  const activeTab = state.lessonsTab || "alphabet";
+
+  if (activeTab === "alphabet") {
+    alphabet();
+    const tabBar = document.createElement("div");
+    tabBar.className = "flex gap-1 mb-5";
+    tabBar.innerHTML = `
+      <button class="px-3 py-2 text-sm font-black rounded-full border bg-[var(--accent)] text-white border-[var(--accent)]" data-lessons-tab="alphabet">ا ${tx("Alfabet", "Alphabet")}</button>
+      <button class="px-3 py-2 text-sm font-black rounded-full border border-[var(--border)] text-[var(--muted)]" data-lessons-tab="lessons">Aa ${tx("Lekcje", "Lessons")}</button>
+    `;
+    view.insertBefore(tabBar, view.firstChild);
+    view.querySelectorAll("[data-lessons-tab]").forEach(btn => btn.addEventListener("click", () => {
+      state.lessonsTab = btn.dataset.lessonsTab;
+      saveState();
+      lessons();
+    }));
+    return;
+  }
+
   const unlocked = state.learnedLetters.length >= arabicAlphabet.length;
-  const lessonsData = LESSONS_DATA[state.lang] || LESSONS_DATA.pl;
-  
+  const islamicCats = ["Islam", "Islam –"];
+  const allData = LESSONS_DATA[state.lang] || LESSONS_DATA.pl;
+  const lessonsData = allData.filter(l => !islamicCats.some(prefix => l.category.startsWith(prefix)));
   const categories = [...new Set(lessonsData.map(l => l.category))];
 
   view.innerHTML = `
+    <div class="flex gap-1 mb-4">
+      <button class="px-3 py-2 text-sm font-black rounded-full border border-[var(--border)] text-[var(--muted)]" data-lessons-tab="alphabet">ا ${tx("Alfabet", "Alphabet")}</button>
+      <button class="px-3 py-2 text-sm font-black rounded-full border bg-[var(--accent)] text-white border-[var(--accent)]" data-lessons-tab="lessons">Aa ${tx("Lekcje", "Lessons")}</button>
+    </div>
     <div class="mb-4">
       <h1 class="text-3xl font-black">${tx("Lekcje i zwroty", "Lessons and phrases")}</h1>
       <p class="text-[var(--muted)]">${unlocked ? tx("Wybierz kategorię, aby rozpocząć naukę.", "Choose a category to start learning.") : tx("Lekcje odblokują się po poznaniu wszystkich 28 liter alfabetu.", "Lessons unlock after you learn all 28 letters.")}</p>
     </div>
-    
+
     ${!unlocked ? `
       <div class="soft-panel p-5 mb-4">
         <div class="mb-3 flex items-center justify-between gap-3">
@@ -2034,7 +2028,7 @@ function lessons() {
           <span class="text-sm text-[var(--muted)]">${progressPercent()}%</span>
         </div>
         <div class="h-4 overflow-hidden rounded-full bg-emerald-100"><div class="h-full bg-emerald-500" style="width:${progressPercent()}%"></div></div>
-        <button class="big-action mt-4 bg-emerald-500 text-white w-full" data-route="alphabet">${tx("Dokoncz alfabet", "Finish alphabet")}</button>
+        <button class="big-action mt-4 bg-emerald-500 text-white w-full" data-lessons-tab="alphabet">${tx("Ucz się alfabetu", "Learn the alphabet")}</button>
       </div>
     ` : ""}
 
@@ -2051,6 +2045,12 @@ function lessons() {
        ${unlocked ? skeleton(4, "180px") : ""}
     </div>
   `;
+
+  view.querySelectorAll("[data-lessons-tab]").forEach(btn => btn.addEventListener("click", () => {
+    state.lessonsTab = btn.dataset.lessonsTab;
+    saveState();
+    lessons();
+  }));
 
   view.querySelectorAll("[data-lesson-cat]").forEach(btn => btn.addEventListener("click", () => {
     triggerHaptic();
@@ -2743,8 +2743,28 @@ async function generateAiBook() {
   btn.disabled = true;
   try {
     const systemPrompt = tx(
-      `Napisz krótką bajkę dla dzieci i dorosłych w dwóch językach jednocześnie, w stylu interleave: każde arabskie zdanie na osobnej linii, a bezpośrednio pod nim polskie tłumaczenie na osobnej linii. Format: linia AR, linia PL, pusta linia, kolejna para. Na końcu dodaj mini słowniczek arabskich słów użytych w bajce, każde w formacie: عربي - polskie znaczenie. ${promptText || "Bajka o nauce arabskiego."}`,
-      `Write a short children's story in two languages using interleaved format: each Arabic sentence on its own line, followed immediately by the English translation on the next line. Format: AR line, EN line, blank line, next pair. At the end add a mini glossary of Arabic words used, each in format: عربي - english meaning. ${promptText || "A story about learning Arabic."}`
+      `Napisz KRÓTKĄ bajkę (5-8 par zdań) po arabsku dla osoby uczącej się (poziom A1-A2).
+Temat: "${promptText || "Bajka o przyjaźni i nauce arabskiego"}"
+Format BEZWZGLĘDNIE:
+arabskie zdanie
+polskie tłumaczenie
+
+(pusta linia)
+następna para
+
+Na końcu: SŁOWNICZEK z 5 trudniejszych słów w formacie: عربي — polskie.
+NIE używaj: nagłówków, markdown, numerów, "Strona przednia/tylna".`,
+      `Write a SHORT story (5-8 sentence pairs) in Arabic for a beginner (A1-A2 level).
+Topic: "${promptText || "A story about friendship and learning Arabic"}"
+Format STRICTLY:
+Arabic sentence
+English translation
+
+(blank line)
+next pair
+
+At the end: GLOSSARY of 5 harder words in format: عربي — english.
+Do NOT use: headers, markdown, numbers, "Front/Back" labels.`
     );
     const text = await askGroq([{ role: "user", content: systemPrompt }]);
     const title = tx(`Bajka ${new Date().toLocaleDateString(localeTag())}`, `Story ${new Date().toLocaleDateString(localeTag())}`);
@@ -2970,38 +2990,153 @@ function culture() {
 
 async function generateCultureFact() {
   const button = $("#generateCultureBtn");
-  button.textContent = tx("Mysle...", "Thinking...");
+  button.textContent = tx("Myślę...", "Thinking...");
   try {
-    const text = await askGroq([{ role: "user", content: tx("Wygeneruj jedna ciekawostke dnia do sekcji Kultura. Ma byc krotka, ciepla, po polsku, z jednym arabskim slowem, transliteracja i mikro-zadaniem.", "Generate one fact of the day for the Culture section. It should be short, warm, in English, with one Arabic word, transliteration, and a micro-task.") }]);
-    state.cultureFacts.unshift({ id: crypto.randomUUID(), date: today(), title: tx(`Ciekawostka ${new Date().toLocaleDateString(localeTag())}`, `Fact ${new Date().toLocaleDateString(localeTag())}`), text });
+    const prompt = tx(
+      `Napisz JEDNĄ krótką ciekawostkę (2-4 zdania) o kulturze arabskiej, islamie lub Indonezji. NIE generuj listy fiszek. NIE używaj nagłówków.
+Format odpowiedzi:
+TYTUŁ: [krótki tytuł 3-5 słów]
+FAKT: [2-4 zdania ciekawostki]
+SŁOWO: [jedno arabskie słowo]
+WYMOWA: [transliteracja]
+ZNACZENIE: [polskie tłumaczenie]`,
+      `Write ONE short culture fact (2-4 sentences) about Arabic culture, Islam or Indonesia. Do NOT generate flashcard lists. Do NOT use headers.
+Response format:
+TITLE: [short title 3-5 words]
+FACT: [2-4 sentences]
+WORD: [one Arabic word]
+PRONUNCIATION: [transliteration]
+MEANING: [English translation]`
+    );
+    const text = await askGroq([{ role: "user", content: prompt }]);
+    const titleMatch = text.match(/(?:TYTUŁ|TITLE):\s*(.+)/i);
+    const factMatch = text.match(/(?:FAKT|FACT):\s*([\s\S]+?)(?:
+(?:SŁOWO|WORD):|
+
+|$)/i);
+    const wordMatch = text.match(/(?:SŁOWO|WORD):\s*(.+)/i);
+    const pronMatch = text.match(/(?:WYMOWA|PRONUNCIATION):\s*(.+)/i);
+    const meaningMatch = text.match(/(?:ZNACZENIE|MEANING):\s*(.+)/i);
+    const title = titleMatch?.[1]?.trim() || tx(`Ciekawostka ${new Date().toLocaleDateString(localeTag())}`, `Fact ${new Date().toLocaleDateString(localeTag())}`);
+    const fact = factMatch?.[1]?.trim() || text.slice(0, 400);
+    const word = wordMatch?.[1]?.trim() || "";
+    const pron = pronMatch?.[1]?.trim() || "";
+    const meaning = meaningMatch?.[1]?.trim() || "";
+    const formatted = fact + (word ? `
+
+🔤 ${word} (${pron}) — ${meaning}` : "");
+    state.cultureFacts.unshift({ id: crypto.randomUUID(), date: today(), title, text: formatted });
     saveState();
     culture();
   } catch {
-    button.textContent = tx("Blad AI", "AI error");
+    button.textContent = tx("Błąd AI", "AI error");
   }
 }
 
 function games() {
+  if (state.activeGame) {
+    const containerMap = {
+      quiz:        '<div id="quizBox" class="panel p-5"></div>',
+      memory:      '<div id="memoryBox" class="panel p-5"></div>',
+      catch:       '<div id="catchBox" class="panel p-5"></div>',
+      dhikrGame:   '<div id="dhikrGameBox" class="panel p-5"></div>',
+      surahQuiz:   '<div id="surahQuizBox" class="panel p-5"></div>',
+      pillarsQuiz: '<div id="pillarsQuizBox" class="panel p-5"></div>',
+    };
+    const directMap = {
+      flashcards: flashcardsView,
+      speech:     speechView,
+      writing:    writingView,
+    };
+    if (containerMap[state.activeGame]) {
+      view.innerHTML = containerMap[state.activeGame];
+      const renderers = { quiz: renderQuiz, memory: renderMemory, catch: renderCatchGame, dhikrGame: renderDhikrGame, surahQuiz: renderSurahQuiz, pillarsQuiz: renderPillarsQuiz };
+      (renderers[state.activeGame] || (() => {}))();
+    } else if (directMap[state.activeGame]) {
+      directMap[state.activeGame]();
+    } else {
+      state.activeGame = null;
+      saveState();
+      games();
+      return;
+    }
+    const backBtn = document.createElement("button");
+    backBtn.className = "flex items-center gap-2 text-[var(--muted)] mb-4 text-sm font-bold active:scale-95 transition-transform";
+    backBtn.innerHTML = `← ${tx("Powrót do gier", "Back to games")}`;
+    backBtn.addEventListener("click", () => {
+      state.activeGame = null;
+      saveState();
+      games();
+    });
+    view.insertBefore(backBtn, view.firstChild);
+    return;
+  }
+
+  const tiles = [
+    { id: "quiz",        icon: "🎯", titlePl: "Quiz liter",    titleEn: "Letter Quiz",      descPl: "Rozpoznaj arabską literę", descEn: "Identify the Arabic letter" },
+    { id: "memory",      icon: "🃏", titlePl: "Memory Match",  titleEn: "Memory Match",     descPl: "Dopasuj pary liter i nazw", descEn: "Match letter pairs" },
+    { id: "catch",       icon: "🕐", titlePl: "Łap literę",    titleEn: "Catch the Letter", descPl: "Złap spadającą literę", descEn: "Catch the falling letter" },
+    { id: "dhikrGame",   icon: "📿", titlePl: "Szybki Dhikr",  titleEn: "Dhikr Speed",      descPl: "Liczymy razem — subhanallah", descEn: "Speed dhikr counting" },
+    { id: "surahQuiz",   icon: "📖", titlePl: "Quiz Surah",    titleEn: "Surah Quiz",       descPl: "Rozpoznaj surę Koranu", descEn: "Identify Quran surahs" },
+    { id: "pillarsQuiz", icon: "⭐", titlePl: "Quiz Filarów",  titleEn: "Pillars Quiz",     descPl: "Test wiedzy o filarach islamu", descEn: "Islamic pillars knowledge test" },
+    { id: "flashcards",  icon: "▣",  titlePl: "Fiszki",        titleEn: "Flashcards",       descPl: "Powtórki metodą SM-2", descEn: "SM-2 spaced repetition" },
+    { id: "speech",      icon: "🗣", titlePl: "Wymowa",        titleEn: "Pronunciation",    descPl: "Ćwicz wymowę arabską", descEn: "Practice Arabic pronunciation" },
+    { id: "writing",     icon: "✎",  titlePl: "Pisanie",       titleEn: "Writing",          descPl: "Pisz arabskie litery", descEn: "Write Arabic letters" },
+  ];
+
+  const recentHistory = (state.gameHistory || []).slice(0, 5);
+
   view.innerHTML = `
-    <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Quizy i Gry", "Quizzes & Games")}</h1>
-      <p class="text-[var(--muted)]">${tx("Quiz liter, Memory Match, Filary Islamu, Sury Koranu, Łap literę, Szybki Dhikr.", "Letter quiz, Memory Match, Pillars of Islam, Surah quiz, Catch the Letter, Dhikr Speed.")}</p>
+    <div class="mb-5">
+      <h1 class="text-3xl font-black">◎ ${tx("Gry i ćwiczenia", "Games & Practice")}</h1>
+      <p class="text-[var(--muted)] mt-1">${tx("Wybierz aktywność", "Choose an activity")}</p>
     </div>
-    <div class="grid gap-4 lg:grid-cols-2">
-      <section class="panel p-5" id="quizBox"></section>
-      <section class="panel p-5" id="memoryBox"></section>
-      <section class="panel p-5" id="pillarsQuizBox"></section>
-      <section class="panel p-5" id="surahQuizBox"></section>
-      <section class="panel p-5 lg:col-span-2" id="catchBox"></section>
-      <section class="panel p-5 lg:col-span-2" id="dhikrGameBox"></section>
+    <div class="grid gap-3 sm:grid-cols-2">
+      ${tiles.map(tile => `
+        <button class="islam-tile text-left" data-game="${tile.id}">
+          <span class="islam-tile-icon">${tile.icon}</span>
+          <div>
+            <p class="islam-tile-title">${state.lang === "pl" ? tile.titlePl : tile.titleEn}</p>
+            <p class="islam-tile-desc">${state.lang === "pl" ? tile.descPl : tile.descEn}</p>
+          </div>
+        </button>
+      `).join("")}
     </div>
+    ${recentHistory.length ? `
+      <div class="mt-6">
+        <h2 class="text-xs font-black uppercase tracking-widest text-[var(--muted)] mb-2">${tx("Ostatnie wyniki", "Recent results")}</h2>
+        <div class="grid gap-1">
+          ${recentHistory.map(h => `
+            <div class="flex items-center justify-between text-sm text-[var(--muted)] px-1">
+              <span>${h.game}</span>
+              <span class="font-bold">${h.score !== undefined ? h.score + "/" + h.total : "✓"}</span>
+              <span class="text-xs">${new Date(h.ts).toLocaleDateString(localeTag())}</span>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    ` : ""}
   `;
-  renderQuiz();
-  renderMemory();
-  renderPillarsQuiz();
-  renderSurahQuiz();
-  renderCatchGame();
-  renderDhikrGame();
+
+  view.querySelectorAll("[data-game]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.activeGame = btn.dataset.game;
+      saveState();
+      games();
+    });
+  });
+}
+
+function flashcardsView() {
+  flashcards();
+}
+
+function speechView() {
+  speech();
+}
+
+function writingView() {
+  writing();
 }
 
 function renderQuiz() {
@@ -3431,7 +3566,6 @@ function aiActionButtons(index) {
     <div class="mt-3 flex flex-wrap gap-2">
       <button class="ai-chip" data-ai-action="flashcards" data-message-index="${index}">${t("addFlashcards")}</button>
       <button class="ai-chip" data-ai-action="book" data-message-index="${index}">${t("saveBook")}</button>
-      <button class="ai-chip" data-ai-action="adventure" data-message-index="${index}">${t("addAdventure")}</button>
       <button class="ai-chip" data-ai-action="culture" data-message-index="${index}">${t("addCulture")}</button>
     </div>
   `;
@@ -3597,32 +3731,53 @@ function handleAiAction(action, messageIndex) {
 
 function addAiFlashcards(text) {
   const created = [];
-  const pairRe = /^[-•*\d.\s]*([\u0600-\u06FF][\u0600-\u06FF\s\u064B-\u0652]*?)\s*[-–—:=]+\s*(.+)$/;
-  for (const line of text.split("\n")) {
-    const m = line.trim().match(pairRe);
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+
+  // Pattern 1: Arabic — Translation (primary expected format)
+  for (const line of lines) {
+    const m = line.match(/^([\u0600-\u06FF][\u0600-\u06FF\s\u064B-\u0652\u0600-\u06FF]*?)\s*[—\-–:=]+\s*(.+)$/);
     if (m) {
       const front = m[1].trim();
       const back = m[2].trim().slice(0, 180);
-      if (front.length >= 2 && back.length >= 2 && !/[\u0600-\u06FF]/.test(back)) {
+      if (front.length >= 2 && back.length >= 2 && !/[\u0600-\u06FF]{3,}/.test(back)) {
         created.push({ id: `ai-${crypto.randomUUID()}`, front, back, hint: "AI" });
       }
     }
   }
+
+  // Pattern 2: "Strona przednia: X" / "Strona tylna: Y" (AI old format)
   if (!created.length) {
-    const arabicMatches = text.match(/[\u0600-\u06FF][\u0600-\u06FF\s\u064B-\u0652]{1,30}/g) || [];
-    arabicMatches.slice(0, 10).forEach((front, index) => {
-      const back = extractNearbyLine(text, front) || tx(`Fiszka AI ${index + 1}`, `AI card ${index + 1}`);
-      if (!/[\u0600-\u06FF]/.test(back) && back.length > 3) {
-        created.push({ id: `ai-${crypto.randomUUID()}`, front: front.trim(), back, hint: "AI" });
+    for (let i = 0; i < lines.length - 1; i++) {
+      const fM = lines[i].match(/(?:strona\s+przednia|front)[:\s]+(.+)/i);
+      const bM = lines[i + 1].match(/(?:strona\s+tylna|back)[:\s]+(.+)/i);
+      if (fM && bM) {
+        created.push({ id: `ai-${crypto.randomUUID()}`, front: fM[1].trim(), back: bM[1].trim().slice(0, 180), hint: "AI" });
+        i++;
       }
-    });
+    }
   }
+
+  // Pattern 3: "1. arabic - polish" numbered format
   if (!created.length) {
-    state.customFlashcards.unshift({ id: `ai-${crypto.randomUUID()}`, front: "\u0633\u0644\u0627\u0645", back: text.slice(0, 180), hint: "AI" });
-  } else {
-    state.customFlashcards.unshift(...created);
+    for (const line of lines) {
+      const m = line.match(/^\d+[.)\s]+([\u0600-\u06FF][^—\-:=]*?)\s*[-—:]+\s*(.+)$/);
+      if (m) {
+        const front = m[1].trim();
+        const back = m[2].trim().slice(0, 180);
+        if (front.length >= 2 && back.length >= 2) {
+          created.push({ id: `ai-${crypto.randomUUID()}`, front, back, hint: "AI" });
+        }
+      }
+    }
   }
+
+  if (!created.length) {
+    showToast(tx("Nie znaleziono par słowo–tłumaczenie. Poproś AI o format: arabskie — polskie.", "No word-translation pairs found. Ask AI for format: arabic — translation."));
+    return;
+  }
+  state.customFlashcards.unshift(...created);
   saveState();
+  showToast(tx(`Dodano ${created.length} fiszek ✓`, `Added ${created.length} flashcards ✓`));
 }
 
 function extractNearbyLine(text, needle) {
@@ -4066,31 +4221,6 @@ function pillars() {
   `;
 }
 
-// ============================================================
-// ARABIC ROOTS
-// ============================================================
-function roots() {
-  view.innerHTML = `
-    <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Korzenie Arabskie", "Arabic Roots")} 🌿</h1>
-      <p class="text-[var(--muted)]">${tx("جَذْر — Jak z jednego korzenia powstają dziesiątki słów", "جَذْر — How dozens of words grow from one root")}</p>
-    </div>
-    ${arabicRoots.map(fam => `
-      <div class="root-family">
-        <div class="root-header">${fam.root_ar} <span class="text-base text-[var(--muted)] font-normal">(${fam.tr})</span></div>
-        <p class="text-sm text-[var(--muted)] mb-3">${tx("Znaczenie korzenia:", "Root meaning:")} <strong>${state.lang === 'pl' ? fam.meaning_pl : fam.meaning_en}</strong></p>
-        <div class="root-derivatives">
-          ${fam.words.map(w => `
-            <div class="root-word">
-              <div class="ar">${w.ar}</div>
-              <div class="tr">${w.tr}</div>
-              <div class="meaning">${state.lang === 'pl' ? w.pl : w.en}</div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `).join('')}
-  `;
-}
+
 
 init();
