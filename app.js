@@ -1,7 +1,6 @@
 import { arabicAlphabet, words, dailyTasks, quranSurahs as QURAN_SURAHS_LOCAL, asmaulHusna, islamicHadith, seerahTimeline, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, arabicRoots } from "./data.js";
 
-const GROQ_API_KEY_DEFAULT = "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";
-function getGroqApiKey() { return (typeof state !== 'undefined' && state.groqApiKey) ? state.groqApiKey : GROQ_API_KEY_DEFAULT; }
+const GROQ_API_KEY = "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";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
 const AI_SYSTEM_PROMPT_PL = `Jesteś ciepłym, motywującym i osobistym asystentem do nauki arabskiego w aplikacji 'Alif AI'. 
@@ -2824,7 +2823,7 @@ async function askGroq(messages, model = GROQ_MODEL, imageData = null) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${getGroqApiKey()}`
+      "Authorization": `Bearer ${GROQ_API_KEY}`
     },
     body: JSON.stringify(payload)
   });
