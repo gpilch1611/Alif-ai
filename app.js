@@ -3010,10 +3010,7 @@ MEANING: [English translation]`
     );
     const text = await askGroq([{ role: "user", content: prompt }]);
     const titleMatch = text.match(/(?:TYTUŁ|TITLE):\s*(.+)/i);
-    const factMatch = text.match(/(?:FAKT|FACT):\s*([\s\S]+?)(?:
-(?:SŁOWO|WORD):|
-
-|$)/i);
+    const factMatch = text.match(/(?:FAKT|FACT):\s*([\s\S]+?)(?:\n(?:SŁOWO|WORD):|\n\n|$)/i);
     const wordMatch = text.match(/(?:SŁOWO|WORD):\s*(.+)/i);
     const pronMatch = text.match(/(?:WYMOWA|PRONUNCIATION):\s*(.+)/i);
     const meaningMatch = text.match(/(?:ZNACZENIE|MEANING):\s*(.+)/i);
