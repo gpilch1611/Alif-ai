@@ -1,4 +1,4 @@
-import { arabicAlphabet, words, dailyTasks, quranSurahs as QURAN_SURAHS_LOCAL, asmaulHusna, islamicHadith, seerahTimeline, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, arabicRoots } from "./data.js";
+import { arabicAlphabet, words, dailyTasks, asmaulHusna, islamicHadith, seerahTimeline, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, arabicRoots } from "./data.js";
 
 const GROQ_API_KEY = "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";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
@@ -28,30 +28,25 @@ const THEME_COLOR = {
 };
 
 const navItems = [
-  ["home", "⌂", "navHome"],
-  ["koran", "📖", "navKoran"],
-  ["alphabet", "ا", "navAlphabet"],
-  ["lessons", "Aa", "navLessons"],
-  ["culture", "✦", "navCulture"]
+  ["home",     "⌂",  "navHome"],
+  ["islam",    "☪",  "navIslam"],
+  ["alphabet", "ا",  "navAlphabet"],
+  ["lessons",  "Aa", "navLessons"],
+  ["games",    "◎",  "navGames"]
 ];
 
 const secondaryNavItems = [
-  ["flashcards", "▣", "navFlashcards"],
-  ["speech", "◉", "navSpeech"],
-  ["writing", "✎", "navWriting"],
-  ["adventure", "☆", "navAdventure"],
-  ["books", "▤", "navBooks"],
-  ["games", "◎", "navGames"],
-  ["badges", "🏆", "navBadges"],
-  ["dhikr", "📿", "navDhikr"],
-  ["prayer", "🕌", "navPrayer"],
-  ["asmaul", "☪", "navAsmaul"],
-  ["tajweed", "🔤", "navTajweed"],
-  ["seerah", "🌙", "navSeerah"],
-  ["pillars", "⭐", "navPillars"],
-  ["roots", "🌿", "navRoots"],
-  ["settings", "⚙", "navSettings"]
+  ["flashcards", "▣",  "navFlashcards"],
+  ["speech",     "◉",  "navSpeech"],
+  ["writing",    "✎",  "navWriting"],
+  ["adventure",  "☆",  "navAdventure"],
+  ["books",      "▤",  "navBooks"],
+  ["culture",    "✦",  "navCulture"],
+  ["badges",     "🏆", "navBadges"],
+  ["settings",   "⚙",  "navSettings"]
 ];
+
+const ISLAM_ROUTES = ["islam","koran","dhikr","prayer","asmaul","tajweed","seerah","pillars","roots"];
 
 const ROMANTIC_LINES = [
   // short
@@ -123,7 +118,7 @@ const ROMANTIC_LINES = [
 
 const I18N = {
   pl: {
-    navHome: "Start", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navSeerah: "Seerah", navPillars: "Filary", navRoots: "Korzenie",
+    navHome: "Start", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navSeerah: "Seerah", navPillars: "Filary", navRoots: "Korzenie",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
     welcome: "Witaj w ألف AI", homeTitle: "Uczymy się arabskiego krok po kroku", homeLead: "Duże litery, spokojne powtórki, wymowa, pisanie — i osobisty AI Assistant do nauki arabskiego.",
@@ -137,7 +132,7 @@ const I18N = {
     lessonCategories: "Kategorie Lekcji", lessonSelect: "Wybierz kategorię"
   },
   en: {
-    navHome: "Home", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navSeerah: "Seerah", navPillars: "Pillars", navRoots: "Roots",
+    navHome: "Home", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navSeerah: "Seerah", navPillars: "Pillars", navRoots: "Roots",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
     welcome: "Welcome to ألف AI", homeTitle: "We learn Arabic step by step", homeLead: "Big letters, calm reviews, pronunciation, writing — and a personal AI Assistant for learning Arabic.",
@@ -653,7 +648,7 @@ function renderNav() {
   const moreActive = secondaryNavItems.some(([id]) => id === route);
   nav.innerHTML =
     navItems.map(([id, icon, labelKey]) => `
-      <button class="nav-btn haptic-feedback ${route === id ? "active" : ""}" data-route="${id}">
+      <button class="nav-btn haptic-feedback ${route === id || (id === "islam" && ISLAM_ROUTES.includes(route)) ? "active" : ""}" data-route="${id}">
         <span class="text-xl">${icon}</span><span class="nav-label">${t(labelKey)}</span>
       </button>
     `).join("") +
@@ -709,8 +704,41 @@ function render() {
   if (aiFabLabel) aiFabLabel.textContent = t("aiAssistant");
   const aiInput = $("#aiInput");
   if (aiInput) aiInput.placeholder = t("aiPlaceholder");
-  const views = { home, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, roots };
+  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, roots };
   (views[route] || home)();
+}
+
+function islam() {
+  const tiles = [
+    { route: "koran",   icon: "📖", titlePl: "Qur'an",           titleEn: "Qur'an",          descPl: "Czytaj, słuchaj i zapisuj sury",                        descEn: "Read, listen and save surahs" },
+    { route: "dhikr",   icon: "📿", titlePl: "Dhikr",             titleEn: "Dhikr",            descPl: "Licznik Subhanallah · Alhamdulillah · Allahu Akbar",     descEn: "Subhanallah · Alhamdulillah · Allahu Akbar counter" },
+    { route: "pillars", icon: "⭐", titlePl: "Filary Islamu",     titleEn: "Pillars of Islam", descPl: "5 Filarów Islamu + 6 Filarów Imanu",                    descEn: "5 Pillars of Islam + 6 Pillars of Iman" },
+    { route: "prayer",  icon: "🕌", titlePl: "Czasy modlitw",     titleEn: "Prayer times",     descPl: "Borzęta 🇵🇱 + Surabaya 🇮🇩 + Qibla",                     descEn: "Borzęta 🇵🇱 + Surabaya 🇮🇩 + Qibla" },
+    { route: "asmaul",  icon: "☪",  titlePl: "99 Imion Allaha",  titleEn: "99 Names of Allah",descPl: "Asma ul-Husna — piękne imiona Boga",                    descEn: "Asma ul-Husna — beautiful Names of God" },
+    { route: "seerah",  icon: "🌙", titlePl: "Seerah",            titleEn: "Seerah",           descPl: "Życie Proroka Muhammada ﷺ",                             descEn: "Life of Prophet Muhammad ﷺ" },
+    { route: "tajweed", icon: "🔤", titlePl: "Tadżwid",           titleEn: "Tajweed",          descPl: "8 zasad prawidłowej recytacji",                         descEn: "8 rules for correct Quran recitation" },
+    { route: "roots",   icon: "🌿", titlePl: "Korzenie arabskie", titleEn: "Arabic roots",     descPl: "Jak z jednego korzenia rośnie 10 słów",                 descEn: "How one root grows 10+ words" },
+  ];
+  view.innerHTML = `
+    <div class="mb-5">
+      <h1 class="text-3xl font-black">☪ ${tx("Islam", "Islam")}</h1>
+      <p class="text-[var(--muted)] mt-1">${tx("Wiedza islamska od podstaw — wybierz temat", "Islamic knowledge from the basics — choose a topic")}</p>
+    </div>
+    <div class="grid gap-3 sm:grid-cols-2">
+      ${tiles.map(t => `
+        <button class="islam-tile text-left" data-route="${t.route}">
+          <span class="islam-tile-icon">${t.icon}</span>
+          <div>
+            <p class="islam-tile-title">${state.lang === "pl" ? t.titlePl : t.titleEn}</p>
+            <p class="islam-tile-desc">${state.lang === "pl" ? t.descPl : t.descEn}</p>
+          </div>
+        </button>
+      `).join("")}
+    </div>
+  `;
+  view.querySelectorAll("[data-route]").forEach(btn =>
+    btn.addEventListener("click", () => setRoute(btn.dataset.route))
+  );
 }
 
 function home() {
@@ -763,16 +791,10 @@ function home() {
     ${journeyWidget()}
     <div class="mt-4 grid gap-3 sm:grid-cols-5">
       ${quickLink(t("aiAssistant"), tx("Tworz fiszki, quizy i historie", "Create cards, quizzes and stories"), "ai")}
-      ${quickLink(t("navKoran"), tx("Czytaj i sluchaj Koranu", "Read and listen to Quran"), "koran")}
+      ${quickLink(tx("Islam", "Islam"), tx("Qur'an, dhikr, filary i więcej", "Qur'an, dhikr, pillars and more"), "islam")}
       ${quickLink(t("navLessons"), tx("Pierwsze slowa i zwroty", "First words and phrases"), "lessons")}
-      ${quickLink(t("navCulture"), tx("Ciekawostka dnia", "Daily culture fact"), "culture")}
+      ${quickLink(t("navAlphabet"), tx("Litery arabskie od podstaw", "Arabic letters from the start"), "alphabet")}
       ${quickLink(t("navGames"), tx("Quiz, memory i lapanie liter", "Quiz, memory and catch game"), "games")}
-    </div>
-    <div class="mt-3 grid gap-3 sm:grid-cols-4">
-      ${quickLink(t("navDhikr"), tx("Subhanallah, Alhamdulillah, Allahu Akbar", "Subhanallah, Alhamdulillah, Allahu Akbar"), "dhikr")}
-      ${quickLink(t("navPrayer"), tx("Czasy modlitw — Borzęta i Surabaya", "Prayer times — Borzęta & Surabaya"), "prayer")}
-      ${quickLink(t("navAsmaul"), tx("Poznaj 99 pięknych Imion Boga", "Learn the 99 Beautiful Names of God"), "asmaul")}
-      ${quickLink(t("navSeerah"), tx("Życie Proroka Muhammada ﷺ", "Life of the Prophet Muhammad ﷺ"), "seerah")}
     </div>
   `;
   
@@ -1127,7 +1149,7 @@ function surahCard(surah) {
       <div class="flex flex-wrap gap-1 mt-0.5">
         <span class="surah-badge" style="background:var(--bg)">${surah.numberOfAyahs} ${tx("w.", "ay.")}</span>
         <span class="surah-badge" style="background:var(--bg)">${revIcon}</span>
-        ${extra ? `<span class="surah-badge" style="background:#fef3c7;color:#92400e">${extra.badge}</span>` : ""}
+        ${extra ? `<span class="surah-badge surah-badge--islamic">${extra.badge}</span>` : ""}
       </div>
       ${extra ? `<p class="text-[10px] text-[var(--muted)] italic leading-tight">${state.lang === "pl" ? extra.tip_pl : extra.tip_en}</p>` : ""}
       <button class="big-action w-full text-sm border border-[var(--line)] mt-0.5" data-read-surah="${surah.number}">▶ ${tx("Czytaj", "Read")}</button>
