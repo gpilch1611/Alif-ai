@@ -46,13 +46,14 @@ const navItems = [
 ];
 
 const secondaryNavItems = [
+  ["koran",     "📖", "navKoran"],
   ["adventure", "☆",  "navAdventure"],
   ["culture",   "✦",  "navCulture"],
   ["badges",    "🏆", "navBadges"],
   ["settings",  "⚙",  "navSettings"]
 ];
 
-const ISLAM_ROUTES = ["islam","koran","dhikr","prayer","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq"];
+const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq"];
 
 const ROMANTIC_LINES = [
   // short

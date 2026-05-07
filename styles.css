@@ -1078,7 +1078,8 @@ h3 {
     display: none !important;
   }
 
-  /* Main content area shifted right to avoid sidebar overlap */
+  /* Shift header and main right to clear sidebar */
+  #appShell > header,
   #appShell > main {
     margin-left: 220px;
   }
@@ -1087,11 +1088,6 @@ h3 {
   #aiFab {
     bottom: 24px;
     right: 24px;
-  }
-
-  /* App header padding so title doesn't hide behind sidebar */
-  #appHeader {
-    padding-left: 236px;
   }
 
   /* Shift app shell bottom padding off for PC (no bottom nav) */
