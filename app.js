@@ -1176,9 +1176,12 @@ function koran() {
         <div class="panel mb-4 p-3">
           <input id="surahSearch" type="search" class="h-10 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm mb-2" placeholder="${tx("Szukaj sury...", "Search surah...")}">
           <div class="flex gap-2">
-            <select id="reciterSelect" class="h-10 flex-1 min-w-0 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm">
-              ${QURAN_RECITERS.map(r => `<option value="${r.id}" ${state.quranReciter === r.id ? "selected" : ""}>${r.name}</option>`).join("")}
-            </select>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-[var(--muted)] mb-1 font-black">${tx("Głos odsłuchu", "Reciter voice")}</p>
+              <select id="reciterSelect" class="h-10 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm">
+                ${QURAN_RECITERS.map(r => `<option value="${r.id}" ${state.quranReciter === r.id ? "selected" : ""}>${r.name}</option>`).join("")}
+              </select>
+            </div>
             <select id="surahSort" class="h-10 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm">
               <option value="number">${tx("Kolejność (1→114)", "Order (1→114)")}</option>
               <option value="short">${tx("Krótkie (≤20 wersetów)", "Short (≤20 ayahs)")}</option>
@@ -1239,11 +1242,23 @@ function koran() {
         <h3 class="font-black mb-3 mt-6">${tx("Ulubione wersety", "Favorite ayahs")}</h3>
         ${(state.quranFavorites || []).length === 0
           ? `<div class="soft-panel p-6 text-center text-[var(--muted)]">${tx("Brak ulubionych wersetów. Czytaj sury i klikaj ❤️.", "No favorite ayahs. Read surahs and tap ❤️.")}</div>`
-          : `<div class="grid gap-2">${(state.quranFavorites || []).map(num => `
-              <div class="soft-panel p-3 flex items-center justify-between gap-2">
-                <span class="text-sm">${tx("Werset", "Ayah")} ${num}</span>
-                <button class="text-red-400 text-sm font-black" data-remove-fav-ayah="${num}">✕</button>
-              </div>`).join("")}</div>`
+          : `<div class="grid gap-3">${(state.quranFavorites || []).map(entry => {
+              const isObj = typeof entry === "object";
+              const num = isObj ? entry.num : entry;
+              const ar = isObj ? (entry.ar || "") : "";
+              const tr = isObj ? (entry.tr || "") : "";
+              const trans = isObj ? (entry.trans || "") : "";
+              const surahName = isObj ? (entry.surahName || "") : "";
+              return `<div class="panel p-4">
+                <div class="flex items-start justify-between gap-2 mb-2">
+                  <p class="text-xs font-black text-emerald-600">${surahName ? `${surahName} · ` : ""}${tx("werset", "ayah")} ${num}</p>
+                  <button class="text-red-400 text-sm font-black shrink-0" data-remove-fav-ayah="${num}">✕</button>
+                </div>
+                ${ar ? `<p class="arabic text-right text-xl leading-loose mb-1">${escapeHtml(ar)}</p>` : ""}
+                ${tr ? `<p class="text-xs text-amber-600 font-mono mb-1" dir="ltr">${escapeHtml(tr)}</p>` : ""}
+                ${trans ? `<p class="text-sm text-[var(--muted)] italic" dir="ltr">${escapeHtml(trans)}</p>` : ""}
+              </div>`;
+            }).join("")}</div>`
         }
       </div>
     </div>
@@ -1277,7 +1292,7 @@ function koran() {
     }));
     view.querySelectorAll("[data-remove-fav-ayah]").forEach(btn => btn.addEventListener("click", () => {
       const num = btn.dataset.removeFavAyah;
-      state.quranFavorites = (state.quranFavorites || []).filter(n => n !== num);
+      state.quranFavorites = (state.quranFavorites || []).filter(f => (typeof f === "object" ? f.num : f) !== num);
       saveState();
       koran();
     }));
@@ -1318,7 +1333,7 @@ async function openSurah(num) {
           </div>
           <div class="grid gap-4">
             ${s.ayahs.map(ayah => `
-              <div class="soft-panel p-4 ayah-card" data-ayah-num="${ayah.number}" data-ayah-text="${escapeHtml(ayah.text)}">
+              <div class="soft-panel p-4 ayah-card" data-ayah-num="${ayah.number}" data-ayah-text="${escapeHtml(ayah.text)}" data-ayah-tr="${escapeHtml(trMap[ayah.numberInSurah] || "")}" data-ayah-trans="${escapeHtml(transMap[ayah.numberInSurah] || "")}">
                 <div class="flex items-start justify-between gap-4 mb-2">
                   <span class="text-xs font-black text-emerald-600 mt-1 shrink-0">${ayah.numberInSurah}</span>
                   <p class="arabic text-right text-2xl sm:text-3xl leading-loose">${escapeHtml(ayah.text)}</p>
@@ -1343,8 +1358,16 @@ async function openSurah(num) {
       }));
 
       container.querySelectorAll("[data-fav-ayah]").forEach(btn => btn.addEventListener("click", () => {
-        const ayahNum = btn.dataset.favAyah;
-        if (!state.quranFavorites.includes(ayahNum)) state.quranFavorites.push(ayahNum);
+        const ayahNum = String(btn.dataset.favAyah);
+        const card = btn.closest(".ayah-card");
+        const ar = card?.dataset.ayahText || "";
+        const tr = card?.dataset.ayahTr || "";
+        const trans = card?.dataset.ayahTrans || "";
+        const surahName = s.englishName || "";
+        const surahNum = s.number;
+        if (!state.quranFavorites.some(f => (typeof f === "object" ? f.num : f) === ayahNum)) {
+          state.quranFavorites.push({ num: ayahNum, ar, tr, trans, surahName, surahNum });
+        }
         saveState();
         showLoveToast(tx("Dodano werset do ulubionych", "Ayah added to favorites"));
       }));
