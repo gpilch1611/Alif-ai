@@ -44,6 +44,7 @@ const secondaryNavItems = [
   ["adventure", "☆", "navAdventure"],
   ["books", "▤", "navBooks"],
   ["games", "◎", "navGames"],
+  ["badges", "🏆", "navBadges"],
   ["settings", "⚙", "navSettings"]
 ];
 
@@ -60,7 +61,7 @@ const ROMANTIC_LINES = [
 
 const I18N = {
   pl: {
-    navHome: "Start", navKoran: "Koran", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navSettings: "Ustawienia",
+    navHome: "Start", navKoran: "Koran", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
     welcome: "Witaj w ألف AI", homeTitle: "Uczymy się arabskiego krok po kroku", homeLead: "Duże litery, spokojne powtórki, wymowa, pisanie i osobisty AI Assistant dla Abanga.",
@@ -74,7 +75,7 @@ const I18N = {
     lessonCategories: "Kategorie Lekcji", lessonSelect: "Wybierz kategorię"
   },
   en: {
-    navHome: "Home", navKoran: "Quran", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navSettings: "Settings",
+    navHome: "Home", navKoran: "Quran", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
     welcome: "Welcome to ألف AI", homeTitle: "We learn Arabic step by step", homeLead: "Big letters, calm reviews, pronunciation, writing and a personal AI Assistant for Abang.",
@@ -714,7 +715,7 @@ function render() {
   if (aiFabLabel) aiFabLabel.textContent = t("aiAssistant");
   const aiInput = $("#aiInput");
   if (aiInput) aiInput.placeholder = t("aiPlaceholder");
-  const views = { home, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, settings };
+  const views = { home, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings };
   (views[route] || home)();
 }
 
@@ -753,39 +754,18 @@ function home() {
            <h2 class="text-xl font-black mb-3">✨ ${tx("Ayat Dnia", "Ayat of the Day")}</h2>
            <div class="skeleton h-20 w-full mb-2"></div>
         </div>
-        <div class="panel p-5">
-          <div class="flex items-center justify-between gap-3 mb-3">
-            <h2 class="text-xl font-black">${tx("Odznaki", "Badges")}</h2>
-            <span class="text-sm font-bold text-amber-500">${state.badges.length}/${BADGES_CATALOG.length}</span>
+        <button class="panel p-4 text-left w-full flex items-center justify-between gap-3 active:scale-95 transition-transform" data-route="badges">
+          <div>
+            <h2 class="text-base font-black">${tx("Odznaki", "Badges")}</h2>
+            <p class="text-xs text-[var(--muted)] mt-0.5">${tx("Twoje osiągnięcia i cele", "Your achievements and goals")}</p>
           </div>
-          <div class="grid grid-cols-7 gap-1.5">
-            ${BADGES_CATALOG.map(b => {
-              const unlocked = state.badges.includes(b.id);
-              const label = state.lang === "pl" ? b.pl : b.en;
-              const criterion = state.lang === "pl" ? b.criterionPl : b.criterionEn;
-              return `<div class="flex flex-col items-center gap-0.5 group relative cursor-default" title="${label}: ${criterion}">
-                <span class="text-2xl ${unlocked ? "" : "grayscale opacity-25"}">${b.icon}</span>
-              </div>`;
-            }).join("")}
-          </div>
-          <details class="mt-3">
-            <summary class="text-xs text-[var(--muted)] cursor-pointer">${tx("Pokaż szczegóły", "Show details")}</summary>
-            <div class="mt-2 grid gap-1.5">
-              ${BADGES_CATALOG.map(b => {
-                const unlocked = state.badges.includes(b.id);
-                const label = state.lang === "pl" ? b.pl : b.en;
-                const criterion = state.lang === "pl" ? b.criterionPl : b.criterionEn;
-                return `<div class="flex items-center gap-2 ${unlocked ? "" : "opacity-40"}">
-                  <span class="text-xl shrink-0">${b.icon}</span>
-                  <div class="min-w-0">
-                    <p class="text-xs font-black leading-tight">${label}</p>
-                    <p class="text-[10px] text-[var(--muted)] leading-tight">${criterion}</p>
-                  </div>
-                </div>`;
-              }).join("")}
+          <div class="flex items-center gap-2 shrink-0">
+            <div class="flex gap-0.5">
+              ${BADGES_CATALOG.slice(0, 5).map(b => `<span class="text-lg ${state.badges.includes(b.id) ? "" : "grayscale opacity-25"}">${b.icon}</span>`).join("")}
             </div>
-          </details>
-        </div>
+            <span class="text-sm font-black text-amber-500">${state.badges.length}/${BADGES_CATALOG.length}</span>
+          </div>
+        </button>
       </aside>
     </div>
     ${journeyWidget()}
@@ -1087,8 +1067,8 @@ async function openSurah(num) {
                   <span class="text-xs font-black text-emerald-600 mt-1 shrink-0">${ayah.numberInSurah}</span>
                   <p class="arabic text-right text-2xl sm:text-3xl leading-loose">${escapeHtml(ayah.text)}</p>
                 </div>
-                ${trMap[ayah.numberInSurah] ? `<p class="text-xs text-amber-600 font-mono leading-relaxed mb-1 text-right">${escapeHtml(trMap[ayah.numberInSurah])}</p>` : ""}
-                ${transMap[ayah.numberInSurah] ? `<p class="text-sm text-[var(--muted)] italic text-right">${escapeHtml(transMap[ayah.numberInSurah])}</p>` : ""}
+                ${trMap[ayah.numberInSurah] ? `<p class="text-xs text-amber-600 font-mono leading-relaxed mb-1" dir="ltr">${escapeHtml(trMap[ayah.numberInSurah])}</p>` : ""}
+                ${transMap[ayah.numberInSurah] ? `<p class="text-sm text-[var(--muted)] italic" dir="ltr">${escapeHtml(transMap[ayah.numberInSurah])}</p>` : ""}
                 <div class="mt-3 flex justify-end gap-2">
                   <button class="speaker-btn haptic-feedback" data-play-audio="${ayah.audio}" title="${tx("Odtwórz", "Play")}">▶️</button>
                   <button class="speaker-btn haptic-feedback" data-fav-ayah="${ayah.number}" title="${tx("Ulubiony werset", "Favorite ayah")}">❤️</button>
@@ -1137,6 +1117,37 @@ async function openSurah(num) {
   } catch (e) {
     container.innerHTML = `<div class="panel p-8 text-center text-red-500">${tx("Nie udało się pobrać treści sury.", "Failed to fetch surah content.")}</div>`;
   }
+}
+
+function badges() {
+  const unlocked = state.badges.length;
+  const total = BADGES_CATALOG.length;
+  view.innerHTML = `
+    <div class="page-header sticky top-0 z-10 flex items-center gap-3 p-4 bg-[var(--bg)]">
+      <h1 class="text-2xl font-black">${tx("Odznaki", "Badges")}</h1>
+      <span class="ml-auto text-sm font-black text-amber-500">${unlocked}/${total}</span>
+    </div>
+    <div class="p-4 pb-28">
+      <div class="w-full bg-[var(--line)] rounded-full h-2 mb-6">
+        <div class="bg-amber-400 h-2 rounded-full transition-all" style="width:${Math.round(unlocked/total*100)}%"></div>
+      </div>
+      <div class="grid gap-3">
+        ${BADGES_CATALOG.map(b => {
+          const isUnlocked = state.badges.includes(b.id);
+          const label = state.lang === "pl" ? b.pl : b.en;
+          const criterion = state.lang === "pl" ? b.criterionPl : b.criterionEn;
+          return `<div class="panel p-4 flex items-center gap-4 ${isUnlocked ? "" : "opacity-50"}">
+            <span class="text-4xl shrink-0 ${isUnlocked ? "" : "grayscale"}">${b.icon}</span>
+            <div class="min-w-0 flex-1">
+              <p class="font-black leading-tight">${label}</p>
+              <p class="text-xs text-[var(--muted)] leading-tight mt-0.5">${criterion}</p>
+            </div>
+            ${isUnlocked ? `<span class="text-emerald-500 text-lg shrink-0">✓</span>` : `<span class="text-[var(--muted)] text-lg shrink-0">🔒</span>`}
+          </div>`;
+        }).join("")}
+      </div>
+    </div>
+  `;
 }
 
 function settings() {
