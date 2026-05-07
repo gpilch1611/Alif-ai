@@ -424,3 +424,243 @@ export const arabicRoots = [
     { ar: "إِصْبَار", tr: "isbara", pl: "wykazywać cierpliwość", en: "to show patience" }
   ]}
 ];
+
+// ============================================================
+// NEW MUSLIM GUIDE — muallaf
+// ============================================================
+export const newMuslimSteps = [
+  {
+    n: 1, icon: "☪",
+    ar: "أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا ٱللَّٰهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ ٱللَّٰهِ",
+    tr: "Ašhadu an lā ilāha illā-llāh, wa ašhadu anna Muḥammadan rasūlu-llāh",
+    titlePl: "Szahada — Wyznanie Wiary",
+    titleEn: "Shahada — Declaration of Faith",
+    descPl: "Pierwsze i najważniejsze. Znaczy: «Świadczę, że nie ma boga prócz Allaha i świadczę, że Muhammad jest Jego posłańcem.» Wypowiedziana szczerze — jest momentem, w którym stajesz się muzułmaninem.",
+    descEn: "First and most important. It means: 'I bear witness there is no god but Allah and Muhammad is His messenger.' Said sincerely — it is the moment you become Muslim.",
+    tipPl: "Nie musisz rozumieć arabskiego idealnie. Liczy się szczerość serca (niyyah).",
+    tipEn: "You don't need perfect Arabic. What counts is sincerity of heart (niyyah)."
+  },
+  {
+    n: 2, icon: "💧",
+    ar: "الوُضُوء",
+    tr: "al-wuḍūʾ",
+    titlePl: "Wudu — Oczyszczenie",
+    titleEn: "Wudu — Ritual Purification",
+    descPl: "Bez wudu modlitwa jest nieważna. Na szczęście to proste: myjesz ręce, usta, nos, twarz, przedramiona, głowę, uszy i stopy — w określonej kolejności. Trwa ok. 2 minut.",
+    descEn: "Without wudu prayer is invalid. Fortunately it's simple: wash hands, mouth, nose, face, forearms, head, ears and feet — in order. Takes about 2 minutes.",
+    tipPl: "Wudu trwa do momentu gdy coś je 'złamie' — sen, wyjście do toalety, utrata przytomności.",
+    tipEn: "Wudu stays valid until 'broken' — by sleep, using the bathroom, or losing consciousness."
+  },
+  {
+    n: 3, icon: "📖",
+    ar: "الفَاتِحَة",
+    tr: "al-Fātiḥa",
+    titlePl: "Al-Fatiha — Zanim zaczniesz się modlić",
+    titleEn: "Al-Fatiha — Before You Start Praying",
+    descPl: "7 wersetów, które recytujesz w każdej jednostce modlitwy (raka'at). To pierwsza sura, której należy się nauczyć. Zacznij od niej — reszta może poczekać.",
+    descEn: "7 verses recited in every prayer unit (raka'at). This is the first surah to learn. Start here — the rest can wait.",
+    tipPl: "Dopuszczalne jest czytanie Al-Fatiha z kartki lub telefonu, gdy dopiero zaczynasz.",
+    tipEn: "It's acceptable to read Al-Fatiha from a card or phone when you're just starting out."
+  },
+  {
+    n: 4, icon: "🕌",
+    ar: "الصَّلَاة",
+    tr: "aṣ-Ṣalāh",
+    titlePl: "Salat — 5 Modlitw Dziennie",
+    titleEn: "Salat — 5 Daily Prayers",
+    descPl: "Fajr (świt), Dhuhr (południe), Asr (popołudnie), Maghrib (zachód słońca), Isha (noc). Nie martw się, że zrobisz błąd — Allah ocenia intencję i wysiłek, nie perfekcję.",
+    descEn: "Fajr (dawn), Dhuhr (noon), Asr (afternoon), Maghrib (sunset), Isha (night). Don't worry about making mistakes — Allah judges intention and effort, not perfection.",
+    tipPl: "Możesz łączyć modlitwy w podróży lub chorobie — islam jest religią ułatwień.",
+    tipEn: "You may combine prayers while travelling or ill — Islam is a religion of ease."
+  },
+  {
+    n: 5, icon: "🌙",
+    ar: "الصِّيَام",
+    tr: "aṣ-Ṣiyām",
+    titlePl: "Ramadan — Post",
+    titleEn: "Ramadan — Fasting",
+    descPl: "Raz w roku, przez cały miesiąc Ramadan, muzułmanie powstrzymują się od jedzenia, picia i współżycia od świtu do zachodu słońca. To czas duchowości, wspólnoty i wdzięczności.",
+    descEn: "Once a year, throughout Ramadan, Muslims abstain from food, drink and intimacy from dawn to sunset. It is a time of spirituality, community and gratitude.",
+    tipPl: "Chorzy, podróżni i kobiety w ciąży są zwolnieni — mogą odpracować dni później.",
+    tipEn: "The sick, travellers and pregnant women are exempt — they can make up days later."
+  },
+  {
+    n: 6, icon: "🤲",
+    ar: "الزَّكَاة",
+    tr: "az-Zakāh",
+    titlePl: "Zakat — Jałmużna",
+    titleEn: "Zakat — Almsgiving",
+    descPl: "2,5% rocznych oszczędności przekazywane potrzebującym — jeśli posiadasz nadwyżkę przez cały rok. To oczyszczenie majątku i filar solidarności społecznej w islamie.",
+    descEn: "2.5% of annual savings given to those in need — if you've held a surplus for a full year. It purifies wealth and is a pillar of social solidarity in Islam.",
+    tipPl: "Nie dotyczy kogoś, kto nie ma nadwyżek finansowych. Islam nie nakłada ciężarów.",
+    tipEn: "Doesn't apply to someone without financial surplus. Islam does not burden people."
+  },
+  {
+    n: 7, icon: "🕋",
+    ar: "الحَج",
+    tr: "al-Ḥajj",
+    titlePl: "Hadżdż — Pielgrzymka",
+    titleEn: "Hajj — Pilgrimage",
+    descPl: "Raz w życiu, jeśli możesz sobie na to pozwolić zdrowotnie i finansowo. Miliony muzułmanów z całego świata spotykają się w Mekce — jedno z najpotężniejszych doświadczeń duchowych na ziemi.",
+    descEn: "Once in a lifetime, if you are physically and financially able. Millions of Muslims from around the world gather in Mecca — one of the most powerful spiritual experiences on earth.",
+    tipPl: "Nikt nie jest zobowiązany do Hadżdżu jeśli go nie stać lub choruje. Allah jest Al-Latif — subtelny i wyrozumiały.",
+    tipEn: "No one is obligated for Hajj if they cannot afford it or are ill. Allah is Al-Latif — gentle and understanding."
+  }
+];
+
+// ============================================================
+// HALAL & HARAM DATA
+// ============================================================
+export const halalHaramData = {
+  food: [
+    { status: "halal", icon: "🐟", namePl: "Ryby i owoce morza", nameEn: "Fish and seafood", ar: "السَّمَك", tr: "as-samak", reasonPl: "Wszystkie ryby i większość owoców morza są halal — bez konieczności specjalnego uboju.", reasonEn: "All fish and most seafood are halal — no special slaughter needed.", ref: "Quran 5:96" },
+    { status: "halal", icon: "🥬", namePl: "Warzywa i owoce", nameEn: "Vegetables and fruit", ar: "الخُضْرَوَات", tr: "al-khuḍrawāt", reasonPl: "Wszystkie rośliny są halal. Bez wyjątków.", reasonEn: "All plants are halal. No exceptions.", ref: "" },
+    { status: "halal", icon: "🐄", namePl: "Mięso halal (dhabihah)", nameEn: "Halal meat (dhabihah)", ar: "ذَبِيحَة", tr: "dhabīḥa", reasonPl: "Bydło, owce, kozy, drób — halal jeśli ubite z wymówieniem bismillah jednym cięciem. Szukaj certyfikatu halal.", reasonEn: "Cattle, sheep, goats, poultry — halal if slaughtered saying bismillah with one cut. Look for halal certification.", ref: "Quran 6:121" },
+    { status: "haram", icon: "🐷", namePl: "Wieprzowina", nameEn: "Pork", ar: "لَحْمُ الخِنْزِير", tr: "laḥm al-khinzīr", reasonPl: "Jasno zakazana w Qur'anie. Dotyczy też żelatyny wieprzowej, smalcu i wszelkich produktów z wieprzowiny.", reasonEn: "Clearly forbidden in the Quran. Applies also to pork gelatin, lard and all pork-derived products.", ref: "Quran 2:173" },
+    { status: "haram", icon: "🩸", namePl: "Krew", nameEn: "Blood", ar: "الدَّم", tr: "ad-dam", reasonPl: "Przepływająca krew jest haram. Dlatego ubój halal wymaga pełnego wykrwawienia zwierzęcia.", reasonEn: "Flowing blood is haram. This is why halal slaughter requires full bleeding of the animal.", ref: "Quran 2:173" },
+    { status: "haram", icon: "🦁", namePl: "Drapieżniki i padlina", nameEn: "Predators and carrion", ar: "الجَوَارِح", tr: "al-jawāriḥ", reasonPl: "Zwierzęta z kłami lub pazurami (lwy, psy, koty) oraz martwe zwierzęta (padlina) są haram.", reasonEn: "Animals with fangs or talons (lions, dogs, cats) and already dead animals (carrion) are haram.", ref: "Bukhari 5530" },
+    { status: "makruh", icon: "🦐", namePl: "Krewetki (kwestia sporna)", nameEn: "Shrimp (disputed)", ar: "الرَّوْبِيَان", tr: "ar-rawbiyān", reasonPl: "Halal wg Szafi'i i Hanbali; makruh wg Hanafi. Ogromna większość muzułmanów je je bez problemu.", reasonEn: "Halal according to Shafi'i and Hanbali; makruh according to Hanafi. The vast majority of Muslims eat them without issue.", ref: "" }
+  ],
+  drinks: [
+    { status: "haram", icon: "🍺", namePl: "Alkohol i każdy środek odurzający", nameEn: "Alcohol and any intoxicant", ar: "الخَمْر", tr: "al-khamr", reasonPl: "Każda ilość alkoholu jest haram — nie tylko upijanie się. «Co w dużych ilościach odurzą — w małych też jest haram.» (Abu Dawud)", reasonEn: "Any amount of alcohol is haram — not just getting drunk. 'Whatever intoxicates in large amounts — a small amount is also haram.' (Abu Dawud)", ref: "Quran 5:90" },
+    { status: "halal", icon: "☕", namePl: "Kawa i herbata", nameEn: "Coffee and tea", ar: "القَهْوَة والشَّاي", tr: "al-qahwa wa-š-šāy", reasonPl: "W pełni halal. Kofeina nie jest środkiem odurzającym w rozumieniu islamskim.", reasonEn: "Fully halal. Caffeine is not an intoxicant in the Islamic sense.", ref: "" },
+    { status: "halal", icon: "🧃", namePl: "Soki, woda, napoje bezalkoholowe", nameEn: "Juices, water, soft drinks", ar: "العَصِير", tr: "al-ʿaṣīr", reasonPl: "Wszystkie napoje niealkoholowe są halal — soki, woda, napoje gazowane, energetyki (bez alkoholu).", reasonEn: "All non-alcoholic drinks are halal — juices, water, fizzy drinks, energy drinks (without alcohol).", ref: "" },
+    { status: "makruh", icon: "🍹", namePl: "Napoje przypominające alkohol smakiem", nameEn: "Drinks imitating alcohol in taste", ar: "", tr: "", reasonPl: "Bezalkoholowe piwo lub «wino» — technicznie halal jeśli 0% alkoholu, ale makruh (niepolecane) bo imituje haram.", reasonEn: "Non-alcoholic beer or 'wine' — technically halal if 0% alcohol, but makruh (discouraged) as it imitates haram.", ref: "" }
+  ],
+  behavior: [
+    { status: "haram", icon: "🎰", namePl: "Hazard", nameEn: "Gambling", ar: "المَيْسِر", tr: "al-maysir", reasonPl: "Wszystkie formy hazardu — kasyna, zakłady, loterie. Islam chroni majątek przed ryzykiem i uzależnieniem.", reasonEn: "All forms of gambling — casinos, bets, lotteries. Islam protects wealth from risk and addiction.", ref: "Quran 5:90" },
+    { status: "haram", icon: "💸", namePl: "Lichwiarskie odsetki (riba)", nameEn: "Usurious interest (riba)", ar: "الرِّبَا", tr: "ar-ribā", reasonPl: "Pożyczanie pieniędzy na procent jest zakazane. Islamskie finanse oferują alternatywy (murabaha, ijara).", reasonEn: "Lending money at interest is forbidden. Islamic finance offers alternatives (murabaha, ijara).", ref: "Quran 2:275" },
+    { status: "haram", icon: "🗣", namePl: "Plotkowanie i obmowa (ghiba)", nameEn: "Gossip and backbiting (ghiba)", ar: "الغِيبَة", tr: "al-ghība", reasonPl: "Mówienie o kimś za jego plecami rzeczy, których by nie lubił — nawet jeśli prawdziwych. Quran porównuje to do jedzenia ciała brata.", reasonEn: "Talking about someone behind their back with things they would dislike — even if true. The Quran compares it to eating your brother's flesh.", ref: "Quran 49:12" },
+    { status: "haram", icon: "🚫", namePl: "Seks poza małżeństwem (zina)", nameEn: "Sex outside marriage (zina)", ar: "الزِّنَا", tr: "az-zinā", reasonPl: "Cudzołóstwo i przedmałżeńskie współżycie są haram. Islam chroni rodzinę i stabilność społeczną.", reasonEn: "Adultery and premarital sex are haram. Islam protects the family and social stability.", ref: "Quran 17:32" },
+    { status: "halal", icon: "💑", namePl: "Współżycie w małżeństwie", nameEn: "Marital intimacy", ar: "النِّكَاح", tr: "an-nikāḥ", reasonPl: "Małżeństwo jest sunnah Proroka ﷺ. Współżycie małżeńskie jest aktem kultu (ibadah) gdy jest z dobrą intencją.", reasonEn: "Marriage is the sunnah of the Prophet ﷺ. Marital relations are an act of worship (ibadah) when done with good intention.", ref: "Muslim 1400" },
+    { status: "haram", icon: "🤥", namePl: "Kłamstwo i oszustwo", nameEn: "Lying and cheating", ar: "الكَذِب", tr: "al-kaḏib", reasonPl: "Prorok ﷺ powiedział: «Wierny może być tchórzliwy, skąpy lub grzesznikiem — ale nie kłamcą.» (Ahmad). Uczciwość (sidq) to fundament islamskiego charakteru.", reasonEn: "The Prophet ﷺ said: 'A believer can be a coward, miser or sinner — but not a liar.' (Ahmad). Honesty (sidq) is a foundation of Islamic character.", ref: "Ahmad 8925" }
+  ],
+  gray: [
+    { icon: "🔍", questionPl: "Czy żelatyna (E441) jest halal?", questionEn: "Is gelatin (E441) halal?", answerPl: "Zależy od źródła. Żelatyna wieprzowa — haram. Wołowa (halal) lub rybia — halal. Żelatyna syntetyczna — halal. Sprawdzaj etykiety lub szukaj certyfikatu. Aplikacje jak «Halal Checker» skanują E-numery automatycznie.", answerEn: "Depends on the source. Pork gelatin — haram. Beef (halal) or fish — halal. Synthetic gelatin — halal. Check labels or look for certification. Apps like 'Halal Checker' scan E-numbers automatically." },
+    { icon: "🔍", questionPl: "Czy mogę jeść mięso z polskiego supermarketu?", questionEn: "Can I eat meat from a Polish supermarket?", answerPl: "Wg madhhab Szafi'i: mięso Ludzi Księgi (chrześcijańskie/żydowskie) jest dopuszczalne gdy halal niedostępne. Wg bardziej rygorystycznych szkół — tylko certyfikowane halal. W Polsce sklepy halal znajdziesz w większych miastach. W razie wątpliwości — wybierz rybę lub wegetariańskie.", answerEn: "According to the Shafi'i madhab: meat from People of the Book (Christian/Jewish) is acceptable when halal is unavailable. Stricter schools require halal certification only. In Poland, halal shops are available in major cities. When in doubt — choose fish or vegetarian." },
+    { icon: "🔍", questionPl: "Które E-numery są podejrzane?", questionEn: "Which E-numbers are suspicious?", answerPl: "Podejrzane: E120 (karmin z owadów — haram), E441 (żelatyna — zależy od źródła), E471 (mono- i diglicerydy — mogą być wieprzowe), E542 (fosfoран костный — może być wieprzowy). Aplikacja «Halal Checker» robi to automatycznie za ciebie.", answerEn: "Suspicious: E120 (carmine from insects — haram), E441 (gelatin — depends on source), E471 (mono- and diglycerides — may be porcine), E542 (edible bone phosphate — may be porcine). The 'Halal Checker' app does this automatically for you." },
+    { icon: "🔍", questionPl: "Co z lekami zawierającymi alkohol lub żelatynę?", questionEn: "What about medicines containing alcohol or gelatin?", answerPl: "Konieczność (darura) uchyla zakaz — jeśli jedyna dostępna wersja leku zawiera haram składnik, a zdrowie tego wymaga, jest to dozwolone. Islam jest religią łatwości: «Allah chce dla was łatwości, nie trudności» (Quran 2:185). Zapytaj lekarza o alternatywy jeśli są dostępne.", answerEn: "Necessity (darura) overrides prohibition — if the only available medicine contains a haram ingredient and health requires it, it is permitted. Islam is a religion of ease: 'Allah wants ease for you, not hardship' (Quran 2:185). Ask your doctor about alternatives if available." }
+  ]
+};
+
+// ============================================================
+// ISLAMIC FAQ — islamfaq
+// ============================================================
+export const islamicFaq = [
+  // ── myths ──
+  { id: "worship_muhammad", tab: "myths", verdict: "false",
+    qPl: "Czy muzułmanie czczą Muhammada jak boga?",
+    qEn: "Do Muslims worship Muhammad as a god?",
+    aPl: "Absolutnie nie. Szahada mówi: «Nie ma boga prócz Allaha i Muhammad jest Jego posłańcem.» Muhammad ﷺ był człowiekiem — prorokiem i przykładem, ale nie boskim. Gdy Omar ibn al-Khattab usłyszał o śmierci Proroka i chciał zaprzeczyć, Abu Bakr powiedział: «Kto czcił Muhammada — Muhammad umarł. Kto czci Allaha — Allah żyje i nie umiera.» (Bukhari 3668)",
+    aEn: "Absolutely not. The Shahada says: 'There is no god but Allah and Muhammad is His messenger.' Muhammad ﷺ was a human — a prophet and example, but not divine. When Omar ibn al-Khattab wanted to deny the Prophet's death, Abu Bakr said: 'Whoever worshipped Muhammad — Muhammad has died. Whoever worships Allah — Allah lives and does not die.' (Bukhari 3668)",
+    ref: "Quran 3:144" },
+  { id: "sword", tab: "myths", verdict: "complex",
+    qPl: "Czy islam szerzył się mieczem?",
+    qEn: "Was Islam spread by the sword?",
+    aPl: "Nie w przypadku największego skupiska muzułmanów — Azji Południowo-Wschodniej (Indonezja, Malezja). Tam islam przyszedł przez arabskich i indyjskich kupców oraz sufickich mistrzów — bez jednej armii. Były podboje militarne (jak wszystkie ówczesne cywilizacje), ale zasada jest jasna: «Nie ma przymusu w religii» (Quran 2:256). Nawet własny wujek Proroka ﷺ, Abu Talib, umarł niebędąc muzułmaninem — nikt go nie zmuszał.",
+    aEn: "Not in the case of the world's largest Muslim population — Southeast Asia (Indonesia, Malaysia). There Islam came through Arab and Indian merchants and Sufi masters — without a single army. There were military conquests (as with all civilisations of the time), but the principle is clear: 'There is no compulsion in religion' (Quran 2:256). Even the Prophet's ﷺ own uncle, Abu Talib, died a non-Muslim — no one coerced him.",
+    ref: "Quran 2:256" },
+  { id: "arabs", tab: "myths", verdict: "false",
+    qPl: "Czy wszyscy muzułmanie są Arabami?",
+    qEn: "Are all Muslims Arabs?",
+    aPl: "Tylko ok. 20% spośród 1,8 miliarda muzułmanów to Arabowie. Indonezja ma ponad 270 milionów muzułmanów i jest największym krajem muzułmańskim na świecie. Islam jest globalny: Pakistan, Bangladesz, Nigeria, Turcja, Chiny, Bośnia, Polska — wszędzie są muzułmanie różnych ras i kultur.",
+    aEn: "Only about 20% of 1.8 billion Muslims are Arab. Indonesia has over 270 million Muslims and is the world's largest Muslim-majority country. Islam is global: Pakistan, Bangladesh, Nigeria, Turkey, China, Bosnia, Poland — everywhere there are Muslims of different races and cultures.",
+    ref: "" },
+  { id: "animals", tab: "myths", verdict: "false",
+    qPl: "Czy muzułmanie uprawiają seks ze zwierzętami?",
+    qEn: "Do Muslims have sex with animals?",
+    aPl: "To kłamstwo i celowa dehumanizacja. Stosunek ze zwierzęciem jest absolutnie haram w islamie i historycznie był karany w prawie islamskim. Jest to jeden z najbardziej szerzonych islamofobicznych stereotypów, niemający żadnego oparcia w rzeczywistości ani w religii. Muzułmanie mają ogromny szacunek dla zwierząt — hadisy mówią o nagrodzie dla kogoś, kto nakarmi spragnionego psa.",
+    aEn: "This is a lie and deliberate dehumanisation. Intercourse with animals is absolutely haram in Islam and was historically punishable under Islamic law. It is one of the most widely spread Islamophobic stereotypes with no basis in reality or religion. Muslims have great respect for animals — hadiths speak of reward for someone who gives water to a thirsty dog.",
+    ref: "Bukhari 2363" },
+  { id: "music", tab: "myths", verdict: "complex",
+    qPl: "Czy muzyka jest zakazana w islamie?",
+    qEn: "Is music forbidden in Islam?",
+    aPl: "To kwestia sporna — uczeni różnią się zdaniami od wieków. Jedni (Hanbali) uważają muzykę instrumentalną za makruh lub haram; inni (Maliki, część Szafi'i) dopuszczają ją. Quran nie zakazuje muzyki wprost. Zakazane jest to, co prowadzi do grzechu (sprośne teksty, nadużycie). Większość muzułmanów słucha muzyki bez problemów.",
+    aEn: "This is a disputed issue — scholars have disagreed for centuries. Some (Hanbali) consider instrumental music makruh or haram; others (Maliki, some Shafi'i) permit it. The Quran does not explicitly forbid music. What is forbidden is what leads to sin (obscene lyrics, excess). Most Muslims listen to music without issue.",
+    ref: "" },
+
+  // ── women ──
+  { id: "wife_beating", tab: "women", verdict: "false",
+    qPl: "Czy islam pozwala mężom bić żony?",
+    qEn: "Does Islam permit husbands to beat their wives?",
+    aPl: "Nie — to jeden z największych mitów o islamie. Werset Quran 4:34 używa arabskiego słowa «daraba» — które klasyczni uczeni tłumaczyli różnie (od «odejść» po «symboliczne dotknięcie»), ale Prorok ﷺ nigdy nie uderzył żadnej kobiety ani zwierzęcia. Powiedział wprost: «Najlepszy z was jest ten, kto jest najlepszy dla swojej żony» (Tirmidhi 1162). Bukhari cytuje Proroka: «Jak może ktokolwiek bić żonę jak biją się niewolnicy, a potem z nią spać?» Przemoc domowa jest haram.",
+    aEn: "No — this is one of the greatest myths about Islam. Quran verse 4:34 uses the Arabic word 'daraba' — which classical scholars translated differently (from 'to leave' to a 'symbolic touch'), but the Prophet ﷺ never struck any woman or animal. He said clearly: 'The best of you is he who is best to his wife' (Tirmidhi 1162). Bukhari quotes the Prophet: 'How can anyone beat his wife as slaves are beaten, and then sleep with her?' Domestic violence is haram.",
+    ref: "Tirmidhi 1162, Bukhari 4942" },
+  { id: "womens_rights", tab: "women", verdict: "false",
+    qPl: "Czy islam odbiera kobietom prawa?",
+    qEn: "Does Islam strip women of their rights?",
+    aPl: "Wręcz przeciwnie — w VII-wiecznej Arabii islam był rewolucją praw kobiet. Islam dał kobietom prawo do własności, dziedziczenia (pierwsze w historii), inicjowania rozwodu (khul') i nauki. Khadijah, pierwsza żona Proroka ﷺ, była zamożną przedsiębiorcą i to ona zaproponowała mu małżeństwo. Aisza bint Abi Bakr była największym uczonym hadisów swojej epoki. Problemy z prawami kobiet w krajach muzułmańskich to najczęściej kultura i polityka — nie islam.",
+    aEn: "On the contrary — in 7th-century Arabia, Islam was a revolution in women's rights. Islam gave women the right to own property, to inheritance (first in history), to initiate divorce (khul') and to education. Khadijah, the Prophet's ﷺ first wife, was a wealthy businesswoman who proposed to him. Aisha bint Abi Bakr was the greatest hadith scholar of her era. Issues with women's rights in Muslim countries are most often culture and politics — not Islam.",
+    ref: "Quran 4:32" },
+  { id: "hijab", tab: "women", verdict: "complex",
+    qPl: "Czy hidżab jest przymusem?",
+    qEn: "Is the hijab forced?",
+    aPl: "W islamie hidżab jest nakazem religijnym (jak modlitwa czy post). Ale: «Nie ma przymusu w religii» (Quran 2:256) — nikt nie może być do wiary zmuszony. Wiele muzułmanek nosi hidżab z własnego wyboru i jest z niego dumna. Przymus hidżabu w Iranie czy Arabii Saudyjskiej to decyzja polityczna tamtych państw — nie islamska zasada. Prorok ﷺ nigdy nikogo nie zmuszał.",
+    aEn: "In Islam, hijab is a religious requirement (like prayer or fasting). But: 'There is no compulsion in religion' (Quran 2:256) — no one can be coerced into faith. Many Muslim women wear hijab by choice and are proud of it. Forced hijab in Iran or Saudi Arabia is a political decision of those states — not an Islamic principle. The Prophet ﷺ never coerced anyone.",
+    ref: "Quran 2:256, 24:31" },
+  { id: "polygamy", tab: "women", verdict: "complex",
+    qPl: "Co z poligamią w islamie?",
+    qEn: "What about polygamy in Islam?",
+    aPl: "Islam ograniczył poligamię, nie wprowadził ją — przed islamem mężczyźni brali dowolną liczbę żon. Quran pozwala na max. 4 żony, ale pod warunkiem absolutnie sprawiedliwego traktowania — i zaraz dodaje: «Nie będziecie w stanie być sprawiedliwi, nawet jeśli chcecie» (4:129). Większość muzułmańskich uczonych uznaje to za praktyczne zniechęcenie do poligamii. Dziś poligamia jest rzadkością i zakazana prawnie w wielu krajach muzułmańskich.",
+    aEn: "Islam limited polygamy, it did not introduce it — before Islam men took any number of wives. The Quran permits up to 4 wives, but only with absolutely equal treatment — and then immediately adds: 'You will not be able to be just, even if you wish' (4:129). Most Muslim scholars consider this a practical discouragement of polygamy. Today polygamy is rare and legally prohibited in many Muslim countries.",
+    ref: "Quran 4:3, 4:129" },
+
+  // ── religions ──
+  { id: "jesus", tab: "religions", verdict: "info",
+    qPl: "Co islam mówi o Jezusie?",
+    qEn: "What does Islam say about Jesus?",
+    aPl: "Jezus — Isa ibn Maryam (Jezus syn Marii) — jest jednym z pięciu najważniejszych proroków w islamie (obok Noe, Abrahama, Mojżesza i Muhammada). Islam potwierdza: dziewicze narodziny, cuda Jezusa (uzdrawianie, wskrzeszanie), Jego pobożność. Islam nie akceptuje: boskości Jezusa, Trójcy Świętej i ukrzyżowania (w islamie Jezus został wzięty do nieba przez Allaha). Powróci przed Dniem Sądu — to ważna eschatologia islamska.",
+    aEn: "Jesus — Isa ibn Maryam (Jesus son of Mary) — is one of the five greatest prophets in Islam (alongside Noah, Abraham, Moses and Muhammad). Islam confirms: virgin birth, Jesus's miracles (healing, raising the dead), His piety. Islam does not accept: the divinity of Jesus, the Holy Trinity, or the crucifixion (in Islam Jesus was taken to heaven by Allah). He will return before the Day of Judgement — this is important Islamic eschatology.",
+    ref: "Quran 3:45-48, 4:157-158" },
+  { id: "mary", tab: "religions", verdict: "info",
+    qPl: "Co Quran mówi o Maryi (Maryam)?",
+    qEn: "What does the Quran say about Mary (Maryam)?",
+    aPl: "Rozdział 19 Qur'anu nosi imię «Maryam» — dedykowany Maryi. Maryja jest wymieniana w Qur'anie więcej razy niż w całym Nowym Testamencie. Jest uważana za czystą (al-Batool) i najlepszą z kobiet świata — według hadisu Proroka ﷺ (Tirmidhi 3878). To niezwykłe: Quran oddaje jej więcej czci niż wiele kościołów chrześcijańskich.",
+    aEn: "Chapter 19 of the Quran is called 'Maryam' — dedicated to Mary. Mary is mentioned in the Quran more times than in the entire New Testament. She is considered pure (al-Batool) and the best of women in the world — according to the hadith of the Prophet ﷺ (Tirmidhi 3878). Remarkably, the Quran gives her more honour than many Christian churches.",
+    ref: "Quran 3:42, 19:1-35" },
+  { id: "same_god", tab: "religions", verdict: "info",
+    qPl: "Czy muzułmanie, chrześcijanie i żydzi czczą tego samego Boga?",
+    qEn: "Do Muslims, Christians and Jews worship the same God?",
+    aPl: "Tak — z islamskiej perspektywy wszyscy czcimy Boga Abrahama, Mojżesza, Jezusa i Muhammada. «Allah» to po prostu arabskie słowo oznaczające «Bóg» — arabscy chrześcijanie od wieków mówią «Allah» modląc się do Boga chrześcijaństwa. Islam, chrześcijaństwo i judaizm to religie abrahamiczne — z jednego korzenia. Różnimy się w teologii (Trójca, boskość Jezusa), ale nie w fundamentalnym obiekcie kultu.",
+    aEn: "Yes — from an Islamic perspective we all worship the God of Abraham, Moses, Jesus and Muhammad. 'Allah' is simply the Arabic word for 'God' — Arab Christians have said 'Allah' for centuries when praying to the God of Christianity. Islam, Christianity and Judaism are Abrahamic religions — from one root. We differ in theology (Trinity, divinity of Jesus), but not in the fundamental object of worship.",
+    ref: "Quran 29:46" },
+  { id: "common_prophets", tab: "religions", verdict: "info",
+    qPl: "Jacy prorocy są wspólni dla islamu, chrześcijaństwa i judaizmu?",
+    qEn: "Which prophets are shared by Islam, Christianity and Judaism?",
+    aPl: "Adam (Adem), Noe (Nuh), Abraham (Ibrahim), Mojżesz (Musa), Dawid (Dawud), Salomon (Sulejman), Jan Chrzciciel (Jahja), Jezus (Isa) — wszyscy są prorokami w islamie. Quran jest pełen ich historii. Muhammad ﷺ był ostatnim prorokiem — «pieczęcią proroków» (hatam al-anbiya). Ibrahim (Abraham) jest ojcem zarówno Izaaka (przodka żydów i chrześcijan) jak i Ismaela (przodka Arabów) — stąd wspólne korzenie.",
+    aEn: "Adam (Adem), Noah (Nuh), Abraham (Ibrahim), Moses (Musa), David (Dawud), Solomon (Sulayman), John the Baptist (Yahya), Jesus (Isa) — all are prophets in Islam. The Quran is full of their stories. Muhammad ﷺ was the last prophet — 'the seal of the prophets' (khatam al-anbiya). Ibrahim (Abraham) is the father of both Isaac (ancestor of Jews and Christians) and Ishmael (ancestor of Arabs) — hence the shared roots.",
+    ref: "Quran 2:136" },
+  { id: "dietary", tab: "religions", verdict: "info",
+    qPl: "Czy islamskie zasady diety są podobne do żydowskich (koszer)?",
+    qEn: "Are Islamic dietary rules similar to Jewish kosher?",
+    aPl: "Tak — bardzo podobne. Obie zakazują wieprzowiny i krwi. Obie wymagają specjalnego uboju (dhabihah / shechita). Obie zakazują padliny. Różnice: koszer zakazuje mieszania mięsa z nabiałem (islam nie), koszer ma inne szczegółowe przepisy. Islam pozwala jeść koszer jako dozwolone — Quran mówi: «Pożywienie Ludzi Księgi jest dla was dozwolone» (5:5).",
+    aEn: "Yes — very similar. Both forbid pork and blood. Both require special slaughter (dhabihah / shechita). Both forbid carrion. Differences: kosher forbids mixing meat with dairy (Islam doesn't), kosher has other specific rules. Islam permits eating kosher as acceptable — the Quran says: 'The food of the People of the Book is permitted to you' (5:5).",
+    ref: "Quran 5:5" },
+
+  // ── terrorism ──
+  { id: "isis", tab: "terrorism", verdict: "false",
+    qPl: "Czy ISIS i Al-Kaida reprezentują islam?",
+    qEn: "Do ISIS and Al-Qaeda represent Islam?",
+    aPl: "Nie — mówi tak ponad 99% uczonych islamskich na świecie. ISIS i Al-Kaida to ruchy takfiri — ogłaszają innych muzułmanów niewiernymi (kafir), co jest wielkim grzechem w islamie. Al-Azhar w Kairze, najstarsza i najbardziej prestiżowa uczelnia islamska świata, oficjalnie orzekła że ISIS nie są muzułmanami. Ich metodologia opiera się na wyrywaniu wersetów Quran z historycznego i językowego kontekstu — coś, co każdy uczony odrzuca.",
+    aEn: "No — over 99% of Islamic scholars worldwide say so. ISIS and Al-Qaeda are takfiri movements — they declare other Muslims to be unbelievers (kafir), which is a great sin in Islam. Al-Azhar in Cairo, the world's oldest and most prestigious Islamic university, officially ruled that ISIS are not Muslims. Their methodology is based on ripping Quranic verses from historical and linguistic context — something every scholar rejects.",
+    ref: "Quran 5:32, Al-Azhar fatwa 2014" },
+  { id: "killing", tab: "terrorism", verdict: "false",
+    qPl: "Czy Quran nakazuje zabijanie niewiernych?",
+    qEn: "Does the Quran command killing non-believers?",
+    aPl: "Nie — «wersety miecza» zostały objawione w konkretnym kontekście militarnym w VII wieku (obrona przed atakami na nową wspólnotę). Ogólna zasada jest jasna: «Kto zabije człowieka — jakby zabił całą ludzkość» (Quran 5:32). Prorok ﷺ zakazywał zabijania kobiet, dzieci, starców i mnichów w walce (Abu Dawud 2614). Terroryzm jest haram. Samobójstwo jest haram (Quran 4:29).",
+    aEn: "No — the 'sword verses' were revealed in a specific 7th-century military context (defence against attacks on the new community). The general principle is clear: 'Whoever kills a soul — it is as if he has killed all mankind' (Quran 5:32). The Prophet ﷺ forbade killing women, children, the elderly and monks in combat (Abu Dawud 2614). Terrorism is haram. Suicide is haram (Quran 4:29).",
+    ref: "Quran 5:32, 4:29" },
+  { id: "jihad", tab: "terrorism", verdict: "complex",
+    qPl: "Co tak naprawdę znaczy dżihad?",
+    qEn: "What does jihad actually mean?",
+    aPl: "Dżihad (جِهَاد) znaczy «wysiłek» lub «staranie» — od arabskiego korzenia jahada. Większy dżihad (al-jihad al-akbar) to walka z własnym ego, pożądaniem i lenistwem. Mniejszy dżihad (al-jihad al-asghar) to obrona militarna — tylko jako samoobrona, z surowymi zasadami (nie wolno krzywdzić cywilów). ISIS i media zawłaszczyły słowo «dżihad» i wypełniły je swoją propagandą — to nie jest islamska definicja.",
+    aEn: "Jihad (جِهَاد) means 'struggle' or 'striving' — from the Arabic root jahada. The greater jihad (al-jihad al-akbar) is the struggle against one's own ego, desires and laziness. The lesser jihad (al-jihad al-asghar) is military defence — only as self-defence, with strict rules (civilians must not be harmed). ISIS and the media have hijacked the word 'jihad' and filled it with their propaganda — that is not the Islamic definition.",
+    ref: "Tirmidhi 1621" },
+  { id: "suicide_bombing", tab: "terrorism", verdict: "false",
+    qPl: "Czy samobójcze zamachy są dozwolone w islamie?",
+    qEn: "Are suicide bombings permitted in Islam?",
+    aPl: "Absolutnie nie — podwójnie haram. Po pierwsze: samobójstwo jest haram: «Nie zabijajcie siebie samych — Allah jest dla was miłosierny» (Quran 4:29). Po drugie: mordowanie niewinnych cywilów jest haram. Hadis mówi, że ktoś kto popełni samobójstwo będzie powtarzał ten czyn w piekle (Bukhari 5778). Żaden uznaany uczony islamski na świecie nie popiera zamachów samobójczych wobec cywilów.",
+    aEn: "Absolutely not — doubly haram. First: suicide is haram: 'Do not kill yourselves — Allah is merciful to you' (Quran 4:29). Second: murdering innocent civilians is haram. A hadith says that someone who commits suicide will repeat the act in hell (Bukhari 5778). No recognised Islamic scholar in the world endorses suicide bombings against civilians.",
+    ref: "Quran 4:29, Bukhari 5778" }
+];
+

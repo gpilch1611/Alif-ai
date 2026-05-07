@@ -1,4 +1,4 @@
-import { arabicAlphabet, words, dailyTasks, asmaulHusna, islamicHadith, seerahTimeline, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, arabicRoots } from "./data.js";
+import { arabicAlphabet, words, dailyTasks, asmaulHusna, islamicHadith, seerahTimeline, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, arabicRoots, newMuslimSteps, halalHaramData, islamicFaq } from "./data.js";
 
 const GROQ_API_KEY = "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";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
@@ -46,7 +46,7 @@ const secondaryNavItems = [
   ["settings",   "⚙",  "navSettings"]
 ];
 
-const ISLAM_ROUTES = ["islam","koran","dhikr","prayer","asmaul","tajweed","seerah","pillars","roots"];
+const ISLAM_ROUTES = ["islam","koran","dhikr","prayer","asmaul","tajweed","seerah","pillars","roots","muallaf","halalharam","islamfaq"];
 
 const ROMANTIC_LINES = [
   // short
@@ -118,7 +118,7 @@ const ROMANTIC_LINES = [
 
 const I18N = {
   pl: {
-    navHome: "Start", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navSeerah: "Seerah", navPillars: "Filary", navRoots: "Korzenie",
+    navHome: "Start", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navSeerah: "Seerah", navPillars: "Filary", navRoots: "Korzenie", navMuallaf: "Nowy muzułmanin", navHalalHaram: "Halal & Haram", navIslamFaq: "FAQ islamu",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
     welcome: "Witaj w ألف AI", homeTitle: "Islam — krok po kroku", homeLead: "Arabski jest narzędziem — bo czytanie Koranu w oryginale to obowiązek każdego muzułmanina. Ucz się liter, sur, dhikru, historii islamu i modlitw.",
@@ -135,7 +135,7 @@ const I18N = {
     lessonCategories: "Kategorie Lekcji", lessonSelect: "Wybierz kategorię"
   },
   en: {
-    navHome: "Home", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navSeerah: "Seerah", navPillars: "Pillars", navRoots: "Roots",
+    navHome: "Home", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navSeerah: "Seerah", navPillars: "Pillars", navRoots: "Roots", navMuallaf: "New Muslim", navHalalHaram: "Halal & Haram", navIslamFaq: "Islam FAQ",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
     welcome: "Welcome to ألف AI", homeTitle: "Islam — step by step", homeLead: "Arabic is the key — reading the Quran in the original is every Muslim's obligation. Learn letters, surahs, dhikr, Islamic history and prayers.",
@@ -722,8 +722,183 @@ function render() {
   if (aiFabLabel) aiFabLabel.textContent = t("aiAssistant");
   const aiInput = $("#aiInput");
   if (aiInput) aiInput.placeholder = t("aiPlaceholder");
-  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, roots };
+  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, roots, muallaf, halalharam, islamfaq };
   (views[route] || home)();
+}
+
+function muallaf() {
+  const easeHadiths = [
+    { ar: "إِنَّ الدِّينَ يُسْرٌ", tr: "Inna-d-Dīna yusrun", source: "Bukhari 39", pl: "«Zaprawdę, religia jest łatwa.» Islam nie jest karą — jest drogą. Każdy krok liczy się.", en: "«Verily, the religion is ease.» Islam is not a punishment — it is a path. Every step counts." },
+    { ar: "يَسِّرُوا وَلَا تُعَسِّرُوا", tr: "Yassirū wa-lā tuʿassirū", source: "Bukhari 69", pl: "«Ułatwiajcie, a nie utrudniajcie.» Prorok ﷺ uczył stopniowo — nie dawał wszystkiego naraz.", en: "«Make things easy, not difficult.» The Prophet ﷺ taught gradually — he didn't give everything at once." },
+    { ar: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ", tr: "Innamā al-aʿmālu bi-n-niyyāt", source: "Bukhari 1", pl: "«Czyny są oceniane według intencji.» Twój wysiłek i szczerość liczy się bardziej niż perfekcja.", en: "«Actions are judged by intentions.» Your effort and sincerity count more than perfection." },
+  ];
+
+  view.innerHTML = `
+    <div class="panel p-5 mb-5" style="background:linear-gradient(135deg,var(--panel) 0%,rgba(16,185,129,0.08) 100%);border:1px solid rgba(16,185,129,0.25)">
+      <h1 class="text-3xl font-black mb-1">🌱 ${tx("Nowy muzułmanin", "New Muslim")}</h1>
+      <p class="text-[var(--muted)]">${tx("Zaczynasz od zera? Doskonale. Islam jest religią łatwości, nie perfekcji.", "Starting from scratch? Perfect. Islam is a religion of ease, not perfection.")}</p>
+    </div>
+
+    <h2 class="text-xl font-black mb-3">${tx("7 kroków — po kolei, bez pośpiechu", "7 steps — one at a time, no rush")}</h2>
+    <div class="mb-6">
+      ${newMuslimSteps.map(s => `
+        <div class="muallaf-step">
+          <div class="muallaf-step-num">${s.n}</div>
+          <div class="muallaf-step-icon">${s.icon}</div>
+          <div style="flex:1;min-width:0">
+            <p class="font-black text-base mb-1">${state.lang === "pl" ? s.titlePl : s.titleEn}</p>
+            <p class="muallaf-step-ar">${s.ar}</p>
+            <p class="text-xs text-[var(--muted)] mb-1 font-mono">${s.tr}</p>
+            <p class="text-sm text-[var(--muted)] mb-2">${state.lang === "pl" ? s.descPl : s.descEn}</p>
+            <div class="muallaf-tip">💡 ${state.lang === "pl" ? s.tipPl : s.tipEn}</div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+
+    <h2 class="text-xl font-black mb-3">${tx("Nie musisz być perfekcyjny", "You don't need to be perfect")}</h2>
+    <div class="grid gap-3 mb-6">
+      ${easeHadiths.map(h => `
+        <div class="panel p-4">
+          <p class="arabic text-xl text-[var(--accent)] mb-1" style="direction:rtl">${h.ar}</p>
+          <p class="text-xs font-mono text-[var(--muted)] mb-2">${h.tr}</p>
+          <p class="text-sm">${state.lang === "pl" ? h.pl : h.en}</p>
+          <p class="text-xs text-[var(--muted)] mt-2 italic">${h.source}</p>
+        </div>
+      `).join("")}
+    </div>
+
+    <h2 class="text-xl font-black mb-3">${tx("Praktyczne wskazówki dla konwertytów", "Practical tips for converts")}</h2>
+    <div class="grid gap-3 sm:grid-cols-2">
+      ${[
+        { icon: "🕌", pl: "Znajdź lokalny meczet — imam pomoże Ci z podstawami bezpłatnie.", en: "Find a local mosque — the imam will help you with the basics free of charge." },
+        { icon: "📱", pl: "Aplikacje: Muslim Pro (czasy modlitw, qibla), Tarteel (Quran z wymową).", en: "Apps: Muslim Pro (prayer times, qibla), Tarteel (Quran with pronunciation)." },
+        { icon: "🤝", pl: "Nie musisz ogłaszać swojej konwersji — to między tobą a Allahem.", en: "You don't need to announce your conversion — it is between you and Allah." },
+        { icon: "📖", pl: "Zacznij od krótkiej sury Al-Ikhlas (112) — 4 wersety, serce teologii islamu.", en: "Start with the short surah Al-Ikhlas (112) — 4 verses, the heart of Islamic theology." },
+        { icon: "💚", pl: "Błędy w wymowie są wybaczalne — Allah wie, co jest w sercu.", en: "Pronunciation mistakes are forgivable — Allah knows what is in the heart." },
+        { icon: "🌍", pl: "Indonesia, Pakistan, Nigeria, Turcja — muzułmanie są wszędzie. Nie jesteś sam.", en: "Indonesia, Pakistan, Nigeria, Turkey — Muslims are everywhere. You are not alone." },
+      ].map(tip => `
+        <div class="panel p-4 flex gap-3 items-start">
+          <span class="text-2xl">${tip.icon}</span>
+          <p class="text-sm text-[var(--muted)]">${state.lang === "pl" ? tip.pl : tip.en}</p>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function halalharam() {
+  const tabs = [
+    { id: "food",     labelPl: "🥩 Jedzenie",   labelEn: "🥩 Food" },
+    { id: "drinks",   labelPl: "🍷 Napoje",      labelEn: "🍷 Drinks" },
+    { id: "behavior", labelPl: "⚖ Zachowanie",  labelEn: "⚖ Behaviour" },
+    { id: "gray",     labelPl: "❓ Szare strefy", labelEn: "❓ Gray areas" },
+  ];
+  const activeTab = state.halalTab || "food";
+
+  function renderItems() {
+    if (activeTab === "gray") {
+      return halalHaramData.gray.map(item => `
+        <div class="panel p-4 mb-3">
+          <p class="font-black text-sm mb-2">${item.icon} ${state.lang === "pl" ? item.questionPl : item.questionEn}</p>
+          <p class="text-sm text-[var(--muted)]">${state.lang === "pl" ? item.answerPl : item.answerEn}</p>
+        </div>
+      `).join("");
+    }
+    return halalHaramData[activeTab].map(item => `
+      <div class="halalharam-card ${item.status}">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-2xl">${item.icon}</span>
+          <span class="halalharam-name">${item.namePl && state.lang === "pl" ? item.namePl : item.nameEn}</span>
+          <span class="verdict-badge ${item.status}" style="margin-left:auto">${item.status === "halal" ? "✓ HALAL" : item.status === "haram" ? "✗ HARAM" : "~ MAKRUH"}</span>
+        </div>
+        ${item.ar ? `<p class="halalharam-ar">${item.ar} <span style="font-size:11px;direction:ltr;display:inline-block">${item.tr}</span></p>` : ""}
+        <p class="text-sm text-[var(--muted)] mt-1">${state.lang === "pl" ? item.reasonPl : item.reasonEn}</p>
+        ${item.ref ? `<p class="text-xs text-[var(--muted)] mt-2 italic">${item.ref}</p>` : ""}
+      </div>
+    `).join("");
+  }
+
+  view.innerHTML = `
+    <div class="mb-4">
+      <h1 class="text-3xl font-black">⚖ ${tx("Halal & Haram", "Halal & Haram")}</h1>
+      <p class="text-[var(--muted)] mt-1 text-sm">${tx("Zasada islamu: wszystko jest halal, chyba że dowód mówi inaczej.", "Islamic principle: everything is halal unless evidence says otherwise.")}</p>
+    </div>
+    <div class="flex gap-1 mb-4 overflow-x-auto pb-1">
+      ${tabs.map(tab => `
+        <button class="px-3 py-2 text-sm font-black rounded-full whitespace-nowrap border ${activeTab === tab.id ? "bg-[var(--accent)] text-white border-[var(--accent)]" : "border-[var(--border)] text-[var(--muted)]"}" data-halalTab="${tab.id}">
+          ${state.lang === "pl" ? tab.labelPl : tab.labelEn}
+        </button>
+      `).join("")}
+    </div>
+    <div id="halalContent">${renderItems()}</div>
+  `;
+
+  view.querySelectorAll("[data-halalTab]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.halalTab = btn.dataset.halaltab;
+      saveState();
+      halalharam();
+    });
+  });
+}
+
+function islamfaq() {
+  const tabs = [
+    { id: "myths",     labelPl: "🔍 Mity i fakty",  labelEn: "🔍 Myths & facts" },
+    { id: "women",     labelPl: "👩 Kobiety",        labelEn: "👩 Women" },
+    { id: "religions", labelPl: "🕊 Religie",        labelEn: "🕊 Religions" },
+    { id: "terrorism", labelPl: "⚠ Terroryzm",      labelEn: "⚠ Terrorism" },
+  ];
+  const activeTab = state.faqTab || "myths";
+  const verdictLabel = { false: tx("MIT", "MYTH"), complex: tx("ZŁOŻONE", "COMPLEX"), info: tx("FAKT", "FACT") };
+
+  const filtered = islamicFaq.filter(q => q.tab === activeTab);
+
+  view.innerHTML = `
+    <div class="mb-4">
+      <h1 class="text-3xl font-black">❓ ${tx("FAQ islamu", "Islam FAQ")}</h1>
+      <p class="text-[var(--muted)] mt-1 text-sm">${tx("Pytania, które zadają wszyscy — uczciwe odpowiedzi.", "Questions everyone asks — honest answers.")}</p>
+    </div>
+    <div class="flex gap-1 mb-4 overflow-x-auto pb-1">
+      ${tabs.map(tab => `
+        <button class="px-3 py-2 text-sm font-black rounded-full whitespace-nowrap border ${activeTab === tab.id ? "bg-[var(--accent)] text-white border-[var(--accent)]" : "border-[var(--border)] text-[var(--muted)]"}" data-faqTab="${tab.id}">
+          ${state.lang === "pl" ? tab.labelPl : tab.labelEn}
+        </button>
+      `).join("")}
+    </div>
+    <div>
+      ${filtered.map(q => `
+        <div class="faq-card" data-open="false" data-faqid="${q.id}">
+          <button class="faq-question">
+            <span>${state.lang === "pl" ? q.qPl : q.qEn}</span>
+            <span class="faq-arrow">▾</span>
+          </button>
+          <div class="faq-answer hidden">
+            ${q.verdict ? `<span class="verdict-badge ${q.verdict}">${verdictLabel[q.verdict] || q.verdict}</span>` : ""}
+            <p>${state.lang === "pl" ? q.aPl : q.aEn}</p>
+            ${q.ref ? `<p class="faq-ref">📚 ${q.ref}</p>` : ""}
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  view.querySelectorAll("[data-faqTab]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.faqTab = btn.dataset.faqtab;
+      saveState();
+      islamfaq();
+    });
+  });
+
+  view.querySelectorAll(".faq-card").forEach(card => {
+    card.querySelector(".faq-question").addEventListener("click", () => {
+      const isOpen = card.dataset.open === "true";
+      card.dataset.open = isOpen ? "false" : "true";
+      card.querySelector(".faq-answer").classList.toggle("hidden", isOpen);
+    });
+  });
 }
 
 function islam() {
@@ -735,7 +910,10 @@ function islam() {
     { route: "asmaul",  icon: "☪",  titlePl: "99 Imion Allaha",  titleEn: "99 Names of Allah",descPl: "Asma ul-Husna — piękne imiona Boga",                    descEn: "Asma ul-Husna — beautiful Names of God" },
     { route: "seerah",  icon: "🌙", titlePl: "Seerah",            titleEn: "Seerah",           descPl: "Życie Proroka Muhammada ﷺ",                             descEn: "Life of Prophet Muhammad ﷺ" },
     { route: "tajweed", icon: "🔤", titlePl: "Tadżwid",           titleEn: "Tajweed",          descPl: "8 zasad prawidłowej recytacji",                         descEn: "8 rules for correct Quran recitation" },
-    { route: "roots",   icon: "🌿", titlePl: "Korzenie arabskie", titleEn: "Arabic roots",     descPl: "Jak z jednego korzenia rośnie 10 słów",                 descEn: "How one root grows 10+ words" },
+    { route: "roots",      icon: "🌿", titlePl: "Korzenie arabskie", titleEn: "Arabic roots",     descPl: "Jak z jednego korzenia rośnie 10 słów",                       descEn: "How one root grows 10+ words" },
+    { route: "muallaf",    icon: "🌱", titlePl: "Nowy muzułmanin",  titleEn: "New Muslim",       descPl: "Pierwsze kroki, szahada i nie musisz być perfekcyjny",        descEn: "First steps, shahada and you don't need to be perfect" },
+    { route: "halalharam", icon: "⚖",  titlePl: "Halal & Haram",   titleEn: "Halal & Haram",   descPl: "Jedzenie, napoje, zachowanie — co wolno, czego nie",          descEn: "Food, drinks, behaviour — what is and isn't allowed" },
+    { route: "islamfaq",   icon: "❓", titlePl: "FAQ islamu",       titleEn: "Islam FAQ",        descPl: "Mity, islamofobia, kobiety, terroryzm, inne religie",         descEn: "Myths, Islamophobia, women, terrorism, other religions" },
   ];
   view.innerHTML = `
     <div class="mb-5">
