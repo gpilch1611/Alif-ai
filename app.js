@@ -61,7 +61,7 @@ const ROMANTIC_LINES = [
 
 const I18N = {
   pl: {
-    navHome: "Start", navKoran: "Koran", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia",
+    navHome: "Start", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
     welcome: "Witaj w ألف AI", homeTitle: "Uczymy się arabskiego krok po kroku", homeLead: "Duże litery, spokojne powtórki, wymowa, pisanie i osobisty AI Assistant dla Abanga.",
@@ -71,11 +71,11 @@ const I18N = {
     more: "Więcej", play: "Odtwórz", check: "Sprawdź", clear: "Wyczyść", next: "Następna", good: "dobrze", weak: "słabo", veryWeak: "bardzo słabo", attempts: "Historia prób",
     frontHint: "Dotknij karty, żeby ją odwrócić", hard: "Trudne", ok: "OK", easy: "Łatwe", noCards: "Nie ma kart w tym trybie",
     correct: "Dobrze", wrong: "Źle", history: "Historia", stop: "Stop", record: "Rekord", score: "Wynik",
-    koranTitle: "Mój Koran", koranAdd: "Dodaj Surę", koranNumber: "Numer (1-114)", koranEmpty: "Nie dodano jeszcze żadnej Sury.", koranOrder: "Sury są układane automatycznie.",
+    koranTitle: "Mój Qur'an", koranAdd: "Dodaj Surę", koranNumber: "Numer (1-114)", koranEmpty: "Nie dodano jeszcze żadnej Sury.", koranOrder: "Sortuj i filtruj sury według potrzeb.",
     lessonCategories: "Kategorie Lekcji", lessonSelect: "Wybierz kategorię"
   },
   en: {
-    navHome: "Home", navKoran: "Quran", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings",
+    navHome: "Home", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
     welcome: "Welcome to ألف AI", homeTitle: "We learn Arabic step by step", homeLead: "Big letters, calm reviews, pronunciation, writing and a personal AI Assistant for Abang.",
@@ -85,7 +85,7 @@ const I18N = {
     more: "More", play: "Play", check: "Check", clear: "Clear", next: "Next", good: "good", weak: "weak", veryWeak: "very weak", attempts: "Attempt history",
     frontHint: "Tap the card to flip it", hard: "Hard", ok: "OK", easy: "Easy", noCards: "No cards in this mode",
     correct: "Correct", wrong: "Wrong", history: "History", stop: "Stop", record: "Best", score: "Score",
-    koranTitle: "My Quran", koranAdd: "Add Surah", koranNumber: "Number (1-114)", koranEmpty: "No Surahs added yet.", koranOrder: "Surahs are sorted automatically.",
+    koranTitle: "My Qur'an", koranAdd: "Add Surah", koranNumber: "Number (1-114)", koranEmpty: "No Surahs added yet.", koranOrder: "Sort and filter surahs as you need.",
     lessonCategories: "Lesson Categories", lessonSelect: "Choose a category"
   }
 };
@@ -299,6 +299,7 @@ const defaultState = {
   lastSpacedRep: {},
   focusMode: false,
   quranSurahFavorites: [],
+  quranTab: "surahs",
   ayatCache: null,
   learnedLettersLog: [],
   ttsWarningShown: false
@@ -881,6 +882,21 @@ const QURAN_RECITERS = [
   { id: "ar.minshawi", name: "Mohamed Siddiq al-Minshawi" }
 ];
 
+const DUA_DATA = [
+  { id: "before_eating", ar: "بِسْمِ اللَّهِ", tr: "Bismillah", pl: "W imię Boga (przed jedzeniem)", en: "In the name of God (before eating)" },
+  { id: "after_eating", ar: "الْحَمْدُ لِلَّهِ", tr: "Alhamdulillah", pl: "Chwała Bogu (po jedzeniu)", en: "Praise be to God (after eating)" },
+  { id: "entering_home", ar: "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلِجِ وَخَيْرَ الْمَخْرَجِ", tr: "Allahumma inni as'aluka khayra l-mawlaji wa-khayra l-makhraji", pl: "Dua wchodząc do domu", en: "Dua when entering home" },
+  { id: "leaving_home", ar: "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ", tr: "Bismillahi tawakkaltu 'ala Allah", pl: "Dua wychodząc z domu", en: "Dua when leaving home" },
+  { id: "morning", ar: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ", tr: "Asbahna wa-asbahal-mulku lillah", pl: "Dua poranna", en: "Morning dua" },
+  { id: "evening", ar: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ", tr: "Amsayna wa-amsal-mulku lillah", pl: "Dua wieczorna", en: "Evening dua" },
+  { id: "sleeping", ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", tr: "Bismika Allahumma amutu wa-ahya", pl: "Dua przed snem", en: "Dua before sleeping" },
+  { id: "waking", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا", tr: "Alhamdulillahi l-ladhi ahyana ba'da ma amatana", pl: "Dua po przebudzeniu", en: "Dua upon waking" },
+  { id: "travel", ar: "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا", tr: "Subhanal-ladhi sakhkhara lana hadha", pl: "Dua w podróży", en: "Travel dua" },
+  { id: "anxiety", ar: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ", tr: "Allahumma inni a'udhu bika minal-hammi wal-hazan", pl: "Dua przy smutku i trosce", en: "Dua for anxiety and grief" },
+  { id: "forgiveness", ar: "رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ", tr: "Rabbi ghfir li wa-tub 'alayya", pl: "Prośba o przebaczenie", en: "Seeking forgiveness" },
+  { id: "parents", ar: "رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا", tr: "Rabbi rhamhuma kama rabbayani saghira", pl: "Dua za rodziców", en: "Dua for parents" },
+];
+
 async function thematicQuranSearch(query) {
   const btn = $("#thematicSearchBtn");
   btn.textContent = tx("Szukam...", "Searching...");
@@ -897,16 +913,24 @@ async function thematicQuranSearch(query) {
 
 function surahCard(surah) {
   const isFav = (state.quranSurahFavorites || []).includes(surah.number);
+  const revType = surah.revelationType === "Meccan" ? tx("Mekkańska 🕌", "Meccan 🕌") : surah.revelationType === "Medinan" ? tx("Medyńska 🕋", "Medinan 🕋") : "";
+  const ayahCount = surah.numberOfAyahs ? `${surah.numberOfAyahs} ${tx("wersetów", "ayahs")}` : "";
   return `
-    <article class="panel p-5 relative">
-      <button class="absolute right-2 top-2 text-xl" data-fav-surah="${surah.number}" title="${tx("Ulubiona", "Favorite")}">${isFav ? "❤️" : "🤍"}</button>
-      <div class="flex items-center justify-between pr-8">
-        <span class="grid h-10 w-10 place-items-center rounded-full bg-emerald-100 text-sm font-black text-emerald-700">${surah.number}</span>
-        <button class="arabic text-2xl" data-say-ar="${escapeHtml(surah.arName)}" title="${tx("Wymowa", "Pronunciation")}">${escapeHtml(surah.arName)}</button>
+    <article class="panel p-4 relative flex flex-col gap-2">
+      <div class="flex items-center gap-3">
+        <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-100 text-sm font-black text-emerald-700">${surah.number}</span>
+        <div class="flex-1 min-w-0">
+          <button class="arabic text-2xl leading-tight block" data-say-ar="${escapeHtml(surah.arName)}">${escapeHtml(surah.arName)}</button>
+          <p class="text-xs font-black">${escapeHtml(surah.enName)}</p>
+        </div>
+        <button class="text-xl shrink-0" data-fav-surah="${surah.number}">${isFav ? "❤️" : "🤍"}</button>
       </div>
-      <h2 class="mt-3 text-xl font-black">${escapeHtml(surah.enName)}</h2>
       <p class="text-sm text-[var(--muted)]">${escapeHtml(surah.meaning)}</p>
-      <div class="mt-4 flex gap-2">
+      <div class="flex gap-2 text-xs text-[var(--muted)]">
+        ${ayahCount ? `<span class="soft-panel px-2 py-0.5">${ayahCount}</span>` : ""}
+        ${revType ? `<span class="soft-panel px-2 py-0.5">${revType}</span>` : ""}
+      </div>
+      <div class="flex gap-2 mt-1">
         <button class="big-action flex-1 border border-[var(--line)]" data-read-surah="${surah.number}">${tx("Czytaj", "Read")}</button>
         <button class="speaker-btn" data-say-ar="${escapeHtml(surah.arName)}" title="${tx("Wymowa", "Pronunciation")}">🔊</button>
       </div>
@@ -918,12 +942,25 @@ function renderSurahList() {
   if (!state.quranSurahFavorites) state.quranSurahFavorites = [];
   const sortVal = $("#surahSort")?.value || "number";
   const favNums = state.quranSurahFavorites;
-  const favSurahs = state.quranSurahs.filter(s => favNums.includes(s.number)).sort((a, b) => a.number - b.number);
-  let rest = state.quranSurahs.filter(s => !favNums.includes(s.number));
-  if (sortVal === "alpha") rest = [...rest].sort((a, b) => a.enName.localeCompare(b.enName));
-  else rest = [...rest].sort((a, b) => a.number - b.number);
 
-  const allSorted = sortVal === "favfirst" ? [...favSurahs, ...rest] : rest;
+  let surahs = [...state.quranSurahs];
+
+  // Filter
+  if (sortVal === "short") surahs = surahs.filter(s => s.numberOfAyahs && s.numberOfAyahs <= 20);
+  else if (sortVal === "medium") surahs = surahs.filter(s => s.numberOfAyahs && s.numberOfAyahs > 20 && s.numberOfAyahs <= 100);
+  else if (sortVal === "long") surahs = surahs.filter(s => s.numberOfAyahs && s.numberOfAyahs > 100);
+  else if (sortVal === "meccan") surahs = surahs.filter(s => s.revelationType === "Meccan");
+  else if (sortVal === "medinan") surahs = surahs.filter(s => s.revelationType === "Medinan");
+
+  // Sort
+  if (sortVal === "alpha") surahs = surahs.sort((a, b) => a.enName.localeCompare(b.enName));
+  else if (sortVal === "favfirst") surahs = surahs.sort((a, b) => {
+    const aF = favNums.includes(a.number) ? 0 : 1;
+    const bF = favNums.includes(b.number) ? 0 : 1;
+    return aF - bF || a.number - b.number;
+  });
+  else surahs = surahs.sort((a, b) => a.number - b.number);
+
   const listEl = $("#surahList");
   if (!listEl) return;
 
@@ -932,14 +969,12 @@ function renderSurahList() {
     return;
   }
 
-  let html = "";
-  if (favSurahs.length && sortVal !== "favfirst") {
-    html += `<div class="col-span-full"><p class="mb-2 font-black text-emerald-600">${tx("Ulubione", "Favorites")}</p><div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">${favSurahs.map(surahCard).join("")}</div><hr class="my-4 border-[var(--line)]" /></div>`;
-    html += rest.map(surahCard).join("");
-  } else {
-    html = allSorted.map(surahCard).join("");
+  if (!surahs.length) {
+    listEl.innerHTML = `<div class="soft-panel col-span-full p-6 text-center text-[var(--muted)]">${tx("Brak sur w tej kategorii. Dodaj więcej sur.", "No surahs in this category. Add more surahs.")}</div>`;
+    return;
   }
-  listEl.innerHTML = html;
+
+  listEl.innerHTML = surahs.map(surahCard).join("");
 
   listEl.querySelectorAll("[data-say-ar]").forEach(btn => btn.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -948,11 +983,9 @@ function renderSurahList() {
   listEl.querySelectorAll("[data-fav-surah]").forEach(btn => btn.addEventListener("click", () => {
     const num = Number(btn.dataset.favSurah);
     if (!state.quranSurahFavorites) state.quranSurahFavorites = [];
-    if (state.quranSurahFavorites.includes(num)) {
-      state.quranSurahFavorites = state.quranSurahFavorites.filter(n => n !== num);
-    } else {
-      state.quranSurahFavorites.push(num);
-    }
+    const idx = state.quranSurahFavorites.indexOf(num);
+    if (idx === -1) state.quranSurahFavorites.push(num);
+    else state.quranSurahFavorites.splice(idx, 1);
     saveState();
     renderSurahList();
   }));
@@ -1015,6 +1048,8 @@ async function addSurahByNumber() {
         arName: s.name,
         enName: s.englishName,
         meaning: s.englishNameTranslation,
+        numberOfAyahs: s.numberOfAyahs,
+        revelationType: s.revelationType,
         addedAt: today()
       });
       saveState();
