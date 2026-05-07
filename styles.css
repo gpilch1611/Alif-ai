@@ -353,33 +353,6 @@ select {
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
 }
 
-.profile-gate {
-  position: fixed;
-  inset: 0;
-  z-index: 80;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background:
-    radial-gradient(circle at 20% 15%, rgba(247, 200, 214, 0.55), transparent 26rem),
-    radial-gradient(circle at 85% 20%, rgba(234, 179, 8, 0.32), transparent 22rem),
-    linear-gradient(135deg, #fff8ef, #fff3ee);
-}
-
-.profile-card {
-  min-height: 170px;
-  border: 1px solid rgba(234, 179, 8, 0.44);
-  border-radius: 14px;
-  padding: 22px;
-  background: rgba(255, 253, 248, 0.9);
-  box-shadow: var(--shadow-pop);
-  text-align: left;
-}
-
-.profile-card:hover {
-  transform: translateY(-3px);
-}
-
 .journey-line {
   position: relative;
   height: 10px;

@@ -3,15 +3,13 @@ import { arabicAlphabet, words, dailyTasks, quranSurahs as QURAN_SURAHS_LOCAL } 
 const GROQ_API_KEY = "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";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
-const AI_SYSTEM_PROMPT_PL = `Jesteś ciepłym, motywującym i osobistym asystentem do nauki arabskiego w aplikacji 'Alif AI'. 
-Użytkownik to Abang / Gantengku / Hubby. Jego żona to Baby / babe / wifey / princess / anioł stróż.
-Zawsze odpowiadaj TYLKO w języku polskim. Bądź przyjacielski, zabawny i bardzo osobisty. 
-NIGDY nie używaj surowych linków markdown ani nie generuj zbędnego kodu. 
-Twórz wysokiej jakości materiały edukacyjne (fiszki, quizy, historie). 
+const AI_SYSTEM_PROMPT_PL = `Jesteś ciepłym, motywującym asystentem do nauki arabskiego w aplikacji 'Alif AI'.
+Zawsze odpowiadaj TYLKO w języku polskim. Bądź przyjacielski, pomocny i zachęcający.
+NIGDY nie używaj surowych linków markdown ani nie generuj zbędnego kodu.
+Twórz wysokiej jakości materiały edukacyjne (fiszki, quizy, historie).
 Po wygenerowaniu treści, użytkownik będzie mógł ją dodać do sekcji Fiszki, Książeczki, Nasza Przygoda lub Kultura za pomocą przycisków w aplikacji.`;
-const AI_SYSTEM_PROMPT_EN = `You are a warm, motivating and personal Arabic learning assistant inside the app 'Alif AI'.
-The user is Abang / Gantengku / Hubby. His wife is Baby / babe / wifey / princess / guardian angel.
-Always reply ONLY in English language. Be friendly, encouraging, playful and personal.
+const AI_SYSTEM_PROMPT_EN = `You are a warm, motivating Arabic learning assistant inside the app 'Alif AI'.
+Always reply ONLY in English. Be friendly, encouraging and helpful.
 NEVER use raw markdown links or generate unnecessary code.
 Provide high-quality Arabic learning material (flashcards, quizzes, stories).
 After generating content, the user will be able to add it to Flashcards, Books, Our Adventure, or Culture sections using app buttons.`;
@@ -49,14 +47,34 @@ const secondaryNavItems = [
 ];
 
 const ROMANTIC_LINES = [
-  "Kocham Cię, Baby 🌸",
-  "Tęsknię za Tobą, Princess 💕",
-  "Habibi ❤️",
-  "You are my everything, Abang 💐",
-  "Aku sayang kamu 🌺",
-  "Selalu rindu kamu, sayang ❤️",
-  "Jesteś moim domem, gdziekolwiek jesteś 💕",
-  "My heart is learning Arabic with you 🌸"
+  "Distance means nothing when someone means everything — 10 700 km feels like nothing, habibi ❤️",
+  "Somewhere across the ocean, someone is thinking of you right now 🌊💕",
+  "Two cities, one heart. Borzęta and Surabaya are closer than the world thinks 🌸",
+  "Learning Arabic so our words can travel further than miles ever could 📖❤️",
+  "Rindu itu berat, tapi cinta lebih kuat — missing you is heavy, but love is stronger 🌺",
+  "Every letter of the Arabic alphabet learned is a step closer to you, sayang 💐",
+  "The distance between Poland and Indonesia is just a number — love has no coordinates 🌍",
+  "Alhamdulillah for the technology that lets hearts stay close across continents 🤍",
+  "Borzęta to Surabaya: two dots on a map, one unbreakable thread between them 💕",
+  "You make every timezone worth living in ❤️",
+  "I carry you with me in every surah I read and every letter I trace, habibi 📿",
+  "10 700 km apart — yet you are the first thought every morning 🌅",
+  "The stars above Surabaya are the same ones shining over Poland tonight, sayang 🌟",
+  "Love that crosses oceans doesn't need a passport 🛫💕",
+  "In sha'a Allah, soon the countdown reaches zero and the distance becomes a memory 🌸",
+  "Every day of learning is a love letter written in Arabic script ✍️❤️",
+  "Missing you tastes like Indonesian rain and Polish autumn — both beautiful, both yours 🌧️🍂",
+  "The longest journey is from the mind to the heart — you made mine effortless, habibi 💕",
+  "Aku rindu kamu more than words in any language can say 🌺",
+  "Two time zones, one dream: the moment the distance disappears 🕐🕖",
+  "Every Arabic word I learn feels like a new way to say I love you ❤️",
+  "Surabaya sunsets and Borzęta mornings — I carry both in my heart 🌅",
+  "Love is the only thing that gets stronger the further it travels 💪❤️",
+  "Masya Allah — what a blessing to love someone this deeply across this much distance 🤲",
+  "Some things are worth every kilometer of waiting, habibi 🌸",
+  "The plane ticket is just a formality — my heart is already there 🛫",
+  "Rindu itu nyata — missing you is real, vivid, and makes me learn faster 📖💕",
+  "They say love conquers all — apparently that includes 10 700 km ❤️"
 ];
 
 const I18N = {
@@ -64,9 +82,9 @@ const I18N = {
     navHome: "Start", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
-    welcome: "Witaj w ألف AI", homeTitle: "Uczymy się arabskiego krok po kroku", homeLead: "Duże litery, spokojne powtórki, wymowa, pisanie i osobisty AI Assistant dla Abanga.",
+    welcome: "Witaj w ألف AI", homeTitle: "Uczymy się arabskiego krok po kroku", homeLead: "Duże litery, spokojne powtórki, wymowa, pisanie — i osobisty AI Assistant do nauki arabskiego.",
     streak: "Seria dni", level: "Poziom", alphabetProgress: "Alfabet", todayTask: "Dzisiejsze zadanie", start: "Zaczynam", progress: "Postęp", points: "pkt",
-    aiAssistant: "AI Assistant", aiPlaceholder: "Poproś o fiszki, quiz, historyjkę albo ciekawostkę...", send: "Wyślij", aiHello: "Cześć Abang. Jestem Twoim Alif AI Assistantem. Mogę stworzyć fiszki, mini-lekcję, quiz, historyjkę dla Ciebie i Baby albo ciekawostkę dnia.",
+    aiAssistant: "AI Assistant", aiPlaceholder: "Poproś o fiszki, quiz, historyjkę albo ciekawostkę...", send: "Wyślij", aiHello: "Cześć! Jestem Twoim Alif AI Assistantem. Mogę stworzyć fiszki, mini-lekcję, quiz, historyjkę albo ciekawostkę dnia.",
     addFlashcards: "Dodaj do fiszek", saveBook: "Zapisz jako nową książeczkę", addAdventure: "Dodaj do Naszej Przygody", addCulture: "Dodaj jako ciekawostkę",
     more: "Więcej", play: "Odtwórz", check: "Sprawdź", clear: "Wyczyść", next: "Następna", good: "dobrze", weak: "słabo", veryWeak: "bardzo słabo", attempts: "Historia prób",
     frontHint: "Dotknij karty, żeby ją odwrócić", hard: "Trudne", ok: "OK", easy: "Łatwe", noCards: "Nie ma kart w tym trybie",
@@ -78,9 +96,9 @@ const I18N = {
     navHome: "Home", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
-    welcome: "Welcome to ألف AI", homeTitle: "We learn Arabic step by step", homeLead: "Big letters, calm reviews, pronunciation, writing and a personal AI Assistant for Abang.",
+    welcome: "Welcome to ألف AI", homeTitle: "We learn Arabic step by step", homeLead: "Big letters, calm reviews, pronunciation, writing — and a personal AI Assistant for learning Arabic.",
     streak: "Daily streak", level: "Level", alphabetProgress: "Alphabet", todayTask: "Today's task", start: "Start", progress: "Progress", points: "pts",
-    aiAssistant: "AI Assistant", aiPlaceholder: "Ask for flashcards, a quiz, a story or a culture fact...", send: "Send", aiHello: "Hi Abang. I am your Alif AI Assistant. I can create flashcards, mini-lessons, quizzes, stories for you and Baby, or a daily culture fact.",
+    aiAssistant: "AI Assistant", aiPlaceholder: "Ask for flashcards, a quiz, a story or a culture fact...", send: "Send", aiHello: "Hi! I am your Alif AI Assistant. I can create flashcards, mini-lessons, quizzes, stories, or a daily culture fact.",
     addFlashcards: "Add to flashcards", saveBook: "Save as new book", addAdventure: "Add to Our Adventure", addCulture: "Add as culture fact",
     more: "More", play: "Play", check: "Check", clear: "Clear", next: "Next", good: "good", weak: "weak", veryWeak: "very weak", attempts: "Attempt history",
     frontHint: "Tap the card to flip it", hard: "Hard", ok: "OK", easy: "Easy", noCards: "No cards in this mode",
@@ -262,7 +280,6 @@ let speechUnlocked = false;
 
 const defaultState = {
   lang: "pl",
-  profile: "",
   theme: "light",
   points: 0,
   streak: 0,
@@ -363,36 +380,6 @@ function updateDocumentI18nMeta() {
   $("#closeAi")?.setAttribute("aria-label", tx("Zamknij", "Close"));
 }
 
-function activeProfile() {
-  return state.profile === "Princess" ? "Princess" : "Abang";
-}
-
-function activeProfileLabel() {
-  return activeProfile();
-}
-
-function partnerLabel() {
-  return activeProfile() === "Princess" ? "Abang" : "Baby";
-}
-
-function nicknameForFeedback() {
-  return activeProfile() === "Princess" ? "Princess" : "Gantengku";
-}
-
-function homeLeadText() {
-  if (state.lang === "pl") {
-    return `Duże litery, spokojne powtórki, wymowa, pisanie i osobisty AI Assistant dla ${activeProfileLabel()}.`;
-  }
-  return `Big letters, calm reviews, pronunciation, writing, and a personal AI Assistant for ${activeProfileLabel()}.`;
-}
-
-function aiHelloText() {
-  if (state.lang === "pl") {
-    return `Cześć ${activeProfileLabel()}. Jestem Twoim Alif AI Assistantem. Mogę stworzyć fiszki, mini-lekcję, quiz, historyjkę dla Ciebie i ${partnerLabel()} albo ciekawostkę dnia.`;
-  }
-  return `Hi ${activeProfileLabel()}. I am your Alif AI Assistant. I can create flashcards, mini-lessons, quizzes, stories for you and ${partnerLabel()}, or a daily culture fact.`;
-}
-
 function themeMeta(theme) {
   if (theme === "dark") return { icon: "☾", title: "Dark" };
   if (theme === "romantic") return { icon: "🌸", title: "Romantic" };
@@ -405,10 +392,7 @@ function nextTheme(theme) {
 }
 
 function aiSystemPrompt() {
-  const profileContext = state.lang === "pl"
-    ? `Aktywny profil: ${activeProfileLabel()}. Partner/partnerka: ${partnerLabel()}.`
-    : `Active profile: ${activeProfileLabel()}. Partner: ${partnerLabel()}.`;
-  return `${state.lang === "en" ? AI_SYSTEM_PROMPT_EN : AI_SYSTEM_PROMPT_PL}\n${profileContext}`;
+  return state.lang === "en" ? AI_SYSTEM_PROMPT_EN : AI_SYSTEM_PROMPT_PL;
 }
 
 function loadState() {
@@ -496,7 +480,6 @@ function init() {
   renderNav();
   bindGlobalEvents();
   mountAiAssistant();
-  mountProfileGate();
   scheduleRomanticToast();
   initSearch();
   window.addEventListener("hashchange", () => {
@@ -588,44 +571,11 @@ function showLoveToast(message = romanticLine()) {
 }
 
 function scheduleRomanticToast() {
-  const delay = (8 + Math.random() * 7) * 60 * 1000;
+  const delay = (2 + Math.random() * 1) * 60 * 1000;
   setTimeout(() => {
     showLoveToast();
     scheduleRomanticToast();
   }, delay);
-}
-
-function mountProfileGate() {
-  if (state.profile) return;
-  document.body.insertAdjacentHTML("beforeend", `
-    <div id="profileGate" class="profile-gate">
-      <section class="w-full max-w-3xl">
-        <div class="mb-5 text-center">
-          <img src="assets/icon.svg" alt="Alif AI" class="mx-auto h-20 w-20 rounded-lg shadow-sm" />
-          <h1 class="mt-4 text-4xl font-black">Alif AI</h1>
-          <p class="mt-2 text-[var(--muted)]">${state.lang === "pl" ? "Wybierz, kto dziś uczy się arabskiego." : "Choose who is learning Arabic today."}</p>
-        </div>
-        <div class="grid gap-3 sm:grid-cols-2">
-          <button class="profile-card" data-profile="Abang">
-            <span class="text-sm font-bold text-emerald-600">Gantengku</span>
-            <strong class="mt-2 block text-3xl">Abang</strong>
-            <span class="mt-3 block text-[var(--muted)]">${state.lang === "pl" ? "Ciepła ścieżka dla Hubby." : "A warm path for Hubby."}</span>
-          </button>
-          <button class="profile-card" data-profile="Princess">
-            <span class="text-sm font-bold text-amber-600">Guardian angel</span>
-            <strong class="mt-2 block text-3xl">Princess</strong>
-            <span class="mt-3 block text-[var(--muted)]">${state.lang === "pl" ? "Delikatna ścieżka dla Baby." : "A gentle path for Baby."}</span>
-          </button>
-        </div>
-      </section>
-    </div>
-  `);
-  document.querySelectorAll("[data-profile]").forEach((button) => button.addEventListener("click", () => {
-    state.profile = button.dataset.profile;
-    saveState();
-    $("#profileGate")?.remove();
-    render();
-  }));
 }
 
 function registerPwa() {
@@ -698,7 +648,7 @@ function render() {
   updateDocumentI18nMeta();
   $("#installBtn").textContent = t("install");
   $("#quickLangBtn").textContent = state.lang === "pl" ? "PL" : "EN";
-  $("#profileBadge").textContent = state.profile ? `${activeProfileLabel()} · ألف AI` : "ألف AI";
+  $("#profileBadge").textContent = "ألف AI";
   const aiFabLabel = $("#aiFab .hidden");
   if (aiFabLabel) aiFabLabel.textContent = t("aiAssistant");
   const aiInput = $("#aiInput");
@@ -718,7 +668,7 @@ function home() {
           <div>
             <p class="font-bold text-emerald-600">${t("welcome")}</p>
             <h1 class="mt-2 text-3xl font-black sm:text-5xl">${t("homeTitle")} 🌸</h1>
-            <p class="mt-3 max-w-2xl text-[var(--muted)]">${homeLeadText()} 💕</p>
+            <p class="mt-3 max-w-2xl text-[var(--muted)]">${t("homeLead")} 💕</p>
           </div>
           <div class="grid h-28 w-28 shrink-0 place-items-center rounded-lg bg-emerald-500 text-7xl text-white shadow-sm arabic">ا</div>
         </div>
@@ -829,7 +779,6 @@ function journeyWidget() {
         <div>
           <p class="text-sm font-black text-emerald-700">${tx("Dwa miasta, jedno serce", "Two cities, one heart")}</p>
           <h2 class="mt-1 text-2xl font-black">Borzęta - Surabaya</h2>
-          <button id="switchProfileBtn" class="mt-3 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm font-black">${tx("Profil", "Profile")}: ${activeProfileLabel()}</button>
         </div>
         <div>
           <div class="mb-3 flex justify-between gap-3 text-sm font-black">
@@ -840,7 +789,7 @@ function journeyWidget() {
           <p class="mt-3 text-center text-sm text-[var(--muted)]">~10 700 km · PL ↔ ID</p>
         </div>
         <div class="soft-panel p-4 text-center">
-          <p class="text-sm font-black text-amber-600">${state.lang === "pl" ? `Do wylotu do Surabayi / spotkania z ${partnerLabel()}` : `Until Surabaya flight / meeting ${partnerLabel()}`}</p>
+          <p class="text-sm font-black text-amber-600">${tx("Do wylotu do Surabayi", "Until Surabaya flight")}</p>
           <p class="mt-1 text-3xl font-black">${days}d ${hours}h</p>
           <p class="text-xs text-[var(--muted)]">11.06.2026</p>
         </div>
@@ -1256,13 +1205,6 @@ function settings() {
         </div>
       </section>
       <section class="panel p-5">
-        <h2 class="text-xl font-black">${tx("Profil", "Profile")}</h2>
-        <div class="mt-4 grid grid-cols-2 gap-2">
-          <button class="big-action ${state.profile === "Abang" ? "bg-emerald-500 text-white" : "border border-[var(--line)] bg-[var(--surface)]"}" data-profile-set="Abang">Abang</button>
-          <button class="big-action ${state.profile === "Princess" ? "bg-emerald-500 text-white" : "border border-[var(--line)] bg-[var(--surface)]"}" data-profile-set="Princess">Princess</button>
-        </div>
-      </section>
-      <section class="panel p-5">
         <h2 class="text-xl font-black">${tx("Instalacja PWA", "PWA installation")}</h2>
         <p class="mt-2 text-[var(--muted)]">${tx("Dodaj Alif AI do ekranu glownego telefonu.", "Add Alif AI to your phone home screen.")}</p>
         <div class="mt-4">${installButtonHtml("")}</div>
@@ -1291,7 +1233,7 @@ function settings() {
         <div class="mt-3 grid gap-2">
           ${state.aiMessages.slice(-25).reverse().map((message) => `
             <article class="soft-panel p-3">
-              <strong>${message.role === "user" ? activeProfileLabel() : "Alif AI"}</strong>
+              <strong>${message.role === "user" ? tx("Ja", "Me") : "Alif AI"}</strong>
               <p class="mt-1 line-clamp-3 text-sm text-[var(--muted)]">${escapeHtml(message.content)}</p>
             </article>
           `).join("") || `<p class="text-[var(--muted)]">${tx("Brak historii AI.", "No AI history yet.")}</p>`}
@@ -1305,11 +1247,6 @@ function settings() {
     render();
   }));
   bindInstallButtons();
-  view.querySelectorAll("[data-profile-set]").forEach((button) => button.addEventListener("click", () => {
-    state.profile = button.dataset.profileSet;
-    saveState();
-    render();
-  }));
   view.querySelectorAll("[data-theme-set]").forEach((button) => button.addEventListener("click", () => {
     state.theme = button.dataset.themeSet;
     document.documentElement.dataset.theme = state.theme;
@@ -1967,9 +1904,8 @@ function writingResultLabel(score) {
 }
 
 function writingMessage(score) {
-  const name = nicknameForFeedback();
-  if (score >= 92) return `${score}% - ${tx(`prawie idealnie, ${name}!`, `almost perfect, ${name}!`)}`;
-  if (score >= 68) return `${score}% - ${tx(`piekny postep, ${name}.`, `beautiful progress, ${name}.`)}`;
+  if (score >= 92) return `${score}% - ${tx("prawie idealnie!", "almost perfect!")}`;
+  if (score >= 68) return `${score}% - ${tx("piękny postęp.", "beautiful progress.")}`;
   if (score >= 38) return `${score}% - ${tx("jeszcze odrobina spokoju i bedzie lepiej.", "a little more calm and it will improve.")}`;
   return `${score}% - ${tx("sprobuj narysowac wiecej po sladzie.", "try tracing more of the guide.")}`;
 }
@@ -2142,7 +2078,7 @@ function adventure() {
 }
 
 async function generateAdventureStory() {
-  const promptValue = $("#storyPrompt").value.trim() || tx("Napisz krotka, ciepla historyjke o Abangu i jego zonie, z trzema prostymi arabskimi slowami.", "Write a short warm story about Abang and his wife, using three simple Arabic words.");
+  const promptValue = $("#storyPrompt").value.trim() || tx("Napisz krótką, ciepłą historyjkę o dwóch miastach: Borzęcie i Surabayi, z trzema prostymi arabskimi słowami.", "Write a short warm story about two cities — Borzęta and Surabaya — using three simple Arabic words.");
   $("#generateStoryBtn").textContent = tx("Analizuję zdjęcie...", "Analyzing photo...");
   
   const hasPhoto = !!state.pendingAdventurePhoto;
@@ -2179,7 +2115,7 @@ function books() {
     </div>
     <div class="panel mb-4 p-5">
       <h2 class="text-lg font-black mb-3">${tx("Wygeneruj bajkę arabską z AI", "Generate Arabic story with AI")}</h2>
-      <textarea id="aiStoryPrompt" class="min-h-20 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3 mb-3" placeholder="${tx("Temat bajki (np. Abang i księżyc, przygoda w Indonezji, kolorowe ptaki...)", "Story theme (e.g. Abang and the moon, adventure in Indonesia, colorful birds...)")}"></textarea>
+      <textarea id="aiStoryPrompt" class="min-h-20 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3 mb-3" placeholder="${tx("Temat bajki (np. przygoda w Indonezji, kolorowe ptaki, księżyc nad Surabayą...)", "Story theme (e.g. adventure in Indonesia, colorful birds, the moon over Surabaya...)")}"></textarea>
       <button id="generateAiBookBtn" class="big-action w-full bg-emerald-500 text-white">${tx("Wygeneruj bajkę", "Generate story")}</button>
     </div>
     <details class="panel mb-4 p-5">
@@ -2695,7 +2631,7 @@ function openAiChat() {
   if (!state.aiMessages.length) {
     state.aiMessages.push({
       role: "assistant",
-      content: aiHelloText()
+      content: t("aiHello")
     });
     saveState();
   }
