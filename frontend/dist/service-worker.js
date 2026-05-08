@@ -1,4 +1,4 @@
-const CACHE_NAME = "alif-ai-v11";
+const CACHE_NAME = "alif-ai-v12";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -19,6 +19,10 @@ const OPTIONAL_CDN = [
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs",
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs"
 ];
+
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
+});
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
