@@ -1036,7 +1036,7 @@ h3 {
     left: 0;
     top: 0;
     bottom: 0;
-    width: 220px;
+    width: 180px;
     flex-direction: column;
     height: 100vh;
     overflow-y: auto;
@@ -1045,24 +1045,24 @@ h3 {
     border-top: none;
     padding: 16px 0;
     z-index: 100;
-    max-width: 220px;
+    max-width: 180px;
   }
 
   #bottomNav .nav-btn {
     display: flex !important;
     flex-direction: row;
-    gap: 12px;
+    gap: 10px;
     justify-content: flex-start;
-    padding: 12px 20px;
+    padding: 10px 14px;
     height: auto;
-    min-height: 48px;
+    min-height: 44px;
     border-radius: 12px;
     margin: 2px 8px;
     width: calc(100% - 16px);
   }
 
   #bottomNav .nav-label {
-    font-size: 14px;
+    font-size: 13px;
     white-space: normal;
     opacity: 1;
     display: block !important;
@@ -1078,10 +1078,16 @@ h3 {
     display: none !important;
   }
 
-  /* Shift header and main right to clear sidebar */
+  /* Center content in the full viewport, reserve sidebar space (200px buffer) */
   #appShell > header,
   #appShell > main {
-    margin-left: 220px;
+    margin-left: 0 !important;
+  }
+  #appShell > header > div.max-w-6xl,
+  #appShell > main {
+    max-width: 1100px !important;
+    margin-left: max(200px, calc((100vw - 1100px) / 2)) !important;
+    margin-right: max(20px, calc((100vw - 1100px) / 2)) !important;
   }
 
   /* AI FAB clear of sidebar */
