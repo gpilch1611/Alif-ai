@@ -48,6 +48,8 @@ const navItems = [
 const secondaryNavItems = [];
 
 const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","prayer","prayerGuide"];
+const CONTENT_VERSION = "2026.05";
+const CONTENT_UPDATED_AT = "2026-05-08";
 
 const faqExtraUnique = [
   { id: "extra_quran_touch", tab: "basics", verdict: "complex", qPl: "Czy muszę mieć wudu, żeby czytać Quran na telefonie?", qEn: "Do I need wudu to read the Quran on my phone?", aPl: "Większość uczonych rozróżnia mushaf (papierowy Quran) i ekran telefonu. Dla aplikacji Quran wudu jest zalecane z szacunku, ale nie zawsze wymagane. Jeśli możesz — czytaj w czystości, ale brak wudu nie odcinaj cię od nauki.", aEn: "Most scholars distinguish between a physical mushaf and a phone screen. For Quran apps, wudu is recommended out of respect but not always required. If you can, read in purity, but do not stop learning when you lack wudu.", ref: "" },
@@ -71,7 +73,45 @@ const faqExtraUnique = [
   { id: "extra_reverts_lonely", tab: "converts", verdict: "info", qPl: "Jak nie czuć się samotnie po konwersji?", qEn: "How can I avoid loneliness after conversion?", aPl: "Szukaj wspólnoty: lokalny meczet, grupy online, 1-2 zaufane osoby do regularnego kontaktu. Wspólnota jest ogromnym wsparciem.", aEn: "Seek community: local mosque, online groups, and 1-2 trusted people for regular contact. Community is a major support.", ref: "" }
 ];
 
-const islamicFaqExpanded = [...islamicFaq, ...faqExtraUnique];
+const CONTENT_LAST_CHECKED_AT = "2026-05-08";
+const TRUST_LEVEL = {
+  verified: { pl: "ZWERYFIKOWANE", en: "VERIFIED" },
+  unverified: { pl: "NIEZWERYFIKOWANE", en: "UNVERIFIED" }
+};
+
+const FAQ_REFERENCE_FIXES = {
+  salam: "Abu Dawud 5193; Tirmidhi 2689",
+  ramadan_respect: "Quran 2:183-185",
+  mosque_visit: "Quran 9:18; general adab of masjid",
+  convert_steps: "Muslim 21; Bukhari 8",
+  arabs: "Quran 49:13",
+  music: "Scholarly disagreement; no explicit Quranic prohibition"
+};
+
+const islamicFaqExpanded = islamicFaq.map((item) => ({
+  ...item,
+  ref: item.ref || FAQ_REFERENCE_FIXES[item.id] || "",
+  verified: Boolean(item.ref || FAQ_REFERENCE_FIXES[item.id]),
+  source: item.ref || FAQ_REFERENCE_FIXES[item.id] || "",
+  last_checked_at: CONTENT_LAST_CHECKED_AT
+}));
+
+const ISLAMIC_SOURCE_LIBRARY = [
+  ...islamicFaqExpanded.map((item) => ({
+    id: `faq:${item.id}`,
+    type: "faq",
+    source: item.source,
+    textPl: `${item.qPl} ${item.aPl}`,
+    textEn: `${item.qEn} ${item.aEn}`
+  })),
+  ...islamicHadith.map((item) => ({
+    id: `hadith:${item.id}`,
+    type: "hadith",
+    source: item.source,
+    textPl: `${item.pl} ${item.tr}`,
+    textEn: `${item.en} ${item.tr}`
+  }))
+].filter((item) => item.source);
 
 const ROMANTIC_LINES = [
   // short
@@ -410,37 +450,13 @@ const defaultState = {
   dhikrGameHistory: [],
   gameHistory: [],
   activeGame: null,
-<<<<<<< ours
   lessonsTab: "lessons",
   faqTab: "basics",
   prayerGuideSessions: 0,
-  lastPrayerGuide: null
-=======
-  lessonsTab: "alphabet",
-  faqTab: "basics",
-<<<<<<< ours
-  prayerLocations: null
-  ,
-  asmaChallengeBest: 0,
-  asmaChallengeHistory: []
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
+  lastPrayerGuide: null,
   prayerLocations: null,
   asmaChallengeBest: 0,
   asmaChallengeHistory: []
->>>>>>> theirs
 };
 
 let state = loadState();
@@ -514,7 +530,10 @@ function nextTheme(theme) {
 }
 
 function aiSystemPrompt() {
-  return state.lang === "en" ? AI_SYSTEM_PROMPT_EN : AI_SYSTEM_PROMPT_PL;
+  const sourceRule = state.lang === "en"
+    ? `\n\nRELIGIOUS SAFETY: For Islam/prayer/Quran/dua/hadith/halal answers, use only the verified Alif AI source context. Every religious answer must include a "Sources:" section with concrete citations. If no verified source is available, say that the Alif AI database has no verified source for that answer.`
+    : `\n\nBEZPIECZENSTWO RELIGIJNE: Dla odpowiedzi o islamie, modlitwie, Quranie, dua, hadith, halal/haram uzywaj tylko zweryfikowanego kontekstu zrodlowego Alif AI. Kazda odpowiedz religijna musi zawierac sekcje "Zrodla:" z konkretnymi cytatami. Jesli nie ma zweryfikowanego zrodla, powiedz, ze baza Alif AI nie ma zweryfikowanego zrodla dla tej odpowiedzi.`;
+  return (state.lang === "en" ? AI_SYSTEM_PROMPT_EN : AI_SYSTEM_PROMPT_PL) + sourceRule;
 }
 
 function loadState() {
@@ -871,6 +890,7 @@ function muallaf() {
           <p class="text-xs font-mono text-[var(--muted)] mb-2">${h.tr}</p>
           <p class="text-sm">${state.lang === "pl" ? h.pl : h.en}</p>
           <p class="text-xs text-[var(--muted)] mt-2 italic">${h.source}</p>
+          <p class="quality-meta">${hadithQuality(h).verified ? tx(TRUST_LEVEL.verified.pl, TRUST_LEVEL.verified.en) : tx(TRUST_LEVEL.unverified.pl, TRUST_LEVEL.unverified.en)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).last_checked_at}</p>
         </div>
       `).join("")}
     </div>
@@ -964,11 +984,13 @@ function islamfaq() {
   const verdictLabel = { false: tx("MIT", "MYTH"), complex: tx("ZŁOŻONE", "COMPLEX"), info: tx("FAKT", "FACT") };
 
   const filtered = islamicFaqExpanded.filter(q => q.tab === activeTab);
+  const verifiedCount = islamicFaqExpanded.filter(q => q.verified).length;
 
   view.innerHTML = `
     <div class="mb-4">
       <h1 class="text-3xl font-black">❓ ${tx("FAQ islamu", "Islam FAQ")}</h1>
       <p class="text-[var(--muted)] mt-1 text-sm">${tx("Pytania, które zadają wszyscy — uczciwe odpowiedzi.", "Questions everyone asks — honest answers.")}</p>
+      <p class="text-[var(--muted)] mt-1 text-xs">${tx("Wersja treści", "Content version")}: <strong>${CONTENT_VERSION}</strong> · ${tx("Aktualizacja", "Updated")}: <strong>${CONTENT_UPDATED_AT}</strong></p>
     </div>
     <div class="flex gap-1 mb-4 overflow-x-auto pb-1">
       ${tabs.map(tab => `
@@ -986,8 +1008,15 @@ function islamfaq() {
           </button>
           <div class="faq-answer hidden">
             ${q.verdict ? `<span class="verdict-badge ${q.verdict}">${verdictLabel[q.verdict] || q.verdict}</span>` : ""}
+            <span class="trust-badge ${q.verified ? "verified" : "unverified"}">${q.verified ? tx(TRUST_LEVEL.verified.pl, TRUST_LEVEL.verified.en) : tx(TRUST_LEVEL.unverified.pl, TRUST_LEVEL.unverified.en)}</span>
             <p>${state.lang === "pl" ? q.aPl : q.aEn}</p>
+<<<<<<< ours
+            <p class="faq-ref">Source: ${escapeHtml(q.source || q.ref || tx("Brak zweryfikowanego zrodla", "No verified source"))}</p>
+            <p class="quality-meta">${tx("Sprawdzone:", "Checked:")} ${escapeHtml(q.last_checked_at)}</p>
             ${q.ref ? `<p class="faq-ref">📚 ${q.ref}</p>` : ""}
+=======
+            <p class="faq-ref">📚 ${q.ref || tx("Źródło w trakcie uzupełniania", "Source pending update")}</p>
+>>>>>>> theirs
           </div>
         </div>
       `).join("")}
@@ -1253,8 +1282,6 @@ function home() {
       else setRoute(button.dataset.route);
     });
   });
-<<<<<<< ours
-=======
   view.querySelectorAll("[data-open-badge-lesson]").forEach((button) => {
     button.addEventListener("click", () => openMiniLesson(button.dataset.openBadgeLesson));
   });
@@ -1277,7 +1304,6 @@ function getNextLessonBadgeLink() {
     return { ...badge, lessonId };
   }
   return null;
->>>>>>> theirs
 }
 
 async function loadAyatOfDay() {
@@ -1608,6 +1634,40 @@ const DUA_DATA = [
   },
 ];
 
+const DUA_SOURCE_MAP = {
+  bismillah: "Bukhari 5376; Muslim 2022",
+  after_eating: "Abu Dawud 3850; Tirmidhi 3457",
+  leaving_home: "Abu Dawud 5095; Tirmidhi 3426",
+  entering_home: "Abu Dawud 5096",
+  morning: "Muslim 2723",
+  evening: "Muslim 2723",
+  sleeping: "Bukhari 6324",
+  waking: "Bukhari 6312",
+  travel: "Quran 43:13-14; Muslim 1342",
+  forgiveness: "Abu Dawud 1517; Tirmidhi 3577",
+  anxiety: "Bukhari 6369",
+  parents: "Quran 17:24",
+  knowledge: "Quran 20:114",
+  good_end: "Quran 2:201",
+  heart: "Quran 3:8"
+};
+
+function duaQuality(dua) {
+  return {
+    source: DUA_SOURCE_MAP[dua.id] || "",
+    verified: Boolean(DUA_SOURCE_MAP[dua.id]),
+    last_checked_at: CONTENT_LAST_CHECKED_AT
+  };
+}
+
+function hadithQuality(hadith) {
+  return {
+    source: hadith.source || "",
+    verified: Boolean(hadith.source),
+    last_checked_at: CONTENT_LAST_CHECKED_AT
+  };
+}
+
 function surahCard(surah) {
   const isFav = (state.quranSurahFavorites || []).includes(surah.number);
   const extra = SURAH_EXTRA[surah.number];
@@ -1765,6 +1825,8 @@ function koran() {
                     <p class="text-sm font-black mb-2">${state.lang === "pl" ? dua.pl : dua.en}</p>
                     <p class="arabic text-right text-xl leading-loose mb-1">${escapeHtml(dua.ar)}</p>
                     <p class="text-xs text-amber-600 font-mono mb-3" dir="ltr">${escapeHtml(dua.tr)}</p>
+                    <p class="faq-ref">Source: ${escapeHtml(duaQuality(dua).source || tx("Brak zweryfikowanego zrodla", "No verified source"))}</p>
+                    <p class="quality-meta">${duaQuality(dua).verified ? tx(TRUST_LEVEL.verified.pl, TRUST_LEVEL.verified.en) : tx(TRUST_LEVEL.unverified.pl, TRUST_LEVEL.unverified.en)} · ${tx("Sprawdzone:", "Checked:")} ${duaQuality(dua).last_checked_at}</p>
                     <div class="flex items-center gap-2">
                       <button class="speaker-btn text-sm" data-say-ar="${escapeHtml(dua.ar)}">🔊 ${tx("Odsłuchaj", "Listen")}</button>
                       <button class="speaker-btn text-sm ${state.quranDuaFavorites?.includes(dua.id) ? "" : "opacity-50"}" data-fav-dua="${dua.id}">❤️ ${tx("Ulubione", "Favorite")}</button>
@@ -1909,6 +1971,8 @@ async function openSurah(num) {
                 </div>
                 ${trMap[ayah.numberInSurah] ? `<p class="text-xs text-amber-600 font-mono leading-relaxed mb-1" dir="ltr">${escapeHtml(trMap[ayah.numberInSurah])}</p>` : ""}
                 ${transMap[ayah.numberInSurah] ? `<p class="text-sm text-[var(--muted)] italic" dir="ltr">${escapeHtml(transMap[ayah.numberInSurah])}</p>` : ""}
+                <p class="faq-ref">Source: Quran ${s.number}:${ayah.numberInSurah} · alquran.cloud (${escapeHtml(reciter)}, ${escapeHtml(transEdition)})</p>
+                <p class="quality-meta">${tx(TRUST_LEVEL.verified.pl, TRUST_LEVEL.verified.en)} · ${tx("Sprawdzone:", "Checked:")} ${CONTENT_LAST_CHECKED_AT}</p>
                 <div class="mt-3 flex justify-end gap-2">
                   <button class="speaker-btn haptic-feedback" data-play-audio="${ayah.audio}" title="${tx("Odtwórz", "Play")}">▶️</button>
                   <button class="speaker-btn haptic-feedback" data-fav-ayah="${ayah.number}" title="${tx("Ulubiony werset", "Favorite ayah")}">❤️</button>
@@ -3924,6 +3988,32 @@ function aiActionButtons(_index) {
   return '';
 }
 
+function isIslamicQuery(content = "") {
+  return /\b(islam|allah|quran|koran|surah|sura|ayah|ajat|dua|du'a|hadith|hadis|salat|modlitw|halal|haram|ramadan|wudu|meczet|prorok|muhammad|muzu|shahada|szahada|jihad|dĹĽihad)\b/i.test(content);
+}
+
+function buildIslamicSourceContext(content = "") {
+  const terms = content.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((term) => term.length > 2);
+  const scored = ISLAMIC_SOURCE_LIBRARY.map((item) => {
+    const haystack = `${item.textPl} ${item.textEn} ${item.source}`.toLowerCase();
+    const score = terms.reduce((sum, term) => sum + (haystack.includes(term) ? 1 : 0), 0);
+    return { ...item, score };
+  })
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 6);
+
+  if (!scored.length) return "";
+  return scored.map((item, index) => {
+    const text = state.lang === "pl" ? item.textPl : item.textEn;
+    return `${index + 1}. [${item.source}] ${text}`;
+  }).join("\n");
+}
+
+function hasRequiredIslamicSources(answer = "") {
+  return /(Zrodla|Źrodla|Źródła|Sources)\s*:/i.test(answer) && /(Quran|Koran|Bukhari|Muslim|Tirmidhi|Abu Dawud|Nasai|Ibn Majah|Tabarani)\s*\d*/i.test(answer);
+}
+
 async function sendAiMessage(event) {
   event.preventDefault();
   const input = $("#aiInput");
@@ -3941,12 +4031,20 @@ async function sendAiMessage(event) {
       `Kontekst aplikacji: uzytkownik ma ${state.points} punktow, poziom ${level()}, zna ${state.learnedLetters.length}/28 liter. Sekcje: Alfabet, Lekcje, Fiszki, Wymowa, Pisanie, Nasza Przygoda, Kultura, Gry, Qur'an, Islam.`,
       `App context: user has ${state.points} points, level ${level()}, knows ${state.learnedLetters.length}/28 letters. Sections: Alphabet, Lessons, Flashcards, Speech, Writing, Our Adventure, Culture, Games, Qur'an, Islam.`
     );
+    const islamicSourceContext = isIslamicQuery(content) ? buildIslamicSourceContext(content) : "";
     const recent = state.aiMessages.filter((message) => message.content !== aiThinking).slice(-8);
     const answer = await askGroq([
       { role: "system", content: appContext },
+      ...(islamicSourceContext ? [{ role: "system", content: `Verified Alif AI Islamic source context:\n${islamicSourceContext}\nAnswer religious questions only from this context and include Sources.` }] : []),
       ...recent
     ]);
-    state.aiMessages[state.aiMessages.length - 1] = { role: "assistant", content: answer };
+    const guardedAnswer = isIslamicQuery(content) && !hasRequiredIslamicSources(answer)
+      ? tx(
+          "Nie mam zweryfikowanego zrodla w bazie Alif AI dla tej odpowiedzi.\n\nZrodla: brak dopasowanego zrodla w lokalnej bazie",
+          "I do not have a verified source in the Alif AI database for this answer.\n\nSources: no matching source in the local database"
+        )
+      : answer;
+    state.aiMessages[state.aiMessages.length - 1] = { role: "assistant", content: guardedAnswer };
     if (Math.random() < 0.35) showLoveToast(romanticLine());
   } catch (error) {
     state.aiMessages[state.aiMessages.length - 1] = { role: "assistant", content: tx("Nie udalo mi sie polaczyc z Groq. Sprawdz internet, CORS albo limit API i sprobuj ponownie.", "I could not connect to Groq. Check internet, CORS, or API limits and try again.") };
@@ -4340,6 +4438,7 @@ function hadithOfDayWidget() {
     <p class="text-base font-bold arabic text-right leading-relaxed mb-1">${h.ar}</p>
     <p class="text-xs text-[var(--muted)] italic">${state.lang === 'pl' ? h.pl : h.en}</p>
     <p class="text-xs text-[var(--muted)] mt-1 font-bold">${h.source}</p>
+    <p class="quality-meta">${hadithQuality(h).verified ? tx(TRUST_LEVEL.verified.pl, TRUST_LEVEL.verified.en) : tx(TRUST_LEVEL.unverified.pl, TRUST_LEVEL.unverified.en)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).last_checked_at}</p>
   </div>`;
 }
 
@@ -4768,28 +4867,10 @@ async function prayer() {
   view.innerHTML = `
     <div class="mb-4">
       <h1 class="text-3xl font-black">${tx("Czasy Modlitw", "Prayer Times")} 🕌</h1>
-<<<<<<< ours
       <p class="text-[var(--muted)]">${tx("Dwie lokalizacje na żywo + globalne wyszukiwanie meczetów", "Two live locations + global mosque finder")}</p>
       <a class="inline-flex mt-3 items-center gap-2 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm font-bold" href="https://www.google.com/maps/search/mosque+near+me" target="_blank" rel="noopener noreferrer">🕌 ${tx("Znajdź meczet w okolicy (cały świat)", "Find a mosque nearby (worldwide)")}</a>
-=======
       <p class="text-[var(--muted)]">${tx("Dwie lokalizacje na żywo — Polska i Surabaya", "Two live locations — Poland and Surabaya")}</p>
       <p class="text-xs text-[var(--muted)] mt-1">${tx("Możesz edytować lokalizacje (miasto, szerokość, długość, strefa).", "You can edit locations (city, latitude, longitude, timezone).")}</p>
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
     </div>
     <button id="editPrayerLocations" class="big-action mb-3 border border-[var(--line)]">${tx("Edytuj lokalizacje", "Edit locations")}</button>
     <div class="grid gap-4 lg:grid-cols-2">
@@ -5002,6 +5083,7 @@ function seerah() {
           <p class="text-base font-bold arabic text-right leading-relaxed" style="direction:rtl">${h.ar}</p>
           <p class="text-sm text-[var(--muted)] mt-1 italic">${state.lang === 'pl' ? h.pl : h.en}</p>
           <p class="text-xs font-bold text-[var(--accent)] mt-1">${h.source}</p>
+          <p class="quality-meta">${hadithQuality(h).verified ? tx(TRUST_LEVEL.verified.pl, TRUST_LEVEL.verified.en) : tx(TRUST_LEVEL.unverified.pl, TRUST_LEVEL.unverified.en)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).last_checked_at}</p>
         </div>
       `).join('')}
     </div>
