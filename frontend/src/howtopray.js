@@ -68,7 +68,8 @@ export const prayerInfo = {
       "Subhanallah × 33, Alhamdulillah × 33, Allahu Akbar × 34 (lub 33+33+33 + La ilaha illa Allah × 1)",
       "Ayat al-Kursi (2:255) — chroni do następnej modlitwy",
       "Du'a osobista — proś Allaha o cokolwiek po arabsku lub w swoim języku"
-    ]
+    ],
+    durations: { takbir: 4, qiyam: 18, ruku: 8, itidal: 5, sujud1: 8, jalsa: 5, sujud2: 8, next_rakah: 3, tashahhud: 12, salawat: 8, salam: 4 }
   },
   en: {
     intro: "Salah (prayer) is a pillar of Islam. Its movements reflect humility, gratitude, and submission to Allah.",
@@ -136,6 +137,7 @@ export const prayerInfo = {
       "Subhanallah × 33, Alhamdulillah × 33, Allahu Akbar × 34 (or 33+33+33 + La ilaha illa Allah × 1)",
       "Ayat al-Kursi (2:255) — protects until the next prayer",
       "Personal du'a — ask Allah for anything in Arabic or your language"
-    ]
+    ],
+    durations: { takbir: 4, qiyam: 18, ruku: 8, itidal: 5, sujud1: 8, jalsa: 5, sujud2: 8, next_rakah: 3, tashahhud: 12, salawat: 8, salam: 4 }
   }
 };

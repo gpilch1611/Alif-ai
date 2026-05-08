@@ -1,0 +1,42 @@
+{
+  "summary": "Frontend-only testing of (a) Sunnah-correct dua_eat + hadith refs in 6 existing duas, (b) 5 new daily duas, (c) brand-new Real-time Prayer Mode at #prayermode. Prayer Mode passes 100% (all 5 prayer selectors, timer 3-18s countdown, step progression 1/11→2/11, pause/stop/TTS, back nav, PL/EN headers). Content-data is correct in source. ONE bug: the 5 new lessons + 6 existing 'Islam – codzienne'/'Islam – Daily' duas are filtered OUT of the #lessons UI by an explicit filter in lessons() and they are not displayed elsewhere either.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "lessons() in /app/frontend/src/app.js (line 2151-2153)",
+        "issue": "An explicit filter `const islamicCats = ['Islam','Islam –']; lessonsData = allData.filter(l => !islamicCats.some(p => l.category.startsWith(p)))` removes ALL lessons whose category starts with 'Islam'. Result: dua_eat, dua_after_eat, dua_sleep, dua_wake, dua_mirror, dua_stress + 5 new (dua_toilet_in/out, dua_after_wudu, dua_to_mosque, dua_morning_evening) are never rendered in #lessons in either PL or EN. The review request asserts they should appear in the 'Islam – codzienne'/'Islam – Daily' category — they do NOT.",
+        "selector": "#lessons (Lessons sub-tab)",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Daily duas discoverability",
+        "issue": "duasView() at line 4585 uses a separate `expandedDuas` data source and does NOT consume LESSONS_DATA — so the 5 new duas in LESSONS_DATA are also invisible at #duas. They are only reachable through the global search box (LESSONS_DATA is searched at line 3823).",
+        "affected_selectors": ["[data-testid=\"duas-view\"]", "#lessons"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/test_reports/iteration_3.json"],
+  "action_items": [
+    "Fix the lessons() filter so 'Islam – codzienne'/'Islam – Daily' lessons display. Either (a) remove the filter and let the new duas show as a category card, or (b) merge them into duasView() / a dedicated daily-duas section, or (c) keep the filter but add a separate data-testid section in #lessons or #islam that lists the daily duas. Whichever path is chosen, the 11 daily duas (6 existing + 5 new) need a visible UI surface so users can read the Arabic, transliteration, meaning + hadith refs."
+  ],
+  "critical_code_review_comments": [
+    "app.js is now 5039 lines — repeating the same recommendation from iterations 1 & 2: split into modules (lessons.js, prayer.js, duas.js, prayermode.js, badges.js).",
+    "LESSONS_DATA contains 'Islam – codzienne'/'Islam – Daily' categories that are filtered out by the lessons() view itself — this is a code smell. Either don't seed Islam categories into LESSONS_DATA, or render them in a dedicated tab/section.",
+    "duasView() uses a separate `expandedDuas` array that overlaps in concept with the dua_* entries in LESSONS_DATA. Two parallel sources for the same domain object causes drift and bugs like the one above. Recommend consolidating to a single source.",
+    "Tailwind via cdn.tailwindcss.com still produces production warning (unchanged from prior iterations).",
+    "Prayer Mode timer relies on `prayerInfo.durations` per language — values look reasonable (3-18s). Note: 11 steps × 2 rakahs ≈ 2-4 minutes total in test mode, but real prayer should be ~3-5 minutes. Consider exposing a 'real-time vs guide-time' toggle so durations can match a real Maghrib (~3-5 min) without rushing the user.",
+    "Web Speech API in pmodeSpeakCurrent is fired without checking `'speechSynthesis' in window`. In some restricted browsers/iframes this could throw — recommend a guard."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (skipped per request)", "frontend": "94% (16/17 review-request items pass; lessons-display item fails)"},
+  "test_credentials": "n/a — no auth in this PWA",
+  "seed_data_creation": "localStorage.setItem('alif-ai-state', JSON.stringify({onboardingDone:true,persona:'practicing',lang:'pl',theme:'light',badges:[],learnedLetters:[],points:0,streak:0}))",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Prayer Mode (#prayermode) is fully verified end-to-end via Playwright: all 5 [data-testid='pmode-select-{Fajr|Dhuhr|Asr|Maghrib|Isha}'] buttons exist, Maghrib click sets rakah display to 1/3, timer-circle shows '--' initially, Start enables pause and starts countdown (saw '3' then '16' as it advanced through takbir then qiyam), step-display advanced 1/11→2/11 within 5s, Pause holds the number for 2.2s without change, Stop resets to '--' and 1/11, TTS click does not crash. EN lang toggle correctly renders 'Real-time Prayer Mode' header. CTA howtopray-go-prayermode-btn navigates to #prayermode. Back button (pmode-back-howtopray) navigates to #howtopray. NO JS errors during navigation across #prayermode/#lessons/#howtopray/#islam/#home/#duas. Content data (dua_eat, 6 existing dua refs, 5 new daily duas) is CORRECT in /app/frontend/src/app.js source — confirmed via grep at lines 218-234 (PL) and 279-295 (EN). The single remaining failure is a UI display issue: lessons() explicitly filters out 'Islam' categories so the new duas don't render in #lessons. After fix, retest #lessons (PL+EN) for the 5 new titles + dua_eat refs.",
+  "rca_of_the_issue": "The lessons() function at /app/frontend/src/app.js:2151-2153 contains: `const islamicCats=['Islam','Islam –']; const lessonsData = allData.filter(l => !islamicCats.some(prefix => l.category.startsWith(prefix)));`. This filter is applied BEFORE the category cards are built (line 2154: `categories=[...new Set(lessonsData.map(l=>l.category))]`), so any lesson whose category starts with 'Islam' is silently dropped from both the category card list and the lesson grid. The new duas were added with category 'Islam – codzienne' / 'Islam – Daily' so they hit this filter. Additionally, duasView() (line 4585) uses a different data source `expandedDuas`, so they're not displayed there either. Reproduction: open https://alif-quran-learn.preview.emergentagent.com/#lessons → click 'Lekcje'/'Lessons' sub-tab → only Basics/Family/Colors/Numbers/Food/Time/'Poland & Indonesia' categories appear; no 'Islam – codzienne' card. Mitigation: remove the filter (simplest), OR render Islam-prefixed lessons in a dedicated section in #lessons or as cards in #duas / #islam. Given that the review request's intent is for users to discover these daily duas, the simplest fix is to drop the filter so the new 'Islam – codzienne' / 'Islam – Daily' category card appears alongside Basics, Family, etc."
+}

@@ -55,7 +55,7 @@ const secondaryNavItems = [
   ["settings",  "⚙",  "navSettings"]
 ];
 
-const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","fiqh","duas","tracker","calendar","myths"];
+const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","fiqh","duas","tracker","calendar","myths","howtopray","prayermode"];
 
 const ROMANTIC_LINES = [
   // short
@@ -215,18 +215,23 @@ const LESSONS_DATA = {
     { id: "shahada", category: "Islam – najważniejsze", title: "Szahada", ar: "لَا إِلَٰهَ إِلَّا اللَّهُ مُحَمَّدٌ رَسُولُ اللَّهِ", tr: "la ilaha illallah, Muhammadun rasulullah", meaning: "Nie ma boga prócz Allaha, Muhammad jest posłańcem Allaha", task: "Powtórz wolno i ze zrozumieniem każde słowo." },
     { id: "fatiha", category: "Islam – najważniejsze", title: "Al-Fatiha (wstęp)", ar: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", tr: "alhamdu lillahi rabbil alamin", meaning: "Chwała Bogu, Panu światów (Al-Fatiha 1:2)", task: "Zapamiętaj ten werset — jest recytowany w każdej rak'ah modlitwy." },
     { id: "ayat_kursi_intro", category: "Islam – najważniejsze", title: "Ajet al-Kursi (początek)", ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ", tr: "Allahu la ilaha illa huwal hayyul qayyum", meaning: "Bóg — nie ma boga prócz Niego, Żyjącego, Samopodtrzymującego", task: "Ajet al-Kursi to najpotężniejszy werset Koranu (2:255). Zapamiętaj jego początek." },
-    { id: "dua_eat", category: "Islam – codzienne", title: "Dua przed jedzeniem", ar: "بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ", tr: "bismillahi wa ala barakati Allah", meaning: "W imię Boga i z błogosławieństwem Boga", task: "Mów to przed każdym posiłkiem przez cały tydzień." },
-    { id: "dua_after_eat", category: "Islam – codzienne", title: "Dua po jedzeniu", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ", tr: "alhamdu lillahil ladhi at'amana wa saqana wa ja'alana muslimin", meaning: "Chwała Bogu, który nas nakarmił, napoił i uczynił muzułmanami", task: "Powiedz po zakończeniu posiłku." },
-    { id: "dua_sleep", category: "Islam – codzienne", title: "Dua przed snem", ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", tr: "bismika Allahumma amutu wa ahya", meaning: "W Twoje imię, o Boże, umieram i żyję", task: "Powiedz przed zaśnięciem każdej nocy." },
-    { id: "dua_wake", category: "Islam – codzienne", title: "Dua po przebudzeniu", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", tr: "alhamdu lillahil ladhi ahyana ba'da ma amatana wa-ilayhin-nushur", meaning: "Chwała Bogu, który nas wskrzesił po tym, jak uśpił — i do Niego jest nasze zmartwychwstanie", task: "Mów po przebudzeniu zamiast sprawdzania telefonu." },
-    { id: "dua_mirror", category: "Islam – codzienne", title: "Dua przy lustrze", ar: "اللَّهُمَّ حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي", tr: "Allahumma hassanta khalqi fa hassin khuluqi", meaning: "Boże, upiększyłeś moje stworzenie, upiększy też mój charakter", task: "Powtarzaj patrząc w lustro rano." },
+    { id: "dua_eat", category: "Islam – codzienne", title: "Bismillah przed jedzeniem", ar: "بِسْمِ اللَّه", tr: "bismillah", meaning: "W imię Boga (sunnah Proroka ﷺ — Bukhari 5376, Muslim 2022). Jeśli zapomnisz na początku posiłku, powiedz: «بِسْمِ اللَّهِ أَوَّلَهُ وَآخِرَهُ» (Bismillahi awwalahu wa akhirahu — W imię Boga na początku i na końcu — Abu Dawud 3767, Tirmidhi 1858).", task: "Mów to przed każdym posiłkiem przez cały tydzień. Jeśli zapomnisz — dodaj «awwalahu wa akhirahu»." },
+    { id: "dua_after_eat", category: "Islam – codzienne", title: "Dua po jedzeniu", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ", tr: "alhamdu lillahil ladhi at'amana wa saqana wa ja'alana muslimin", meaning: "Chwała Bogu, który nas nakarmił, napoił i uczynił muzułmanami (Abu Dawud 3850, Tirmidhi 3457).", task: "Powiedz po zakończeniu posiłku." },
+    { id: "dua_sleep", category: "Islam – codzienne", title: "Dua przed snem", ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", tr: "bismika Allahumma amutu wa ahya", meaning: "W Twoje imię, o Boże, umieram i żyję (Bukhari 6312, Muslim 2711). Pełna sunnah przed snem: dmuchnij w dłonie, recytuj 3 ostatnie sury (Al-Ikhlas, Al-Falaq, An-Nas), przetrzyj ciało; recytuj Ajat al-Kursi (chroni do rana); połóż się na prawym boku, dłoń pod policzkiem; potem powiedz tę du'a.", task: "Wykonaj pełną sunnah przed zaśnięciem dziś." },
+    { id: "dua_wake", category: "Islam – codzienne", title: "Dua po przebudzeniu", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", tr: "alhamdu lillahil ladhi ahyana ba'da ma amatana wa-ilayhin-nushur", meaning: "Chwała Bogu, który nas wskrzesił po tym, jak uśpił — i do Niego jest nasze zmartwychwstanie (Bukhari 6312, Muslim 2711).", task: "Mów po przebudzeniu zamiast sprawdzania telefonu." },
+    { id: "dua_mirror", category: "Islam – codzienne", title: "Dua przy lustrze", ar: "اللَّهُمَّ حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي", tr: "Allahumma hassanta khalqi fa hassin khuluqi", meaning: "Boże, upiększyłeś moje stworzenie, upiększ też mój charakter (Ahmad 24405, Ibn Hibban 959).", task: "Powtarzaj patrząc w lustro rano." },
     { id: "salat_times", category: "Islam – najważniejsze", title: "Pięć modlitw", ar: "فَجْر / ظُهْر / عَصْر / مَغْرِب / عِشَاء", tr: "fadżr / zuhr / asr / maghrib / isza", meaning: "Świt / Południe / Popołudnie / Zachód słońca / Noc", task: "Zapamiętaj nazwy i kolejność 5 modlitw dziennych." },
     { id: "ramadan", category: "Islam – najważniejsze", title: "Ramadan", ar: "رَمَضَان مُبَارَك", tr: "ramadan mubarak", meaning: "Błogosławiony Ramadan", task: "Dowiedz się kiedy zaczyna się następny Ramadan i zaznacz w kalendarzu." },
     { id: "eid", category: "Islam – najważniejsze", title: "Eid Mubarak", ar: "عِيدٌ مُبَارَكٌ", tr: "eid mubarak", meaning: "Błogosławione Święto", task: "Naucz się też: كُلَّ عَام وَأَنْتُم بِخَيْر (kullu am wa antum bikhajr) – Niech każdy rok przynosi Wam dobro." },
     { id: "tawakkul", category: "Islam – wartości", title: "Tawakkul – zaufanie Bogu", ar: "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ", tr: "hasbunallahu wa ni'mal wakil", meaning: "Wystarczy nam Bóg – jakiż wspaniały opiekun", task: "Powiedz gdy czujesz stres lub niepewność." },
     { id: "sabr", category: "Islam – wartości", title: "Cierpliwość (Sabr)", ar: "إِنَّ اللَّهَ مَعَ الصَّابِرِينَ", tr: "innallaha ma'as-sabirin", meaning: "Zaprawdę Bóg jest z cierpliwymi (Koran 2:153)", task: "Zapamiętaj werset i powiedz go gdy jesteś w trudnej chwili." },
     { id: "shukr", category: "Islam – wartości", title: "Wdzięczność (Shukr)", ar: "لَئِنْ شَكَرْتُمْ لَأَزِيدَنَّكُمْ", tr: "la in shakartum la azidannakum", meaning: "Jeśli będziecie wdzięczni, dam wam więcej (Koran 14:7)", task: "Wypisz 3 rzeczy za które jesteś wdzięczny/a dziś." },
-    { id: "dua_stress", category: "Islam – codzienne", title: "Dua na trudne chwile", ar: "لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ", tr: "la ilaha illa anta subhanaka inni kuntu minaz-zalimin", meaning: "Nie ma boga prócz Ciebie, chwała Tobie, zaprawdę byłem z niesprawiedliwych (dua Jonasza)", task: "Powtórz 40 razy gdy czujesz się przytłoczony/a." }
+    { id: "dua_stress", category: "Islam – codzienne", title: "Dua na trudne chwile", ar: "لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ", tr: "la ilaha illa anta subhanaka inni kuntu minaz-zalimin", meaning: "Nie ma boga prócz Ciebie, chwała Tobie, zaprawdę byłem z niesprawiedliwych (Du'a Yunusa, Quran 21:87, Tirmidhi 3505).", task: "Powtórz 40 razy gdy czujesz się przytłoczony/a." },
+    { id: "dua_toilet_in", category: "Islam – codzienne", title: "Du'a wchodząc do toalety", ar: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبْثِ وَالْخَبَائِثِ", tr: "Allahumma inni a'udhu bika minal-khubthi wal-khaba'ith", meaning: "Boże, szukam u Ciebie ochrony przed złymi duchami męskimi i żeńskimi (Bukhari 142, Muslim 375). Wchodź lewą nogą.", task: "Mów przed każdą wizytą w toalecie." },
+    { id: "dua_toilet_out", category: "Islam – codzienne", title: "Du'a wychodząc z toalety", ar: "غُفْرَانَكَ", tr: "ghufranaka", meaning: "Twojego przebaczenia [proszę] (Abu Dawud 30, Tirmidhi 7). Wychodź prawą nogą.", task: "Mów po każdej wizycie." },
+    { id: "dua_after_wudu", category: "Islam – codzienne", title: "Du'a po wudu", ar: "أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ", tr: "ashhadu an la ilaha illallahu wahdahu la sharika lah, wa ashhadu anna Muhammadan abduhu wa rasuluh", meaning: "Świadczę, że nie ma boga prócz Allaha jedynego, bez wspólnika, i świadczę, że Muhammad jest Jego sługą i posłańcem. Otwiera 8 bram raju (Muslim 234).", task: "Mów po każdym wudu — niezwykła obietnica Proroka ﷺ." },
+    { id: "dua_to_mosque", category: "Islam – codzienne", title: "Du'a w drodze do meczetu", ar: "اللَّهُمَّ اجْعَلْ فِي قَلْبِي نُورًا، وَفِي بَصَرِي نُورًا...", tr: "Allahumma ij'al fi qalbi nuran, wa fi basari nuran...", meaning: "Boże, daj światło w mym sercu, w mym wzroku, słuchu, po prawej, lewej, nade mną, pode mną, przede mną, za mną, i daj mi światło (Bukhari 6316).", task: "Mów idąc na modlitwę." },
+    { id: "dua_morning_evening", category: "Islam – codzienne", title: "Adhkar poranne i wieczorne", ar: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ", tr: "asbahna wa asbahal-mulku lillah", meaning: "Doczekaliśmy się poranka, a władza należy do Allaha (Muslim 2723). Pełne adhkar poranne (Hisnul-Muslim) zawiera: Ajat al-Kursi, 3 ostatnie sury (×3), du'a Sayyidul-istighfar, La ilaha illa Allah ×100.", task: "Wykonaj pełne adhkar poranne lub wieczorne dziś." }
   ],
   en: [
     { id: "hello", category: "Basics", title: "As-salamu alaikum", ar: "السلام عليكم", tr: "as-salamu alaikum", meaning: "Peace be upon you (greeting)", task: "Say this phrase aloud and add it to flashcards." },
@@ -271,18 +276,23 @@ const LESSONS_DATA = {
     { id: "shahada", category: "Islam – Essential", title: "Shahada", ar: "لَا إِلَٰهَ إِلَّا اللَّهُ مُحَمَّدٌ رَسُولُ اللَّهِ", tr: "la ilaha illallah, Muhammadun rasulullah", meaning: "There is no god but Allah, Muhammad is His messenger", task: "Repeat slowly understanding each word." },
     { id: "fatiha", category: "Islam – Essential", title: "Al-Fatiha (opening)", ar: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", tr: "alhamdulillahi rabbil alamin", meaning: "All praise to God, Lord of all worlds (Al-Fatiha 1:2)", task: "Memorize this verse — it is recited in every rak'ah of prayer." },
     { id: "ayat_kursi_intro", category: "Islam – Essential", title: "Ayat al-Kursi (opening)", ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ", tr: "Allahu la ilaha illa huwal hayyul qayyum", meaning: "Allah — there is no god but Him, the Living, the Eternal", task: "Ayat al-Kursi is the greatest verse in the Quran (2:255). Memorize its opening." },
-    { id: "dua_eat", category: "Islam – Daily", title: "Dua before eating", ar: "بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ", tr: "bismillahi wa ala barakati Allah", meaning: "In the name of Allah and with Allah's blessings", task: "Say this before every meal for a full week." },
-    { id: "dua_after_eat", category: "Islam – Daily", title: "Dua after eating", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ", tr: "alhamdulillahil ladhi at'amana wa saqana wa ja'alana muslimin", meaning: "Praise be to Allah who has fed us, given us drink, and made us Muslims", task: "Say this after finishing your meal." },
-    { id: "dua_sleep", category: "Islam – Daily", title: "Dua before sleeping", ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", tr: "bismika Allahumma amutu wa ahya", meaning: "In Your name, O Allah, I die and I live", task: "Say this every night before sleeping." },
-    { id: "dua_wake", category: "Islam – Daily", title: "Dua after waking", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", tr: "alhamdulillahil ladhi ahyana ba'da ma amatana wa-ilayhin-nushur", meaning: "Praise to Allah who revived us after He had put us to sleep — and to Him is the resurrection", task: "Say this after waking up instead of checking your phone." },
-    { id: "dua_mirror", category: "Islam – Daily", title: "Dua at the mirror", ar: "اللَّهُمَّ حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي", tr: "Allahumma hassanta khalqi fa hassin khuluqi", meaning: "O Allah, You beautified my creation — beautify my character too", task: "Repeat this looking in the mirror each morning." },
+    { id: "dua_eat", category: "Islam – Daily", title: "Bismillah before eating", ar: "بِسْمِ اللَّه", tr: "bismillah", meaning: "In the name of Allah (Sunnah of the Prophet ﷺ — Bukhari 5376, Muslim 2022). If you forget at the start of the meal, say: «بِسْمِ اللَّهِ أَوَّلَهُ وَآخِرَهُ» (Bismillahi awwalahu wa akhirahu — In the name of Allah at the beginning and the end — Abu Dawud 3767, Tirmidhi 1858).", task: "Say this before every meal for a full week. If you forget — add «awwalahu wa akhirahu»." },
+    { id: "dua_after_eat", category: "Islam – Daily", title: "Dua after eating", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ", tr: "alhamdulillahil ladhi at'amana wa saqana wa ja'alana muslimin", meaning: "Praise be to Allah who has fed us, given us drink, and made us Muslims (Abu Dawud 3850, Tirmidhi 3457).", task: "Say this after finishing your meal." },
+    { id: "dua_sleep", category: "Islam – Daily", title: "Dua before sleeping", ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", tr: "bismika Allahumma amutu wa ahya", meaning: "In Your name, O Allah, I die and I live (Bukhari 6312, Muslim 2711). Full Sunnah before sleep: blow into your hands, recite the last 3 surahs (Al-Ikhlas, Al-Falaq, An-Nas), wipe your body; recite Ayat al-Kursi (protection until morning); lie on your right side, hand under cheek; then say this du'a.", task: "Perform the full Sunnah before sleeping tonight." },
+    { id: "dua_wake", category: "Islam – Daily", title: "Dua after waking", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", tr: "alhamdulillahil ladhi ahyana ba'da ma amatana wa-ilayhin-nushur", meaning: "Praise to Allah who revived us after He had put us to sleep — and to Him is the resurrection (Bukhari 6312, Muslim 2711).", task: "Say this after waking up instead of checking your phone." },
+    { id: "dua_mirror", category: "Islam – Daily", title: "Dua at the mirror", ar: "اللَّهُمَّ حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي", tr: "Allahumma hassanta khalqi fa hassin khuluqi", meaning: "O Allah, You beautified my creation — beautify my character too (Ahmad 24405, Ibn Hibban 959).", task: "Repeat this looking in the mirror each morning." },
     { id: "salat_times", category: "Islam – Essential", title: "Five prayers", ar: "فَجْر / ظُهْر / عَصْر / مَغْرِب / عِشَاء", tr: "fajr / dhuhr / asr / maghrib / isha", meaning: "Dawn / Noon / Afternoon / Sunset / Night", task: "Memorize the names and order of the 5 daily prayers." },
     { id: "ramadan", category: "Islam – Essential", title: "Ramadan", ar: "رَمَضَان مُبَارَك", tr: "ramadan mubarak", meaning: "Blessed Ramadan", task: "Find out when the next Ramadan starts and mark it in your calendar." },
     { id: "eid", category: "Islam – Essential", title: "Eid Mubarak", ar: "عِيدٌ مُبَارَكٌ", tr: "eid mubarak", meaning: "Blessed celebration", task: "Learn also: كُلَّ عَام وَأَنْتُم بِخَيْر (kullu am wa antum bikhajr) – May you be well every year." },
     { id: "tawakkul", category: "Islam – Values", title: "Tawakkul – trust in God", ar: "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ", tr: "hasbunallahu wa ni'mal wakil", meaning: "Allah is sufficient for us and He is the best disposer of affairs", task: "Say this when you feel stressed or uncertain." },
     { id: "sabr", category: "Islam – Values", title: "Patience (Sabr)", ar: "إِنَّ اللَّهَ مَعَ الصَّابِرِينَ", tr: "innallaha ma'as-sabirin", meaning: "Indeed Allah is with the patient (Quran 2:153)", task: "Memorize this verse and say it in difficult moments." },
     { id: "shukr", category: "Islam – Values", title: "Gratitude (Shukr)", ar: "لَئِنْ شَكَرْتُمْ لَأَزِيدَنَّكُمْ", tr: "la in shakartum la azidannakum", meaning: "If you are grateful, I will give you more (Quran 14:7)", task: "Write down 3 things you are grateful for today." },
-    { id: "dua_stress", category: "Islam – Daily", title: "Dua in hard times", ar: "لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ", tr: "la ilaha illa anta subhanaka inni kuntu minaz-zalimin", meaning: "There is no god but You, glory be to You, I was among the wrongdoers (Dua of Yunus)", task: "Repeat 40 times when feeling overwhelmed." }
+    { id: "dua_stress", category: "Islam – Daily", title: "Dua in hard times", ar: "لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ", tr: "la ilaha illa anta subhanaka inni kuntu minaz-zalimin", meaning: "There is no god but You, glory be to You, I was among the wrongdoers (Du'a of Yunus, Quran 21:87, Tirmidhi 3505).", task: "Repeat 40 times when feeling overwhelmed." },
+    { id: "dua_toilet_in", category: "Islam – Daily", title: "Du'a entering the bathroom", ar: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبْثِ وَالْخَبَائِثِ", tr: "Allahumma inni a'udhu bika minal-khubthi wal-khaba'ith", meaning: "O Allah, I seek refuge in You from male and female evil spirits (Bukhari 142, Muslim 375). Enter with the left foot.", task: "Say this before each visit." },
+    { id: "dua_toilet_out", category: "Islam – Daily", title: "Du'a leaving the bathroom", ar: "غُفْرَانَكَ", tr: "ghufranaka", meaning: "[I ask for] Your forgiveness (Abu Dawud 30, Tirmidhi 7). Exit with the right foot.", task: "Say this after each visit." },
+    { id: "dua_after_wudu", category: "Islam – Daily", title: "Du'a after wudu", ar: "أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ", tr: "ashhadu an la ilaha illallahu wahdahu la sharika lah, wa ashhadu anna Muhammadan abduhu wa rasuluh", meaning: "I bear witness there is no god but Allah alone, without partner, and I bear witness that Muhammad is His servant and messenger. Opens the 8 gates of paradise (Muslim 234).", task: "Say this after every wudu — extraordinary promise of the Prophet ﷺ." },
+    { id: "dua_to_mosque", category: "Islam – Daily", title: "Du'a on the way to the mosque", ar: "اللَّهُمَّ اجْعَلْ فِي قَلْبِي نُورًا، وَفِي بَصَرِي نُورًا...", tr: "Allahumma ij'al fi qalbi nuran, wa fi basari nuran...", meaning: "O Allah, place light in my heart, in my sight, hearing, on my right, left, above me, below me, before me, behind me, and grant me light (Bukhari 6316).", task: "Say this on your way to prayer." },
+    { id: "dua_morning_evening", category: "Islam – Daily", title: "Morning and evening adhkar", ar: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ", tr: "asbahna wa asbahal-mulku lillah", meaning: "We have reached the morning, and dominion belongs to Allah (Muslim 2723). Complete morning adhkar (Hisnul-Muslim) includes: Ayat al-Kursi, last 3 surahs (×3), Sayyidul-istighfar, La ilaha illa Allah ×100.", task: "Perform a complete morning or evening adhkar today." }
   ]
 };
 
@@ -775,7 +785,7 @@ function render() {
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
   const books = () => setRoute("adventure");
-  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq, fiqh: fiqhView, duas: duasView, tracker: trackerView, calendar: calendarView, myths: mythsView, onboarding: onboardingView, howtopray: howtoprayView };
+  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq, fiqh: fiqhView, duas: duasView, tracker: trackerView, calendar: calendarView, myths: mythsView, onboarding: onboardingView, howtopray: howtoprayView, prayermode: prayerModeView };
   // Sprint 4: wrap home/islam to inject new sections
   if (typeof home2 === 'function') views.home = home2;
   else if (typeof homeWrapped === 'function') views.home = homeWrapped;
@@ -4692,12 +4702,189 @@ function howtoprayView() {
         </ul>
       </div>
 
-      <div class="text-center pt-3">
-        <button class="big-action bg-emerald-500 text-white inline-flex items-center gap-2" data-route="prayer" data-testid="howtopray-go-prayer-btn">⏰ ${tx('Zobacz czasy modlitw','See prayer times')}</button>
+      <div class="text-center pt-3 flex flex-wrap justify-center gap-2">
+        <button class="big-action bg-emerald-500 text-white inline-flex items-center gap-2" data-route="prayermode" data-testid="howtopray-go-prayermode-btn">▶️ ${tx('Modlitwa w czasie rzeczywistym','Real-time Prayer Mode')}</button>
+        <button class="big-action border border-[var(--line)] bg-[var(--surface)] inline-flex items-center gap-2" data-route="prayer" data-testid="howtopray-go-prayer-btn">⏰ ${tx('Zobacz czasy modlitw','See prayer times')}</button>
       </div>
     </section>
   `);
   view.querySelectorAll('[data-route]').forEach(b => b.addEventListener('click', () => setRoute(b.dataset.route)));
+}
+
+// Real-time Prayer Mode — guides user through 1 rak'ah with audio cue + timer
+let _prayerModeTimer = null;
+let _prayerModeState = { stepIdx: 0, rakah: 1, totalRakah: 2, countdown: 0, paused: false, prayerKey: 'Fajr' };
+
+function prayerModeView() {
+  const data = prayerInfo[state.lang] || prayerInfo.pl;
+  const steps = data.steps;
+  const sel = _prayerModeState.prayerKey;
+  const prInfo = data.prayers.find(p => p.key === sel) || data.prayers[0];
+  view.innerHTML = sanitize(`
+    <section class="space-y-4" data-testid="prayermode-view">
+      <header class="rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-white p-5">
+        <h1 class="text-2xl font-black">▶️ ${tx('Modlitwa w czasie rzeczywistym','Real-time Prayer Mode')}</h1>
+        <p class="text-sm opacity-95 mt-1">${tx('Aplikacja prowadzi Cię krok-po-kroku z timerem i wymową.','The app guides you step-by-step with a timer and pronunciation.')}</p>
+      </header>
+
+      <div class="rounded-xl bg-[var(--surface-soft)] border border-[var(--line)] p-4">
+        <h2 class="font-bold mb-3">${tx('1. Wybierz modlitwę','1. Choose the prayer')}</h2>
+        <div class="grid grid-cols-5 gap-2">
+          ${data.prayers.map(p => `<button class="rounded-lg border-2 ${sel===p.key?'border-emerald-500 bg-emerald-100 dark:bg-emerald-900':'border-[var(--line)] bg-[var(--surface)]'} p-2 font-bold text-sm" data-prayer-select="${p.key}" data-testid="pmode-select-${p.key}">${p.namePl}<div class="text-xs font-normal">${p.fardRakah} rak'ah</div></button>`).join('')}
+        </div>
+      </div>
+
+      <div class="rounded-xl bg-[var(--surface-soft)] border border-[var(--line)] p-4 text-center">
+        <div class="text-sm text-[var(--muted)]">${tx("Modlitwa:","Prayer:")} <strong>${prInfo.namePl}</strong> · ${tx("Rak'ah:","Rak'ah:")} <strong id="pmode-rakah-display">1/${prInfo.fardRakah}</strong></div>
+        <div class="text-xs text-[var(--muted)] mt-1">${tx('Krok:','Step:')} <strong id="pmode-step-display">— —</strong></div>
+        <div class="my-3 mx-auto w-32 h-32 rounded-full border-4 border-emerald-200 grid place-items-center bg-[var(--surface)]" data-testid="pmode-timer-circle">
+          <div id="pmode-countdown" class="text-4xl font-black text-emerald-600">--</div>
+        </div>
+        <div id="pmode-step-content" class="rounded-lg bg-[var(--surface)] border border-[var(--line)] p-4 text-left min-h-[100px]"></div>
+        <div class="mt-4 flex flex-wrap justify-center gap-2">
+          <button id="pmode-start-btn" data-testid="pmode-start-btn" class="big-action bg-emerald-500 text-white">▶️ ${tx('Start','Start')}</button>
+          <button id="pmode-pause-btn" data-testid="pmode-pause-btn" class="big-action border border-[var(--line)] bg-[var(--surface)]" disabled>⏸️ ${tx('Pauza','Pause')}</button>
+          <button id="pmode-stop-btn" data-testid="pmode-stop-btn" class="big-action border border-[var(--line)] bg-[var(--surface)]">⏹️ ${tx('Stop','Stop')}</button>
+          <button id="pmode-tts-btn" data-testid="pmode-tts-btn" class="big-action border border-[var(--line)] bg-[var(--surface)]">🔊 ${tx('Wymów ten krok','Speak this step')}</button>
+        </div>
+        <p class="text-[10px] text-[var(--muted)] mt-3">${tx('Wibracja przy każdym przejściu (jeśli telefon obsługuje). Wymowa: Web Speech API — może być nieidealna dla arabskiego.','Vibration on each transition (if phone supports). Pronunciation: Web Speech API — may not be perfect for Arabic.')}</p>
+      </div>
+
+      <div class="text-center">
+        <button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-route="howtopray" data-testid="pmode-back-howtopray">📖 ${tx('Wróć do instrukcji','Back to guide')}</button>
+      </div>
+    </section>
+  `);
+
+  // selector
+  view.querySelectorAll('[data-prayer-select]').forEach(b => b.addEventListener('click', () => {
+    _prayerModeState.prayerKey = b.dataset.prayerSelect;
+    _prayerModeState.totalRakah = data.prayers.find(p => p.key === b.dataset.prayerSelect)?.fardRakah || 2;
+    _prayerModeState.stepIdx = 0;
+    _prayerModeState.rakah = 1;
+    pmodeStop();
+    prayerModeView();
+  }));
+  view.querySelectorAll('[data-route]').forEach(b => b.addEventListener('click', () => setRoute(b.dataset.route)));
+
+  $('#pmode-start-btn').addEventListener('click', pmodeStart);
+  $('#pmode-pause-btn').addEventListener('click', pmodePauseToggle);
+  $('#pmode-stop-btn').addEventListener('click', pmodeStop);
+  $('#pmode-tts-btn').addEventListener('click', () => pmodeSpeakCurrent(steps));
+
+  pmodeRenderStep(steps);
+}
+
+function pmodeRenderStep(steps) {
+  const data = prayerInfo[state.lang] || prayerInfo.pl;
+  const idx = _prayerModeState.stepIdx;
+  const step = steps[idx];
+  const totalR = _prayerModeState.totalRakah;
+  const stepDisp = $('#pmode-step-display');
+  const rakahDisp = $('#pmode-rakah-display');
+  const content = $('#pmode-step-content');
+  if (!step || !content) return;
+  if (stepDisp) stepDisp.textContent = `${idx+1}/${steps.length}`;
+  if (rakahDisp) rakahDisp.textContent = `${_prayerModeState.rakah}/${totalR}`;
+  content.innerHTML = sanitize(`
+    <div class="flex items-start gap-3">
+      <div class="text-4xl shrink-0">${step.icon}</div>
+      <div class="flex-1 min-w-0 text-left">
+        <h3 class="font-bold">${step.title}</h3>
+        <p class="text-sm mt-1">${step.body}</p>
+        ${step.words_ar ? `<div class="mt-2 rounded-lg bg-[var(--surface-soft)] border border-[var(--line)] p-3"><div class="text-xl text-right" dir="rtl">${step.words_ar}</div><div class="text-xs italic text-amber-700 mt-1">${step.words_tr || ''}</div><div class="text-sm text-[var(--muted)] mt-1">${step.words_pl || ''}</div></div>` : ''}
+      </div>
+    </div>
+  `);
+}
+
+function pmodeStart() {
+  if (_prayerModeTimer) return;
+  const data = prayerInfo[state.lang] || prayerInfo.pl;
+  const steps = data.steps;
+  _prayerModeState.paused = false;
+  $('#pmode-pause-btn').disabled = false;
+  $('#pmode-start-btn').disabled = true;
+  pmodeAdvance(steps);
+}
+
+function pmodeAdvance(steps) {
+  if (_prayerModeTimer) clearInterval(_prayerModeTimer);
+  const data = prayerInfo[state.lang] || prayerInfo.pl;
+  const step = steps[_prayerModeState.stepIdx];
+  if (!step) return;
+  const dur = (data.durations && data.durations[step.id]) || 6;
+  _prayerModeState.countdown = dur;
+  $('#pmode-countdown').textContent = dur;
+  pmodeRenderStep(steps);
+  pmodeSpeakCurrent(steps);
+  if (navigator.vibrate) navigator.vibrate(150);
+
+  _prayerModeTimer = setInterval(() => {
+    if (_prayerModeState.paused) return;
+    _prayerModeState.countdown -= 1;
+    const cd = $('#pmode-countdown');
+    if (cd) cd.textContent = Math.max(0, _prayerModeState.countdown);
+    if (_prayerModeState.countdown <= 0) {
+      clearInterval(_prayerModeTimer);
+      _prayerModeTimer = null;
+      // advance step
+      if (_prayerModeState.stepIdx < steps.length - 1) {
+        // skip "next_rakah" if last rakah
+        const nextStep = steps[_prayerModeState.stepIdx + 1];
+        if (nextStep && nextStep.id === 'next_rakah' && _prayerModeState.rakah >= _prayerModeState.totalRakah) {
+          _prayerModeState.stepIdx = steps.findIndex(s => s.id === 'tashahhud');
+        } else if (nextStep && nextStep.id === 'tashahhud' && _prayerModeState.rakah < _prayerModeState.totalRakah) {
+          // not yet for tashahhud, go back to qiyam in next rakah
+          _prayerModeState.rakah += 1;
+          _prayerModeState.stepIdx = steps.findIndex(s => s.id === 'qiyam');
+        } else {
+          _prayerModeState.stepIdx += 1;
+        }
+        pmodeAdvance(steps);
+      } else {
+        // done
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]);
+        $('#pmode-countdown').textContent = '✓';
+        $('#pmode-pause-btn').disabled = true;
+        $('#pmode-start-btn').disabled = false;
+        addPoints(20, false);
+        showLoveToast(tx('🎉 Modlitwa zakończona — +20 pkt','🎉 Prayer complete — +20 pts'));
+      }
+    }
+  }, 1000);
+}
+
+function pmodePauseToggle() {
+  _prayerModeState.paused = !_prayerModeState.paused;
+  $('#pmode-pause-btn').textContent = _prayerModeState.paused ? '▶️ ' + tx('Wznów','Resume') : '⏸️ ' + tx('Pauza','Pause');
+}
+
+function pmodeStop() {
+  if (_prayerModeTimer) { clearInterval(_prayerModeTimer); _prayerModeTimer = null; }
+  _prayerModeState.stepIdx = 0;
+  _prayerModeState.rakah = 1;
+  _prayerModeState.countdown = 0;
+  _prayerModeState.paused = false;
+  if ($('#pmode-countdown')) $('#pmode-countdown').textContent = '--';
+  if ($('#pmode-pause-btn')) $('#pmode-pause-btn').disabled = true;
+  if ($('#pmode-start-btn')) $('#pmode-start-btn').disabled = false;
+  if ($('#pmode-pause-btn')) $('#pmode-pause-btn').textContent = '⏸️ ' + tx('Pauza','Pause');
+  const data = prayerInfo[state.lang] || prayerInfo.pl;
+  pmodeRenderStep(data.steps);
+}
+
+function pmodeSpeakCurrent(steps) {
+  const step = steps[_prayerModeState.stepIdx];
+  if (!step || !('speechSynthesis' in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+    const text = step.words_ar || step.title;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = step.words_ar ? 'ar-SA' : (state.lang === 'pl' ? 'pl-PL' : 'en-US');
+    utter.rate = 0.85;
+    window.speechSynthesis.speak(utter);
+  } catch {}
 }
 
 function mythsView() {
