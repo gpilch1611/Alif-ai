@@ -41,16 +41,12 @@ const navItems = [
   ["home",    "⌂",  "navHome"],
   ["islam",   "☪",  "navIslam"],
   ["lessons", "Aa", "navLessons"],
-  ["games",   "◎",  "navGames"],
-  ["prayer",  "🕌", "navPrayer"]
+  ["games",   "◎",  "navGames"]
 ];
 
 const secondaryNavItems = [
-  ["koran",     "📖", "navKoran"],
-  ["adventure", "☆",  "navAdventure"],
   ["culture",   "✦",  "navCulture"],
-  ["badges",    "🏆", "navBadges"],
-  ["settings",  "⚙",  "navSettings"]
+  ["badges",    "🏆", "navBadges"]
 ];
 
 const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq"];
@@ -755,8 +751,8 @@ function render() {
   const flashcards = () => { state.activeGame = "flashcards"; games(); };
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
-  const books = () => setRoute("adventure");
-  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq };
+  const books = () => setRoute("culture");
+  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq };
   (views[route] || home)();
 }
 
@@ -974,6 +970,8 @@ function islam() {
 function home() {
   const tasks = activeDailyTasks();
   const task = tasks[new Date().getDate() % tasks.length];
+  const taskRoute = /liter|trace|narys|write|letter|alfabet/i.test(task) ? "alphabet" : "lessons";
+  const nextLessonBadge = getNextLessonBadgeLink();
 
   view.innerHTML = `
     <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
@@ -996,8 +994,23 @@ function home() {
         <div class="soft-panel p-5">
           <h2 class="text-xl font-black">${t("todayTask")}</h2>
           <p class="mt-2 text-[var(--muted)]">${task}</p>
-          <button class="big-action mt-4 w-full bg-emerald-500 text-white" data-route="alphabet">${t("start")}</button>
+          <button class="big-action mt-4 w-full bg-emerald-500 text-white" data-route="${taskRoute}">${t("start")}</button>
         </div>
+        <button class="panel p-4 text-left w-full flex items-center justify-between gap-3 active:scale-95 transition-transform" data-route="settings">
+          <div>
+            <h2 class="text-base font-black">${tx("Ustawienia", "Settings")}</h2>
+            <p class="text-xs text-[var(--muted)] mt-0.5">${tx("Personalizacja, język, eksport i import", "Personalization, language, export and import")}</p>
+          </div>
+          <span class="text-xl">⚙️</span>
+        </button>
+        ${nextLessonBadge ? `
+        <button class="panel p-4 text-left w-full flex items-center justify-between gap-3 active:scale-95 transition-transform" data-open-badge-lesson="${nextLessonBadge.lessonId}">
+          <div>
+            <h2 class="text-base font-black">${tx("Odblokuj odznakę", "Unlock a badge")} ${nextLessonBadge.icon}</h2>
+            <p class="text-xs text-[var(--muted)] mt-0.5">${state.lang === "pl" ? nextLessonBadge.criterionPl : nextLessonBadge.criterionEn}</p>
+          </div>
+          <span class="text-xs font-black text-emerald-600">${tx("Przejdź", "Go")}</span>
+        </button>` : ""}
         ${hijriWidget()}
         <div id="ayatOfDay" class="panel p-5">
            <h2 class="text-xl font-black mb-3">✨ ${tx("Ayat Dnia", "Ayat of the Day")}</h2>
@@ -1029,6 +1042,20 @@ function home() {
       else setRoute(button.dataset.route);
     });
   });
+  view.querySelectorAll("[data-open-badge-lesson]").forEach((button) => {
+    button.addEventListener("click", () => openMiniLesson(button.dataset.openBadgeLesson));
+  });
+}
+
+function getNextLessonBadgeLink() {
+  const lessonBadgeMap = { bismillah: "bismillah", shahada_badge: "shahada" };
+  for (const badge of BADGES_CATALOG) {
+    if (state.badges.includes(badge.id)) continue;
+    const lessonId = lessonBadgeMap[badge.id];
+    if (!lessonId) continue;
+    return { ...badge, lessonId };
+  }
+  return null;
 }
 
 async function loadAyatOfDay() {
