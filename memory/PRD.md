@@ -75,5 +75,15 @@ Comprehensive analysis of ALIF-AI v0.1 (Polish/English islamic education PWA) su
 3. Optional: add tests for `tajweedColorize` heuristic against known recitations.
 4. Future: pair-mode P2P sync (e.g., via WebRTC/Firestore) — current implementation is local-only.
 
+## Test status (iteration 2 — 2026-05-08)
+- Frontend 100% (46/46 review-request checks). Zero functional bugs.
+- Code review notes (non-blocking): app.js is 4851 lines (split recommended); Tailwind via CDN warning; learnedLetters seed must be `[]` to keep first_letter locked in QA.
+
+## Iteration 2 deliverables
+- **Clickable locked badges**: each `BADGES_CATALOG` entry now has a `route` field. Locked cards render as `<button data-testid="badge-{id}">` with progress bar (`badgeProgress(b)` calculator) + `→` arrow. Click → `setRoute(b.route)`. Unlocked cards still render as `<div>` with `✓`. Hint text PL/EN above grid.
+- **#howtopray view** (new): full step-by-step Sunni prayer guide. PL+EN. 5 prayer cards with rak'ah counts; 4 prereq cards (wudu, ubranie, qibla, niyyah); 11 movement steps (takbir → qiyam → ruku → i'tidal → sujud1 → jalsa → sujud2 → next-rakah → tashahhud → salawat → salam) — each with Arabic + transliteration + Polish/English translation + madhhab notes. Section "po modlitwie — dhikr" with Subhanallah/Alhamdulillah/AllahuAkbar counts + Ayat al-Kursi reference.
+- **Linked from**: #islam page (first link, data-testid="islam-link-howtopray"), #prayer header CTA (data-testid="prayer-howtopray-btn"), and direct hash navigation. Bottom CTA in #howtopray jumps to #prayer (data-testid="howtopray-go-prayer-btn").
+- **New file**: `/app/frontend/src/howtopray.js` (prayerInfo PL/EN data).
+
 ## Test status (iteration 1)
-- Backend 100%, Frontend 100% (no critical, no minor issues). Tailwind CDN warning is the only console noise.
+- Backend 100%, Frontend 100% (no critical, no minor issues).
