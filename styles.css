@@ -148,6 +148,8 @@ body::after {
 #appShell {
   position: relative;
   z-index: 1;
+  width: min(100%, 1600px);
+  margin-inline: auto;
 }
 
 @keyframes float-romance {
