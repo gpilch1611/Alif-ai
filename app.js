@@ -382,6 +382,7 @@ const defaultState = {
   pendingAdventurePhoto: null,
   quranSurahs: [],
   quranFavorites: [],
+  quranDuaFavorites: [],
   quranAudioCache: {},
   quranReciter: "ar.alafasy",
   badges: [],
@@ -407,10 +408,19 @@ const defaultState = {
   dhikrGameHistory: [],
   gameHistory: [],
   activeGame: null,
+<<<<<<< ours
   lessonsTab: "lessons",
   faqTab: "basics",
   prayerGuideSessions: 0,
   lastPrayerGuide: null
+=======
+  lessonsTab: "alphabet",
+  faqTab: "basics",
+  prayerLocations: null
+  ,
+  asmaChallengeBest: 0,
+  asmaChallengeHistory: []
+>>>>>>> theirs
 };
 
 let state = loadState();
@@ -1022,6 +1032,26 @@ function home() {
   const badgeTotal = BADGES_CATALOG.length || 1;
   const badgeProgress = Math.round((state.badges.length / badgeTotal) * 100);
 
+  const learnedSurahs = (state.quranSurahFavorites || []).length;
+  const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
+  const favAyahs = (state.quranFavorites || []).length;
+  const favDua = (state.quranDuaFavorites || []).length;
+  const homeFavItems = [
+    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
+      const s = SURAH_LIST.find(x => x.number === num);
+      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
+    }).filter(Boolean),
+    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
+      const num = typeof entry === "object" ? entry.num : entry;
+      const surah = typeof entry === "object" ? entry.surahName : "";
+      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
+    }),
+    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
+      const dua = DUA_DATA.find(d => d.id === id);
+      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
+    }).filter(Boolean)
+  ];
+
   view.innerHTML = `
     <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
       <section class="panel romantic-hero p-5 sm:p-7">
@@ -1033,10 +1063,25 @@ function home() {
           </div>
           <div class="grid h-28 w-28 shrink-0 place-items-center rounded-lg bg-emerald-500 text-5xl text-white shadow-sm">☪</div>
         </div>
-        <div class="mt-7 grid gap-3 sm:grid-cols-3">
+        <div class="mt-7 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
           ${statCard(t("streak"), `${state.streak} ${tx("dni", "days")}`, tx("Codzienna obecnosc", "Daily presence"))}
           ${statCard(t("level"), `${t("level")} ${level()}`, `${state.points} ${t("points")}`)}
           ${statCard(t("alphabetProgress"), `${progressPercent()}%`, `${state.learnedLetters.length}/28`)}
+          ${statCard(tx("Poznane sury", "Learned surahs"), `${learnedSurahs}`, tx("Ulubione / monitorowane", "Favorited / tracked"))}
+          ${statCard(tx("Poznane dua", "Learned duas"), `${learnedDua}`, tx("Z lekcji codziennych", "From daily lessons"))}
+          ${statCard(tx("Ulubione ayaty", "Favorite ayahs"), `${favAyahs}`, tx("Do szybkich powtórek", "For quick revision"))}
+          ${statCard(tx("Ulubione dua", "Favorite duas"), `${favDua}`, tx("Najczęściej czytane", "Most revisited"))}
+        </div>
+        <div class="mt-4">
+          <p class="text-xs font-black uppercase tracking-wide text-[var(--muted)]">${tx("Ulubione (przewijane)", "Favorites (scrollable)")}</p>
+          <div class="mt-2 flex gap-2 overflow-x-auto pb-1">
+            ${homeFavItems.length ? homeFavItems.map(item => `
+              <button class="soft-panel p-3 min-w-[220px] text-left" data-home-fav="${item.target}" ${item.quranTab ? `data-quran-tab="${item.quranTab}"` : ""} ${item.openSurah ? `data-home-surah="${item.openSurah}"` : ""}>
+                <p class="text-sm font-black">${escapeHtml(item.title)}</p>
+                <p class="text-xs text-[var(--muted)] mt-1">${escapeHtml(item.sub)}</p>
+              </button>
+            `).join("") : `<div class="soft-panel p-3 text-xs text-[var(--muted)]">${tx("Dodaj ulubione sury/ayaty, aby pojawiły się tutaj.", "Add favorite surahs/ayahs to see them here.")}</div>`}
+          </div>
         </div>
       </section>
       <aside class="grid gap-4">
@@ -1086,6 +1131,31 @@ function home() {
       else setRoute(button.dataset.route);
     });
   });
+<<<<<<< ours
+=======
+  view.querySelectorAll("[data-open-badge-lesson]").forEach((button) => {
+    button.addEventListener("click", () => openMiniLesson(button.dataset.openBadgeLesson));
+  });
+  view.querySelectorAll("[data-home-fav]").forEach((button) => {
+    button.addEventListener("click", () => {
+      setRoute(button.dataset.homeFav);
+      if (button.dataset.quranTab) state.quranTab = button.dataset.quranTab;
+      const num = Number(button.dataset.homeSurah || 0);
+      if (num) setTimeout(() => openSurah(num), 150);
+    });
+  });
+}
+
+function getNextLessonBadgeLink() {
+  const lessonBadgeMap = { bismillah: "bismillah", shahada_badge: "shahada" };
+  for (const badge of BADGES_CATALOG) {
+    if (state.badges.includes(badge.id)) continue;
+    const lessonId = lessonBadgeMap[badge.id];
+    if (!lessonId) continue;
+    return { ...badge, lessonId };
+  }
+  return null;
+>>>>>>> theirs
 }
 
 async function loadAyatOfDay() {
@@ -1440,8 +1510,8 @@ function surahCard(surah) {
   `;
 }
 
-function renderSurahFilterChips(activeFilter) {
-  const chips = [
+function renderSurahFilterDropdown(activeFilter) {
+  const options = [
     { key: "all",      labelPl: "Wszystkie",    labelEn: "All"          },
     { key: "essential",labelPl: "Esencjalne ⭐", labelEn: "Essential ⭐"  },
     { key: "meccan",   labelPl: "Mekka 🕋",     labelEn: "Meccan 🕋"    },
@@ -1450,9 +1520,9 @@ function renderSurahFilterChips(activeFilter) {
     ...SURAH_LENGTH_GROUPS.map(g => ({ key: g.key, labelPl: g.labelPl, labelEn: g.labelEn })),
     { key: "alpha",    labelPl: "A→Z",           labelEn: "A→Z"          },
   ];
-  return `<div class="surah-chips-bar" id="surahChipsBar">${chips.map(c =>
-    `<button class="surah-chip${activeFilter === c.key ? " active" : ""}" data-chip="${c.key}">${state.lang === "pl" ? c.labelPl : c.labelEn}</button>`
-  ).join("")}</div>`;
+  return `<select id="surahFilterSelect" class="h-10 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm">
+    ${options.map(o => `<option value="${o.key}" ${activeFilter === o.key ? "selected" : ""}>${state.lang === "pl" ? o.labelPl : o.labelEn}</option>`).join("")}
+  </select>`;
 }
 
 function bindSurahListEvents() {
@@ -1547,7 +1617,7 @@ function koran() {
       <div id="tabSurahs" class="${activeTab !== "surahs" ? "hidden" : ""}">
         <div class="mb-3">
           <input id="surahSearch" type="search" class="h-10 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm mb-2" placeholder="${tx("Szukaj sury...", "Search surah...")}">
-          ${renderSurahFilterChips(state.surahFilter || "all")}
+          ${renderSurahFilterDropdown(state.surahFilter || "all")}
           <div class="mt-2 flex items-center justify-end gap-2">
             <span class="text-xs text-[var(--muted)] font-black">${tx("Recytator:", "Reciter:")}</span>
             <select id="reciterSelect" class="h-9 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-xs">
@@ -1573,7 +1643,10 @@ function koran() {
                     <p class="text-sm font-black mb-2">${state.lang === "pl" ? dua.pl : dua.en}</p>
                     <p class="arabic text-right text-xl leading-loose mb-1">${escapeHtml(dua.ar)}</p>
                     <p class="text-xs text-amber-600 font-mono mb-3" dir="ltr">${escapeHtml(dua.tr)}</p>
-                    <button class="speaker-btn text-sm" data-say-ar="${escapeHtml(dua.ar)}">🔊 ${tx("Odsłuchaj", "Listen")}</button>
+                    <div class="flex items-center gap-2">
+                      <button class="speaker-btn text-sm" data-say-ar="${escapeHtml(dua.ar)}">🔊 ${tx("Odsłuchaj", "Listen")}</button>
+                      <button class="speaker-btn text-sm ${state.quranDuaFavorites?.includes(dua.id) ? "" : "opacity-50"}" data-fav-dua="${dua.id}">❤️ ${tx("Ulubione", "Favorite")}</button>
+                    </div>
                   </div>
                 `).join("")}
               </div>
@@ -1637,17 +1710,24 @@ function koran() {
     renderSurahList();
     $("#surahSearch").addEventListener("input", renderSurahList);
     $("#reciterSelect").addEventListener("change", e => { state.quranReciter = e.target.value; saveState(); });
-    view.querySelectorAll("[data-chip]").forEach(btn => btn.addEventListener("click", () => {
-      state.surahFilter = btn.dataset.chip;
+    $("#surahFilterSelect")?.addEventListener("change", (e) => {
+      state.surahFilter = e.target.value;
       saveState();
-      // Update active chip visually
-      view.querySelectorAll("[data-chip]").forEach(b => b.classList.toggle("active", b.dataset.chip === state.surahFilter));
       renderSurahList();
-    }));
+    });
   }
 
   if (activeTab === "dua") {
     view.querySelectorAll("[data-say-ar]").forEach(btn => btn.addEventListener("click", () => speakArabic(btn.dataset.sayAr)));
+    view.querySelectorAll("[data-fav-dua]").forEach(btn => btn.addEventListener("click", () => {
+      if (!state.quranDuaFavorites) state.quranDuaFavorites = [];
+      const id = btn.dataset.favDua;
+      const idx = state.quranDuaFavorites.indexOf(id);
+      if (idx === -1) state.quranDuaFavorites.push(id);
+      else state.quranDuaFavorites.splice(idx, 1);
+      saveState();
+      koran();
+    }));
   }
 
   if (activeTab === "favayahs") {
@@ -3122,6 +3202,7 @@ function games() {
       dhikrGame:   '<div id="dhikrGameBox" class="panel p-5"></div>',
       surahQuiz:   '<div id="surahQuizBox" class="panel p-5"></div>',
       pillarsQuiz: '<div id="pillarsQuizBox" class="panel p-5"></div>',
+      asmaChallenge: '<div id="asmaChallengeBox" class="panel p-5"></div>',
     };
     const directMap = {
       flashcards: flashcardsView,
@@ -3130,7 +3211,7 @@ function games() {
     };
     if (containerMap[state.activeGame]) {
       view.innerHTML = containerMap[state.activeGame];
-      const renderers = { quiz: renderQuiz, memory: renderMemory, catch: renderCatchGame, dhikrGame: renderDhikrGame, surahQuiz: renderSurahQuiz, pillarsQuiz: renderPillarsQuiz };
+      const renderers = { quiz: renderQuiz, memory: renderMemory, catch: renderCatchGame, dhikrGame: renderDhikrGame, surahQuiz: renderSurahQuiz, pillarsQuiz: renderPillarsQuiz, asmaChallenge: renderAsmaChallenge };
       (renderers[state.activeGame] || (() => {}))();
     } else if (directMap[state.activeGame]) {
       directMap[state.activeGame]();
@@ -3159,6 +3240,7 @@ function games() {
     { id: "dhikrGame",   icon: "📿", titlePl: "Szybki Dhikr",  titleEn: "Dhikr Speed",      descPl: "Liczymy razem — subhanallah", descEn: "Speed dhikr counting" },
     { id: "surahQuiz",   icon: "📖", titlePl: "Quiz Surah",    titleEn: "Surah Quiz",       descPl: "Rozpoznaj surę Koranu", descEn: "Identify Quran surahs" },
     { id: "pillarsQuiz", icon: "⭐", titlePl: "Quiz Filarów",  titleEn: "Pillars Quiz",     descPl: "Test wiedzy o filarach islamu", descEn: "Islamic pillars knowledge test" },
+    { id: "asmaChallenge", icon: "🕋", titlePl: "99 Imion Challenge", titleEn: "99 Names Challenge", descPl: "20 min: wpisz jak najwięcej imion Allaha", descEn: "20 min: type as many Names of Allah as possible" },
     { id: "flashcards",  icon: "▣",  titlePl: "Fiszki",        titleEn: "Flashcards",       descPl: "Powtórki metodą SM-2", descEn: "SM-2 spaced repetition" },
     { id: "speech",      icon: "🗣", titlePl: "Wymowa",        titleEn: "Pronunciation",    descPl: "Ćwicz wymowę arabską", descEn: "Practice Arabic pronunciation" },
     { id: "writing",     icon: "✎",  titlePl: "Pisanie",       titleEn: "Writing",          descPl: "Pisz arabskie litery", descEn: "Write Arabic letters" },
@@ -3580,6 +3662,81 @@ function renderDhikrGame() {
       btn.textContent = `${seconds.toFixed(1)}s — +${pts} ${t("points")}`;
       btn.disabled = true;
       setTimeout(renderDhikrGame, 2000);
+    }
+  });
+}
+
+function normalizeNameInput(s) {
+  return (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function isCloseEnoughName(input, target) {
+  if (input === target) return true;
+  if (Math.abs(input.length - target.length) > 1) return false;
+  let i = 0, j = 0, edits = 0;
+  while (i < input.length && j < target.length) {
+    if (input[i] === target[j]) { i += 1; j += 1; continue; }
+    edits += 1;
+    if (edits > 1) return false;
+    if (input.length > target.length) i += 1;
+    else if (target.length > input.length) j += 1;
+    else { i += 1; j += 1; }
+  }
+  if (i < input.length || j < target.length) edits += 1;
+  return edits <= 1;
+}
+
+function renderAsmaChallenge() {
+  const DURATION = 20 * 60;
+  const pool = asmaulHusna.map(n => normalizeNameInput(n.tr));
+  const found = new Set();
+  let secondsLeft = DURATION;
+  let timer = null;
+
+  $("#asmaChallengeBox").innerHTML = `
+    <h2 class="text-2xl font-black">${tx("99 Imion Allaha — Challenge", "99 Names of Allah — Challenge")}</h2>
+    <p class="text-sm text-[var(--muted)] mt-1">${tx("Masz 20 minut. Wpisuj transliteracje (np. arrahman). 1 literówka jest akceptowana.", "You have 20 minutes. Type transliterations (e.g. arrahman). 1 typo is accepted.")}</p>
+    <p class="mt-2 font-black">${tx("Rekord", "Best")}: ${state.asmaChallengeBest || 0} / 99</p>
+    <div class="mt-4 flex gap-2">
+      <input id="asmaInput" class="flex-1 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 h-11" placeholder="ar-rahman" />
+      <button id="asmaAdd" class="big-action bg-emerald-500 text-white">${tx("Dodaj", "Add")}</button>
+    </div>
+    <div class="mt-3 flex items-center justify-between">
+      <p id="asmaTimer" class="font-mono text-lg font-black">20:00</p>
+      <p id="asmaScore" class="font-black">0 / 99</p>
+    </div>
+    <div id="asmaFound" class="mt-3 text-xs text-[var(--muted)]"></div>
+  `;
+  const input = $("#asmaInput");
+  const scoreEl = $("#asmaScore");
+  const timerEl = $("#asmaTimer");
+  const foundEl = $("#asmaFound");
+  const finish = () => {
+    if (timer) clearInterval(timer);
+    const score = found.size;
+    if (score > (state.asmaChallengeBest || 0)) state.asmaChallengeBest = score;
+    state.asmaChallengeHistory.unshift({ score, date: new Date().toISOString() });
+    state.asmaChallengeHistory = state.asmaChallengeHistory.slice(0, 20);
+    saveState();
+    showLoveToast(`${tx("Wynik", "Score")}: ${score}/99`);
+  };
+  timer = setInterval(() => {
+    secondsLeft -= 1;
+    const m = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
+    const s = String(secondsLeft % 60).padStart(2, "0");
+    timerEl.textContent = `${m}:${s}`;
+    if (secondsLeft <= 0) finish();
+  }, 1000);
+  $("#asmaAdd").addEventListener("click", () => {
+    const raw = input.value.trim();
+    const q = normalizeNameInput(raw);
+    if (!q) return;
+    const match = pool.find(name => isCloseEnoughName(q, name));
+    if (match && !found.has(match)) {
+      found.add(match);
+      scoreEl.textContent = `${found.size} / 99`;
+      foundEl.textContent = [...found].slice(-12).join(", ");
+      input.value = "";
     }
   });
 }
@@ -4398,6 +4555,9 @@ const PRAYER_LOCATIONS = [
   { id: 'polska', label: 'Polska 🇵🇱', city: 'Poland', tz: 'Europe/Warsaw', lat: '52.2297', lng: '21.0122', method: 3 },
   { id: 'surabaya', label: 'Surabaya 🇮🇩', city: 'Surabaya', tz: 'Asia/Jakarta', lat: '-7.2575', lng: '112.7521', method: 3 }
 ];
+function getPrayerLocations() {
+  return state.prayerLocations?.length ? state.prayerLocations : PRAYER_LOCATIONS;
+}
 const PRAYER_NAMES = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 const PRAYER_NAMES_PL = ['Fadżr', 'Wschód', 'Dhuhr', 'Asr', 'Maghrib', 'Isza'];
 
@@ -4482,12 +4642,19 @@ async function prayer() {
   if (prayerClockInterval) { clearInterval(prayerClockInterval); prayerClockInterval = null; }
   if (compassWatchId !== null) { try { window.removeEventListener('deviceorientationabsolute', compassWatchId); window.removeEventListener('deviceorientation', compassWatchId); } catch {} compassWatchId = null; }
 
+  const activeLocations = getPrayerLocations();
   view.innerHTML = `
     <div class="mb-4">
       <h1 class="text-3xl font-black">${tx("Czasy Modlitw", "Prayer Times")} 🕌</h1>
+<<<<<<< ours
       <p class="text-[var(--muted)]">${tx("Dwie lokalizacje na żywo + globalne wyszukiwanie meczetów", "Two live locations + global mosque finder")}</p>
       <a class="inline-flex mt-3 items-center gap-2 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm font-bold" href="https://www.google.com/maps/search/mosque+near+me" target="_blank" rel="noopener noreferrer">🕌 ${tx("Znajdź meczet w okolicy (cały świat)", "Find a mosque nearby (worldwide)")}</a>
+=======
+      <p class="text-[var(--muted)]">${tx("Dwie lokalizacje na żywo — Polska i Surabaya", "Two live locations — Poland and Surabaya")}</p>
+      <p class="text-xs text-[var(--muted)] mt-1">${tx("Możesz edytować lokalizacje (miasto, szerokość, długość, strefa).", "You can edit locations (city, latitude, longitude, timezone).")}</p>
+>>>>>>> theirs
     </div>
+    <button id="editPrayerLocations" class="big-action mb-3 border border-[var(--line)]">${tx("Edytuj lokalizacje", "Edit locations")}</button>
     <div class="grid gap-4 lg:grid-cols-2">
       <div id="prayerPolska" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
       <div id="prayerSurabaya" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
@@ -4495,7 +4662,7 @@ async function prayer() {
   `;
 
   const results = {};
-  for (const loc of PRAYER_LOCATIONS) {
+  for (const loc of activeLocations) {
     try {
       const [timings, qibla] = await Promise.all([fetchPrayerTimes(loc), fetchQibla(loc)]);
       const nextKey = getNextPrayer(timings);
@@ -4512,7 +4679,7 @@ async function prayer() {
 
   // Live clocks — update every second
   prayerClockInterval = setInterval(() => {
-    for (const loc of PRAYER_LOCATIONS) {
+    for (const loc of activeLocations) {
       const clockEl = $(`#clock-${loc.id}`);
       if (clockEl) clockEl.textContent = formatLocalTime(loc.tz);
     }
@@ -4529,7 +4696,7 @@ async function prayer() {
       heading = 360 - e.alpha;
     }
     if (heading === null) return;
-    for (const loc of PRAYER_LOCATIONS) {
+    for (const loc of activeLocations) {
       const qiblaDir = results[loc.id]?.qibla;
       if (qiblaDir === undefined || qiblaDir === null) continue;
       const needle = $(`#needle-${loc.id}`);
@@ -4564,6 +4731,23 @@ async function prayer() {
       window.addEventListener('deviceorientation', orientationHandler, true);
     }
   }
+  $("#editPrayerLocations")?.addEventListener("click", () => {
+    const current = getPrayerLocations();
+    const city1 = prompt(tx("Lokalizacja 1: miasto/kraj", "Location 1: city/country"), current[0]?.city || "Poland");
+    const lat1 = prompt("Lat 1", current[0]?.lat || "52.2297");
+    const lng1 = prompt("Lng 1", current[0]?.lng || "21.0122");
+    const tz1 = prompt("TZ 1", current[0]?.tz || "Europe/Warsaw");
+    const city2 = prompt(tx("Lokalizacja 2: miasto/kraj", "Location 2: city/country"), current[1]?.city || "Surabaya");
+    const lat2 = prompt("Lat 2", current[1]?.lat || "-7.2575");
+    const lng2 = prompt("Lng 2", current[1]?.lng || "112.7521");
+    const tz2 = prompt("TZ 2", current[1]?.tz || "Asia/Jakarta");
+    state.prayerLocations = [
+      { ...PRAYER_LOCATIONS[0], city: city1 || current[0]?.city, label: `${city1 || "Location 1"} 🕌`, lat: lat1 || current[0]?.lat, lng: lng1 || current[0]?.lng, tz: tz1 || current[0]?.tz },
+      { ...PRAYER_LOCATIONS[1], city: city2 || current[1]?.city, label: `${city2 || "Location 2"} 🕌`, lat: lat2 || current[1]?.lat, lng: lng2 || current[1]?.lng, tz: tz2 || current[1]?.tz }
+    ];
+    saveState();
+    prayer();
+  });
 }
 
 // ============================================================
