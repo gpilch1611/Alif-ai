@@ -41,15 +41,13 @@ const navItems = [
   ["home",    "⌂",  "navHome"],
   ["islam",   "☪",  "navIslam"],
   ["lessons", "Aa", "navLessons"],
+  ["culture", "✦",  "navCulture"],
   ["games",   "◎",  "navGames"]
 ];
 
-const secondaryNavItems = [
-  ["culture",   "✦",  "navCulture"],
-  ["badges",    "🏆", "navBadges"]
-];
+const secondaryNavItems = [];
 
-const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq"];
+const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","prayer","prayerGuide"];
 
 const ROMANTIC_LINES = [
   // short
@@ -330,6 +328,8 @@ let catchMisses = 0;
 let speechUnlocked = false;
 let prayerClockInterval = null;
 let compassWatchId = null;
+let prayerGuidePrayer = "fajr";
+let prayerGuideStep = 0;
 
 const defaultState = {
   lang: "pl",
@@ -385,8 +385,10 @@ const defaultState = {
   dhikrGameHistory: [],
   gameHistory: [],
   activeGame: null,
-  lessonsTab: "alphabet",
-  faqTab: "basics"
+  lessonsTab: "lessons",
+  faqTab: "basics",
+  prayerGuideSessions: 0,
+  lastPrayerGuide: null
 };
 
 let state = loadState();
@@ -689,20 +691,22 @@ function registerPwa() {
 
 function renderNav() {
   const moreActive = secondaryNavItems.some(([id]) => id === route);
+  const secondaryHtml = secondaryNavItems.map(([id, icon, labelKey]) => `
+      <button class="nav-btn haptic-feedback ${route === id ? "active" : ""} nav-secondary" data-route="${id}">
+        <span class="text-xl">${icon}</span><span class="nav-label">${t(labelKey)}</span>
+      </button>
+    `).join("");
+  const moreHtml = secondaryNavItems.length ? `
+    <button id="moreNavBtn" class="nav-btn haptic-feedback ${moreActive ? "active" : ""} nav-more">
+      <span class="text-xl">⋯</span><span class="nav-label">${t("more")}</span>
+    </button>` : "";
+
   nav.innerHTML =
     navItems.map(([id, icon, labelKey]) => `
       <button class="nav-btn haptic-feedback ${route === id || (id === "islam" && ISLAM_ROUTES.includes(route)) ? "active" : ""}" data-route="${id}">
         <span class="text-xl">${icon}</span><span class="nav-label">${t(labelKey)}</span>
       </button>
-    `).join("") +
-    secondaryNavItems.map(([id, icon, labelKey]) => `
-      <button class="nav-btn haptic-feedback ${route === id ? "active" : ""} nav-secondary" data-route="${id}">
-        <span class="text-xl">${icon}</span><span class="nav-label">${t(labelKey)}</span>
-      </button>
-    `).join("") +
-    `<button id="moreNavBtn" class="nav-btn haptic-feedback ${moreActive ? "active" : ""} nav-more">
-      <span class="text-xl">⋯</span><span class="nav-label">${t("more")}</span>
-    </button>`;
+    `).join("") + secondaryHtml + moreHtml;
 
   nav.querySelectorAll("[data-route]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -716,6 +720,7 @@ function renderNav() {
   });
 
   $("#moreNavBtn")?.addEventListener("click", () => {
+    if (!secondaryNavItems.length) return;
     triggerHaptic();
     const content = `
       <div class="mb-6"><h2 class="text-2xl font-black text-center">${t("more")}</h2></div>
@@ -772,7 +777,7 @@ function render() {
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
   const books = () => setRoute("culture");
-  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq };
+  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq };
   (views[route] || home)();
 }
 
@@ -957,6 +962,7 @@ function islam() {
     { route: "koran",   icon: "📖", titlePl: "Qur'an",           titleEn: "Qur'an",          descPl: "Czytaj, słuchaj i zapisuj sury",                        descEn: "Read, listen and save surahs" },
     { route: "dhikr",   icon: "📿", titlePl: "Dhikr",             titleEn: "Dhikr",            descPl: "Licznik Subhanallah · Alhamdulillah · Allahu Akbar",     descEn: "Subhanallah · Alhamdulillah · Allahu Akbar counter" },
     { route: "pillars", icon: "⭐", titlePl: "Filary Islamu",     titleEn: "Pillars of Islam", descPl: "5 Filarów Islamu + 6 Filarów Imanu",                    descEn: "5 Pillars of Islam + 6 Pillars of Iman" },
+    { route: "prayerGuide", icon: "🧎", titlePl: "Prayer Mode",   titleEn: "Prayer Mode",      descPl: "Przewodnik salat krok po kroku dla początkujących",       descEn: "Step-by-step salat guide for beginners" },
     { route: "prayer",  icon: "🕌", titlePl: "Czasy modlitw",     titleEn: "Prayer times",     descPl: "Borzęta 🇵🇱 + Surabaya 🇮🇩 + Qibla",                     descEn: "Borzęta 🇵🇱 + Surabaya 🇮🇩 + Qibla" },
     { route: "asmaul",  icon: "☪",  titlePl: "99 Imion Allaha",  titleEn: "99 Names of Allah",descPl: "Asma ul-Husna — piękne imiona Boga",                    descEn: "Asma ul-Husna — beautiful Names of God" },
     { route: "seerah",  icon: "🌙", titlePl: "Seerah",            titleEn: "Seerah",           descPl: "Życie Proroka Muhammada ﷺ",                             descEn: "Life of Prophet Muhammad ﷺ" },
@@ -991,7 +997,8 @@ function home() {
   const tasks = activeDailyTasks();
   const task = tasks[new Date().getDate() % tasks.length];
   const taskRoute = /liter|trace|narys|write|letter|alfabet/i.test(task) ? "alphabet" : "lessons";
-  const nextLessonBadge = getNextLessonBadgeLink();
+  const badgeTotal = BADGES_CATALOG.length || 1;
+  const badgeProgress = Math.round((state.badges.length / badgeTotal) * 100);
 
   view.innerHTML = `
     <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
@@ -1023,14 +1030,6 @@ function home() {
           </div>
           <span class="text-xl">⚙️</span>
         </button>
-        ${nextLessonBadge ? `
-        <button class="panel p-4 text-left w-full flex items-center justify-between gap-3 active:scale-95 transition-transform" data-open-badge-lesson="${nextLessonBadge.lessonId}">
-          <div>
-            <h2 class="text-base font-black">${tx("Odblokuj odznakę", "Unlock a badge")} ${nextLessonBadge.icon}</h2>
-            <p class="text-xs text-[var(--muted)] mt-0.5">${state.lang === "pl" ? nextLessonBadge.criterionPl : nextLessonBadge.criterionEn}</p>
-          </div>
-          <span class="text-xs font-black text-emerald-600">${tx("Przejdź", "Go")}</span>
-        </button>` : ""}
         ${hijriWidget()}
         <div id="ayatOfDay" class="panel p-5">
            <h2 class="text-xl font-black mb-3">✨ ${tx("Ayat Dnia", "Ayat of the Day")}</h2>
@@ -1041,10 +1040,13 @@ function home() {
           <div>
             <h2 class="text-base font-black">${tx("Odznaki", "Badges")}</h2>
             <p class="text-xs text-[var(--muted)] mt-0.5">${tx("Twoje osiągnięcia i cele", "Your achievements and goals")}</p>
+            <div class="mt-3 h-2 overflow-hidden rounded-full bg-amber-100">
+              <div class="h-full bg-amber-400 transition-all" style="width:${badgeProgress}%"></div>
+            </div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
             <div class="flex gap-0.5">
-              ${BADGES_CATALOG.slice(0, 5).map(b => `<span class="text-lg ${state.badges.includes(b.id) ? "" : "grayscale opacity-25"}">${b.icon}</span>`).join("")}
+              ${BADGES_CATALOG.slice(0, 6).map(b => `<span class="text-lg ${state.badges.includes(b.id) ? "" : "grayscale opacity-25"}">${b.icon}</span>`).join("")}
             </div>
             <span class="text-sm font-black text-amber-500">${state.badges.length}/${BADGES_CATALOG.length}</span>
           </div>
@@ -1062,20 +1064,6 @@ function home() {
       else setRoute(button.dataset.route);
     });
   });
-  view.querySelectorAll("[data-open-badge-lesson]").forEach((button) => {
-    button.addEventListener("click", () => openMiniLesson(button.dataset.openBadgeLesson));
-  });
-}
-
-function getNextLessonBadgeLink() {
-  const lessonBadgeMap = { bismillah: "bismillah", shahada_badge: "shahada" };
-  for (const badge of BADGES_CATALOG) {
-    if (state.badges.includes(badge.id)) continue;
-    const lessonId = lessonBadgeMap[badge.id];
-    if (!lessonId) continue;
-    return { ...badge, lessonId };
-  }
-  return null;
 }
 
 async function loadAyatOfDay() {
@@ -2051,6 +2039,10 @@ function formBox(label, value) {
   return `<div class="soft-panel p-3 text-center"><p class="text-xs font-bold text-[var(--muted)]">${label}</p><p class="arabic mt-2 text-4xl">${value}</p></div>`;
 }
 
+function isIslamLessonCategory(cat = "") {
+  return /^Islam\b/i.test(cat);
+}
+
 function lessons() {
   const activeTab = state.lessonsTab || "alphabet";
 
@@ -2071,11 +2063,10 @@ function lessons() {
     return;
   }
 
-  const unlocked = state.learnedLetters.length >= arabicAlphabet.length;
-  const islamicCats = ["Islam", "Islam –"];
   const allData = LESSONS_DATA[state.lang] || LESSONS_DATA.pl;
-  const lessonsData = allData.filter(l => !islamicCats.some(prefix => l.category.startsWith(prefix)));
+  const lessonsData = allData.filter(l => !isIslamLessonCategory(l.category));
   const categories = [...new Set(lessonsData.map(l => l.category))];
+  const unlocked = true;
 
   view.innerHTML = `
     <div class="flex gap-1 mb-4">
@@ -2083,20 +2074,9 @@ function lessons() {
       <button class="px-3 py-2 text-sm font-black rounded-full border bg-[var(--accent)] text-white border-[var(--accent)]" data-lessons-tab="lessons">${tx("Lekcje", "Lessons")}</button>
     </div>
     <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Lekcje i zwroty", "Lessons and phrases")}</h1>
-      <p class="text-[var(--muted)]">${unlocked ? tx("Wybierz kategorię, aby rozpocząć naukę.", "Choose a category to start learning.") : tx("Lekcje odblokują się po poznaniu wszystkich 28 liter alfabetu.", "Lessons unlock after you learn all 28 letters.")}</p>
+      <h1 class="text-3xl font-black">${tx("Lekcje arabskiego", "Arabic lessons")}</h1>
+      <p class="text-[var(--muted)]">${tx("Tutaj zostają tylko język, alfabet, zwroty i słownictwo. Wiedza o islamie jest w sekcji Islam.", "This section keeps language, alphabet, phrases and vocabulary only. Islamic learning lives in the Islam section.")}</p>
     </div>
-
-    ${!unlocked ? `
-      <div class="soft-panel p-5 mb-4">
-        <div class="mb-3 flex items-center justify-between gap-3">
-          <strong>${state.learnedLetters.length}/28 ${tx("liter", "letters")}</strong>
-          <span class="text-sm text-[var(--muted)]">${progressPercent()}%</span>
-        </div>
-        <div class="h-4 overflow-hidden rounded-full bg-emerald-100"><div class="h-full bg-emerald-500" style="width:${progressPercent()}%"></div></div>
-        <button class="big-action mt-4 bg-emerald-500 text-white w-full" data-lessons-tab="alphabet">${tx("Ucz się alfabetu", "Learn the alphabet")}</button>
-      </div>
-    ` : ""}
 
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-6">
       ${categories.map(cat => `
@@ -3744,7 +3724,9 @@ function runSearch(q) {
   const alphabetMatches = arabicAlphabet.filter(l => l.id.includes(q) || l.polishName.toLowerCase().includes(q) || l.transliteration.includes(q) || l.forms.isolated.includes(q));
   const wordMatches = words.filter(w => w.pl.toLowerCase().includes(q) || w.tr.toLowerCase().includes(q) || w.ar.includes(q));
   const surahMatches = SURAH_LIST.filter(s => s.enName.toLowerCase().includes(q) || s.arName.includes(q) || String(s.number) === q);
-  const lessonMatches = (LESSONS_DATA[state.lang] || []).filter(l => l.title.toLowerCase().includes(q) || l.meaning.toLowerCase().includes(q) || l.ar.includes(q) || l.tr.toLowerCase().includes(q));
+  const lessonMatches = (LESSONS_DATA[state.lang] || [])
+    .filter(l => !isIslamLessonCategory(l.category))
+    .filter(l => l.title.toLowerCase().includes(q) || l.meaning.toLowerCase().includes(q) || l.ar.includes(q) || l.tr.toLowerCase().includes(q));
 
   view.innerHTML = `
     <div class="mb-4"><h1 class="text-3xl font-black">${tx("Wyniki", "Results")}: "${escapeHtml(q)}"</h1></div>
@@ -3930,6 +3912,7 @@ const BADGES_CATALOG = [
   { id: "half_alphabet",  icon: "⭐",  pl: "Połowa alfabetu",     en: "Half alphabet",      criterionPl: "Poznaj 14 z 28 liter",              criterionEn: "Learn 14 of 28 letters" },
   { id: "full_alphabet",  icon: "🏆",  pl: "Mistrz alfabetu",     en: "Alphabet master",    criterionPl: "Poznaj wszystkie 28 liter",         criterionEn: "Learn all 28 letters" },
   { id: "first_surah",    icon: "📖",  pl: "Pierwsza sura",       en: "First surah",        criterionPl: "Dodaj 1 surę do ulubionych ❤️",     criterionEn: "Add 1 surah to favorites ❤️" },
+  { id: "surahs5",        icon: "📗",  pl: "5 sur",               en: "5 surahs",           criterionPl: "Dodaj 5 sur do ulubionych",         criterionEn: "Add 5 surahs to favorites" },
   { id: "ten_surahs",     icon: "📚",  pl: "Dziesięć sur",        en: "Ten surahs",         criterionPl: "Dodaj 10 sur do ulubionych ❤️",     criterionEn: "Add 10 surahs to favorites ❤️" },
   { id: "streak3",        icon: "🔥",  pl: "3 dni z rzędu",       en: "3-day streak",       criterionPl: "Ucz się 3 dni pod rząd",            criterionEn: "Learn 3 days in a row" },
   { id: "streak7",        icon: "🔥🔥", pl: "Tydzień nauki",      en: "Week streak",        criterionPl: "Ucz się 7 dni pod rząd",            criterionEn: "Learn 7 days in a row" },
@@ -3937,10 +3920,25 @@ const BADGES_CATALOG = [
   { id: "pts500",         icon: "💯",  pl: "500 punktów",         en: "500 points",         criterionPl: "Zdobądź 500 punktów",               criterionEn: "Earn 500 points" },
   { id: "pts2000",        icon: "💎",  pl: "2000 punktów",        en: "2000 points",        criterionPl: "Zdobądź 2000 punktów",              criterionEn: "Earn 2000 points" },
   { id: "quiz10",         icon: "🧠",  pl: "10 poprawnych",       en: "10 correct",         criterionPl: "Odpowiedz poprawnie 10 razy w quizie", criterionEn: "Answer correctly 10 times in quiz" },
+  { id: "quiz25",         icon: "🎓",  pl: "25 poprawnych",       en: "25 correct",         criterionPl: "Odpowiedz poprawnie 25 razy w quizie", criterionEn: "Answer correctly 25 times in quiz" },
+  { id: "flashcard_first", icon: "🔖", pl: "Pierwsza fiszka",      en: "First flashcard",    criterionPl: "Dodaj lub rozpocznij 1 fiszkę",      criterionEn: "Add or start 1 flashcard" },
   { id: "flashcards25",   icon: "🃏",  pl: "25 fiszek",           en: "25 flashcards",      criterionPl: "Miej 25 fiszek w kolekcji",         criterionEn: "Have 25 flashcards in collection" },
+  { id: "lessons3",       icon: "🌱",  pl: "3 lekcje",            en: "3 lessons",          criterionPl: "Zalicz 3 lekcje",                   criterionEn: "Complete 3 lessons" },
   { id: "lessons10",      icon: "📝",  pl: "10 lekcji",           en: "10 lessons",         criterionPl: "Zalicz 10 lekcji",                  criterionEn: "Complete 10 lessons" },
+  { id: "lessons25",      icon: "📒",  pl: "25 lekcji",           en: "25 lessons",         criterionPl: "Zalicz 25 lekcji",                  criterionEn: "Complete 25 lessons" },
   { id: "bismillah",      icon: "🌙",  pl: "Bismillah",           en: "Bismillah",          criterionPl: "Zalicz lekcję Bismillah",           criterionEn: "Complete the Bismillah lesson" },
   { id: "shahada_badge",  icon: "☪️",  pl: "Szahada",            en: "Shahada",            criterionPl: "Zalicz lekcję Szahada",             criterionEn: "Complete the Shahada lesson" },
+  { id: "fatiha_lesson",  icon: "🕋",  pl: "Al-Fatiha",           en: "Al-Fatiha",          criterionPl: "Zalicz lekcję Al-Fatiha",           criterionEn: "Complete the Al-Fatiha lesson" },
+  { id: "salat_names",    icon: "🕌",  pl: "5 modlitw",           en: "5 prayers",          criterionPl: "Zalicz lekcję o pięciu modlitwach", criterionEn: "Complete the five prayers lesson" },
+  { id: "salat_rakat",    icon: "🧭",  pl: "Raka'at",             en: "Raka'at",            criterionPl: "Zalicz lekcję o raka'at",           criterionEn: "Complete the raka'at lesson" },
+  { id: "salat_positions", icon: "🧎", pl: "Ruchy salat",         en: "Salat moves",        criterionPl: "Zalicz lekcję o ruku lub sujud",    criterionEn: "Complete a ruku or sujud lesson" },
+  { id: "prayer_mode_first", icon: "🤲", pl: "Pierwszy Prayer Mode", en: "First Prayer Mode", criterionPl: "Ukończ 1 sesję Prayer Mode",         criterionEn: "Complete 1 Prayer Mode session" },
+  { id: "prayer_mode_3",  icon: "🌟",  pl: "3 sesje modlitwy",    en: "3 prayer sessions",  criterionPl: "Ukończ 3 sesje Prayer Mode",         criterionEn: "Complete 3 Prayer Mode sessions" },
+  { id: "dhikr33",        icon: "📿",  pl: "33 dhikr",            en: "33 dhikr",           criterionPl: "Wykonaj 33 kliknięcia dhikru",       criterionEn: "Complete 33 dhikr taps" },
+  { id: "dhikr100",       icon: "💚",  pl: "100 dhikr",           en: "100 dhikr",          criterionPl: "Wykonaj 100 kliknięć dhikru",       criterionEn: "Complete 100 dhikr taps" },
+  { id: "pillars_quiz10", icon: "⭐",  pl: "Filary quiz",         en: "Pillars quiz",       criterionPl: "Zdobądź 10 poprawnych w quizie filarów", criterionEn: "Get 10 correct in the pillars quiz" },
+  { id: "surah_quiz10",   icon: "📜",  pl: "Quiz sur",            en: "Surah quiz",         criterionPl: "Zdobądź 10 poprawnych w quizie sur", criterionEn: "Get 10 correct in the surah quiz" },
+  { id: "games3",         icon: "🎮",  pl: "3 gry",               en: "3 games",            criterionPl: "Zagraj 3 razy w gry",                criterionEn: "Play games 3 times" },
 ];
 
 function checkBadges() {
@@ -3949,12 +3947,23 @@ function checkBadges() {
   const pts = state.points;
   const fc = (state.customFlashcards || []).length + Object.keys(state.flashcards || {}).length;
   const ld = (state.miniLessonsDone || []).length;
+  const dhikrTotal = Object.values(state.dhikrCounts || {}).reduce((sum, count) => sum + (Number(count) || 0), 0);
+  const prayerSessions = state.prayerGuideSessions || 0;
+  const gamesPlayed =
+    (state.quizHistory || []).length +
+    (state.catchHistory || []).length +
+    (state.dhikrGameHistory || []).length +
+    (state.pillarsQuizHistory || []).length +
+    (state.surahQuizHistory || []).length +
+    (state.memoryStats?.correct || 0) +
+    (state.memoryStats?.wrong || 0);
 
   if (ll >= 1)  unlockBadge("first_letter",  tx("Pierwsza litera", "First letter"));
   if (ll >= 10) unlockBadge("ten_letters",   tx("Dziesięć liter", "Ten letters"));
   if (ll >= 14) unlockBadge("half_alphabet", tx("Połowa alfabetu", "Half alphabet"));
   if (ll >= 28) unlockBadge("full_alphabet", tx("Mistrz alfabetu", "Alphabet master"));
   if (sq >= 1)  unlockBadge("first_surah",   tx("Pierwsza sura", "First surah"));
+  if (sq >= 5)  unlockBadge("surahs5",       tx("5 sur", "5 surahs"));
   if (sq >= 10) unlockBadge("ten_surahs",    tx("Dziesięć sur", "Ten surahs"));
   if (state.streak >= 3)  unlockBadge("streak3",  tx("3 dni z rzędu", "3-day streak"));
   if (state.streak >= 7)  unlockBadge("streak7",  tx("Tydzień nauki", "Week streak"));
@@ -3962,10 +3971,25 @@ function checkBadges() {
   if (pts >= 500)  unlockBadge("pts500",  tx("500 punktów", "500 points"));
   if (pts >= 2000) unlockBadge("pts2000", tx("2000 punktów", "2000 points"));
   if (state.quizStats.correct >= 10) unlockBadge("quiz10", tx("10 poprawnych", "10 correct"));
+  if (state.quizStats.correct >= 25) unlockBadge("quiz25", tx("25 poprawnych", "25 correct"));
+  if (fc >= 1) unlockBadge("flashcard_first", tx("Pierwsza fiszka", "First flashcard"));
   if (fc >= 25) unlockBadge("flashcards25", tx("25 fiszek", "25 flashcards"));
+  if (ld >= 3)  unlockBadge("lessons3",    tx("3 lekcje", "3 lessons"));
   if (ld >= 10) unlockBadge("lessons10",   tx("10 lekcji", "10 lessons"));
+  if (ld >= 25) unlockBadge("lessons25",   tx("25 lekcji", "25 lessons"));
   if ((state.miniLessonsDone || []).includes("bismillah"))    unlockBadge("bismillah",     "Bismillah");
   if ((state.miniLessonsDone || []).includes("shahada"))      unlockBadge("shahada_badge", tx("Szahada", "Shahada"));
+  if ((state.miniLessonsDone || []).includes("fatiha"))       unlockBadge("fatiha_lesson", "Al-Fatiha");
+  if ((state.miniLessonsDone || []).includes("salat_times"))  unlockBadge("salat_names",   tx("5 modlitw", "5 prayers"));
+  if ((state.miniLessonsDone || []).includes("salat_rakat"))  unlockBadge("salat_rakat",   "Raka'at");
+  if ((state.miniLessonsDone || []).some(id => ["salat_ruku", "salat_sujud"].includes(id))) unlockBadge("salat_positions", tx("Ruchy salat", "Salat moves"));
+  if (prayerSessions >= 1) unlockBadge("prayer_mode_first", tx("Pierwszy Prayer Mode", "First Prayer Mode"));
+  if (prayerSessions >= 3) unlockBadge("prayer_mode_3", tx("3 sesje modlitwy", "3 prayer sessions"));
+  if (dhikrTotal >= 33) unlockBadge("dhikr33", tx("33 dhikr", "33 dhikr"));
+  if (dhikrTotal >= 100) unlockBadge("dhikr100", tx("100 dhikr", "100 dhikr"));
+  if ((state.pillarsQuizStats?.correct || 0) >= 10) unlockBadge("pillars_quiz10", tx("Filary quiz", "Pillars quiz"));
+  if ((state.surahQuizStats?.correct || 0) >= 10) unlockBadge("surah_quiz10", tx("Quiz sur", "Surah quiz"));
+  if (gamesPlayed >= 3) unlockBadge("games3", tx("3 gry", "3 games"));
 }
 
 function unlockBadge(id, name) {
@@ -4070,6 +4094,7 @@ function dhikr() {
       }
       triggerHaptic();
       saveState();
+      checkBadges();
       dhikr();
     });
   });
@@ -4077,6 +4102,270 @@ function dhikr() {
     state.dhikrCounts = { subhana: 0, alhamdu: 0, allahu: 0 };
     saveState();
     dhikr();
+  });
+}
+
+// ============================================================
+// PRAYER MODE — beginner salat guide
+// ============================================================
+const PRAYER_GUIDE_PRAYERS = [
+  { id: "fajr", pl: "Fadżr", en: "Fajr", rakat: 2 },
+  { id: "dhuhr", pl: "Dhuhr", en: "Dhuhr", rakat: 4 },
+  { id: "asr", pl: "Asr", en: "Asr", rakat: 4 },
+  { id: "maghrib", pl: "Maghrib", en: "Maghrib", rakat: 3 },
+  { id: "isha", pl: "Isza", en: "Isha", rakat: 4 }
+];
+
+const PRAYER_GUIDE_CORE_STEPS = [
+  {
+    id: "intro",
+    titlePl: "Start i intencja",
+    titleEn: "Start and intention",
+    bodyPl: "Stań spokojnie twarzą w stronę Qibla. W sercu wiesz, którą modlitwę wykonujesz. Nie musisz wypowiadać intencji na głos.",
+    bodyEn: "Stand calmly facing the Qibla. In your heart, know which prayer you are praying. You do not need to say the intention out loud.",
+    ar: "",
+    tr: "",
+    meaningPl: "Ten tryb zaczyna od samej modlitwy, bez instrukcji wudu.",
+    meaningEn: "This mode starts with the prayer itself, without wudu instructions."
+  },
+  {
+    id: "qiyam",
+    titlePl: "Qiyam — stanie",
+    titleEn: "Qiyam — standing",
+    bodyPl: "Stań prosto. Wzrok skieruj w miejsce sujud. Ręce przygotuj do pierwszego takbiru.",
+    bodyEn: "Stand upright. Look toward the place of sujud. Prepare your hands for the opening takbir.",
+    ar: "",
+    tr: "qiyam",
+    meaningPl: "Pozycja stojąca na początku raka'at.",
+    meaningEn: "Standing position at the beginning of the raka'ah."
+  },
+  {
+    id: "takbir",
+    titlePl: "Takbir otwierający",
+    titleEn: "Opening takbir",
+    bodyPl: "Podnieś dłonie przy uszach lub ramionach i powiedz Allahu Akbar. Potem połóż prawą dłoń na lewej.",
+    bodyEn: "Raise your hands near your ears or shoulders and say Allahu Akbar. Then place your right hand over your left.",
+    ar: "الله أكبر",
+    tr: "Allahu Akbar",
+    meaningPl: "Allah jest Największy.",
+    meaningEn: "Allah is the Greatest."
+  },
+  {
+    id: "fatiha",
+    titlePl: "Al-Fatiha",
+    titleEn: "Al-Fatiha",
+    bodyPl: "Recytuj Al-Fatihę spokojnie. Na początku możesz czytać z ekranu, żeby uczyć się poprawnej kolejności.",
+    bodyEn: "Recite Al-Fatiha calmly. At the beginning, you may read from the screen to learn the correct order.",
+    ar: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+    tr: "Alhamdu lillahi rabbil alamin",
+    meaningPl: "Chwała Allahowi, Panu światów.",
+    meaningEn: "All praise is for Allah, Lord of all worlds."
+  },
+  {
+    id: "short-surah",
+    titlePl: "Krótka sura",
+    titleEn: "Short surah",
+    bodyPl: "Po Al-Fatiha recytuj krótką surę. Dla początkującego najlepsza jest Al-Ikhlas.",
+    bodyEn: "After Al-Fatiha, recite a short surah. For beginners, Al-Ikhlas is a good start.",
+    ar: "قُلْ هُوَ اللَّهُ أَحَدٌ",
+    tr: "Qul huwa Allahu ahad",
+    meaningPl: "Powiedz: On, Allah, jest Jeden.",
+    meaningEn: "Say: He is Allah, One."
+  },
+  {
+    id: "ruku",
+    titlePl: "Ruku — skłon",
+    titleEn: "Ruku — bowing",
+    bodyPl: "Powiedz Allahu Akbar i pochyl się, opierając dłonie na kolanach. Plecy trzymaj możliwie prosto.",
+    bodyEn: "Say Allahu Akbar and bow, placing your hands on your knees. Keep your back as straight as you can.",
+    ar: "سُبْحَانَ رَبِّيَ الْعَظِيم",
+    tr: "Subhana rabbiyal azim",
+    meaningPl: "Chwała mojemu Panu, Najwspanialszemu.",
+    meaningEn: "Glory be to my Lord, the Magnificent."
+  },
+  {
+    id: "rise",
+    titlePl: "Powrót ze skłonu",
+    titleEn: "Rise from bowing",
+    bodyPl: "Podnieś się z ruku do stania. Najpierw wypowiedz odpowiedź podczas podnoszenia, potem krótką pochwałę.",
+    bodyEn: "Rise from ruku back to standing. Say the response while rising, then the short praise.",
+    ar: "سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ\nرَبَّنَا وَلَكَ الْحَمْد",
+    tr: "Sami Allahu liman hamidah. Rabbana wa laka al-hamd",
+    meaningPl: "Allah słyszy tego, kto Go chwali. Panie nasz, Tobie należy się chwała.",
+    meaningEn: "Allah hears the one who praises Him. Our Lord, to You belongs praise."
+  },
+  {
+    id: "sujud1",
+    titlePl: "Pierwszy sujud",
+    titleEn: "First sujud",
+    bodyPl: "Powiedz Allahu Akbar i przejdź do pokłonu: czoło, nos, dłonie, kolana i palce stóp dotykają ziemi.",
+    bodyEn: "Say Allahu Akbar and go down: forehead, nose, hands, knees and toes touch the ground.",
+    ar: "سُبْحَانَ رَبِّيَ الْأَعْلَى",
+    tr: "Subhana rabbiyal a'la",
+    meaningPl: "Chwała mojemu Panu, Najwyższemu.",
+    meaningEn: "Glory be to my Lord, the Most High."
+  },
+  {
+    id: "sit",
+    titlePl: "Siedzenie między sujud",
+    titleEn: "Sitting between sujud",
+    bodyPl: "Usiądź spokojnie między dwoma pokłonami. To krótka pauza i prośba o przebaczenie.",
+    bodyEn: "Sit calmly between the two prostrations. This is a short pause and a request for forgiveness.",
+    ar: "رَبِّ اغْفِرْ لِي",
+    tr: "Rabbi ghfir li",
+    meaningPl: "Panie mój, przebacz mi.",
+    meaningEn: "My Lord, forgive me."
+  },
+  {
+    id: "sujud2",
+    titlePl: "Drugi sujud",
+    titleEn: "Second sujud",
+    bodyPl: "Powiedz Allahu Akbar i wykonaj drugi sujud tak samo jak pierwszy.",
+    bodyEn: "Say Allahu Akbar and perform the second sujud the same way as the first.",
+    ar: "سُبْحَانَ رَبِّيَ الْأَعْلَى",
+    tr: "Subhana rabbiyal a'la",
+    meaningPl: "Chwała mojemu Panu, Najwyższemu.",
+    meaningEn: "Glory be to my Lord, the Most High."
+  },
+  {
+    id: "next-rakah",
+    titlePl: "Kolejna raka'at",
+    titleEn: "Next raka'ah",
+    bodyPl: "Wstań do kolejnej raka'at i powtórz: Al-Fatiha, krótka sura, ruku, powrót, dwa sujud.",
+    bodyEn: "Stand for the next raka'ah and repeat: Al-Fatiha, short surah, ruku, rising, and two sujud.",
+    ar: "الله أكبر",
+    tr: "Allahu Akbar",
+    meaningPl: "Przechodzisz do następnej jednostki modlitwy.",
+    meaningEn: "You are moving into the next prayer unit."
+  },
+  {
+    id: "tashahhud",
+    titlePl: "Tashahhud",
+    titleEn: "Tashahhud",
+    bodyPl: "Po ostatniej raka'at usiądź. Na początku ucz się tej formuły powoli, fragment po fragmencie.",
+    bodyEn: "After the final raka'ah, sit. At first, learn this formula slowly, piece by piece.",
+    ar: "التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَات",
+    tr: "At-tahiyyatu lillahi was-salawatu wat-tayyibat",
+    meaningPl: "Pozdrowienia, modlitwy i dobre rzeczy należą do Allaha.",
+    meaningEn: "Greetings, prayers and good things belong to Allah."
+  },
+  {
+    id: "salam",
+    titlePl: "Salam — zakończenie",
+    titleEn: "Salam — closing",
+    bodyPl: "Obróć głowę w prawo i wypowiedz salam, potem w lewo. To kończy modlitwę.",
+    bodyEn: "Turn your head to the right and say salam, then to the left. This completes the prayer.",
+    ar: "السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّه",
+    tr: "As-salamu alaykum wa rahmatullah",
+    meaningPl: "Pokój z wami i miłosierdzie Allaha.",
+    meaningEn: "Peace be upon you and the mercy of Allah."
+  }
+];
+
+function prayerGuideStepsFor(prayer) {
+  const repeated = [];
+  const rakatCount = prayer?.rakat || 2;
+  PRAYER_GUIDE_CORE_STEPS.forEach((step) => {
+    if (step.id === "next-rakah") {
+      for (let i = 2; i <= rakatCount; i += 1) {
+        repeated.push({
+          ...step,
+          titlePl: `Raka'at ${i} z ${rakatCount}`,
+          titleEn: `Raka'ah ${i} of ${rakatCount}`,
+          bodyPl: i === rakatCount
+            ? "To ostatnia raka'at tej modlitwy. Powtórz ruchy spokojnie, potem przejdziesz do tashahhud."
+            : "Wstań i powtórz pełną raka'at. Aplikacja prowadzi Cię dalej bez presji na perfekcję.",
+          bodyEn: i === rakatCount
+            ? "This is the final raka'ah of this prayer. Repeat the movements calmly, then you will continue to tashahhud."
+            : "Stand and repeat a full raka'ah. The app guides you forward without pressure for perfection."
+        });
+      }
+      return;
+    }
+    repeated.push(step);
+  });
+  return repeated;
+}
+
+function prayerGuide() {
+  const selected = PRAYER_GUIDE_PRAYERS.find(p => p.id === prayerGuidePrayer) || PRAYER_GUIDE_PRAYERS[0];
+  prayerGuidePrayer = selected.id;
+  const steps = prayerGuideStepsFor(selected);
+  prayerGuideStep = Math.max(0, Math.min(prayerGuideStep, steps.length - 1));
+  const step = steps[prayerGuideStep];
+  const progress = Math.round(((prayerGuideStep + 1) / steps.length) * 100);
+
+  view.innerHTML = `
+    <div class="mb-4">
+      <h1 class="text-3xl font-black">${tx("Prayer Mode", "Prayer Mode")} 🧎</h1>
+      <p class="text-[var(--muted)]">${tx("Przewodnik salat od pierwszego ruchu. Bez sekcji wudu — tylko sama modlitwa krok po kroku.", "A salat guide from the first movement. No wudu section — only the prayer itself, step by step.")}</p>
+    </div>
+
+    <div class="prayer-guide-shell">
+      <div class="prayer-guide-selector">
+        ${PRAYER_GUIDE_PRAYERS.map(p => `
+          <button class="mode-btn ${p.id === selected.id ? "active" : ""}" data-prayer-guide="${p.id}">
+            ${state.lang === "pl" ? p.pl : p.en}
+            <span>${p.rakat} raka'at</span>
+          </button>
+        `).join("")}
+      </div>
+
+      <article class="prayer-guide-card">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="text-xs font-black uppercase text-[var(--muted)]">${state.lang === "pl" ? selected.pl : selected.en} · ${selected.rakat} raka'at</p>
+            <h2 class="mt-1 text-2xl font-black">${state.lang === "pl" ? step.titlePl : step.titleEn}</h2>
+          </div>
+          <span class="prayer-guide-count">${prayerGuideStep + 1}/${steps.length}</span>
+        </div>
+        <div class="mt-4 h-2 overflow-hidden rounded-full bg-emerald-100">
+          <div class="h-full bg-emerald-500 transition-all" style="width:${progress}%"></div>
+        </div>
+
+        <p class="mt-5 text-[var(--muted)]">${state.lang === "pl" ? step.bodyPl : step.bodyEn}</p>
+        ${step.ar ? `<div class="prayer-guide-arabic arabic">${step.ar.replace(/\n/g, "<br>")}</div>` : ""}
+        ${step.tr ? `<p class="mt-3 text-lg font-black text-[var(--accent)]">${step.tr}</p>` : ""}
+        <p class="mt-2 text-sm text-[var(--muted)]">${state.lang === "pl" ? step.meaningPl : step.meaningEn}</p>
+
+        <div class="mt-6 grid gap-2 sm:grid-cols-3">
+          <button class="big-action border border-[var(--line)] bg-[var(--surface)]" id="prayerPrev" ${prayerGuideStep === 0 ? "disabled" : ""}>${tx("Wstecz", "Back")}</button>
+          <button class="big-action border border-[var(--line)] bg-[var(--surface)]" id="prayerSpeak" ${step.ar ? "" : "disabled"}>${t("play")}</button>
+          <button class="big-action bg-emerald-500 text-white" id="prayerNext">${prayerGuideStep === steps.length - 1 ? tx("Zakończ", "Finish") : tx("Dalej", "Next")}</button>
+        </div>
+      </article>
+    </div>
+  `;
+
+  view.querySelectorAll("[data-prayer-guide]").forEach(btn => btn.addEventListener("click", () => {
+    prayerGuidePrayer = btn.dataset.prayerGuide;
+    prayerGuideStep = 0;
+    state.lastPrayerGuide = prayerGuidePrayer;
+    saveState();
+    prayerGuide();
+  }));
+  $("#prayerPrev")?.addEventListener("click", () => {
+    prayerGuideStep = Math.max(0, prayerGuideStep - 1);
+    prayerGuide();
+  });
+  $("#prayerSpeak")?.addEventListener("click", () => {
+    if (step.ar) speakArabic(step.ar.replace(/\n/g, " "));
+  });
+  $("#prayerNext")?.addEventListener("click", () => {
+    if (prayerGuideStep < steps.length - 1) {
+      prayerGuideStep += 1;
+      prayerGuide();
+      return;
+    }
+    state.prayerGuideSessions = (state.prayerGuideSessions || 0) + 1;
+    state.lastPrayerGuide = selected.id;
+    addPoints(35, false);
+    checkBadges();
+    saveState();
+    showLoveToast(tx("Modlitwa ukończona krok po kroku", "Prayer completed step by step"));
+    confetti();
+    prayerGuideStep = 0;
+    prayerGuide();
   });
 }
 

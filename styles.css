@@ -955,7 +955,13 @@ h3 {
   .nav-btn {
     min-width: 0;
     min-height: 52px;
-    font-size: 8px;
+    font-size: 9px;
+    padding-inline: 1px;
+  }
+
+  .nav-btn .text-xl {
+    font-size: 18px;
+    line-height: 1;
   }
 
   .letter-tile {
@@ -1222,6 +1228,84 @@ a:focus-visible {
 /* ============================================================
    Czasy modlitw (Prayer times) & Qibla compass
    ============================================================ */
+.prayer-guide-shell {
+  display: grid;
+  gap: 14px;
+}
+
+.prayer-guide-selector {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.prayer-guide-selector .mode-btn {
+  min-width: 0;
+  padding: 8px 4px;
+  display: grid;
+  gap: 2px;
+  line-height: 1.1;
+  font-size: 12px;
+}
+
+.prayer-guide-selector .mode-btn span {
+  font-size: 10px;
+  opacity: 0.78;
+}
+
+.prayer-guide-card {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+}
+
+.prayer-guide-count {
+  min-width: 54px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  padding: 6px 10px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.prayer-guide-arabic {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+  text-align: right;
+  direction: rtl;
+  font-size: 34px;
+  line-height: 1.7;
+}
+
+@media (max-width: 420px) {
+  .prayer-guide-selector {
+    gap: 5px;
+  }
+
+  .prayer-guide-selector .mode-btn {
+    min-height: 48px;
+    font-size: 10px;
+  }
+
+  .prayer-guide-selector .mode-btn span {
+    font-size: 8px;
+  }
+
+  .prayer-guide-card {
+    padding: 16px;
+  }
+
+  .prayer-guide-arabic {
+    font-size: 26px;
+    padding: 14px;
+  }
+}
+
 .prayer-widget {
   background: var(--panel);
   border-radius: 16px;
@@ -1884,4 +1968,3 @@ a:focus-visible {
   color: var(--muted);
   font-style: italic;
 }
-
