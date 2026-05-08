@@ -40,10 +40,11 @@ const THEME_COLOR = {
 };
 
 const navItems = [
-  ["home",    "⌂",  "navHome"],
-  ["islam",   "☪",  "navIslam"],
-  ["lessons", "Aa", "navLessons"],
-  ["culture", "✦",  "navCulture"]
+  ["home",       "⌂",  "navHome"],
+  ["islam",      "☪",  "navIslam"],
+  ["prayermode", "▶",  "navPrayerMode"],
+  ["lessons",    "Aa", "navLessons"],
+  ["culture",    "✦",  "navCulture"]
 ];
 
 const secondaryNavItems = [

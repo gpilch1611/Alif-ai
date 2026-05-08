@@ -38,10 +38,11 @@ const THEME_COLOR = {
 };
 
 const navItems = [
-  ["home",    "⌂",  "navHome"],
-  ["islam",   "☪",  "navIslam"],
-  ["lessons", "Aa", "navLessons"],
-  ["culture", "✦",  "navCulture"]
+  ["home",       "⌂",  "navHome"],
+  ["islam",      "☪",  "navIslam"],
+  ["prayermode", "▶",  "navPrayerMode"],
+  ["lessons",    "Aa", "navLessons"],
+  ["culture",    "✦",  "navCulture"]
 ];
 
 const secondaryNavItems = [
@@ -995,16 +996,6 @@ function islam() {
   view.querySelectorAll("[data-route]").forEach(btn =>
     btn.addEventListener("click", () => setRoute(btn.dataset.route))
   );
-  const extraNav = document.createElement('div');
-  extraNav.className = 'grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4';
-  extraNav.innerHTML = `
-    <button class="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 p-3 font-bold" data-route="prayer">🕌 ${tx('Czasy modlitw','Prayer times')}</button>
-    <button class="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 p-3 font-bold" data-route="dhikr">📿 ${tx('Dhikr','Dhikr')}</button>
-    <button class="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 p-3 font-bold" data-route="koran">📖 ${tx("Qur'an","Qur'an")}</button>
-    <button class="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 p-3 font-bold" data-route="islamfaq">❓ ${tx('FAQ islamu','Islam FAQ')}</button>
-  `;
-  view.appendChild(extraNav);
-  extraNav.querySelectorAll('[data-route]').forEach(b => b.addEventListener('click', () => setRoute(b.dataset.route)));
 }
 
 function home() {
