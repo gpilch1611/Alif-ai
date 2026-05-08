@@ -38,22 +38,20 @@ const THEME_COLOR = {
 };
 
 const navItems = [
-  ["home",    "⌂",  "navHome"],
-  ["islam",   "☪",  "navIslam"],
-  ["lessons", "Aa", "navLessons"],
-  ["games",   "◎",  "navGames"],
-  ["prayer",  "🕌", "navPrayer"]
+  ["home",       "⌂",  "navHome"],
+  ["islam",      "☪",  "navIslam"],
+  ["prayermode", "▶",  "navPrayerMode"],
+  ["lessons",    "Aa", "navLessons"],
+  ["culture",    "✦",  "navCulture"]
 ];
 
 const secondaryNavItems = [
-  ["koran",     "📖", "navKoran"],
-  ["adventure", "☆",  "navAdventure"],
-  ["culture",   "✦",  "navCulture"],
-  ["badges",    "🏆", "navBadges"],
-  ["settings",  "⚙",  "navSettings"]
+  ["games",    "◎",  "navGames"],
+  ["badges",   "🏆", "navBadges"],
+  ["settings", "⚙",  "navSettings"]
 ];
 
-const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq"];
+const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","prayer","prayermode"];
 
 const ROMANTIC_LINES = [
   // short
@@ -125,7 +123,7 @@ const ROMANTIC_LINES = [
 
 const I18N = {
   pl: {
-    navHome: "Start", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navSeerah: "Seerah", navPillars: "Filary", navRoots: "Korzenie", navMuallaf: "Nowy muzułmanin", navHalalHaram: "Halal & Haram", navIslamFaq: "FAQ islamu",
+    navHome: "Start", navIslam: "Islam", navPrayerMode: "Modlitwa", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navSeerah: "Seerah", navPillars: "Filary", navRoots: "Korzenie", navMuallaf: "Nowy muzułmanin", navHalalHaram: "Halal & Haram", navIslamFaq: "FAQ islamu",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
     welcome: "Witaj w ألف AI", homeTitle: "Islam — krok po kroku", homeLead: "Arabski jest narzędziem — bo czytanie Koranu w oryginale to obowiązek każdego muzułmanina. Ucz się liter, sur, dhikru, historii islamu i modlitw.",
@@ -142,7 +140,7 @@ const I18N = {
     lessonCategories: "Kategorie Lekcji", lessonSelect: "Wybierz kategorię"
   },
   en: {
-    navHome: "Home", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navSeerah: "Seerah", navPillars: "Pillars", navRoots: "Roots", navMuallaf: "New Muslim", navHalalHaram: "Halal & Haram", navIslamFaq: "Islam FAQ",
+    navHome: "Home", navIslam: "Islam", navPrayerMode: "Prayer", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navSeerah: "Seerah", navPillars: "Pillars", navRoots: "Roots", navMuallaf: "New Muslim", navHalalHaram: "Halal & Haram", navIslamFaq: "Islam FAQ",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
     welcome: "Welcome to ألف AI", homeTitle: "Islam — step by step", homeLead: "Arabic is the key — reading the Quran in the original is every Muslim's obligation. Learn letters, surahs, dhikr, Islamic history and prayers.",
@@ -781,8 +779,10 @@ function render() {
   const flashcards = () => { state.activeGame = "flashcards"; games(); };
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
-  const books = () => setRoute("adventure");
-  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq };
+  const books = () => setRoute("lessons");
+  const prayermode = () => prayer();
+  const myths = () => islamfaq();
+  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayermode, myths, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq };
   (views[route] || home)();
 }
 
@@ -964,15 +964,16 @@ function islamfaq() {
 
 function islam() {
   const tiles = [
-    { route: "koran",   icon: "📖", titlePl: "Qur'an",           titleEn: "Qur'an",          descPl: "Czytaj, słuchaj i zapisuj sury",                        descEn: "Read, listen and save surahs" },
-    { route: "dhikr",   icon: "📿", titlePl: "Dhikr",             titleEn: "Dhikr",            descPl: "Licznik Subhanallah · Alhamdulillah · Allahu Akbar",     descEn: "Subhanallah · Alhamdulillah · Allahu Akbar counter" },
-    { route: "pillars", icon: "⭐", titlePl: "Filary Islamu",     titleEn: "Pillars of Islam", descPl: "5 Filarów Islamu + 6 Filarów Imanu",                    descEn: "5 Pillars of Islam + 6 Pillars of Iman" },
-    { route: "prayer",  icon: "🕌", titlePl: "Czasy modlitw",     titleEn: "Prayer times",     descPl: "Borzęta 🇵🇱 + Surabaya 🇮🇩 + Qibla",                     descEn: "Borzęta 🇵🇱 + Surabaya 🇮🇩 + Qibla" },
-    { route: "asmaul",  icon: "☪",  titlePl: "99 Imion Allaha",  titleEn: "99 Names of Allah",descPl: "Asma ul-Husna — piękne imiona Boga",                    descEn: "Asma ul-Husna — beautiful Names of God" },
-    { route: "seerah",  icon: "🌙", titlePl: "Seerah",            titleEn: "Seerah",           descPl: "Życie Proroka Muhammada ﷺ",                             descEn: "Life of Prophet Muhammad ﷺ" },
-    { route: "tajweed", icon: "🔤", titlePl: "Tadżwid",           titleEn: "Tajweed",          descPl: "8 zasad prawidłowej recytacji",                         descEn: "8 rules for correct Quran recitation" },
+    { route: "prayermode", icon: "▶️", titlePl: "Tryb modlitwy",    titleEn: "Prayer Mode",      descPl: "Prowadzi Cię krok po kroku z timerem i wymową",              descEn: "Guides you step-by-step with timer and pronunciation", featured: true },
+    { route: "koran",      icon: "📖", titlePl: "Qur'an",           titleEn: "Qur'an",           descPl: "Czytaj, słuchaj i zapisuj sury",                             descEn: "Read, listen and save surahs" },
+    { route: "dhikr",      icon: "📿", titlePl: "Dhikr",            titleEn: "Dhikr",            descPl: "Licznik Subhanallah · Alhamdulillah · Allahu Akbar",          descEn: "Subhanallah · Alhamdulillah · Allahu Akbar counter" },
+    { route: "pillars",    icon: "⭐", titlePl: "Filary Islamu",    titleEn: "Pillars of Islam", descPl: "5 Filarów Islamu + 6 Filarów Imanu",                         descEn: "5 Pillars of Islam + 6 Pillars of Iman" },
+    { route: "prayer",     icon: "🕌", titlePl: "Czasy modlitw",    titleEn: "Prayer times",     descPl: "Borzęta 🇵🇱 + Surabaya 🇮🇩 + Qibla",                          descEn: "Borzęta 🇵🇱 + Surabaya 🇮🇩 + Qibla" },
+    { route: "asmaul",     icon: "☪",  titlePl: "99 Imion Allaha", titleEn: "99 Names of Allah",descPl: "Asma ul-Husna — piękne imiona Boga",                         descEn: "Asma ul-Husna — beautiful Names of God" },
+    { route: "seerah",     icon: "🌙", titlePl: "Seerah",           titleEn: "Seerah",           descPl: "Życie Proroka Muhammada ﷺ",                                  descEn: "Life of Prophet Muhammad ﷺ" },
+    { route: "tajweed",    icon: "🔤", titlePl: "Tadżwid",          titleEn: "Tajweed",          descPl: "8 zasad prawidłowej recytacji",                              descEn: "8 rules for correct Quran recitation" },
     { route: "muallaf",    icon: "🌱", titlePl: "Nowy muzułmanin",  titleEn: "New Muslim",       descPl: "Pierwsze kroki, szahada i nie musisz być perfekcyjny",        descEn: "First steps, shahada and you don't need to be perfect" },
-    { route: "halalharam", icon: "⚖",  titlePl: "Halal & Haram",   titleEn: "Halal & Haram",   descPl: "Jedzenie, napoje, zachowanie — co wolno, czego nie",          descEn: "Food, drinks, behaviour — what is and isn't allowed" },
+    { route: "halalharam", icon: "⚖",  titlePl: "Halal & Haram",   titleEn: "Halal & Haram",    descPl: "Jedzenie, napoje, zachowanie — co wolno, czego nie",          descEn: "Food, drinks, behaviour — what is and isn't allowed" },
     { route: "islamfaq",   icon: "❓", titlePl: "FAQ islamu",       titleEn: "Islam FAQ",        descPl: "Mity, islamofobia, kobiety, terroryzm, inne religie",         descEn: "Myths, Islamophobia, women, terrorism, other religions" },
   ];
   view.innerHTML = `
@@ -982,7 +983,7 @@ function islam() {
     </div>
     <div class="grid gap-3 sm:grid-cols-2">
       ${tiles.map(t => `
-        <button class="islam-tile text-left" data-route="${t.route}">
+        <button class="islam-tile text-left${t.featured ? ' ring-2 ring-emerald-400 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/40 dark:to-emerald-800/30' : ''}" data-route="${t.route}">
           <span class="islam-tile-icon">${t.icon}</span>
           <div>
             <p class="islam-tile-title">${state.lang === "pl" ? t.titlePl : t.titleEn}</p>
