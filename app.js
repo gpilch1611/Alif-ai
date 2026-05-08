@@ -668,7 +668,33 @@ function registerPwa() {
     return;
   }
 
-  navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" }).catch(() => {});
+  navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" })
+    .then((registration) => {
+      // Auto-reload when a new SW takes control
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        window.location.reload();
+      });
+
+      // Check for updates every 5 minutes
+      setInterval(() => registration.update().catch(() => {}), 5 * 60 * 1000);
+
+      // Also check immediately if a new SW is waiting
+      registration.addEventListener("updatefound", () => {
+        const newWorker = registration.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener("statechange", () => {
+          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+            newWorker.postMessage({ type: "SKIP_WAITING" });
+          }
+        });
+      });
+
+      // Activate any already-waiting SW on load
+      if (registration.waiting && navigator.serviceWorker.controller) {
+        registration.waiting.postMessage({ type: "SKIP_WAITING" });
+      }
+    })
+    .catch(() => {});
 }
 
 function renderNav() {
