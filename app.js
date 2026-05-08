@@ -664,7 +664,27 @@ function registerPwa() {
     return;
   }
 
-  navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" }).catch(() => {});
+  navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" })
+    .then((registration) => {
+      registration.update().catch(() => {});
+
+      registration.addEventListener("updatefound", () => {
+        const installing = registration.installing;
+        if (!installing) return;
+        installing.addEventListener("statechange", () => {
+          if (installing.state === "installed" && navigator.serviceWorker.controller) {
+            installing.postMessage({ type: "SKIP_WAITING" });
+          }
+        });
+      });
+
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (window.__alifReloading) return;
+        window.__alifReloading = true;
+        window.location.reload();
+      });
+    })
+    .catch(() => {});
 }
 
 function renderNav() {
