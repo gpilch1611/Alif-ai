@@ -990,6 +990,7 @@ function islamfaq() {
     <div class="mb-4">
       <h1 class="text-3xl font-black">❓ ${tx("FAQ islamu", "Islam FAQ")}</h1>
       <p class="text-[var(--muted)] mt-1 text-sm">${tx("Pytania, które zadają wszyscy — uczciwe odpowiedzi.", "Questions everyone asks — honest answers.")}</p>
+      <p class="text-xs text-[var(--muted)] mt-2">${tx("Curated content: bez sztucznego powielania. Widoczne sa unikalne odpowiedzi z metadanymi zrodel.", "Curated content: no artificial duplication. Unique answers include source metadata.")} ${verifiedCount}/${islamicFaqExpanded.length}</p>
       <p class="text-[var(--muted)] mt-1 text-xs">${tx("Wersja treści", "Content version")}: <strong>${CONTENT_VERSION}</strong> · ${tx("Aktualizacja", "Updated")}: <strong>${CONTENT_UPDATED_AT}</strong></p>
     </div>
     <div class="flex gap-1 mb-4 overflow-x-auto pb-1">
@@ -1010,13 +1011,8 @@ function islamfaq() {
             ${q.verdict ? `<span class="verdict-badge ${q.verdict}">${verdictLabel[q.verdict] || q.verdict}</span>` : ""}
             <span class="trust-badge ${q.verified ? "verified" : "unverified"}">${q.verified ? tx(TRUST_LEVEL.verified.pl, TRUST_LEVEL.verified.en) : tx(TRUST_LEVEL.unverified.pl, TRUST_LEVEL.unverified.en)}</span>
             <p>${state.lang === "pl" ? q.aPl : q.aEn}</p>
-<<<<<<< ours
             <p class="faq-ref">Source: ${escapeHtml(q.source || q.ref || tx("Brak zweryfikowanego zrodla", "No verified source"))}</p>
             <p class="quality-meta">${tx("Sprawdzone:", "Checked:")} ${escapeHtml(q.last_checked_at)}</p>
-            ${q.ref ? `<p class="faq-ref">📚 ${q.ref}</p>` : ""}
-=======
-            <p class="faq-ref">📚 ${q.ref || tx("Źródło w trakcie uzupełniania", "Source pending update")}</p>
->>>>>>> theirs
           </div>
         </div>
       `).join("")}
@@ -4866,11 +4862,10 @@ async function prayer() {
   const activeLocations = getPrayerLocations();
   view.innerHTML = `
     <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Czasy Modlitw", "Prayer Times")} 🕌</h1>
-      <p class="text-[var(--muted)]">${tx("Dwie lokalizacje na żywo + globalne wyszukiwanie meczetów", "Two live locations + global mosque finder")}</p>
-      <a class="inline-flex mt-3 items-center gap-2 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm font-bold" href="https://www.google.com/maps/search/mosque+near+me" target="_blank" rel="noopener noreferrer">🕌 ${tx("Znajdź meczet w okolicy (cały świat)", "Find a mosque nearby (worldwide)")}</a>
-      <p class="text-[var(--muted)]">${tx("Dwie lokalizacje na żywo — Polska i Surabaya", "Two live locations — Poland and Surabaya")}</p>
-      <p class="text-xs text-[var(--muted)] mt-1">${tx("Możesz edytować lokalizacje (miasto, szerokość, długość, strefa).", "You can edit locations (city, latitude, longitude, timezone).")}</p>
+      <h1 class="text-3xl font-black">${tx("Czasy modlitw", "Prayer Times")}</h1>
+      <p class="text-[var(--muted)]">${tx("Dwie lokalizacje live: Polska i Surabaya.", "Two live locations: Poland and Surabaya.")}</p>
+      <p class="text-xs text-[var(--muted)] mt-1">${tx("Mozesz edytowac lokalizacje: miasto, szerokosc, dlugosc i strefe.", "You can edit locations: city, latitude, longitude, and timezone.")}</p>
+      <a class="inline-flex mt-3 items-center gap-2 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm font-bold" href="https://www.google.com/maps/search/mosque+near+me" target="_blank" rel="noopener noreferrer">${tx("Znajdz meczet w okolicy", "Find a mosque nearby")}</a>
     </div>
     <button id="editPrayerLocations" class="big-action mb-3 border border-[var(--line)]">${tx("Edytuj lokalizacje", "Edit locations")}</button>
     <div class="grid gap-4 lg:grid-cols-2">
@@ -5078,6 +5073,7 @@ function seerah() {
     </div>
     <div class="panel p-5 mt-6">
       <h2 class="text-xl font-black mb-4">${tx("Hadisy Dnia", "Daily Hadiths")}</h2>
+      <p class="text-xs text-[var(--muted)] mb-4">${tx("Zweryfikowana lista wybranych hadisow. To nie jest pelny kanoniczny korpus hadisow.", "Verified curated hadith list. This is not a complete canonical hadith corpus.")}</p>
       ${islamicHadith.slice(0, 5).map(h => `
         <div class="mb-4 pb-4 border-b border-[var(--border)]">
           <p class="text-base font-bold arabic text-right leading-relaxed" style="direction:rtl">${h.ar}</p>
