@@ -49,27 +49,29 @@ const secondaryNavItems = [];
 
 const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","prayer","prayerGuide"];
 
-const faqExpansionSeed = [
-  { tab: "basics", qPl: "Jak zrobić wudu krok po kroku?", qEn: "How do I perform wudu step by step?", aPl: "Zacznij od intencji, umyj dłonie, wypłucz usta i nos, umyj twarz, ręce do łokci, przetrzyj głowę i uszy, umyj stopy do kostek. Nie musi być perfekcyjnie od pierwszego dnia — ważna jest regularność.", aEn: "Begin with intention, wash hands, rinse mouth and nose, wash face, arms to elbows, wipe head and ears, wash feet to ankles. It does not need to be perfect on day one — consistency matters.", verdict: "info", ref: "Quran 5:6" },
-  { tab: "basics", qPl: "Czy mogę modlić się z kartki lub telefonu?", qEn: "Can I pray using notes or my phone?", aPl: "Tak, szczególnie na początku. Ucz się stopniowo i skracaj pomoc z czasem. Allah nagradza wysiłek i szczerość.", aEn: "Yes, especially at the beginning. Learn gradually and reduce assistance over time. Allah rewards effort and sincerity.", verdict: "info", ref: "" },
-  { tab: "women", qPl: "Czy kobieta może pracować i mieć karierę?", qEn: "Can a Muslim woman work and have a career?", aPl: "Tak. Islam dopuszcza pracę kobiet i ich niezależny majątek. Kluczowe są etyka, bezpieczeństwo i równowaga.", aEn: "Yes. Islam allows women to work and keep independent wealth. The key is ethics, safety and balance.", verdict: "info", ref: "Quran 4:32" },
-  { tab: "religions", qPl: "Czy mogę odwiedzić kościół jako muzułmanin?", qEn: "Can a Muslim visit a church?", aPl: "Wizyta edukacyjna lub rodzinna jest przez wielu uczonych dopuszczana; aktywny udział w obrzędach to kwestia sporna. Zachowaj szacunek i własną tożsamość religijną.", aEn: "Educational or family visits are permitted by many scholars; active ritual participation is disputed. Keep respect and your own religious identity.", verdict: "complex", ref: "" },
-  { tab: "myths", qPl: "Czy islam zabrania zadawania pytań?", qEn: "Does Islam forbid asking questions?", aPl: "Nie. Islam zachęca do szukania wiedzy. Kluczowe jest pytanie z dobrą intencją i gotowością do nauki.", aEn: "No. Islam encourages seeking knowledge. The key is asking with good intent and willingness to learn.", verdict: "false", ref: "" },
-  { tab: "terrorism", qPl: "Czy gniew usprawiedliwia przemoc wobec cywilów?", qEn: "Does anger justify violence against civilians?", aPl: "Nie. Krzywdzenie cywilów jest zakazane niezależnie od konfliktu. Etyka wojny w islamie wyklucza celowe ataki na niewinnych.", aEn: "No. Harming civilians is forbidden regardless of conflict. Islamic war ethics exclude deliberate attacks on innocents.", verdict: "false", ref: "Quran 5:32" }
+const faqExtraUnique = [
+  { id: "extra_quran_touch", tab: "basics", verdict: "complex", qPl: "Czy muszę mieć wudu, żeby czytać Quran na telefonie?", qEn: "Do I need wudu to read the Quran on my phone?", aPl: "Większość uczonych rozróżnia mushaf (papierowy Quran) i ekran telefonu. Dla aplikacji Quran wudu jest zalecane z szacunku, ale nie zawsze wymagane. Jeśli możesz — czytaj w czystości, ale brak wudu nie odcinaj cię od nauki.", aEn: "Most scholars distinguish between a physical mushaf and a phone screen. For Quran apps, wudu is recommended out of respect but not always required. If you can, read in purity, but do not stop learning when you lack wudu.", ref: "" },
+  { id: "extra_madhhab", tab: "basics", verdict: "info", qPl: "Czy muszę od razu wybrać madhhab?", qEn: "Do I need to choose a madhhab immediately?", aPl: "Nie. Na początku najważniejsze są podstawy: wiara, modlitwa, halal/haram i charakter. Z czasem możesz uczyć się jednej szkoły fiqh bardziej systematycznie.", aEn: "No. At the beginning, the priority is basics: faith, prayer, halal/haram and character. Later you can study one fiqh school more systematically.", ref: "" },
+  { id: "extra_convert_name", tab: "basics", verdict: "info", qPl: "Czy po konwersji muszę zmienić imię?", qEn: "Do I have to change my name after conversion?", aPl: "Nie, chyba że imię ma wyraźnie zły sens (np. związany z bałwochwalstwem). Neutralne i dobre imiona można zostawić.", aEn: "No, unless the name has a clearly problematic meaning (e.g., tied to idolatry). Neutral or good names can be kept.", ref: "" },
+  { id: "extra_work_prayer", tab: "daily", verdict: "info", qPl: "Jak pogodzić 5 modlitw z pracą na etacie?", qEn: "How can I fit 5 daily prayers into a full-time job?", aPl: "Planowanie pomaga: Fajr przed wyjściem, Dhuhr/Asr w przerwie, Maghrib po powrocie, Isha wieczorem. Krótka, spokojna modlitwa trwa kilka minut.", aEn: "Planning helps: Fajr before leaving, Dhuhr/Asr during breaks, Maghrib after return, Isha in the evening. A calm prayer takes only a few minutes.", ref: "" },
+  { id: "extra_family_pushback", tab: "daily", verdict: "complex", qPl: "Co robić, gdy rodzina krytykuje mój islam?", qEn: "What should I do if my family criticizes my Islam?", aPl: "Odpowiadaj łagodnie i bez kłótni. Islam nakazuje dobro wobec rodziców, nawet gdy nie podzielają wiary. Najsilniejszy argument to dobry charakter i cierpliwość.", aEn: "Respond gently and avoid arguments. Islam commands kindness to parents even when they do not share your faith. The strongest argument is good character and patience.", ref: "Quran 31:14-15" },
+  { id: "extra_halal_job", tab: "daily", verdict: "complex", qPl: "Czy mogę pracować w miejscu, gdzie sprzedają alkohol?", qEn: "Can I work in a place that sells alcohol?", aPl: "To kwestia trudna i zależy od zakresu obowiązków. Im mniejszy bezpośredni udział w sprzedaży haram, tym lepiej. Warto szukać halal alternatywy etapami, bez niszczenia własnej stabilności.", aEn: "This is a difficult issue and depends on your role. The less direct involvement in haram sales, the better. Seek a halal alternative gradually without destroying your stability.", ref: "" },
+  { id: "extra_mental_health", tab: "daily", verdict: "info", qPl: "Czy terapia psychologiczna jest dozwolona w islamie?", qEn: "Is psychological therapy allowed in Islam?", aPl: "Tak. Leczenie duszy i ciała jest częścią troski o amanah (powierzone życie). Dua i terapia mogą iść razem.", aEn: "Yes. Caring for mind and body is part of preserving the life entrusted to you. Dua and therapy can go together.", ref: "" },
+  { id: "extra_doubts", tab: "daily", verdict: "info", qPl: "Czy wątpliwości religijne oznaczają, że mam słabą wiarę?", qEn: "Do doubts mean I have weak faith?", aPl: "Nie zawsze. Pytania i kryzysy bywają etapem dojrzewania wiary. Szukaj wiedzy u wiarygodnych nauczycieli i nie izoluj się.", aEn: "Not always. Questions and crises can be part of growing faith. Seek knowledge from reliable teachers and do not isolate yourself.", ref: "" },
+  { id: "extra_violence", tab: "myths", verdict: "false", qPl: "Czy islam promuje przemoc wobec innych religii?", qEn: "Does Islam promote violence against other religions?", aPl: "Nie. Quran mówi o sprawiedliwości i zakazie agresji. Przemoc wobec niewinnych jest zabroniona.", aEn: "No. The Quran speaks of justice and forbids aggression. Violence against innocents is prohibited.", ref: "Quran 60:8, 5:32" },
+  { id: "extra_forced_convert", tab: "myths", verdict: "false", qPl: "Czy islam nakazuje zmuszać ludzi do konwersji?", qEn: "Does Islam command forcing people to convert?", aPl: "Nie. Zasada brzmi jasno: nie ma przymusu w religii. Wiara bez wolnego wyboru nie ma wartości.", aEn: "No. The principle is clear: no compulsion in religion. Faith without free choice has no value.", ref: "Quran 2:256" },
+  { id: "extra_women_education", tab: "women", verdict: "false", qPl: "Czy kobieta w islamie nie powinna się uczyć?", qEn: "Should women avoid education in Islam?", aPl: "To mit. Poszukiwanie wiedzy dotyczy kobiet i mężczyzn. W historii islamu były tysiące uczonych kobiet.", aEn: "This is a myth. Seeking knowledge applies to women and men. Islamic history includes thousands of women scholars.", ref: "" },
+  { id: "extra_marriage_choice", tab: "women", verdict: "false", qPl: "Czy kobiety są zmuszane do małżeństwa w islamie?", qEn: "Are women forced into marriage in Islam?", aPl: "Przymusowe małżeństwo jest sprzeczne z zasadami islamu. Zgoda kobiety jest warunkiem nikahu.", aEn: "Forced marriage contradicts Islamic principles. A woman's consent is a condition of nikah.", ref: "" },
+  { id: "extra_jews_christians", tab: "religions", verdict: "info", qPl: "Kim są 'Ludzie Księgi' w islamie?", qEn: "Who are the 'People of the Book' in Islam?", aPl: "To głównie żydzi i chrześcijanie — społeczności wcześniejszego objawienia. Quran nakazuje rozmowę z nimi w najlepszy sposób.", aEn: "Primarily Jews and Christians — communities of earlier revelation. The Quran commands discussion with them in the best manner.", ref: "Quran 29:46" },
+  { id: "extra_holidays", tab: "religions", verdict: "complex", qPl: "Czy muzułmanin może składać życzenia na Boże Narodzenie?", qEn: "Can a Muslim offer Christmas greetings?", aPl: "Uczeni różnią się w szczegółach. Wielu dopuszcza uprzejme życzenia rodzinne bez uczestnictwa w obrzędach religijnych. Najważniejsze: szacunek, granice wiary i dobro relacji.", aEn: "Scholars differ in details. Many permit polite family greetings without participating in religious rites. Key points: respect, faith boundaries and good relations.", ref: "" },
+  { id: "extra_news", tab: "terrorism", verdict: "false", qPl: "Dlaczego media łączą islam głównie z przemocą?", qEn: "Why do media often link Islam mainly to violence?", aPl: "Negatywne wiadomości przyciągają uwagę, a spokojna codzienność miliardów ludzi nie jest 'newsowa'. To zniekształca obraz. Trzeba oddzielać religię od działań ekstremistów.", aEn: "Negative news gets attention, while the peaceful daily life of billions is not 'newsworthy'. This distorts perception. Religion must be separated from extremists' actions.", ref: "" },
+  { id: "extra_citizenship", tab: "terrorism", verdict: "false", qPl: "Czy lojalność wobec kraju zamieszkania jest sprzeczna z islamem?", qEn: "Is loyalty to your country of residence against Islam?", aPl: "Nie. Islam nakazuje dotrzymywać umów, być uczciwym obywatelem i nie szkodzić społeczeństwu. Dobry muzułmanin może być odpowiedzialnym obywatelem.", aEn: "No. Islam commands honoring agreements, being a fair citizen, and not harming society. A good Muslim can be a responsible citizen.", ref: "" },
+  { id: "extra_reverts", tab: "converts", verdict: "info", qPl: "Od czego zacząć pierwszy miesiąc po szahadzie?", qEn: "Where should I start in the first month after shahada?", aPl: "Minimum: Al-Fatiha, podstawy modlitwy, krótkie sury, halal jedzenie i dobre towarzystwo. Nie bierz wszystkiego naraz.", aEn: "Minimum: Al-Fatiha, prayer basics, short surahs, halal food, and good company. Do not take everything at once.", ref: "" },
+  { id: "extra_reverts_mistakes", tab: "converts", verdict: "info", qPl: "Co jeśli popełniam błędy w modlitwie jako nowy muzułmanin?", qEn: "What if I make mistakes in prayer as a new Muslim?", aPl: "Allah patrzy na szczerość i wysiłek. Ucz się krok po kroku, poprawiaj jedną rzecz naraz i nie poddawaj się.", aEn: "Allah looks at sincerity and effort. Learn step by step, fix one thing at a time, and do not give up.", ref: "" },
+  { id: "extra_reverts_lonely", tab: "converts", verdict: "info", qPl: "Jak nie czuć się samotnie po konwersji?", qEn: "How can I avoid loneliness after conversion?", aPl: "Szukaj wspólnoty: lokalny meczet, grupy online, 1-2 zaufane osoby do regularnego kontaktu. Wspólnota jest ogromnym wsparciem.", aEn: "Seek community: local mosque, online groups, and 1-2 trusted people for regular contact. Community is a major support.", ref: "" }
 ];
 
-const islamicFaqExpanded = (() => {
-  const items = [...islamicFaq];
-  const target = 100;
-  let idx = 0;
-  while (items.length < target) {
-    const seed = faqExpansionSeed[idx % faqExpansionSeed.length];
-    const n = items.length + 1;
-    items.push({ id: `extra_${n}`, tab: seed.tab, verdict: seed.verdict, qPl: `${seed.qPl} (${n})`, qEn: `${seed.qEn} (${n})`, aPl: `${seed.aPl}\n\nWskazówka: ten punkt jest częścią rozszerzonego pakietu FAQ 100 pytań.`, aEn: `${seed.aEn}\n\nTip: this item is part of the extended 100-question FAQ package.`, ref: seed.ref });
-    idx += 1;
-  }
-  return items;
-})();
+const islamicFaqExpanded = [...islamicFaq, ...faqExtraUnique];
 
 const ROMANTIC_LINES = [
   // short
@@ -416,8 +418,26 @@ const defaultState = {
 =======
   lessonsTab: "alphabet",
   faqTab: "basics",
+<<<<<<< ours
   prayerLocations: null
   ,
+  asmaChallengeBest: 0,
+  asmaChallengeHistory: []
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+  prayerLocations: null,
   asmaChallengeBest: 0,
   asmaChallengeHistory: []
 >>>>>>> theirs
@@ -933,6 +953,8 @@ function halalharam() {
 function islamfaq() {
   const tabs = [
     { id: "basics",    labelPl: "📚 Podstawy",       labelEn: "📚 Basics" },
+    { id: "daily",     labelPl: "🧭 Codzienność",    labelEn: "🧭 Daily life" },
+    { id: "converts",  labelPl: "🌱 Konwersja",      labelEn: "🌱 Converts" },
     { id: "myths",     labelPl: "🔍 Mity i fakty",   labelEn: "🔍 Myths & facts" },
     { id: "women",     labelPl: "👩 Kobiety",         labelEn: "👩 Women" },
     { id: "religions", labelPl: "🕊 Religie",         labelEn: "🕊 Religions" },
@@ -1031,6 +1053,106 @@ function home() {
   const taskRoute = /liter|trace|narys|write|letter|alfabet/i.test(task) ? "alphabet" : "lessons";
   const badgeTotal = BADGES_CATALOG.length || 1;
   const badgeProgress = Math.round((state.badges.length / badgeTotal) * 100);
+
+  const learnedSurahs = (state.quranSurahFavorites || []).length;
+  const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
+  const favAyahs = (state.quranFavorites || []).length;
+  const favDua = (state.quranDuaFavorites || []).length;
+  const homeFavItems = [
+    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
+      const s = SURAH_LIST.find(x => x.number === num);
+      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
+    }).filter(Boolean),
+    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
+      const num = typeof entry === "object" ? entry.num : entry;
+      const surah = typeof entry === "object" ? entry.surahName : "";
+      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
+    }),
+    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
+      const dua = DUA_DATA.find(d => d.id === id);
+      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
+    }).filter(Boolean)
+  ];
+
+  const learnedSurahs = (state.quranSurahFavorites || []).length;
+  const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
+  const favAyahs = (state.quranFavorites || []).length;
+  const favDua = (state.quranDuaFavorites || []).length;
+  const homeFavItems = [
+    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
+      const s = SURAH_LIST.find(x => x.number === num);
+      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
+    }).filter(Boolean),
+    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
+      const num = typeof entry === "object" ? entry.num : entry;
+      const surah = typeof entry === "object" ? entry.surahName : "";
+      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
+    }),
+    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
+      const dua = DUA_DATA.find(d => d.id === id);
+      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
+    }).filter(Boolean)
+  ];
+
+  const learnedSurahs = (state.quranSurahFavorites || []).length;
+  const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
+  const favAyahs = (state.quranFavorites || []).length;
+  const favDua = (state.quranDuaFavorites || []).length;
+  const homeFavItems = [
+    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
+      const s = SURAH_LIST.find(x => x.number === num);
+      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
+    }).filter(Boolean),
+    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
+      const num = typeof entry === "object" ? entry.num : entry;
+      const surah = typeof entry === "object" ? entry.surahName : "";
+      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
+    }),
+    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
+      const dua = DUA_DATA.find(d => d.id === id);
+      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
+    }).filter(Boolean)
+  ];
+
+  const learnedSurahs = (state.quranSurahFavorites || []).length;
+  const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
+  const favAyahs = (state.quranFavorites || []).length;
+  const favDua = (state.quranDuaFavorites || []).length;
+  const homeFavItems = [
+    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
+      const s = SURAH_LIST.find(x => x.number === num);
+      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
+    }).filter(Boolean),
+    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
+      const num = typeof entry === "object" ? entry.num : entry;
+      const surah = typeof entry === "object" ? entry.surahName : "";
+      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
+    }),
+    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
+      const dua = DUA_DATA.find(d => d.id === id);
+      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
+    }).filter(Boolean)
+  ];
+
+  const learnedSurahs = (state.quranSurahFavorites || []).length;
+  const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
+  const favAyahs = (state.quranFavorites || []).length;
+  const favDua = (state.quranDuaFavorites || []).length;
+  const homeFavItems = [
+    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
+      const s = SURAH_LIST.find(x => x.number === num);
+      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
+    }).filter(Boolean),
+    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
+      const num = typeof entry === "object" ? entry.num : entry;
+      const surah = typeof entry === "object" ? entry.surahName : "";
+      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
+    }),
+    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
+      const dua = DUA_DATA.find(d => d.id === id);
+      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
+    }).filter(Boolean)
+  ];
 
   const learnedSurahs = (state.quranSurahFavorites || []).length;
   const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
@@ -4652,6 +4774,21 @@ async function prayer() {
 =======
       <p class="text-[var(--muted)]">${tx("Dwie lokalizacje na żywo — Polska i Surabaya", "Two live locations — Poland and Surabaya")}</p>
       <p class="text-xs text-[var(--muted)] mt-1">${tx("Możesz edytować lokalizacje (miasto, szerokość, długość, strefa).", "You can edit locations (city, latitude, longitude, timezone).")}</p>
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
     </div>
     <button id="editPrayerLocations" class="big-action mb-3 border border-[var(--line)]">${tx("Edytuj lokalizacje", "Edit locations")}</button>
