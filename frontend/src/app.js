@@ -2148,9 +2148,10 @@ function lessons() {
   }
 
   const unlocked = state.learnedLetters.length >= arabicAlphabet.length;
-  const islamicCats = ["Islam", "Islam –"];
+  // Note: Islamic categories ("Islam – codzienne", "Islam – wartości", "Islam – najważniejsze")
+  // are now visible in #lessons so users can discover the 11+ daily duas with hadith references.
   const allData = LESSONS_DATA[state.lang] || LESSONS_DATA.pl;
-  const lessonsData = allData.filter(l => !islamicCats.some(prefix => l.category.startsWith(prefix)));
+  const lessonsData = allData;
   const categories = [...new Set(lessonsData.map(l => l.category))];
 
   view.innerHTML = `
