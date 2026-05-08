@@ -1,5 +1,6 @@
 import { arabicAlphabet, words, dailyTasks, asmaulHusna, islamicHadith, seerahTimeline, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, newMuslimSteps, halalHaramData, islamicFaq } from "./data.js";
 import { sanitize, debounce, fetchTimeout, cached, crisisNoteHTML, obligationScale, fiqhCards, expandedDuas, tafsirSnippets, hijriEvents, personas, topMyths, scholarPrompt, PRAYER_KEYS, genPairCode, tajweedColorize } from "./extras.js";
+import { prayerInfo } from "./howtopray.js";
 
 const GROQ_API_KEY = "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";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
@@ -774,7 +775,7 @@ function render() {
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
   const books = () => setRoute("adventure");
-  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq, fiqh: fiqhView, duas: duasView, tracker: trackerView, calendar: calendarView, myths: mythsView, onboarding: onboardingView };
+  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, adventure, books, culture, games, badges, settings, dhikr, prayer, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq, fiqh: fiqhView, duas: duasView, tracker: trackerView, calendar: calendarView, myths: mythsView, onboarding: onboardingView, howtopray: howtoprayView };
   // Sprint 4: wrap home/islam to inject new sections
   if (typeof home2 === 'function') views.home = home2;
   else if (typeof homeWrapped === 'function') views.home = homeWrapped;
@@ -1769,23 +1770,33 @@ function badges() {
       <div class="w-full bg-[var(--line)] rounded-full h-2 mb-6">
         <div class="bg-amber-400 h-2 rounded-full transition-all" style="width:${Math.round(unlocked/total*100)}%"></div>
       </div>
+      <p class="text-xs text-[var(--muted)] mb-4">${tx("👉 Kliknij zablokowaną odznakę, aby przejść do miejsca, gdzie ją zdobędziesz.", "👉 Click a locked badge to go where you can earn it.")}</p>
       <div class="grid gap-3">
         ${BADGES_CATALOG.map(b => {
           const isUnlocked = state.badges.includes(b.id);
           const label = state.lang === "pl" ? b.pl : b.en;
           const criterion = state.lang === "pl" ? b.criterionPl : b.criterionEn;
-          return `<div class="panel p-4 flex items-center gap-4 ${isUnlocked ? "" : "opacity-50"}">
+          const prog = badgeProgress(b);
+          const pct = Math.min(100, Math.round((prog.cur / Math.max(1, prog.target)) * 100));
+          const tag = isUnlocked ? 'div' : 'button';
+          const clickable = isUnlocked ? '' : `data-badge-route="${b.route}" data-testid="badge-${b.id}"`;
+          const cursor = isUnlocked ? '' : 'hover:bg-[var(--surface-soft)] cursor-pointer text-left w-full';
+          return `<${tag} class="panel p-4 flex items-center gap-4 ${isUnlocked ? "" : "opacity-90"} ${cursor} transition" ${clickable}>
             <span class="text-4xl shrink-0 ${isUnlocked ? "" : "grayscale"}">${b.icon}</span>
             <div class="min-w-0 flex-1">
               <p class="font-black leading-tight">${label}</p>
               <p class="text-xs text-[var(--muted)] leading-tight mt-0.5">${criterion}</p>
+              ${!isUnlocked ? `<div class="mt-2 flex items-center gap-2"><div class="flex-1 bg-[var(--line)] rounded-full h-1.5"><div class="bg-amber-400 h-1.5 rounded-full transition-all" style="width:${pct}%"></div></div><span class="text-[10px] font-bold text-[var(--muted)] tabular-nums">${prog.cur}/${prog.target}</span></div>` : ""}
             </div>
-            ${isUnlocked ? `<span class="text-emerald-500 text-lg shrink-0">✓</span>` : `<span class="text-[var(--muted)] text-lg shrink-0">🔒</span>`}
-          </div>`;
+            ${isUnlocked ? `<span class="text-emerald-500 text-lg shrink-0">✓</span>` : `<span class="text-[var(--muted)] text-lg shrink-0" aria-hidden="true">→</span>`}
+          </${tag}>`;
         }).join("")}
       </div>
     </div>
   `;
+  view.querySelectorAll('[data-badge-route]').forEach(btn => btn.addEventListener('click', () => {
+    setRoute(btn.dataset.badgeRoute || 'home');
+  }));
 }
 
 function settings() {
@@ -3980,23 +3991,51 @@ function toggleFocusMode(content = "") {
 }
 
 const BADGES_CATALOG = [
-  { id: "first_letter",   icon: "🅰️", pl: "Pierwsza litera",     en: "First letter",       criterionPl: "Poznaj 1 literę arabską",           criterionEn: "Learn 1 Arabic letter" },
-  { id: "ten_letters",    icon: "✋",  pl: "Dziesięć liter",      en: "Ten letters",        criterionPl: "Poznaj 10 liter",                   criterionEn: "Learn 10 letters" },
-  { id: "half_alphabet",  icon: "⭐",  pl: "Połowa alfabetu",     en: "Half alphabet",      criterionPl: "Poznaj 14 z 28 liter",              criterionEn: "Learn 14 of 28 letters" },
-  { id: "full_alphabet",  icon: "🏆",  pl: "Mistrz alfabetu",     en: "Alphabet master",    criterionPl: "Poznaj wszystkie 28 liter",         criterionEn: "Learn all 28 letters" },
-  { id: "first_surah",    icon: "📖",  pl: "Pierwsza sura",       en: "First surah",        criterionPl: "Dodaj 1 surę do ulubionych ❤️",     criterionEn: "Add 1 surah to favorites ❤️" },
-  { id: "ten_surahs",     icon: "📚",  pl: "Dziesięć sur",        en: "Ten surahs",         criterionPl: "Dodaj 10 sur do ulubionych ❤️",     criterionEn: "Add 10 surahs to favorites ❤️" },
-  { id: "streak3",        icon: "🔥",  pl: "3 dni z rzędu",       en: "3-day streak",       criterionPl: "Ucz się 3 dni pod rząd",            criterionEn: "Learn 3 days in a row" },
-  { id: "streak7",        icon: "🔥🔥", pl: "Tydzień nauki",      en: "Week streak",        criterionPl: "Ucz się 7 dni pod rząd",            criterionEn: "Learn 7 days in a row" },
-  { id: "streak30",       icon: "💫",  pl: "Miesiąc nauki",       en: "Month streak",       criterionPl: "Ucz się 30 dni pod rząd",           criterionEn: "Learn 30 days in a row" },
-  { id: "pts500",         icon: "💯",  pl: "500 punktów",         en: "500 points",         criterionPl: "Zdobądź 500 punktów",               criterionEn: "Earn 500 points" },
-  { id: "pts2000",        icon: "💎",  pl: "2000 punktów",        en: "2000 points",        criterionPl: "Zdobądź 2000 punktów",              criterionEn: "Earn 2000 points" },
-  { id: "quiz10",         icon: "🧠",  pl: "10 poprawnych",       en: "10 correct",         criterionPl: "Odpowiedz poprawnie 10 razy w quizie", criterionEn: "Answer correctly 10 times in quiz" },
-  { id: "flashcards25",   icon: "🃏",  pl: "25 fiszek",           en: "25 flashcards",      criterionPl: "Miej 25 fiszek w kolekcji",         criterionEn: "Have 25 flashcards in collection" },
-  { id: "lessons10",      icon: "📝",  pl: "10 lekcji",           en: "10 lessons",         criterionPl: "Zalicz 10 lekcji",                  criterionEn: "Complete 10 lessons" },
-  { id: "bismillah",      icon: "🌙",  pl: "Bismillah",           en: "Bismillah",          criterionPl: "Zalicz lekcję Bismillah",           criterionEn: "Complete the Bismillah lesson" },
-  { id: "shahada_badge",  icon: "☪️",  pl: "Szahada",            en: "Shahada",            criterionPl: "Zalicz lekcję Szahada",             criterionEn: "Complete the Shahada lesson" },
+  { id: "first_letter",   icon: "🅰️", route: "lessons", pl: "Pierwsza litera",     en: "First letter",       criterionPl: "Poznaj 1 literę arabską",           criterionEn: "Learn 1 Arabic letter" },
+  { id: "ten_letters",    icon: "✋",  route: "lessons", pl: "Dziesięć liter",      en: "Ten letters",        criterionPl: "Poznaj 10 liter",                   criterionEn: "Learn 10 letters" },
+  { id: "half_alphabet",  icon: "⭐",  route: "lessons", pl: "Połowa alfabetu",     en: "Half alphabet",      criterionPl: "Poznaj 14 z 28 liter",              criterionEn: "Learn 14 of 28 letters" },
+  { id: "full_alphabet",  icon: "🏆",  route: "lessons", pl: "Mistrz alfabetu",     en: "Alphabet master",    criterionPl: "Poznaj wszystkie 28 liter",         criterionEn: "Learn all 28 letters" },
+  { id: "first_surah",    icon: "📖",  route: "koran",   pl: "Pierwsza sura",       en: "First surah",        criterionPl: "Dodaj 1 surę do ulubionych ❤️",     criterionEn: "Add 1 surah to favorites ❤️" },
+  { id: "ten_surahs",     icon: "📚",  route: "koran",   pl: "Dziesięć sur",        en: "Ten surahs",         criterionPl: "Dodaj 10 sur do ulubionych ❤️",     criterionEn: "Add 10 surahs to favorites ❤️" },
+  { id: "streak3",        icon: "🔥",  route: "home",    pl: "3 dni z rzędu",       en: "3-day streak",       criterionPl: "Ucz się 3 dni pod rząd",            criterionEn: "Learn 3 days in a row" },
+  { id: "streak7",        icon: "🔥🔥", route: "home",   pl: "Tydzień nauki",      en: "Week streak",        criterionPl: "Ucz się 7 dni pod rząd",            criterionEn: "Learn 7 days in a row" },
+  { id: "streak30",       icon: "💫",  route: "home",    pl: "Miesiąc nauki",       en: "Month streak",       criterionPl: "Ucz się 30 dni pod rząd",           criterionEn: "Learn 30 days in a row" },
+  { id: "pts500",         icon: "💯",  route: "games",   pl: "500 punktów",         en: "500 points",         criterionPl: "Zdobądź 500 punktów",               criterionEn: "Earn 500 points" },
+  { id: "pts2000",        icon: "💎",  route: "games",   pl: "2000 punktów",        en: "2000 points",        criterionPl: "Zdobądź 2000 punktów",              criterionEn: "Earn 2000 points" },
+  { id: "quiz10",         icon: "🧠",  route: "games",   pl: "10 poprawnych",       en: "10 correct",         criterionPl: "Odpowiedz poprawnie 10 razy w quizie", criterionEn: "Answer correctly 10 times in quiz" },
+  { id: "flashcards25",   icon: "🃏",  route: "games",   pl: "25 fiszek",           en: "25 flashcards",      criterionPl: "Miej 25 fiszek w kolekcji",         criterionEn: "Have 25 flashcards in collection" },
+  { id: "lessons10",      icon: "📝",  route: "lessons", pl: "10 lekcji",           en: "10 lessons",         criterionPl: "Zalicz 10 lekcji",                  criterionEn: "Complete 10 lessons" },
+  { id: "bismillah",      icon: "🌙",  route: "lessons", pl: "Bismillah",           en: "Bismillah",          criterionPl: "Zalicz lekcję Bismillah",           criterionEn: "Complete the Bismillah lesson" },
+  { id: "shahada_badge",  icon: "☪️",  route: "muallaf", pl: "Szahada",            en: "Shahada",            criterionPl: "Zalicz lekcję Szahada",             criterionEn: "Complete the Shahada lesson" },
 ];
+
+// Progress calculator for each badge (used by clickable badge cards)
+function badgeProgress(b) {
+  const ll = state.learnedLetters.length;
+  const sq = (state.quranSurahFavorites || []).length;
+  const fc = (state.customFlashcards || []).length + Object.keys(state.flashcards || {}).length;
+  const ld = (state.miniLessonsDone || []).length;
+  const qz = state.quizStats?.correct || 0;
+  switch (b.id) {
+    case "first_letter":   return { cur: ll, target: 1 };
+    case "ten_letters":    return { cur: ll, target: 10 };
+    case "half_alphabet":  return { cur: ll, target: 14 };
+    case "full_alphabet":  return { cur: ll, target: 28 };
+    case "first_surah":    return { cur: sq, target: 1 };
+    case "ten_surahs":     return { cur: sq, target: 10 };
+    case "streak3":        return { cur: state.streak, target: 3 };
+    case "streak7":        return { cur: state.streak, target: 7 };
+    case "streak30":       return { cur: state.streak, target: 30 };
+    case "pts500":         return { cur: state.points, target: 500 };
+    case "pts2000":        return { cur: state.points, target: 2000 };
+    case "quiz10":         return { cur: qz, target: 10 };
+    case "flashcards25":   return { cur: fc, target: 25 };
+    case "lessons10":      return { cur: ld, target: 10 };
+    case "bismillah":      return { cur: (state.miniLessonsDone || []).includes("bismillah") ? 1 : 0, target: 1 };
+    case "shahada_badge":  return { cur: (state.miniLessonsDone || []).includes("shahada") ? 1 : 0, target: 1 };
+    default:               return { cur: 0, target: 1 };
+  }
+}
 
 function checkBadges() {
   const ll = state.learnedLetters.length;
@@ -4233,15 +4272,19 @@ async function prayer() {
   if (compassWatchId !== null) { try { window.removeEventListener('deviceorientationabsolute', compassWatchId); window.removeEventListener('deviceorientation', compassWatchId); } catch {} compassWatchId = null; }
 
   view.innerHTML = `
-    <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Czasy Modlitw", "Prayer Times")} 🕌</h1>
-      <p class="text-[var(--muted)]">${tx("Dwie lokalizacje na żywo — Polska i Surabaya", "Two live locations — Poland and Surabaya")}</p>
+    <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <h1 class="text-3xl font-black">${tx("Czasy Modlitw", "Prayer Times")} 🕌</h1>
+        <p class="text-[var(--muted)]">${tx("Dwie lokalizacje na żywo — Polska i Surabaya", "Two live locations — Poland and Surabaya")}</p>
+      </div>
+      <button class="big-action bg-emerald-500 text-white" data-route="howtopray" data-testid="prayer-howtopray-btn">🕌 ${tx('Jak się modlić — kroki','How to pray — steps')}</button>
     </div>
     <div class="grid gap-4 lg:grid-cols-2">
       <div id="prayerPolska" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
       <div id="prayerSurabaya" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
     </div>
   `;
+  view.querySelector('[data-route="howtopray"]')?.addEventListener('click', () => setRoute('howtopray'));
 
   const results = {};
   for (const loc of PRAYER_LOCATIONS) {
@@ -4602,6 +4645,61 @@ function calendarView() {
   `);
 }
 
+// Sprint+ : How-to-pray view
+function howtoprayView() {
+  const data = prayerInfo[state.lang] || prayerInfo.pl;
+  view.innerHTML = sanitize(`
+    <section class="space-y-5" data-testid="howtopray-view">
+      <header class="rounded-2xl bg-emerald-50/60 dark:bg-emerald-900/30 border border-emerald-200 p-5">
+        <h1 class="text-2xl font-black">🕌 ${tx('Jak się modlić — krok po kroku','How to pray — step by step')}</h1>
+        <p class="text-sm mt-2">${data.intro}</p>
+        <p class="text-xs text-[var(--muted)] mt-2"><strong>${tx('Rakah:','Rakah:')}</strong> ${data.rakahNote}</p>
+      </header>
+
+      <div class="rounded-xl bg-[var(--surface-soft)] border border-[var(--line)] p-4">
+        <h2 class="font-bold text-lg mb-3">${tx("5 modlitw — liczba rakat","5 prayers — rak'ah counts")}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-2">
+          ${data.prayers.map(p => `<div class="rounded-lg border border-[var(--line)] p-3 bg-[var(--surface)] text-center" data-testid="howtopray-prayer-${p.key}"><div class="font-black text-emerald-700">${p.namePl}</div><div class="text-3xl font-black">${p.fardRakah}</div><div class="text-[10px] uppercase tracking-wider text-[var(--muted)]">rak'ah fard</div><div class="text-xs mt-1">${p.timePl}</div><div class="text-[10px] text-[var(--muted)] mt-1">+ ${p.sunnah}</div></div>`).join('')}
+        </div>
+      </div>
+
+      <div class="rounded-xl bg-amber-50/60 dark:bg-amber-900/20 border border-amber-200 p-4">
+        <h2 class="font-bold text-lg mb-3">${tx('Przed modlitwą — przygotowanie','Before prayer — preparation')}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          ${data.prereq.map(p => `<div class="rounded-lg bg-[var(--surface)] border border-[var(--line)] p-3" data-testid="prereq-${p.id}"><div class="font-bold">${p.title}</div><p class="text-sm mt-1">${p.desc}</p></div>`).join('')}
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-xl font-black">${tx('Ruchy modlitwy — 11 kroków','Prayer movements — 11 steps')}</h2>
+        ${data.steps.map((s, i) => `<article class="rounded-xl bg-[var(--surface-soft)] border border-[var(--line)] p-4" data-testid="howtopray-step-${s.id}">
+          <div class="flex items-start gap-3">
+            <div class="text-4xl shrink-0">${s.icon}</div>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-bold text-lg">${s.title}</h3>
+              <p class="text-sm mt-2">${s.body}</p>
+              ${s.words_ar ? `<div class="mt-3 rounded-lg bg-[var(--surface)] border border-[var(--line)] p-3"><div class="text-2xl text-right" dir="rtl">${s.words_ar}</div><div class="text-xs italic text-amber-700 mt-1">${s.words_tr || ''}</div><div class="text-sm text-[var(--muted)] mt-1">${s.words_pl || ''}</div></div>` : ''}
+              ${s.sunnah ? `<p class="text-xs text-[var(--muted)] mt-2"><strong>📌 Madhhab:</strong> ${s.sunnah}</p>` : ''}
+            </div>
+          </div>
+        </article>`).join('')}
+      </div>
+
+      <div class="rounded-xl bg-rose-50/60 dark:bg-rose-900/20 border border-rose-200 p-4">
+        <h2 class="font-bold text-lg mb-2">💚 ${tx('Po modlitwie — dhikr','After prayer — dhikr')}</h2>
+        <ul class="space-y-1 text-sm list-disc ml-5">
+          ${data.after.map(line => `<li>${line}</li>`).join('')}
+        </ul>
+      </div>
+
+      <div class="text-center pt-3">
+        <button class="big-action bg-emerald-500 text-white inline-flex items-center gap-2" data-route="prayer" data-testid="howtopray-go-prayer-btn">⏰ ${tx('Zobacz czasy modlitw','See prayer times')}</button>
+      </div>
+    </section>
+  `);
+  view.querySelectorAll('[data-route]').forEach(b => b.addEventListener('click', () => setRoute(b.dataset.route)));
+}
+
 function mythsView() {
   const myths = islamicFaq.filter(f => f.verdict === 'false' || f.verdict === 'complex');
   view.innerHTML = sanitize(`
@@ -4627,12 +4725,15 @@ function islamWrapped() {
   const extraNav = document.createElement('div');
   extraNav.className = 'grid grid-cols-2 sm:grid-cols-5 gap-2 mt-4';
   extraNav.innerHTML = sanitize(`
+    <button class="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 p-3 font-bold" data-route="howtopray" data-testid="islam-link-howtopray">🕌 ${tx('Jak się modlić','How to pray')}</button>
     <button class="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 p-3 font-bold" data-route="fiqh" data-testid="islam-link-fiqh">📜 ${tx('Fiqh & skala','Fiqh & scale')}</button>
     <button class="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 p-3 font-bold" data-route="duas" data-testid="islam-link-duas">🤲 ${tx("Du'a","Du'a")}</button>
     <button class="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 p-3 font-bold" data-route="tracker" data-testid="islam-link-tracker">✅ ${tx('Tracker modlitw','Prayer Tracker')}</button>
     <button class="rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 p-3 font-bold" data-route="calendar" data-testid="islam-link-calendar">📅 ${tx('Kalendarz','Calendar')}</button>
     <button class="rounded-xl border-2 border-rose-300 bg-rose-50 dark:bg-rose-900/30 p-3 font-bold" data-route="myths" data-testid="islam-link-myths">🛡️ ${tx('Mity','Myths')}</button>
   `);
+  // Update grid columns to fit 6
+  extraNav.className = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mt-4';
   islamView.appendChild(extraNav);
   extraNav.querySelectorAll('[data-route]').forEach(b => b.addEventListener('click', () => setRoute(b.dataset.route)));
 }
