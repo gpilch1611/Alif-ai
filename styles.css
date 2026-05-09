@@ -1888,6 +1888,196 @@ a:focus-visible {
   border-left: 3px solid var(--accent);
   line-height: 1.5;
 }
+.muallaf-checklist {
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--accent) 9%, transparent), transparent 60%),
+    var(--panel);
+}
+.muallaf-progress {
+  min-width: 132px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+}
+.muallaf-progress span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--accent);
+  font-size: 1.15rem;
+  font-weight: 900;
+  text-align: right;
+}
+.muallaf-progress div {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--muted) 18%, transparent);
+}
+.muallaf-progress i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+}
+.muallaf-checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+.muallaf-checklist-group {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  background: color-mix(in oklab, var(--surface) 88%, var(--accent) 12%);
+}
+.muallaf-checklist-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.muallaf-checklist-head > span {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--accent);
+  color: white;
+  font-weight: 900;
+}
+.muallaf-checklist-head h3 {
+  margin: 0 0 3px;
+  font-size: 1rem;
+  font-weight: 900;
+}
+.muallaf-checklist-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+.muallaf-checklist-items {
+  display: grid;
+  gap: 9px;
+}
+.muallaf-check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 42px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.muallaf-check-item input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  accent-color: var(--accent);
+}
+.muallaf-check-item:has(input:checked) {
+  border-color: color-mix(in oklab, var(--accent) 55%, var(--border));
+  background: color-mix(in oklab, var(--accent) 12%, var(--panel));
+}
+.muallaf-check-item:has(input:checked) span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+/* ============================================================
+   Zakat calculator
+   ============================================================ */
+.zakat-card {
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--gold) 12%, transparent), transparent 58%),
+    var(--panel);
+}
+.zakat-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.zakat-field {
+  display: grid;
+  gap: 8px;
+}
+.zakat-field span {
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+.zakat-field input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 12px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 800;
+}
+.zakat-field small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+.zakat-result {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+.zakat-result > div {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  background: var(--bg);
+}
+.zakat-result p {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.zakat-result strong {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--accent);
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 900;
+}
+.zakat-disclaimer {
+  margin: 18px 0 0;
+  padding: 12px 14px;
+  border-left: 4px solid var(--gold);
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--gold) 10%, var(--surface));
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+@media (max-width: 720px) {
+  .muallaf-checklist-grid,
+  .zakat-form-grid,
+  .zakat-result {
+    grid-template-columns: 1fr;
+  }
+  .muallaf-progress {
+    width: 100%;
+  }
+  .muallaf-progress span {
+    text-align: left;
+  }
+}
 
 /* ============================================================
    Halal & Haram
@@ -1943,8 +2133,14 @@ a:focus-visible {
   letter-spacing: 0.04em;
 }
 .trust-badge.verified { background: #ecfdf5; color: #047857; }
+.trust-badge.scholarly-disagreement { background: #fffbeb; color: #b45309; }
+.trust-badge.context-dependent { background: #eef2ff; color: #4338ca; }
+.trust-badge.high-risk { background: #fff7ed; color: #c2410c; }
 .trust-badge.unverified { background: #fef2f2; color: #b91c1c; }
 [data-theme="dark"] .trust-badge.verified { background: #064e3b; color: #a7f3d0; }
+[data-theme="dark"] .trust-badge.scholarly-disagreement { background: #451a03; color: #fcd34d; }
+[data-theme="dark"] .trust-badge.context-dependent { background: #312e81; color: #c7d2fe; }
+[data-theme="dark"] .trust-badge.high-risk { background: #431407; color: #fed7aa; }
 [data-theme="dark"] .trust-badge.unverified { background: #450a0a; color: #fecaca; }
 
 /* ============================================================
@@ -2001,4 +2197,15 @@ a:focus-visible {
   color: var(--muted);
   font-size: 10px;
   font-weight: 800;
+}
+
+.religious-risk-note {
+  margin-top: 10px;
+  border-left: 3px solid #f97316;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(249, 115, 22, 0.08);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
 }

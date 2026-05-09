@@ -48,11 +48,25 @@ for (const hadith of islamicHadith) {
 }
 
 assert(!appJs.includes("<<<<<<<") && !appJs.includes(">>>>>>>"), "app.js contains unresolved merge markers.");
-assert(!appJs.includes("[...islamicFaq, ...faqExtraUnique]"), "app.js still expands FAQ with artificial extra items.");
+assert(!appJs.includes("[...islamicFaq, ...faqExtraUnique, ...faqExtraUnique]"), "app.js duplicates curated extra FAQ items.");
+assert(appJs.includes("const islamicFaqExpanded = [...islamicFaq, ...faqExtraUnique].map"), "Curated extra FAQ items are not included in the FAQ dataset.");
+assert(appJs.includes("CONTENT_TRUST"), "Content trust taxonomy is missing.");
+assert(appJs.includes("SCHOLARLY_DISAGREEMENT"), "Scholarly disagreement trust level is missing.");
+assert(appJs.includes("CONTEXT_DEPENDENT"), "Context-dependent trust level is missing.");
+assert(appJs.includes("source_type"), "Religious content schema is missing source_type.");
+assert(appJs.includes("source_ref"), "Religious content schema is missing source_ref.");
+assert(appJs.includes("reviewed_at"), "Religious content schema is missing reviewed_at.");
+assert(appJs.includes("HIGH_RISK_RELIGIOUS_NOTICE"), "High-risk religious notice is missing.");
+assert(appJs.includes("HIGH_RISK_FAQ_IDS"), "High-risk FAQ registry is missing.");
+assert(appJs.includes("high_risk"), "FAQ high-risk schema flag is missing.");
+assert(appJs.includes("isHighRiskFaq"), "FAQ high-risk classifier is missing.");
+assert(appJs.includes("hadith_collection"), "Hadith source type metadata is missing.");
+assert(appJs.includes("parseHadithCollection"), "Hadith collection parser is missing.");
 assert(appJs.includes("ISLAMIC_SOURCE_LIBRARY"), "AI source library is missing.");
 assert(appJs.includes("hasRequiredIslamicSources"), "AI religious source guard is missing.");
 assert(appJs.includes("DUA_SOURCE_MAP"), "Dua source map is missing.");
 assert(appJs.includes("CONTENT_LAST_CHECKED_AT"), "Content quality metadata is missing.");
+assert(appJs.includes("RELIGIOUS_NOTICE"), "Religious responsibility notice is missing.");
 
 if (failures.length) {
   console.error("Islamic data validation failed:");

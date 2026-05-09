@@ -47,7 +47,7 @@ const navItems = [
 
 const secondaryNavItems = [];
 
-const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","prayer","prayerGuide"];
+const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","zakat","halalharam","islamfaq","prayer","prayerGuide"];
 const CONTENT_VERSION = "2026.05";
 const CONTENT_UPDATED_AT = "2026-05-08";
 
@@ -75,9 +75,36 @@ const faqExtraUnique = [
 
 const CONTENT_LAST_CHECKED_AT = "2026-05-08";
 const TRUST_LEVEL = {
-  verified: { pl: "ZWERYFIKOWANE", en: "VERIFIED" },
-  unverified: { pl: "NIEZWERYFIKOWANE", en: "UNVERIFIED" }
+  VERIFIED: { pl: "ZWERYFIKOWANE", en: "VERIFIED" },
+  SCHOLARLY_DISAGREEMENT: { pl: "SPORNE U UCZONYCH", en: "SCHOLARLY DISAGREEMENT" },
+  CONTEXT_DEPENDENT: { pl: "ZALEZY OD KONTEKSTU", en: "CONTEXT DEPENDENT" },
+  UNVERIFIED: { pl: "NIEZWERYFIKOWANE", en: "UNVERIFIED" }
 };
+const CONTENT_TRUST = {
+  VERIFIED: "VERIFIED",
+  SCHOLARLY_DISAGREEMENT: "SCHOLARLY_DISAGREEMENT",
+  CONTEXT_DEPENDENT: "CONTEXT_DEPENDENT",
+  UNVERIFIED: "UNVERIFIED"
+};
+const RELIGIOUS_NOTICE = {
+  pl: "Treści edukacyjne: to nie jest indywidualna fatwa. W sprawach spornych (fiqh, finanse, małżeństwo, rozwód, zdrowie) skonsultuj lokalnego, zaufanego imama lub uczonego.",
+  en: "Educational content: this is not a personal fatwa. For disputed issues (fiqh, finance, marriage, divorce, health), consult a trusted local imam or qualified scholar."
+};
+
+const HIGH_RISK_RELIGIOUS_NOTICE = {
+  pl: "Temat wysokiego ryzyka: nie podejmuj decyzji osobistej tylko na podstawie aplikacji. Skonsultuj lokalnego imama, uczonego albo specjaliste, jesli dotyczy zdrowia lub prawa.",
+  en: "High-risk topic: do not make a personal decision based only on the app. Consult a local imam, qualified scholar, or a relevant professional for health or legal matters."
+};
+const HIGH_RISK_FAQ_IDS = new Set([
+  "christmas",
+  "extra_family_pushback",
+  "extra_halal_job",
+  "extra_mental_health",
+  "extra_marriage_choice",
+  "extra_holidays",
+  "polygamy",
+  "hijab"
+]);
 
 const FAQ_REFERENCE_FIXES = {
   salam: "Abu Dawud 5193; Tirmidhi 2689",
@@ -85,16 +112,62 @@ const FAQ_REFERENCE_FIXES = {
   mosque_visit: "Quran 9:18; general adab of masjid",
   convert_steps: "Muslim 21; Bukhari 8",
   arabs: "Quran 49:13",
-  music: "Scholarly disagreement; no explicit Quranic prohibition"
+  music: "Scholarly disagreement; no explicit Quranic prohibition",
+  extra_quran_touch: "Fiqh issue: mushaf handling; Quran 56:79 cited by many scholars",
+  extra_madhhab: "General fiqh learning guidance; Quran 16:43",
+  extra_convert_name: "Bukhari 6190; Muslim 2140",
+  extra_work_prayer: "Quran 4:103; Quran 62:9-10",
+  extra_halal_job: "Quran 5:2; context-dependent fiqh issue",
+  extra_mental_health: "Bukhari 5678; Muslim 2204",
+  extra_doubts: "Muslim 132; Quran 16:43",
+  extra_women_education: "Ibn Majah 224; Quran 39:9",
+  extra_marriage_choice: "Bukhari 5136; Muslim 1419",
+  extra_holidays: "Scholarly disagreement; Quran 60:8",
+  extra_news: "Quran 49:6; Quran 5:8",
+  extra_citizenship: "Quran 5:1; Quran 16:91",
+  extra_reverts: "Muslim 21; Bukhari 8",
+  extra_reverts_mistakes: "Quran 2:286; Bukhari 1",
+  extra_reverts_lonely: "Quran 49:10; Tirmidhi 1924"
 };
 
-const islamicFaqExpanded = islamicFaq.map((item) => ({
-  ...item,
-  ref: item.ref || FAQ_REFERENCE_FIXES[item.id] || "",
-  verified: Boolean(item.ref || FAQ_REFERENCE_FIXES[item.id]),
-  source: item.ref || FAQ_REFERENCE_FIXES[item.id] || "",
-  last_checked_at: CONTENT_LAST_CHECKED_AT
-}));
+function trustForFaq(item) {
+  if (!item.ref && !FAQ_REFERENCE_FIXES[item.id]) return CONTENT_TRUST.UNVERIFIED;
+  if (item.verdict === "complex") return CONTENT_TRUST.SCHOLARLY_DISAGREEMENT;
+  if (/job|health|holiday|family|touch|madhhab|doubts|citizenship/i.test(item.id)) return CONTENT_TRUST.CONTEXT_DEPENDENT;
+  return CONTENT_TRUST.VERIFIED;
+}
+
+function trustLabel(confidence) {
+  const trust = TRUST_LEVEL[confidence] || TRUST_LEVEL.UNVERIFIED;
+  return tx(trust.pl, trust.en);
+}
+
+function trustClass(confidence) {
+  return String(confidence || CONTENT_TRUST.UNVERIFIED).toLowerCase().replace(/_/g, "-");
+}
+
+function isHighRiskFaq(item) {
+  const text = `${item.id} ${item.qPl || ""} ${item.qEn || ""} ${item.aPl || ""} ${item.aEn || ""}`;
+  return HIGH_RISK_FAQ_IDS.has(item.id) || /(małżeń|malzen|marriage|divorce|rozwod|finans|finance|zdrow|health|praca|work|job|rodzin|family|therapy|terapia|riba|alcohol|alkohol)/i.test(text);
+}
+
+const islamicFaqExpanded = [...islamicFaq, ...faqExtraUnique].map((item) => {
+  const source = item.ref || FAQ_REFERENCE_FIXES[item.id] || "";
+  const confidence = trustForFaq(item);
+  const high_risk = isHighRiskFaq(item);
+  return {
+    ...item,
+    ref: source,
+    verified: Boolean(source),
+    confidence,
+    high_risk,
+    source_type: source.includes("Scholarly disagreement") || confidence === CONTENT_TRUST.SCHOLARLY_DISAGREEMENT ? "fiqh_disagreement" : "quran_hadith",
+    source_ref: source,
+    source,
+    reviewed_at: CONTENT_LAST_CHECKED_AT,
+    last_checked_at: CONTENT_LAST_CHECKED_AT
+  };
+});
 
 const ISLAMIC_SOURCE_LIBRARY = [
   ...islamicFaqExpanded.map((item) => ({
@@ -108,6 +181,7 @@ const ISLAMIC_SOURCE_LIBRARY = [
     id: `hadith:${item.id}`,
     type: "hadith",
     source: item.source,
+    source_type: "hadith_collection",
     textPl: `${item.pl} ${item.tr}`,
     textEn: `${item.en} ${item.tr}`
   }))
@@ -452,6 +526,7 @@ const defaultState = {
   activeGame: null,
   lessonsTab: "lessons",
   faqTab: "basics",
+  muallafChecklist: [],
   prayerGuideSessions: 0,
   lastPrayerGuide: null,
   prayerLocations: null,
@@ -571,6 +646,20 @@ function escapeHtml(value = "") {
     "\"": "&quot;",
     "'": "&#039;"
   }[char]));
+}
+
+function setTrustedHtml(target, html) {
+  const el = typeof target === "string" ? $(target) : target;
+  if (!el) return;
+  el.innerHTML = html;
+}
+
+function appendTextBlock(target, tagName, className, text) {
+  const el = document.createElement(tagName);
+  if (className) el.className = className;
+  el.textContent = text;
+  target.appendChild(el);
+  return el;
 }
 
 function markActiveDay() {
@@ -848,8 +937,59 @@ function render() {
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
   const books = () => setRoute("culture");
-  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq };
+  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, zakat, halalharam, islamfaq };
   (views[route] || home)();
+}
+
+const MUALLAF_CHECKLIST_GROUPS = [
+  {
+    id: "30",
+    icon: "30",
+    titlePl: "Pierwsze 30 dni po szahadzie",
+    titleEn: "First 30 days after shahada",
+    leadPl: "Najpierw rytm, modlitwa i spokojne podstawy. Jedna rzecz naraz.",
+    leadEn: "Start with rhythm, prayer and calm basics. One thing at a time.",
+    items: [
+      { id: "30_shahada", pl: "Zapisz tekst szahady i jej znaczenie własnymi słowami.", en: "Write down the shahada and its meaning in your own words." },
+      { id: "30_fatiha", pl: "Ucz się Al-Fatihy po krótkim fragmencie dziennie.", en: "Learn Al-Fatiha in small daily parts." },
+      { id: "30_prayer", pl: "Przećwicz ruchy salat z przewodnikiem, nawet jeśli recytacja jest jeszcze prosta.", en: "Practice salat movements with a guide, even while recitation is still simple." },
+      { id: "30_mosque", pl: "Znajdź lokalny meczet lub jedną zaufaną osobę do pytań.", en: "Find a local mosque or one trusted person for questions." },
+      { id: "30_halal", pl: "Zacznij od najłatwiejszych zmian halal w jedzeniu i codziennych nawykach.", en: "Begin with the easiest halal changes in food and daily habits." }
+    ]
+  },
+  {
+    id: "90",
+    icon: "90",
+    titlePl: "Do 90 dni: stabilny fundament",
+    titleEn: "By 90 days: a steady foundation",
+    leadPl: "Po trzech miesiącach celem jest stabilność, nie perfekcja.",
+    leadEn: "After three months the goal is steadiness, not perfection.",
+    items: [
+      { id: "90_prayers", pl: "Ułóż realistyczny plan pięciu modlitw wokół pracy, szkoły lub domu.", en: "Build a realistic five-prayer schedule around work, school or home." },
+      { id: "90_surahs", pl: "Dodaj 2-3 krótkie sury do recytacji, np. Al-Ikhlas, Al-Falaq, An-Nas.", en: "Add 2-3 short surahs for recitation, such as Al-Ikhlas, Al-Falaq and An-Nas." },
+      { id: "90_community", pl: "Odwiedź lekcję, khutbę albo spotkanie dla początkujących.", en: "Attend a lesson, khutbah or beginner-friendly gathering." },
+      { id: "90_family", pl: "Przygotuj łagodne odpowiedzi dla rodziny i znajomych, bez presji na spory.", en: "Prepare gentle answers for family and friends without pressure to debate." },
+      { id: "90_questions", pl: "Zapisuj pytania fiqh i finansowe do omówienia z lokalnym imamem lub uczonym.", en: "Save fiqh and finance questions for a local imam or qualified scholar." }
+    ]
+  }
+];
+
+function muallafChecklistTotal() {
+  return MUALLAF_CHECKLIST_GROUPS.reduce((sum, group) => sum + group.items.length, 0);
+}
+
+function muallafChecklistDoneCount() {
+  const completed = new Set(state.muallafChecklist || []);
+  return MUALLAF_CHECKLIST_GROUPS.reduce((sum, group) => sum + group.items.filter(item => completed.has(item.id)).length, 0);
+}
+
+function muallafChecklistPercent() {
+  const total = muallafChecklistTotal() || 1;
+  return Math.round((muallafChecklistDoneCount() / total) * 100);
+}
+
+function isMuallafChecklistDone(id) {
+  return (state.muallafChecklist || []).includes(id);
 }
 
 function muallaf() {
@@ -882,6 +1022,40 @@ function muallaf() {
       `).join("")}
     </div>
 
+    <section class="muallaf-checklist panel p-5 mb-6">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 class="text-xl font-black">${tx("Plan 30/90 dni po szahadzie", "30/90 day plan after shahada")}</h2>
+          <p class="text-sm text-[var(--muted)]">${tx("Checklistę możesz odhaczać we własnym tempie. Aplikacja zapamięta postęp na tym urządzeniu.", "Tick items at your own pace. The app saves progress on this device.")}</p>
+        </div>
+        <div class="muallaf-progress" aria-label="${tx("Postęp checklisty", "Checklist progress")}">
+          <span>${muallafChecklistDoneCount()}/${muallafChecklistTotal()}</span>
+          <div><i style="width:${muallafChecklistPercent()}%"></i></div>
+        </div>
+      </div>
+      <div class="muallaf-checklist-grid">
+        ${MUALLAF_CHECKLIST_GROUPS.map(group => `
+          <div class="muallaf-checklist-group">
+            <div class="muallaf-checklist-head">
+              <span>${group.icon}</span>
+              <div>
+                <h3>${state.lang === "pl" ? group.titlePl : group.titleEn}</h3>
+                <p>${state.lang === "pl" ? group.leadPl : group.leadEn}</p>
+              </div>
+            </div>
+            <div class="muallaf-checklist-items">
+              ${group.items.map(item => `
+                <label class="muallaf-check-item">
+                  <input type="checkbox" data-muallaf-check="${item.id}" ${isMuallafChecklistDone(item.id) ? "checked" : ""}>
+                  <span>${state.lang === "pl" ? item.pl : item.en}</span>
+                </label>
+              `).join("")}
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    </section>
+
     <h2 class="text-xl font-black mb-3">${tx("Nie musisz być perfekcyjny", "You don't need to be perfect")}</h2>
     <div class="grid gap-3 mb-6">
       ${easeHadiths.map(h => `
@@ -890,7 +1064,7 @@ function muallaf() {
           <p class="text-xs font-mono text-[var(--muted)] mb-2">${h.tr}</p>
           <p class="text-sm">${state.lang === "pl" ? h.pl : h.en}</p>
           <p class="text-xs text-[var(--muted)] mt-2 italic">${h.source}</p>
-          <p class="quality-meta">${hadithQuality(h).verified ? tx(TRUST_LEVEL.verified.pl, TRUST_LEVEL.verified.en) : tx(TRUST_LEVEL.unverified.pl, TRUST_LEVEL.unverified.en)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).last_checked_at}</p>
+          <p class="quality-meta">${hadithQuality(h).source_type} · ${hadithQuality(h).collection} · ${hadithQuality(h).verified ? trustLabel(CONTENT_TRUST.VERIFIED) : trustLabel(CONTENT_TRUST.UNVERIFIED)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).reviewed_at}</p>
         </div>
       `).join("")}
     </div>
@@ -912,6 +1086,66 @@ function muallaf() {
       `).join("")}
     </div>
   `;
+
+  view.querySelectorAll("[data-muallaf-check]").forEach((input) => {
+    input.addEventListener("change", () => {
+      const current = new Set(state.muallafChecklist || []);
+      if (input.checked) current.add(input.dataset.muallafCheck);
+      else current.delete(input.dataset.muallafCheck);
+      state.muallafChecklist = [...current];
+      saveState();
+      muallaf();
+    });
+  });
+}
+
+function zakat() {
+  view.innerHTML = `
+    <div class="mb-5">
+      <h1 class="text-3xl font-black">💰 ${tx("Kalkulator zakat", "Zakat calculator")}</h1>
+      <p class="text-[var(--muted)] mt-1">${tx("Proste przybliżenie: aktywa minus krótkoterminowe długi, a następnie 2.5% od nadwyżki.", "A simple estimate: assets minus short-term debts, then 2.5% of the surplus.")}</p>
+    </div>
+    <section class="zakat-card panel p-5">
+      <div class="zakat-form-grid">
+        <label class="zakat-field">
+          <span>${tx("Aktywa zakatowe", "Zakatable assets")}</span>
+          <input id="zakatAssets" type="text" inputmode="decimal" pattern="[0-9]+([,.][0-9]+)?" placeholder="0.00">
+          <small>${tx("Gotówka, oszczędności, złoto/srebro, inwestycje i towary handlowe.", "Cash, savings, gold/silver, investments and trade goods.")}</small>
+        </label>
+        <label class="zakat-field">
+          <span>${tx("Długi do odjęcia", "Debts to subtract")}</span>
+          <input id="zakatDebts" type="text" inputmode="decimal" pattern="[0-9]+([,.][0-9]+)?" placeholder="0.00">
+          <small>${tx("Najczęściej bieżące, wymagalne zobowiązania.", "Usually current, immediately due obligations.")}</small>
+        </label>
+      </div>
+      <div class="zakat-result" aria-live="polite">
+        <div>
+          <p>${tx("Nadwyżka po długach", "Surplus after debts")}</p>
+          <strong id="zakatSurplus">0.00</strong>
+        </div>
+        <div>
+          <p>${tx("Przybliżony zakat 2.5%", "Estimated zakat 2.5%")}</p>
+          <strong id="zakatDue">0.00</strong>
+        </div>
+      </div>
+      <p class="zakat-disclaimer">${tx("To narzędzie jest edukacyjne i nie zastępuje indywidualnej fatwy ani porady finansowej. Zakat zależy od nisabu, roku księżycowego, rodzaju majątku i szczegółów długów; w sprawach osobistych skonsultuj lokalnego imama lub kwalifikowanego uczonego.", "This tool is educational and does not replace a personal fatwa or financial advice. Zakat depends on nisab, the lunar year, asset type and debt details; for personal cases consult a local imam or qualified scholar.")}</p>
+    </section>
+  `;
+
+  const assetsInput = $("#zakatAssets");
+  const debtsInput = $("#zakatDebts");
+  const surplusOutput = $("#zakatSurplus");
+  const dueOutput = $("#zakatDue");
+  const formatter = new Intl.NumberFormat(localeTag(), { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const readAmount = (input) => Math.max(0, Number.parseFloat(String(input.value || "0").replace(",", ".")) || 0);
+  const renderZakat = () => {
+    const surplus = Math.max(0, readAmount(assetsInput) - readAmount(debtsInput));
+    const due = surplus * 0.025;
+    surplusOutput.textContent = formatter.format(surplus);
+    dueOutput.textContent = formatter.format(due);
+  };
+  [assetsInput, debtsInput].forEach(input => input.addEventListener("input", renderZakat));
+  renderZakat();
 }
 
 function halalharam() {
@@ -929,6 +1163,7 @@ function halalharam() {
         <div class="panel p-4 mb-3">
           <p class="font-black text-sm mb-2">${item.icon} ${state.lang === "pl" ? item.questionPl : item.questionEn}</p>
           <p class="text-sm text-[var(--muted)]">${state.lang === "pl" ? item.answerPl : item.answerEn}</p>
+          <p class="quality-meta">${trustLabel(CONTENT_TRUST.CONTEXT_DEPENDENT)} · ${tx("Skonsultuj uczonego przy decyzjach osobistych.", "Consult a scholar for personal decisions.")}</p>
         </div>
       `).join("");
     }
@@ -959,6 +1194,9 @@ function halalharam() {
       `).join("")}
     </div>
     <div id="halalContent">${renderItems()}</div>
+    <div class="panel p-3 mt-4 text-xs text-[var(--muted)]">
+      ${tx(RELIGIOUS_NOTICE.pl, RELIGIOUS_NOTICE.en)}
+    </div>
   `;
 
   view.querySelectorAll("[data-halalTab]").forEach(btn => {
@@ -1009,13 +1247,18 @@ function islamfaq() {
           </button>
           <div class="faq-answer hidden">
             ${q.verdict ? `<span class="verdict-badge ${q.verdict}">${verdictLabel[q.verdict] || q.verdict}</span>` : ""}
-            <span class="trust-badge ${q.verified ? "verified" : "unverified"}">${q.verified ? tx(TRUST_LEVEL.verified.pl, TRUST_LEVEL.verified.en) : tx(TRUST_LEVEL.unverified.pl, TRUST_LEVEL.unverified.en)}</span>
+            <span class="trust-badge ${trustClass(q.confidence)}">${trustLabel(q.confidence)}</span>
+            ${q.high_risk ? `<span class="trust-badge high-risk">${tx("SKONSULTUJ UCZONEGO", "CONSULT A SCHOLAR")}</span>` : ""}
             <p>${state.lang === "pl" ? q.aPl : q.aEn}</p>
+            ${q.high_risk ? `<p class="religious-risk-note">${tx(HIGH_RISK_RELIGIOUS_NOTICE.pl, HIGH_RISK_RELIGIOUS_NOTICE.en)}</p>` : ""}
             <p class="faq-ref">Source: ${escapeHtml(q.source || q.ref || tx("Brak zweryfikowanego zrodla", "No verified source"))}</p>
-            <p class="quality-meta">${tx("Sprawdzone:", "Checked:")} ${escapeHtml(q.last_checked_at)}</p>
+            <p class="quality-meta">${escapeHtml(q.source_type)} · ${tx("Sprawdzone:", "Checked:")} ${escapeHtml(q.reviewed_at)}</p>
           </div>
         </div>
       `).join("")}
+    </div>
+    <div class="panel p-3 mt-4 text-xs text-[var(--muted)]">
+      ${tx(RELIGIOUS_NOTICE.pl, RELIGIOUS_NOTICE.en)}
     </div>
   `;
 
@@ -1047,6 +1290,7 @@ function islam() {
     { route: "seerah",  icon: "🌙", titlePl: "Seerah",            titleEn: "Seerah",           descPl: "Życie Proroka Muhammada ﷺ",                             descEn: "Life of Prophet Muhammad ﷺ" },
     { route: "tajweed", icon: "🔤", titlePl: "Tadżwid",           titleEn: "Tajweed",          descPl: "8 zasad prawidłowej recytacji",                         descEn: "8 rules for correct Quran recitation" },
     { route: "muallaf",    icon: "🌱", titlePl: "Nowy muzułmanin",  titleEn: "New Muslim",       descPl: "Pierwsze kroki, szahada i nie musisz być perfekcyjny",        descEn: "First steps, shahada and you don't need to be perfect" },
+    { route: "zakat",      icon: "💰", titlePl: "Kalkulator zakat", titleEn: "Zakat calculator",  descPl: "Aktywa, długi i edukacyjne przybliżenie 2.5%",                descEn: "Assets, debts and an educational 2.5% estimate" },
     { route: "halalharam", icon: "⚖",  titlePl: "Halal & Haram",   titleEn: "Halal & Haram",   descPl: "Jedzenie, napoje, zachowanie — co wolno, czego nie",          descEn: "Food, drinks, behaviour — what is and isn't allowed" },
     { route: "islamfaq",   icon: "❓", titlePl: "FAQ islamu",       titleEn: "Islam FAQ",        descPl: "Mity, islamofobia, kobiety, terroryzm, inne religie",         descEn: "Myths, Islamophobia, women, terrorism, other religions" },
   ];
@@ -1072,6 +1316,24 @@ function islam() {
   );
 }
 
+function homeFavoriteItems() {
+  return [
+    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
+      const s = SURAH_LIST.find(x => x.number === num);
+      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
+    }).filter(Boolean),
+    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
+      const num = typeof entry === "object" ? entry.num : entry;
+      const surah = typeof entry === "object" ? entry.surahName : "";
+      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
+    }),
+    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
+      const dua = DUA_DATA.find(d => d.id === id);
+      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
+    }).filter(Boolean)
+  ];
+}
+
 function home() {
   const tasks = activeDailyTasks();
   const task = tasks[new Date().getDate() % tasks.length];
@@ -1083,121 +1345,7 @@ function home() {
   const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
   const favAyahs = (state.quranFavorites || []).length;
   const favDua = (state.quranDuaFavorites || []).length;
-  const homeFavItems = [
-    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
-      const s = SURAH_LIST.find(x => x.number === num);
-      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
-    }).filter(Boolean),
-    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
-      const num = typeof entry === "object" ? entry.num : entry;
-      const surah = typeof entry === "object" ? entry.surahName : "";
-      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
-    }),
-    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
-      const dua = DUA_DATA.find(d => d.id === id);
-      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
-    }).filter(Boolean)
-  ];
-
-  const learnedSurahs = (state.quranSurahFavorites || []).length;
-  const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
-  const favAyahs = (state.quranFavorites || []).length;
-  const favDua = (state.quranDuaFavorites || []).length;
-  const homeFavItems = [
-    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
-      const s = SURAH_LIST.find(x => x.number === num);
-      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
-    }).filter(Boolean),
-    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
-      const num = typeof entry === "object" ? entry.num : entry;
-      const surah = typeof entry === "object" ? entry.surahName : "";
-      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
-    }),
-    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
-      const dua = DUA_DATA.find(d => d.id === id);
-      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
-    }).filter(Boolean)
-  ];
-
-  const learnedSurahs = (state.quranSurahFavorites || []).length;
-  const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
-  const favAyahs = (state.quranFavorites || []).length;
-  const favDua = (state.quranDuaFavorites || []).length;
-  const homeFavItems = [
-    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
-      const s = SURAH_LIST.find(x => x.number === num);
-      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
-    }).filter(Boolean),
-    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
-      const num = typeof entry === "object" ? entry.num : entry;
-      const surah = typeof entry === "object" ? entry.surahName : "";
-      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
-    }),
-    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
-      const dua = DUA_DATA.find(d => d.id === id);
-      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
-    }).filter(Boolean)
-  ];
-
-  const learnedSurahs = (state.quranSurahFavorites || []).length;
-  const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
-  const favAyahs = (state.quranFavorites || []).length;
-  const favDua = (state.quranDuaFavorites || []).length;
-  const homeFavItems = [
-    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
-      const s = SURAH_LIST.find(x => x.number === num);
-      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
-    }).filter(Boolean),
-    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
-      const num = typeof entry === "object" ? entry.num : entry;
-      const surah = typeof entry === "object" ? entry.surahName : "";
-      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
-    }),
-    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
-      const dua = DUA_DATA.find(d => d.id === id);
-      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
-    }).filter(Boolean)
-  ];
-
-  const learnedSurahs = (state.quranSurahFavorites || []).length;
-  const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
-  const favAyahs = (state.quranFavorites || []).length;
-  const favDua = (state.quranDuaFavorites || []).length;
-  const homeFavItems = [
-    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
-      const s = SURAH_LIST.find(x => x.number === num);
-      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
-    }).filter(Boolean),
-    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
-      const num = typeof entry === "object" ? entry.num : entry;
-      const surah = typeof entry === "object" ? entry.surahName : "";
-      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
-    }),
-    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
-      const dua = DUA_DATA.find(d => d.id === id);
-      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
-    }).filter(Boolean)
-  ];
-
-  const learnedSurahs = (state.quranSurahFavorites || []).length;
-  const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
-  const favAyahs = (state.quranFavorites || []).length;
-  const favDua = (state.quranDuaFavorites || []).length;
-  const homeFavItems = [
-    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
-      const s = SURAH_LIST.find(x => x.number === num);
-      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
-    }).filter(Boolean),
-    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
-      const num = typeof entry === "object" ? entry.num : entry;
-      const surah = typeof entry === "object" ? entry.surahName : "";
-      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
-    }),
-    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
-      const dua = DUA_DATA.find(d => d.id === id);
-      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
-    }).filter(Boolean)
-  ];
+  const homeFavItems = homeFavoriteItems();
 
   view.innerHTML = `
     <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
@@ -1209,6 +1357,20 @@ function home() {
             <p class="mt-3 max-w-2xl text-sm text-[var(--muted)]">${t("homeLead")}</p>
           </div>
           <div class="grid h-28 w-28 shrink-0 place-items-center rounded-lg bg-emerald-500 text-5xl text-white shadow-sm">☪</div>
+        </div>
+        <div class="mt-6 grid gap-2 sm:grid-cols-5">
+          ${[
+            { route: "lessons", icon: "Aa", pl: "Uczę się liter", en: "Learning letters" },
+            { route: "muallaf", icon: "01", pl: "Nowy muzułmanin", en: "New Muslim" },
+            { route: "prayerGuide", icon: "5x", pl: "Chcę modlitwę", en: "Prayer guide" },
+            { route: "koran", icon: "Q", pl: "Czytam Quran", en: "Read Quran" },
+            { route: "islamfaq", icon: "?", pl: "Mam pytanie", en: "I have a question" }
+          ].map(item => `
+            <button class="soft-panel p-3 text-left active:scale-95 transition-transform" data-route="${item.route}">
+              <span class="grid h-8 w-8 place-items-center rounded-lg bg-emerald-100 text-xs font-black text-emerald-700">${item.icon}</span>
+              <span class="mt-2 block text-sm font-black">${state.lang === "pl" ? item.pl : item.en}</span>
+            </button>
+          `).join("")}
         </div>
         <div class="mt-7 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
           ${statCard(t("streak"), `${state.streak} ${tx("dni", "days")}`, tx("Codzienna obecnosc", "Daily presence"))}
@@ -1652,14 +1814,28 @@ function duaQuality(dua) {
   return {
     source: DUA_SOURCE_MAP[dua.id] || "",
     verified: Boolean(DUA_SOURCE_MAP[dua.id]),
+    source_type: "dua_collection",
+    source_ref: DUA_SOURCE_MAP[dua.id] || "",
+    confidence: DUA_SOURCE_MAP[dua.id] ? CONTENT_TRUST.VERIFIED : CONTENT_TRUST.UNVERIFIED,
+    reviewed_at: CONTENT_LAST_CHECKED_AT,
     last_checked_at: CONTENT_LAST_CHECKED_AT
   };
+}
+
+function parseHadithCollection(source = "") {
+  const collection = String(source).split(/\s+/)[0] || "";
+  return collection.replace(/[^A-Za-z]/g, "") || "Hadith";
 }
 
 function hadithQuality(hadith) {
   return {
     source: hadith.source || "",
     verified: Boolean(hadith.source),
+    source_type: "hadith_collection",
+    source_ref: hadith.source || "",
+    collection: parseHadithCollection(hadith.source),
+    confidence: hadith.source ? CONTENT_TRUST.VERIFIED : CONTENT_TRUST.UNVERIFIED,
+    reviewed_at: CONTENT_LAST_CHECKED_AT,
     last_checked_at: CONTENT_LAST_CHECKED_AT
   };
 }
@@ -1822,7 +1998,7 @@ function koran() {
                     <p class="arabic text-right text-xl leading-loose mb-1">${escapeHtml(dua.ar)}</p>
                     <p class="text-xs text-amber-600 font-mono mb-3" dir="ltr">${escapeHtml(dua.tr)}</p>
                     <p class="faq-ref">Source: ${escapeHtml(duaQuality(dua).source || tx("Brak zweryfikowanego zrodla", "No verified source"))}</p>
-                    <p class="quality-meta">${duaQuality(dua).verified ? tx(TRUST_LEVEL.verified.pl, TRUST_LEVEL.verified.en) : tx(TRUST_LEVEL.unverified.pl, TRUST_LEVEL.unverified.en)} · ${tx("Sprawdzone:", "Checked:")} ${duaQuality(dua).last_checked_at}</p>
+                    <p class="quality-meta">${duaQuality(dua).source_type} · ${duaQuality(dua).verified ? trustLabel(CONTENT_TRUST.VERIFIED) : trustLabel(CONTENT_TRUST.UNVERIFIED)} · ${tx("Sprawdzone:", "Checked:")} ${duaQuality(dua).reviewed_at}</p>
                     <div class="flex items-center gap-2">
                       <button class="speaker-btn text-sm" data-say-ar="${escapeHtml(dua.ar)}">🔊 ${tx("Odsłuchaj", "Listen")}</button>
                       <button class="speaker-btn text-sm ${state.quranDuaFavorites?.includes(dua.id) ? "" : "opacity-50"}" data-fav-dua="${dua.id}">❤️ ${tx("Ulubione", "Favorite")}</button>
@@ -1968,7 +2144,7 @@ async function openSurah(num) {
                 ${trMap[ayah.numberInSurah] ? `<p class="text-xs text-amber-600 font-mono leading-relaxed mb-1" dir="ltr">${escapeHtml(trMap[ayah.numberInSurah])}</p>` : ""}
                 ${transMap[ayah.numberInSurah] ? `<p class="text-sm text-[var(--muted)] italic" dir="ltr">${escapeHtml(transMap[ayah.numberInSurah])}</p>` : ""}
                 <p class="faq-ref">Source: Quran ${s.number}:${ayah.numberInSurah} · alquran.cloud (${escapeHtml(reciter)}, ${escapeHtml(transEdition)})</p>
-                <p class="quality-meta">${tx(TRUST_LEVEL.verified.pl, TRUST_LEVEL.verified.en)} · ${tx("Sprawdzone:", "Checked:")} ${CONTENT_LAST_CHECKED_AT}</p>
+                <p class="quality-meta">${trustLabel(CONTENT_TRUST.VERIFIED)} · ${tx("Sprawdzone:", "Checked:")} ${CONTENT_LAST_CHECKED_AT}</p>
                 <div class="mt-3 flex justify-end gap-2">
                   <button class="speaker-btn haptic-feedback" data-play-audio="${ayah.audio}" title="${tx("Odtwórz", "Play")}">▶️</button>
                   <button class="speaker-btn haptic-feedback" data-fav-ayah="${ayah.number}" title="${tx("Ulubiony werset", "Favorite ayah")}">❤️</button>
@@ -3968,12 +4144,17 @@ function openAiChat() {
 function renderAiMessages() {
   const box = $("#aiMessages");
   if (!box) return;
-  box.innerHTML = state.aiMessages.map((message, index) => `
-    <article class="ai-message ${message.role === "user" ? "user" : "assistant"}">
-      <p class="whitespace-pre-wrap">${escapeHtml(message.content)}</p>
-      ${message.role === "assistant" ? aiActionButtons(index) : ""}
-    </article>
-  `).join("");
+  box.textContent = "";
+  state.aiMessages.forEach((message, index) => {
+    const article = document.createElement("article");
+    article.className = `ai-message ${message.role === "user" ? "user" : "assistant"}`;
+    appendTextBlock(article, "p", "whitespace-pre-wrap", message.content);
+    if (message.role === "assistant") {
+      const actions = aiActionButtons(index);
+      if (actions) article.insertAdjacentHTML("beforeend", actions);
+    }
+    box.appendChild(article);
+  });
   box.querySelectorAll("[data-ai-action]").forEach((button) => button.addEventListener("click", () => handleAiAction(button.dataset.aiAction, Number(button.dataset.messageIndex))));
   requestAnimationFrame(() => {
     box.scrollTop = box.scrollHeight;
@@ -4275,7 +4456,7 @@ function openBottomSheet(content) {
   const sheet = $("#bottomSheet");
   const overlay = $("#sheetOverlay");
   const container = $("#bottomSheetContent");
-  container.innerHTML = content;
+  setTrustedHtml(container, content);
   sheet.classList.add("active");
   overlay.classList.add("active");
   triggerHaptic();
@@ -4291,7 +4472,7 @@ function toggleFocusMode(content = "") {
   const overlay = $("#focusOverlay");
   const container = $("#focusContent");
   if (state.focusMode) {
-    container.innerHTML = content || view.innerHTML;
+    setTrustedHtml(container, content || view.innerHTML);
     overlay.classList.remove("hidden");
     document.body.style.overflow = "hidden";
   } else {
@@ -4434,7 +4615,7 @@ function hadithOfDayWidget() {
     <p class="text-base font-bold arabic text-right leading-relaxed mb-1">${h.ar}</p>
     <p class="text-xs text-[var(--muted)] italic">${state.lang === 'pl' ? h.pl : h.en}</p>
     <p class="text-xs text-[var(--muted)] mt-1 font-bold">${h.source}</p>
-    <p class="quality-meta">${hadithQuality(h).verified ? tx(TRUST_LEVEL.verified.pl, TRUST_LEVEL.verified.en) : tx(TRUST_LEVEL.unverified.pl, TRUST_LEVEL.unverified.en)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).last_checked_at}</p>
+    <p class="quality-meta">${hadithQuality(h).source_type} · ${hadithQuality(h).collection} · ${hadithQuality(h).verified ? trustLabel(CONTENT_TRUST.VERIFIED) : trustLabel(CONTENT_TRUST.UNVERIFIED)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).reviewed_at}</p>
   </div>`;
 }
 
@@ -4695,6 +4876,7 @@ function prayerGuide() {
     <div class="mb-4">
       <h1 class="text-3xl font-black">${tx("Prayer Mode", "Prayer Mode")} 🧎</h1>
       <p class="text-[var(--muted)]">${tx("Przewodnik salat od pierwszego ruchu. Bez sekcji wudu — tylko sama modlitwa krok po kroku.", "A salat guide from the first movement. No wudu section — only the prayer itself, step by step.")}</p>
+      <p class="text-xs text-[var(--muted)] mt-2">${tx(RELIGIOUS_NOTICE.pl, RELIGIOUS_NOTICE.en)}</p>
     </div>
 
     <div class="prayer-guide-shell">
@@ -5079,7 +5261,7 @@ function seerah() {
           <p class="text-base font-bold arabic text-right leading-relaxed" style="direction:rtl">${h.ar}</p>
           <p class="text-sm text-[var(--muted)] mt-1 italic">${state.lang === 'pl' ? h.pl : h.en}</p>
           <p class="text-xs font-bold text-[var(--accent)] mt-1">${h.source}</p>
-          <p class="quality-meta">${hadithQuality(h).verified ? tx(TRUST_LEVEL.verified.pl, TRUST_LEVEL.verified.en) : tx(TRUST_LEVEL.unverified.pl, TRUST_LEVEL.unverified.en)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).last_checked_at}</p>
+          <p class="quality-meta">${hadithQuality(h).source_type} · ${hadithQuality(h).collection} · ${hadithQuality(h).verified ? trustLabel(CONTENT_TRUST.VERIFIED) : trustLabel(CONTENT_TRUST.UNVERIFIED)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).reviewed_at}</p>
         </div>
       `).join('')}
     </div>

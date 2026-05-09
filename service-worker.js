@@ -1,4 +1,4 @@
-const CACHE_NAME = "alif-ai-v11";
+const CACHE_NAME = "alif-ai-v12";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -48,6 +48,7 @@ self.addEventListener("fetch", (event) => {
   const requestUrl = new URL(event.request.url);
   const sameOrigin = requestUrl.origin === self.location.origin;
   const isAppShellAsset = sameOrigin && [".html", ".css", ".js", ".json"].some((ext) => requestUrl.pathname.endsWith(ext));
+  const isAssetRequest = sameOrigin && !isAppShellAsset;
   const isNavigation = event.request.mode === "navigate";
   event.respondWith(
     (isNavigation || isAppShellAsset
@@ -61,7 +62,9 @@ self.addEventListener("fetch", (event) => {
         })
         .catch(async () => {
           const cached = await caches.match(event.request);
-          return cached || caches.match("./index.html");
+          if (cached) return cached;
+          if (isNavigation) return caches.match("./index.html");
+          return Response.error();
         })
       : caches.match(event.request).then((cached) => {
       if (cached) return cached;
@@ -73,7 +76,7 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(() => caches.match("./index.html"));
+        .catch(() => isAssetRequest ? Response.error() : caches.match("./index.html"));
     }))
   );
 });

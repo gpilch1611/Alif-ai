@@ -14,6 +14,8 @@ Alif AI/
 ├─ data.js
 ├─ README.md
 ├─ README-UPDATE.md
+├─ docs/
+│  └─ religious-content-policy.md
 └─ assets/
    ├─ icon.svg
    ├─ maskable.svg
@@ -38,6 +40,18 @@ http://localhost:8080
 
 Nie jest potrzebny backend ani baza danych. Po pierwszym wczytaniu service worker zapisuje pliki aplikacji w cache, a postęp użytkownika trafia do `localStorage`.
 
+## Kontrola jakości
+
+Projekt ma lekkie skrypty kontrolne bez zależności npm:
+
+```powershell
+npm run lint
+npm test
+npm run content:report
+```
+
+`lint` sprawdza składnię głównych plików JS, `test` uruchamia walidację danych islamskich i podstawową kontrolę jakości kodu, a `content:report` pokazuje lokalny raport przeglądu treści bez zależności npm i bez internetu.
+
 ## AI Assistant
 
 Aplikacja ma globalny pływający przycisk `AI Assistant`, widoczny na każdej stronie. Assistant używa Groq API:
@@ -47,6 +61,8 @@ Aplikacja ma globalny pływający przycisk `AI Assistant`, widoczny na każdej s
 - klucz API jest wpisany bezpośrednio w `app.js`
 
 AI działa online. Reszta aplikacji nadal działa offline po zcache'owaniu PWA.
+
+Treści islamskie w aplikacji mają osobną politykę odpowiedzialności: widoczny disclaimer, poziomy zaufania treści i metadane źródeł. Szczegóły są w `docs/religious-content-policy.md`.
 
 Assistant może generować treści i zapisywać je bezpośrednio do aplikacji:
 

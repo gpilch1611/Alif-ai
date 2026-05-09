@@ -3,7 +3,7 @@
   "name": "Alif AI - Islam & arabski",
   "short_name": "Alif AI",
   "description": "Offline PWA do nauki islamu przez arabski — Koran, litery, dhikr, historia islamu i więcej.",
-  "lang": "en",
+  "lang": "pl",
   "dir": "ltr",
   "start_url": "./index.html",
   "scope": "./",

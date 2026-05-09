@@ -1,0 +1,11 @@
+{
+  "name": "alif-ai",
+  "version": "2026.05.09",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "content:report": "node scripts/content-review-report.mjs",
+    "lint": "node --check app.js && node --check service-worker.js && node --check scripts/validate-islamic-data.mjs && node --check scripts/validate-code-health.mjs",
+    "test": "node scripts/validate-islamic-data.mjs && node scripts/validate-code-health.mjs"
+  }
+}

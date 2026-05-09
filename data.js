@@ -514,18 +514,18 @@ export const newMuslimSteps = [
 export const halalHaramData = {
   food: [
     { status: "halal", icon: "🐟", namePl: "Ryby i owoce morza", nameEn: "Fish and seafood", ar: "السَّمَك", tr: "as-samak", reasonPl: "Wszystkie ryby i większość owoców morza są halal — bez konieczności specjalnego uboju.", reasonEn: "All fish and most seafood are halal — no special slaughter needed.", ref: "Quran 5:96" },
-    { status: "halal", icon: "🥬", namePl: "Warzywa i owoce", nameEn: "Vegetables and fruit", ar: "الخُضْرَوَات", tr: "al-khuḍrawāt", reasonPl: "Wszystkie rośliny są halal. Bez wyjątków.", reasonEn: "All plants are halal. No exceptions.", ref: "" },
+    { status: "halal", icon: "🥬", namePl: "Warzywa i owoce", nameEn: "Vegetables and fruit", ar: "الخُضْرَوَات", tr: "al-khuḍrawāt", reasonPl: "Wszystkie rośliny są halal. Bez wyjątków.", reasonEn: "All plants are halal. No exceptions.", ref: "Quran 2:29" },
     { status: "halal", icon: "🐄", namePl: "Mięso halal (dhabihah)", nameEn: "Halal meat (dhabihah)", ar: "ذَبِيحَة", tr: "dhabīḥa", reasonPl: "Bydło, owce, kozy, drób — halal jeśli ubite z wymówieniem bismillah jednym cięciem. Szukaj certyfikatu halal.", reasonEn: "Cattle, sheep, goats, poultry — halal if slaughtered saying bismillah with one cut. Look for halal certification.", ref: "Quran 6:121" },
     { status: "haram", icon: "🐷", namePl: "Wieprzowina", nameEn: "Pork", ar: "لَحْمُ الخِنْزِير", tr: "laḥm al-khinzīr", reasonPl: "Jasno zakazana w Qur'anie. Dotyczy też żelatyny wieprzowej, smalcu i wszelkich produktów z wieprzowiny.", reasonEn: "Clearly forbidden in the Quran. Applies also to pork gelatin, lard and all pork-derived products.", ref: "Quran 2:173" },
     { status: "haram", icon: "🩸", namePl: "Krew", nameEn: "Blood", ar: "الدَّم", tr: "ad-dam", reasonPl: "Przepływająca krew jest haram. Dlatego ubój halal wymaga pełnego wykrwawienia zwierzęcia.", reasonEn: "Flowing blood is haram. This is why halal slaughter requires full bleeding of the animal.", ref: "Quran 2:173" },
     { status: "haram", icon: "🦁", namePl: "Drapieżniki i padlina", nameEn: "Predators and carrion", ar: "الجَوَارِح", tr: "al-jawāriḥ", reasonPl: "Zwierzęta z kłami lub pazurami (lwy, psy, koty) oraz martwe zwierzęta (padlina) są haram.", reasonEn: "Animals with fangs or talons (lions, dogs, cats) and already dead animals (carrion) are haram.", ref: "Bukhari 5530" },
-    { status: "makruh", icon: "🦐", namePl: "Krewetki (kwestia sporna)", nameEn: "Shrimp (disputed)", ar: "الرَّوْبِيَان", tr: "ar-rawbiyān", reasonPl: "Halal wg Szafi'i i Hanbali; makruh wg Hanafi. Ogromna większość muzułmanów je je bez problemu.", reasonEn: "Halal according to Shafi'i and Hanbali; makruh according to Hanafi. The vast majority of Muslims eat them without issue.", ref: "" }
+    { status: "makruh", icon: "🦐", namePl: "Krewetki (kwestia sporna)", nameEn: "Shrimp (disputed)", ar: "الرَّوْبِيَان", tr: "ar-rawbiyān", reasonPl: "Halal wg Szafi'i i Hanbali; makruh wg Hanafi. Ogromna większość muzułmanów je je bez problemu.", reasonEn: "Halal according to Shafi'i and Hanbali; makruh according to Hanafi. The vast majority of Muslims eat them without issue.", ref: "Quran 5:96; fiqh disagreement" }
   ],
   drinks: [
     { status: "haram", icon: "🍺", namePl: "Alkohol i każdy środek odurzający", nameEn: "Alcohol and any intoxicant", ar: "الخَمْر", tr: "al-khamr", reasonPl: "Każda ilość alkoholu jest haram — nie tylko upijanie się. «Co w dużych ilościach odurzą — w małych też jest haram.» (Abu Dawud)", reasonEn: "Any amount of alcohol is haram — not just getting drunk. 'Whatever intoxicates in large amounts — a small amount is also haram.' (Abu Dawud)", ref: "Quran 5:90" },
-    { status: "halal", icon: "☕", namePl: "Kawa i herbata", nameEn: "Coffee and tea", ar: "القَهْوَة والشَّاي", tr: "al-qahwa wa-š-šāy", reasonPl: "W pełni halal. Kofeina nie jest środkiem odurzającym w rozumieniu islamskim.", reasonEn: "Fully halal. Caffeine is not an intoxicant in the Islamic sense.", ref: "" },
-    { status: "halal", icon: "🧃", namePl: "Soki, woda, napoje bezalkoholowe", nameEn: "Juices, water, soft drinks", ar: "العَصِير", tr: "al-ʿaṣīr", reasonPl: "Wszystkie napoje niealkoholowe są halal — soki, woda, napoje gazowane, energetyki (bez alkoholu).", reasonEn: "All non-alcoholic drinks are halal — juices, water, fizzy drinks, energy drinks (without alcohol).", ref: "" },
-    { status: "makruh", icon: "🍹", namePl: "Napoje przypominające alkohol smakiem", nameEn: "Drinks imitating alcohol in taste", ar: "", tr: "", reasonPl: "Bezalkoholowe piwo lub «wino» — technicznie halal jeśli 0% alkoholu, ale makruh (niepolecane) bo imituje haram.", reasonEn: "Non-alcoholic beer or 'wine' — technically halal if 0% alcohol, but makruh (discouraged) as it imitates haram.", ref: "" }
+    { status: "halal", icon: "☕", namePl: "Kawa i herbata", nameEn: "Coffee and tea", ar: "القَهْوَة والشَّاي", tr: "al-qahwa wa-š-šāy", reasonPl: "W pełni halal. Kofeina nie jest środkiem odurzającym w rozumieniu islamskim.", reasonEn: "Fully halal. Caffeine is not an intoxicant in the Islamic sense.", ref: "Quran 2:29; general permissibility" },
+    { status: "halal", icon: "🧃", namePl: "Soki, woda, napoje bezalkoholowe", nameEn: "Juices, water, soft drinks", ar: "العَصِير", tr: "al-ʿaṣīr", reasonPl: "Wszystkie napoje niealkoholowe są halal — soki, woda, napoje gazowane, energetyki (bez alkoholu).", reasonEn: "All non-alcoholic drinks are halal — juices, water, fizzy drinks, energy drinks (without alcohol).", ref: "Quran 2:29; Quran 5:90" },
+    { status: "makruh", icon: "🍹", namePl: "Napoje przypominające alkohol smakiem", nameEn: "Drinks imitating alcohol in taste", ar: "", tr: "", reasonPl: "Bezalkoholowe piwo lub «wino» — technicznie halal jeśli 0% alkoholu, ale makruh (niepolecane) bo imituje haram.", reasonEn: "Non-alcoholic beer or 'wine' — technically halal if 0% alcohol, but makruh (discouraged) as it imitates haram.", source_ref: "Quran 5:90; caution by sadd adh-dhara'i/adab" }
   ],
   behavior: [
     { status: "haram", icon: "🎰", namePl: "Hazard", nameEn: "Gambling", ar: "المَيْسِر", tr: "al-maysir", reasonPl: "Wszystkie formy hazardu — kasyna, zakłady, loterie. Islam chroni majątek przed ryzykiem i uzależnieniem.", reasonEn: "All forms of gambling — casinos, bets, lotteries. Islam protects wealth from risk and addiction.", ref: "Quran 5:90" },
@@ -536,10 +536,10 @@ export const halalHaramData = {
     { status: "haram", icon: "🤥", namePl: "Kłamstwo i oszustwo", nameEn: "Lying and cheating", ar: "الكَذِب", tr: "al-kaḏib", reasonPl: "Prorok ﷺ powiedział: «Wierny może być tchórzliwy, skąpy lub grzesznikiem — ale nie kłamcą.» (Ahmad). Uczciwość (sidq) to fundament islamskiego charakteru.", reasonEn: "The Prophet ﷺ said: 'A believer can be a coward, miser or sinner — but not a liar.' (Ahmad). Honesty (sidq) is a foundation of Islamic character.", ref: "Ahmad 8925" }
   ],
   gray: [
-    { icon: "🔍", questionPl: "Czy żelatyna (E441) jest halal?", questionEn: "Is gelatin (E441) halal?", answerPl: "Zależy od źródła. Żelatyna wieprzowa — haram. Wołowa (halal) lub rybia — halal. Żelatyna syntetyczna — halal. Sprawdzaj etykiety lub szukaj certyfikatu. Aplikacje jak «Halal Checker» skanują E-numery automatycznie.", answerEn: "Depends on the source. Pork gelatin — haram. Beef (halal) or fish — halal. Synthetic gelatin — halal. Check labels or look for certification. Apps like 'Halal Checker' scan E-numbers automatically." },
-    { icon: "🔍", questionPl: "Czy mogę jeść mięso z polskiego supermarketu?", questionEn: "Can I eat meat from a Polish supermarket?", answerPl: "Wg madhhab Szafi'i: mięso Ludzi Księgi (chrześcijańskie/żydowskie) jest dopuszczalne gdy halal niedostępne. Wg bardziej rygorystycznych szkół — tylko certyfikowane halal. W Polsce sklepy halal znajdziesz w większych miastach. W razie wątpliwości — wybierz rybę lub wegetariańskie.", answerEn: "According to the Shafi'i madhab: meat from People of the Book (Christian/Jewish) is acceptable when halal is unavailable. Stricter schools require halal certification only. In Poland, halal shops are available in major cities. When in doubt — choose fish or vegetarian." },
-    { icon: "🔍", questionPl: "Które E-numery są podejrzane?", questionEn: "Which E-numbers are suspicious?", answerPl: "Podejrzane: E120 (karmin z owadów — haram), E441 (żelatyna — zależy od źródła), E471 (mono- i diglicerydy — mogą być wieprzowe), E542 (fosfoран костный — może być wieprzowy). Aplikacja «Halal Checker» robi to automatycznie za ciebie.", answerEn: "Suspicious: E120 (carmine from insects — haram), E441 (gelatin — depends on source), E471 (mono- and diglycerides — may be porcine), E542 (edible bone phosphate — may be porcine). The 'Halal Checker' app does this automatically for you." },
-    { icon: "🔍", questionPl: "Co z lekami zawierającymi alkohol lub żelatynę?", questionEn: "What about medicines containing alcohol or gelatin?", answerPl: "Konieczność (darura) uchyla zakaz — jeśli jedyna dostępna wersja leku zawiera haram składnik, a zdrowie tego wymaga, jest to dozwolone. Islam jest religią łatwości: «Allah chce dla was łatwości, nie trudności» (Quran 2:185). Zapytaj lekarza o alternatywy jeśli są dostępne.", answerEn: "Necessity (darura) overrides prohibition — if the only available medicine contains a haram ingredient and health requires it, it is permitted. Islam is a religion of ease: 'Allah wants ease for you, not hardship' (Quran 2:185). Ask your doctor about alternatives if available." }
+    { icon: "🔍", questionPl: "Czy żelatyna (E441) jest halal?", questionEn: "Is gelatin (E441) halal?", answerPl: "Zależy od źródła i certyfikacji. Żelatyna wieprzowa — haram. Rybia albo wołowa z uboju halal — halal. Przy żelatynie wołowej bez certyfikatu uczeni mogą się różnić, więc najlepiej sprawdzić etykietę lub wybrać produkt z certyfikatem.", answerEn: "Depends on the source and certification. Pork gelatin is haram. Fish gelatin or beef gelatin from halal slaughter is halal. Scholars may differ on uncertified beef gelatin, so it is best to check the label or choose a certified product.", ref: "Quran 2:173; Quran 5:3" },
+    { icon: "🔍", questionPl: "Czy mogę jeść mięso z polskiego supermarketu?", questionEn: "Can I eat meat from a Polish supermarket?", answerPl: "To kwestia zależna od szkoły i praktyki uboju. Quran dopuszcza jedzenie Ludzi Księgi, ale zakazuje mięsa, nad którym nie wspomniano imienia Allaha. Część uczonych akceptuje mięso od chrześcijan/Żydów, inni wymagają certyfikatu halal. W razie wątpliwości wybierz certyfikowane halal, rybę albo opcję wegetariańską.", answerEn: "This depends on the school and slaughter practice. The Quran permits the food of the People of the Book, but forbids meat over which Allah's name was not mentioned. Some scholars accept meat from Christians/Jews, while others require halal certification. When in doubt, choose certified halal, fish, or a vegetarian option.", ref: "Quran 5:5; Quran 6:121" },
+    { icon: "🔍", questionPl: "Które E-numery są podejrzane?", questionEn: "Which E-numbers are suspicious?", answerPl: "Wątpliwe bywają dodatki zależne od źródła: E120 (karmin), E441 (żelatyna), E471 (mono- i diglicerydy kwasów tłuszczowych) oraz E542 (fosforan kostny). Sam numer E nie zawsze rozstrzyga status — liczy się pochodzenie składnika i certyfikacja producenta.", answerEn: "Additives whose source can vary are often doubtful: E120 (carmine), E441 (gelatin), E471 (mono- and diglycerides of fatty acids), and E542 (edible bone phosphate). The E-number alone does not always settle the ruling — the ingredient source and manufacturer certification matter.", source_ref: "Quran 2:173; ingredient-source dependent" },
+    { icon: "🔍", questionPl: "Co z lekami zawierającymi alkohol lub żelatynę?", questionEn: "What about medicines containing alcohol or gelatin?", answerPl: "Konieczność (darura) może pozwolić na użycie leku z problematycznym składnikiem, jeśli zdrowie tego wymaga i nie ma rozsądnej alternatywy. Islam jest religią łatwości: «Allah chce dla was łatwości, nie trudności» (Quran 2:185). Zapytaj lekarza lub farmaceutę o alternatywy, jeśli są dostępne.", answerEn: "Necessity (darura) may allow using medicine with a problematic ingredient if health requires it and there is no reasonable alternative. Islam is a religion of ease: 'Allah wants ease for you, not hardship' (Quran 2:185). Ask a doctor or pharmacist about alternatives if available.", ref: "Quran 2:185; Quran 6:119" }
   ]
 };
 
@@ -553,7 +553,7 @@ export const islamicFaq = [
     qEn: "How to greet a Muslim?",
     aPl: "As-salamu alaykum (السَّلاَمُ عَلَيْكُمْ) — «Pokój z wami». Odpowiedź: Wa alaykum as-salam (وَعَلَيْكُمُ السَّلاَم) — «I z wami pokój». To powitanie jest sunną Proroka ﷺ i wyrazem dobrej woli. Niemuzułmanie mogą je spokojnie używać — to kulturowy gest szacunku. W Indonezji jest codziennym zwrotem między wszystkimi ludźmi, nie tylko muzułmanami.",
     aEn: "As-salamu alaykum (السَّلاَمُ عَلَيْكُمْ) — 'Peace be upon you'. Response: Wa alaykum as-salam — 'And upon you peace'. This greeting is the sunnah of the Prophet ﷺ and an expression of goodwill. Non-Muslims can use it freely — it is a cultural gesture of respect. In Indonesia it is a daily phrase used among all people, not just Muslims.",
-    ref: "" },
+    ref: "Abu Dawud 5193; Tirmidhi 2689" },
 
   { id: "inshallah", tab: "basics", verdict: "info",
     qPl: "Dlaczego muzułmanie ciągle mówią 'Inshallah'?",
@@ -567,14 +567,14 @@ export const islamicFaq = [
     qEn: "How to respect Ramadan if I am not Muslim?",
     aPl: "Nie musisz pościć. Możesz: złożyć życzenia «Ramadan Mubarak» (błogosławiony Ramadan) lub «Ramadan Kareem» (hojny Ramadan), pytać z ciekawością — muzułmanie chętnie tłumaczą, unikać jedzenia przy poszącym współpracowniku jeśli sam to proponuje. W Polsce nikt nie oczekuje że będziesz pościć — wystarczy życzliwość. Ramadan kończy się ucztą (Eid al-Fitr) — życzenia na Eid to też piękny gest.",
     aEn: "You don't need to fast. You can: offer wishes 'Ramadan Mubarak' (blessed Ramadan) or 'Ramadan Kareem' (generous Ramadan), ask with genuine curiosity — Muslims are happy to explain, avoid eating in front of a fasting colleague if they themselves request it. In Poland no one expects you to fast — kindness is enough. Ramadan ends with a feast (Eid al-Fitr) — Eid wishes are also a lovely gesture.",
-    ref: "" },
+    ref: "Quran 2:183-185" },
 
   { id: "mosque_visit", tab: "basics", verdict: "info",
     qPl: "Czy mogę wejść do meczetu jako niemuzułmanin?",
     qEn: "Can I enter a mosque as a non-Muslim?",
     aPl: "Tak — większość meczetów na świecie wita niemuzułmanów, szczególnie poza godzinami modlitw. Zasady: zdejmij buty przed wejściem, ubierz się skromnie (kobiety zakrywają włosy i ramiona, mężczyźni unikają szortów), zachowuj ciszę gdy trwa modlitwa, nie wchodź na obszar modlitwy bez zaproszenia. Wiele meczetów w Polsce organizuje dni otwarte. W Indonezji meczety są szczególnie przyjazne dla gości — to jedno z bardziej otwartych krajów muzułmańskich.",
     aEn: "Yes — most mosques around the world welcome non-Muslims, especially outside of prayer times. Rules: remove shoes at the entrance, dress modestly (women cover hair and shoulders, men avoid shorts), maintain silence when prayer is taking place, do not enter the prayer area without an invitation. Many mosques in Poland organise open days. In Indonesia mosques are particularly welcoming to visitors — it is one of the more open Muslim-majority countries.",
-    ref: "" },
+    ref: "Quran 9:18; general adab of masjid" },
 
   { id: "dua", tab: "basics", verdict: "info",
     qPl: "Co to jest dua i jak się modlić w islamie?",
@@ -595,7 +595,7 @@ export const islamicFaq = [
     qEn: "How to formally convert to Islam?",
     aPl: "Wystarczy wypowiedzieć Szahadę szczerze: «Aszhadu an la ilaha illallah, wa aszhadu anna Muhammadan rasulullah.» Formalnie: najlepiej w obecności świadków (np. w meczecie), choć nie jest to warunek — Allah jest świadkiem. Wiele meczetów wydaje zaświadczenie konwersji (Certificate of Reversion) — przydatne w krajach muzułmańskich. Po szahadzie wszystkie poprzednie grzechy są przebaczone — nowy start. Islam uważa każdego za urodzonego w stanie fitra (czystości) — dlatego mówi się «revert» zamiast «convert».",
     aEn: "It suffices to sincerely say the Shahada: 'Ashhadu an la ilaha illallah, wa ashhadu anna Muhammadan rasulullah.' Formally: best done in the presence of witnesses (e.g. at a mosque), though this is not a condition — Allah is the witness. Many mosques issue a Certificate of Reversion — useful in Muslim-majority countries. After the Shahada all previous sins are forgiven — a new start. Islam considers everyone born in a state of fitra (purity) — that is why people say 'revert' rather than 'convert'.",
-    ref: "" },
+    ref: "Muslim 21; Bukhari 8" },
 
   // ── myths ──
   { id: "worship_muhammad", tab: "myths", verdict: "false",
@@ -615,7 +615,7 @@ export const islamicFaq = [
     qEn: "Are all Muslims Arabs?",
     aPl: "Tylko ok. 20% spośród 1,8 miliarda muzułmanów to Arabowie. Indonezja ma ponad 270 milionów muzułmanów i jest największym krajem muzułmańskim na świecie. Islam jest globalny: Pakistan, Bangladesz, Nigeria, Turcja, Chiny, Bośnia, Polska — wszędzie są muzułmanie różnych ras i kultur.",
     aEn: "Only about 20% of 1.8 billion Muslims are Arab. Indonesia has over 270 million Muslims and is the world's largest Muslim-majority country. Islam is global: Pakistan, Bangladesh, Nigeria, Turkey, China, Bosnia, Poland — everywhere there are Muslims of different races and cultures.",
-    ref: "" },
+    ref: "Quran 49:13" },
   { id: "animals", tab: "myths", verdict: "false",
     qPl: "Czy muzułmanie uprawiają seks ze zwierzętami?",
     qEn: "Do Muslims have sex with animals?",
@@ -627,7 +627,7 @@ export const islamicFaq = [
     qEn: "Is music forbidden in Islam?",
     aPl: "To kwestia sporna — uczeni różnią się zdaniami od wieków. Jedni (Hanbali) uważają muzykę instrumentalną za makruh lub haram; inni (Maliki, część Szafi'i) dopuszczają ją. Quran nie zakazuje muzyki wprost. Zakazane jest to, co prowadzi do grzechu (sprośne teksty, nadużycie). Większość muzułmanów słucha muzyki bez problemów.",
     aEn: "This is a disputed issue — scholars have disagreed for centuries. Some (Hanbali) consider instrumental music makruh or haram; others (Maliki, some Shafi'i) permit it. The Quran does not explicitly forbid music. What is forbidden is what leads to sin (obscene lyrics, excess). Most Muslims listen to music without issue.",
-    ref: "" },
+    ref: "Scholarly disagreement; no explicit Quranic prohibition" },
 
   // ── women ──
   { id: "wife_beating", tab: "women", verdict: "false",
@@ -713,4 +713,3 @@ export const islamicFaq = [
     aEn: "Absolutely not — doubly haram. First: suicide is haram: 'Do not kill yourselves — Allah is merciful to you' (Quran 4:29). Second: murdering innocent civilians is haram. A hadith says that someone who commits suicide will repeat the act in hell (Bukhari 5778). No recognised Islamic scholar in the world endorses suicide bombings against civilians.",
     ref: "Quran 4:29, Bukhari 5778" }
 ];
-
