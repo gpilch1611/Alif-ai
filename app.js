@@ -1,4 +1,12 @@
 import { arabicAlphabet, words, dailyTasks, asmaulHusna, islamicHadith, seerahTimeline, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, newMuslimSteps, halalHaramData, islamicFaq } from "./data.js";
+import {
+  CONTENT_LAST_CHECKED_AT,
+  CONTENT_TRUST,
+  HIGH_RISK_FAQ_IDS,
+  HIGH_RISK_RELIGIOUS_NOTICE,
+  RELIGIOUS_NOTICE,
+  TRUST_LEVEL
+} from "./data/content-metadata.js";
 
 const GROQ_API_KEY = "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";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
@@ -30,11 +38,10 @@ const nav = $("#bottomNav");
 const modal = $("#letterModal");
 const modalContent = $("#modalContent");
 const STORAGE_KEY = "alif-ai-state";
-const THEMES = ["light", "dark", "romantic"];
+const THEMES = ["light", "dark"];
 const THEME_COLOR = {
   light: "#f7f7f7",
-  dark: "#071a24",
-  romantic: "#ffd4e5"
+  dark: "#071a24"
 };
 
 const navItems = [
@@ -45,93 +52,15 @@ const navItems = [
   ["games",   "◎",  "navGames"]
 ];
 
-const secondaryNavItems = [];
+const secondaryNavItems = [["adventure", "Note", "navAdventure"]];
 
-const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","zakat","halalharam","islamfaq","prayer","prayerGuide"];
+const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","zakat","halalharam","islamfaq","prayer","prayerGuide","glossary"];
 const CONTENT_VERSION = "2026.05";
 const CONTENT_UPDATED_AT = "2026-05-08";
 
-const faqExtraUnique = [
-  { id: "extra_quran_touch", tab: "basics", verdict: "complex", qPl: "Czy muszę mieć wudu, żeby czytać Quran na telefonie?", qEn: "Do I need wudu to read the Quran on my phone?", aPl: "Większość uczonych rozróżnia mushaf (papierowy Quran) i ekran telefonu. Dla aplikacji Quran wudu jest zalecane z szacunku, ale nie zawsze wymagane. Jeśli możesz — czytaj w czystości, ale brak wudu nie odcinaj cię od nauki.", aEn: "Most scholars distinguish between a physical mushaf and a phone screen. For Quran apps, wudu is recommended out of respect but not always required. If you can, read in purity, but do not stop learning when you lack wudu.", ref: "" },
-  { id: "extra_madhhab", tab: "basics", verdict: "info", qPl: "Czy muszę od razu wybrać madhhab?", qEn: "Do I need to choose a madhhab immediately?", aPl: "Nie. Na początku najważniejsze są podstawy: wiara, modlitwa, halal/haram i charakter. Z czasem możesz uczyć się jednej szkoły fiqh bardziej systematycznie.", aEn: "No. At the beginning, the priority is basics: faith, prayer, halal/haram and character. Later you can study one fiqh school more systematically.", ref: "" },
-  { id: "extra_convert_name", tab: "basics", verdict: "info", qPl: "Czy po konwersji muszę zmienić imię?", qEn: "Do I have to change my name after conversion?", aPl: "Nie, chyba że imię ma wyraźnie zły sens (np. związany z bałwochwalstwem). Neutralne i dobre imiona można zostawić.", aEn: "No, unless the name has a clearly problematic meaning (e.g., tied to idolatry). Neutral or good names can be kept.", ref: "" },
-  { id: "extra_work_prayer", tab: "daily", verdict: "info", qPl: "Jak pogodzić 5 modlitw z pracą na etacie?", qEn: "How can I fit 5 daily prayers into a full-time job?", aPl: "Planowanie pomaga: Fajr przed wyjściem, Dhuhr/Asr w przerwie, Maghrib po powrocie, Isha wieczorem. Krótka, spokojna modlitwa trwa kilka minut.", aEn: "Planning helps: Fajr before leaving, Dhuhr/Asr during breaks, Maghrib after return, Isha in the evening. A calm prayer takes only a few minutes.", ref: "" },
-  { id: "extra_family_pushback", tab: "daily", verdict: "complex", qPl: "Co robić, gdy rodzina krytykuje mój islam?", qEn: "What should I do if my family criticizes my Islam?", aPl: "Odpowiadaj łagodnie i bez kłótni. Islam nakazuje dobro wobec rodziców, nawet gdy nie podzielają wiary. Najsilniejszy argument to dobry charakter i cierpliwość.", aEn: "Respond gently and avoid arguments. Islam commands kindness to parents even when they do not share your faith. The strongest argument is good character and patience.", ref: "Quran 31:14-15" },
-  { id: "extra_halal_job", tab: "daily", verdict: "complex", qPl: "Czy mogę pracować w miejscu, gdzie sprzedają alkohol?", qEn: "Can I work in a place that sells alcohol?", aPl: "To kwestia trudna i zależy od zakresu obowiązków. Im mniejszy bezpośredni udział w sprzedaży haram, tym lepiej. Warto szukać halal alternatywy etapami, bez niszczenia własnej stabilności.", aEn: "This is a difficult issue and depends on your role. The less direct involvement in haram sales, the better. Seek a halal alternative gradually without destroying your stability.", ref: "" },
-  { id: "extra_mental_health", tab: "daily", verdict: "info", qPl: "Czy terapia psychologiczna jest dozwolona w islamie?", qEn: "Is psychological therapy allowed in Islam?", aPl: "Tak. Leczenie duszy i ciała jest częścią troski o amanah (powierzone życie). Dua i terapia mogą iść razem.", aEn: "Yes. Caring for mind and body is part of preserving the life entrusted to you. Dua and therapy can go together.", ref: "" },
-  { id: "extra_doubts", tab: "daily", verdict: "info", qPl: "Czy wątpliwości religijne oznaczają, że mam słabą wiarę?", qEn: "Do doubts mean I have weak faith?", aPl: "Nie zawsze. Pytania i kryzysy bywają etapem dojrzewania wiary. Szukaj wiedzy u wiarygodnych nauczycieli i nie izoluj się.", aEn: "Not always. Questions and crises can be part of growing faith. Seek knowledge from reliable teachers and do not isolate yourself.", ref: "" },
-  { id: "extra_violence", tab: "myths", verdict: "false", qPl: "Czy islam promuje przemoc wobec innych religii?", qEn: "Does Islam promote violence against other religions?", aPl: "Nie. Quran mówi o sprawiedliwości i zakazie agresji. Przemoc wobec niewinnych jest zabroniona.", aEn: "No. The Quran speaks of justice and forbids aggression. Violence against innocents is prohibited.", ref: "Quran 60:8, 5:32" },
-  { id: "extra_forced_convert", tab: "myths", verdict: "false", qPl: "Czy islam nakazuje zmuszać ludzi do konwersji?", qEn: "Does Islam command forcing people to convert?", aPl: "Nie. Zasada brzmi jasno: nie ma przymusu w religii. Wiara bez wolnego wyboru nie ma wartości.", aEn: "No. The principle is clear: no compulsion in religion. Faith without free choice has no value.", ref: "Quran 2:256" },
-  { id: "extra_women_education", tab: "women", verdict: "false", qPl: "Czy kobieta w islamie nie powinna się uczyć?", qEn: "Should women avoid education in Islam?", aPl: "To mit. Poszukiwanie wiedzy dotyczy kobiet i mężczyzn. W historii islamu były tysiące uczonych kobiet.", aEn: "This is a myth. Seeking knowledge applies to women and men. Islamic history includes thousands of women scholars.", ref: "" },
-  { id: "extra_marriage_choice", tab: "women", verdict: "false", qPl: "Czy kobiety są zmuszane do małżeństwa w islamie?", qEn: "Are women forced into marriage in Islam?", aPl: "Przymusowe małżeństwo jest sprzeczne z zasadami islamu. Zgoda kobiety jest warunkiem nikahu.", aEn: "Forced marriage contradicts Islamic principles. A woman's consent is a condition of nikah.", ref: "" },
-  { id: "extra_jews_christians", tab: "religions", verdict: "info", qPl: "Kim są 'Ludzie Księgi' w islamie?", qEn: "Who are the 'People of the Book' in Islam?", aPl: "To głównie żydzi i chrześcijanie — społeczności wcześniejszego objawienia. Quran nakazuje rozmowę z nimi w najlepszy sposób.", aEn: "Primarily Jews and Christians — communities of earlier revelation. The Quran commands discussion with them in the best manner.", ref: "Quran 29:46" },
-  { id: "extra_holidays", tab: "religions", verdict: "complex", qPl: "Czy muzułmanin może składać życzenia na Boże Narodzenie?", qEn: "Can a Muslim offer Christmas greetings?", aPl: "Uczeni różnią się w szczegółach. Wielu dopuszcza uprzejme życzenia rodzinne bez uczestnictwa w obrzędach religijnych. Najważniejsze: szacunek, granice wiary i dobro relacji.", aEn: "Scholars differ in details. Many permit polite family greetings without participating in religious rites. Key points: respect, faith boundaries and good relations.", ref: "" },
-  { id: "extra_news", tab: "terrorism", verdict: "false", qPl: "Dlaczego media łączą islam głównie z przemocą?", qEn: "Why do media often link Islam mainly to violence?", aPl: "Negatywne wiadomości przyciągają uwagę, a spokojna codzienność miliardów ludzi nie jest 'newsowa'. To zniekształca obraz. Trzeba oddzielać religię od działań ekstremistów.", aEn: "Negative news gets attention, while the peaceful daily life of billions is not 'newsworthy'. This distorts perception. Religion must be separated from extremists' actions.", ref: "" },
-  { id: "extra_citizenship", tab: "terrorism", verdict: "false", qPl: "Czy lojalność wobec kraju zamieszkania jest sprzeczna z islamem?", qEn: "Is loyalty to your country of residence against Islam?", aPl: "Nie. Islam nakazuje dotrzymywać umów, być uczciwym obywatelem i nie szkodzić społeczeństwu. Dobry muzułmanin może być odpowiedzialnym obywatelem.", aEn: "No. Islam commands honoring agreements, being a fair citizen, and not harming society. A good Muslim can be a responsible citizen.", ref: "" },
-  { id: "extra_reverts", tab: "converts", verdict: "info", qPl: "Od czego zacząć pierwszy miesiąc po szahadzie?", qEn: "Where should I start in the first month after shahada?", aPl: "Minimum: Al-Fatiha, podstawy modlitwy, krótkie sury, halal jedzenie i dobre towarzystwo. Nie bierz wszystkiego naraz.", aEn: "Minimum: Al-Fatiha, prayer basics, short surahs, halal food, and good company. Do not take everything at once.", ref: "" },
-  { id: "extra_reverts_mistakes", tab: "converts", verdict: "info", qPl: "Co jeśli popełniam błędy w modlitwie jako nowy muzułmanin?", qEn: "What if I make mistakes in prayer as a new Muslim?", aPl: "Allah patrzy na szczerość i wysiłek. Ucz się krok po kroku, poprawiaj jedną rzecz naraz i nie poddawaj się.", aEn: "Allah looks at sincerity and effort. Learn step by step, fix one thing at a time, and do not give up.", ref: "" },
-  { id: "extra_reverts_lonely", tab: "converts", verdict: "info", qPl: "Jak nie czuć się samotnie po konwersji?", qEn: "How can I avoid loneliness after conversion?", aPl: "Szukaj wspólnoty: lokalny meczet, grupy online, 1-2 zaufane osoby do regularnego kontaktu. Wspólnota jest ogromnym wsparciem.", aEn: "Seek community: local mosque, online groups, and 1-2 trusted people for regular contact. Community is a major support.", ref: "" }
-];
-
-const CONTENT_LAST_CHECKED_AT = "2026-05-08";
-const TRUST_LEVEL = {
-  VERIFIED: { pl: "ZWERYFIKOWANE", en: "VERIFIED" },
-  SCHOLARLY_DISAGREEMENT: { pl: "SPORNE U UCZONYCH", en: "SCHOLARLY DISAGREEMENT" },
-  CONTEXT_DEPENDENT: { pl: "ZALEZY OD KONTEKSTU", en: "CONTEXT DEPENDENT" },
-  UNVERIFIED: { pl: "NIEZWERYFIKOWANE", en: "UNVERIFIED" }
-};
-const CONTENT_TRUST = {
-  VERIFIED: "VERIFIED",
-  SCHOLARLY_DISAGREEMENT: "SCHOLARLY_DISAGREEMENT",
-  CONTEXT_DEPENDENT: "CONTEXT_DEPENDENT",
-  UNVERIFIED: "UNVERIFIED"
-};
-const RELIGIOUS_NOTICE = {
-  pl: "Treści edukacyjne: to nie jest indywidualna fatwa. W sprawach spornych (fiqh, finanse, małżeństwo, rozwód, zdrowie) skonsultuj lokalnego, zaufanego imama lub uczonego.",
-  en: "Educational content: this is not a personal fatwa. For disputed issues (fiqh, finance, marriage, divorce, health), consult a trusted local imam or qualified scholar."
-};
-
-const HIGH_RISK_RELIGIOUS_NOTICE = {
-  pl: "Temat wysokiego ryzyka: nie podejmuj decyzji osobistej tylko na podstawie aplikacji. Skonsultuj lokalnego imama, uczonego albo specjaliste, jesli dotyczy zdrowia lub prawa.",
-  en: "High-risk topic: do not make a personal decision based only on the app. Consult a local imam, qualified scholar, or a relevant professional for health or legal matters."
-};
-const HIGH_RISK_FAQ_IDS = new Set([
-  "christmas",
-  "extra_family_pushback",
-  "extra_halal_job",
-  "extra_mental_health",
-  "extra_marriage_choice",
-  "extra_holidays",
-  "polygamy",
-  "hijab"
-]);
-
-const FAQ_REFERENCE_FIXES = {
-  salam: "Abu Dawud 5193; Tirmidhi 2689",
-  ramadan_respect: "Quran 2:183-185",
-  mosque_visit: "Quran 9:18; general adab of masjid",
-  convert_steps: "Muslim 21; Bukhari 8",
-  arabs: "Quran 49:13",
-  music: "Scholarly disagreement; no explicit Quranic prohibition",
-  extra_quran_touch: "Fiqh issue: mushaf handling; Quran 56:79 cited by many scholars",
-  extra_madhhab: "General fiqh learning guidance; Quran 16:43",
-  extra_convert_name: "Bukhari 6190; Muslim 2140",
-  extra_work_prayer: "Quran 4:103; Quran 62:9-10",
-  extra_halal_job: "Quran 5:2; context-dependent fiqh issue",
-  extra_mental_health: "Bukhari 5678; Muslim 2204",
-  extra_doubts: "Muslim 132; Quran 16:43",
-  extra_women_education: "Ibn Majah 224; Quran 39:9",
-  extra_marriage_choice: "Bukhari 5136; Muslim 1419",
-  extra_holidays: "Scholarly disagreement; Quran 60:8",
-  extra_news: "Quran 49:6; Quran 5:8",
-  extra_citizenship: "Quran 5:1; Quran 16:91",
-  extra_reverts: "Muslim 21; Bukhari 8",
-  extra_reverts_mistakes: "Quran 2:286; Bukhari 1",
-  extra_reverts_lonely: "Quran 49:10; Tirmidhi 1924"
-};
-
 function trustForFaq(item) {
-  if (!item.ref && !FAQ_REFERENCE_FIXES[item.id]) return CONTENT_TRUST.UNVERIFIED;
+  if (item.confidence) return item.confidence;
+  if (!item.ref) return CONTENT_TRUST.UNVERIFIED;
   if (item.verdict === "complex") return CONTENT_TRUST.SCHOLARLY_DISAGREEMENT;
   if (/job|health|holiday|family|touch|madhhab|doubts|citizenship/i.test(item.id)) return CONTENT_TRUST.CONTEXT_DEPENDENT;
   return CONTENT_TRUST.VERIFIED;
@@ -151,21 +80,23 @@ function isHighRiskFaq(item) {
   return HIGH_RISK_FAQ_IDS.has(item.id) || /(małżeń|malzen|marriage|divorce|rozwod|finans|finance|zdrow|health|praca|work|job|rodzin|family|therapy|terapia|riba|alcohol|alkohol)/i.test(text);
 }
 
-const islamicFaqExpanded = [...islamicFaq, ...faqExtraUnique].map((item) => {
-  const source = item.ref || FAQ_REFERENCE_FIXES[item.id] || "";
-  const confidence = trustForFaq(item);
-  const high_risk = isHighRiskFaq(item);
+const islamicFaqExpanded = islamicFaq.map((item) => {
+  const source = item.ref || "";
+  const confidence = item.confidence || trustForFaq(item);
+  const high_risk = typeof item.high_risk === "boolean" ? item.high_risk : isHighRiskFaq(item);
+  const source_type = item.source_type || (source.includes("Scholarly disagreement") || confidence === CONTENT_TRUST.SCHOLARLY_DISAGREEMENT ? "fiqh_disagreement" : "quran_hadith");
+  const reviewed_at = item.reviewed_at || CONTENT_LAST_CHECKED_AT;
   return {
     ...item,
     ref: source,
     verified: Boolean(source),
     confidence,
     high_risk,
-    source_type: source.includes("Scholarly disagreement") || confidence === CONTENT_TRUST.SCHOLARLY_DISAGREEMENT ? "fiqh_disagreement" : "quran_hadith",
+    source_type,
     source_ref: source,
     source,
-    reviewed_at: CONTENT_LAST_CHECKED_AT,
-    last_checked_at: CONTENT_LAST_CHECKED_AT
+    reviewed_at,
+    last_checked_at: item.last_checked_at || reviewed_at
   };
 });
 
@@ -187,77 +118,10 @@ const ISLAMIC_SOURCE_LIBRARY = [
   }))
 ].filter((item) => item.source);
 
-const ROMANTIC_LINES = [
-  // short
-  "Miss you 💕",
-  "Habibi ❤️",
-  "Thinking of you 🌸",
-  "Sayang 🌺",
-  "I miss you so much 💙",
-  "You are my calm 🌿",
-  "Rindu 💕",
-  "Always you ❤️",
-  "My favourite person 🌸",
-  "Can't wait 🛫",
-  "Counting the days 📅",
-  "Forever and always 💕",
-  "You, always 🌺",
-  "Home is you 🏡❤️",
-  "Miss your smile 🌸",
-  "Near or far ❤️",
-  "All of you 💕",
-  "Just you 🌟",
-  "Worth every mile 💙",
-  "Cinta ❤️",
-  "My heart, your home 🏡",
-  "Still you 💕",
-  "Every single day 🌸",
-  "You first 🌺",
-  "Always on my mind 💭❤️",
-  // long
-  "Distance means nothing when someone means everything — 10 700 km feels like nothing, habibi ❤️",
-  "Somewhere across the ocean, someone is thinking of you right now 🌊💕",
-  "Two cities, one heart. Borzęta and Surabaya are closer than the world thinks 🌸",
-  "Learning Arabic so our words can travel further than miles ever could 📖❤️",
-  "Rindu itu berat, tapi cinta lebih kuat — missing you is heavy, but love is stronger 🌺",
-  "Every letter of the Arabic alphabet learned is a step closer to you, sayang 💐",
-  "The distance between Poland and Indonesia is just a number — love has no coordinates 🌍",
-  "Alhamdulillah for the technology that lets hearts stay close across continents 🤍",
-  "Borzęta to Surabaya: two dots on a map, one unbreakable thread between them 💕",
-  "You make every timezone worth living in ❤️",
-  "I carry you with me in every surah I read and every letter I trace, habibi 📿",
-  "10 700 km apart — yet you are the first thought every morning 🌅",
-  "The stars above Surabaya are the same ones shining over Poland tonight, sayang 🌟",
-  "Love that crosses oceans doesn't need a passport 🛫💕",
-  "In sha'a Allah, soon the countdown reaches zero and the distance becomes a memory 🌸",
-  "Every day of learning is a love letter written in Arabic script ✍️❤️",
-  "Missing you tastes like Indonesian rain and Polish autumn — both beautiful, both yours 🌧️🍂",
-  "The longest journey is from the mind to the heart — you made mine effortless, habibi 💕",
-  "Aku rindu kamu more than words in any language can say 🌺",
-  "Two time zones, one dream: the moment the distance disappears 🕐🕖",
-  "Every Arabic word I learn feels like a new way to say I love you ❤️",
-  "Surabaya sunsets and Borzęta mornings — I carry both in my heart 🌅",
-  "Love is the only thing that gets stronger the further it travels 💪❤️",
-  "Masya Allah — what a blessing to love someone this deeply across this much distance 🤲",
-  "Some things are worth every kilometer of waiting, habibi 🌸",
-  "The plane ticket is just a formality — my heart is already there 🛫",
-  "Rindu itu nyata — missing you is real, vivid, and makes me learn faster 📖💕",
-  "They say love conquers all — apparently that includes 10 700 km ❤️",
-  "Every time I learn a new Arabic word I wonder if you'd smile hearing me say it 🌸",
-  "Somewhere there's a window where someone is looking at the same moon as me tonight 🌙💕",
-  "The best thing about learning Arabic is imagining the day I use it with you 💙",
-  "Timezone difference: huge. Love: bigger 🌍❤️",
-  "11.06.2026 — just a date on a calendar that holds a whole universe of feeling 🗓️🌸",
-  "I'd cross 10 700 km again and again without hesitation, habibi 💕",
-  "Some loves are big enough to fill the space between continents ❤️",
-  "Counting hours, not because I'm impatient, but because every hour matters 🕰️💕",
-  "This distance is just a story we'll laugh about one day, sayang 🌺",
-  "If missing you were an Arabic word, it would be the most beautiful one in the alphabet 📖❤️"
-];
 
 const I18N = {
   pl: {
-    navHome: "Start", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Przygoda", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navSeerah: "Seerah", navPillars: "Filary", navRoots: "Korzenie", navMuallaf: "Nowy muzułmanin", navHalalHaram: "Halal & Haram", navIslamFaq: "FAQ islamu",
+    navHome: "Start", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Dziennik", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navSeerah: "Seerah", navPillars: "Filary", navRoots: "Korzenie", navMuallaf: "Nowy muzułmanin", navHalalHaram: "Halal & Haram", navIslamFaq: "FAQ islamu",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
     welcome: "Witaj w ألف AI", homeTitle: "Islam — krok po kroku", homeLead: "Arabski jest narzędziem — bo czytanie Koranu w oryginale to obowiązek każdego muzułmanina. Ucz się liter, sur, dhikru, historii islamu i modlitw.",
@@ -266,7 +130,7 @@ const I18N = {
     dhikrGame: "Szybki Dhikr", dhikrGameDesc: "33 razy — jak najszybciej!", dhikrGameStart: "Dotknij aby zacząć", dhikrGameResult: "Czas",
     streak: "Seria dni", level: "Poziom", alphabetProgress: "Alfabet", todayTask: "Dzisiejsze zadanie", start: "Zaczynam", progress: "Postęp", points: "pkt",
     aiAssistant: "AI Assistant", aiPlaceholder: "Poproś o fiszki, quiz, historyjkę albo ciekawostkę...", send: "Wyślij", aiHello: "Cześć! Jestem Twoim Alif AI Assistantem. Mogę stworzyć fiszki, mini-lekcję, quiz, historyjkę albo ciekawostkę dnia.",
-    addFlashcards: "Dodaj do fiszek", saveBook: "Zapisz jako nową książeczkę", addAdventure: "Dodaj do Naszej Przygody", addCulture: "Dodaj jako ciekawostkę",
+    addFlashcards: "Dodaj do fiszek", saveBook: "Zapisz jako nową książeczkę", addAdventure: "Dodaj do dziennika nauki", addCulture: "Dodaj jako ciekawostkę",
     more: "Więcej", play: "Odtwórz", check: "Sprawdź", clear: "Wyczyść", next: "Następna", good: "dobrze", weak: "słabo", veryWeak: "bardzo słabo", attempts: "Historia prób",
     frontHint: "Dotknij karty, żeby ją odwrócić", hard: "Trudne", ok: "OK", easy: "Łatwe", noCards: "Nie ma kart w tym trybie",
     correct: "Dobrze", wrong: "Źle", history: "Historia", stop: "Stop", record: "Rekord", score: "Wynik",
@@ -274,7 +138,7 @@ const I18N = {
     lessonCategories: "Kategorie Lekcji", lessonSelect: "Wybierz kategorię"
   },
   en: {
-    navHome: "Home", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Adventure", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navSeerah: "Seerah", navPillars: "Pillars", navRoots: "Roots", navMuallaf: "New Muslim", navHalalHaram: "Halal & Haram", navIslamFaq: "Islam FAQ",
+    navHome: "Home", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Journal", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navSeerah: "Seerah", navPillars: "Pillars", navRoots: "Roots", navMuallaf: "New Muslim", navHalalHaram: "Halal & Haram", navIslamFaq: "Islam FAQ",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
     welcome: "Welcome to ألف AI", homeTitle: "Islam — step by step", homeLead: "Arabic is the key — reading the Quran in the original is every Muslim's obligation. Learn letters, surahs, dhikr, Islamic history and prayers.",
@@ -283,7 +147,7 @@ const I18N = {
     dhikrGame: "Dhikr Speed", dhikrGameDesc: "33 taps — as fast as you can!", dhikrGameStart: "Tap to start", dhikrGameResult: "Time",
     streak: "Daily streak", level: "Level", alphabetProgress: "Alphabet", todayTask: "Today's task", start: "Start", progress: "Progress", points: "pts",
     aiAssistant: "AI Assistant", aiPlaceholder: "Ask for flashcards, a quiz, a story or a culture fact...", send: "Send", aiHello: "Hi! I am your Alif AI Assistant. I can create flashcards, mini-lessons, quizzes, stories, or a daily culture fact.",
-    addFlashcards: "Add to flashcards", saveBook: "Save as new book", addAdventure: "Add to Our Adventure", addCulture: "Add as culture fact",
+    addFlashcards: "Add to flashcards", saveBook: "Save as new book", addAdventure: "Add to learning journal", addCulture: "Add as culture fact",
     more: "More", play: "Play", check: "Check", clear: "Clear", next: "Next", good: "good", weak: "weak", veryWeak: "very weak", attempts: "Attempt history",
     frontHint: "Tap the card to flip it", hard: "Hard", ok: "OK", easy: "Easy", noCards: "No cards in this mode",
     correct: "Correct", wrong: "Wrong", history: "History", stop: "Stop", record: "Best", score: "Score",
@@ -328,7 +192,7 @@ const LESSONS_DATA = {
     { id: "num5", category: "Liczby", title: "Pięć", ar: "خَمْسَة", tr: "chamsa", meaning: "pięć (5)", task: "Liczba modlitw w islamie – zapamiętaj przez skojarzenie." },
     { id: "bread", category: "Jedzenie", title: "Chleb", ar: "خُبْز", tr: "chubz", meaning: "chleb", task: "Znajdź literę خ i ب w alfabecie." },
     { id: "water", category: "Jedzenie", title: "Woda", ar: "مَاء", tr: "ma", meaning: "woda", task: "Powiedz 'ma' za każdym razem gdy pijesz wodę przez jeden dzień." },
-    { id: "rice", category: "Jedzenie", title: "Ryż", ar: "أُرُز", tr: "aruzz", meaning: "ryż", task: "Podstawa kuchni indonezyjskiej – naucz się tego słowa." },
+    { id: "rice", category: "Jedzenie", title: "Ryż", ar: "أُرُز", tr: "aruzz", meaning: "ryż", task: "Proste codzienne slowo - naucz sie go." },
     { id: "fruit", category: "Jedzenie", title: "Owoce", ar: "فَاكِهَة", tr: "fakiha", meaning: "owoce", task: "Wymień 3 owoce po arabsku z pomocą AI." },
     { id: "day", category: "Czas", title: "Dzień", ar: "يَوْم", tr: "jawm", meaning: "dzień", task: "Powiedz: dzisiaj = اليوم (al-jawm)." },
     { id: "night", category: "Czas", title: "Noc", ar: "لَيْل", tr: "lajl", meaning: "noc", task: "Dobranoc po arabsku: تُصْبِح عَلَى خَيْر (tusbich 'ala khajr)." },
@@ -337,11 +201,6 @@ const LESSONS_DATA = {
     { id: "inshallah", category: "Islam", title: "Inshallah", ar: "إِنْ شَاءَ اللَّه", tr: "in sza'a Allah", meaning: "Jeśli Bóg da / miejmy nadzieję", task: "Powiedz jutro rano planując swój dzień." },
     { id: "mashallah", category: "Islam", title: "Mashallah", ar: "مَا شَاءَ اللَّه", tr: "ma sza'a Allah", meaning: "Jak Bóg zechciał (zachwyt / podziw)", task: "Powiedz komuś coś miłego i dodaj Mashallah." },
     { id: "subhanallah", category: "Islam", title: "Subhanallah", ar: "سُبْحَانَ اللَّه", tr: "subhana Allah", meaning: "Chwała Bogu (zachwyt nad pięknem)", task: "Powtórz 33 razy jako formę medytacji." },
-    { id: "poland_ar", category: "Polska i Indonezja", title: "Polska", ar: "بُولَنْدَا", tr: "bulanda", meaning: "Polska", task: "Napisz słowo po arabsku z pamięci." },
-    { id: "warsaw_ar", category: "Polska i Indonezja", title: "Warszawa", ar: "وَارْسُو", tr: "warsaw", meaning: "Warszawa", task: "Znajdź literę و w alfabecie." },
-    { id: "borze_ar", category: "Polska i Indonezja", title: "Borzęta", ar: "بُورْزِينْتَا", tr: "borzenta", meaning: "Borzęta (miasteczko w Polsce)", task: "Naucz się pisać i powiedzieć nazwę swojego miasta po arabsku." },
-    { id: "indonesia_ar", category: "Polska i Indonezja", title: "Indonezja", ar: "إِنْدُونِيسِيَا", tr: "indunisia", meaning: "Indonezja", task: "Kraj kochany od zawsze – powiedz na głos 5 razy." },
-    { id: "surabaya_ar", category: "Polska i Indonezja", title: "Surabaya", ar: "سُورَابَايَا", tr: "surabaja", meaning: "Surabaya (miasto w Indonezji)", task: "Napisz na canvasie litery س ر ب." },
     { id: "shahada", category: "Islam – najważniejsze", title: "Szahada", ar: "لَا إِلَٰهَ إِلَّا اللَّهُ مُحَمَّدٌ رَسُولُ اللَّهِ", tr: "la ilaha illallah, Muhammadun rasulullah", meaning: "Nie ma boga prócz Allaha, Muhammad jest posłańcem Allaha", task: "Powtórz wolno i ze zrozumieniem każde słowo." },
     { id: "fatiha", category: "Islam – najważniejsze", title: "Al-Fatiha (wstęp)", ar: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", tr: "alhamdu lillahi rabbil alamin", meaning: "Chwała Bogu, Panu światów (Al-Fatiha 1:2)", task: "Zapamiętaj ten werset — jest recytowany w każdej rak'ah modlitwy." },
     { id: "ayat_kursi_intro", category: "Islam – najważniejsze", title: "Ajet al-Kursi (początek)", ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ", tr: "Allahu la ilaha illa huwal hayyul qayyum", meaning: "Bóg — nie ma boga prócz Niego, Żyjącego, Samopodtrzymującego", task: "Ajet al-Kursi to najpotężniejszy werset Koranu (2:255). Zapamiętaj jego początek." },
@@ -385,7 +244,7 @@ const LESSONS_DATA = {
     { id: "num5", category: "Numbers", title: "Five", ar: "خَمْسَة", tr: "khamsa", meaning: "five (5)", task: "Number of daily prayers in Islam – remember by association." },
     { id: "bread", category: "Food", title: "Bread", ar: "خُبْز", tr: "khubz", meaning: "bread", task: "Find the letters خ and ب in the alphabet." },
     { id: "water", category: "Food", title: "Water", ar: "مَاء", tr: "ma'", meaning: "water", task: "Say 'ma' every time you drink water today." },
-    { id: "rice", category: "Food", title: "Rice", ar: "أُرُز", tr: "uruz", meaning: "rice", task: "Staple of Indonesian cuisine – memorize this word." },
+    { id: "rice", category: "Food", title: "Rice", ar: "أُرُز", tr: "uruz", meaning: "rice", task: "A simple everyday food word - memorize it." },
     { id: "fruit", category: "Food", title: "Fruit", ar: "فَاكِهَة", tr: "fakiha", meaning: "fruit", task: "Name 3 fruits in Arabic with AI's help." },
     { id: "day", category: "Time", title: "Day", ar: "يَوْم", tr: "yawm", meaning: "day", task: "Say: today = اليوم (al-yawm)." },
     { id: "night", category: "Time", title: "Night", ar: "لَيْل", tr: "layl", meaning: "night", task: "Goodnight in Arabic: تُصْبِح عَلَى خَيْر (tusbih 'ala khayr)." },
@@ -394,10 +253,6 @@ const LESSONS_DATA = {
     { id: "inshallah", category: "Islam", title: "Inshallah", ar: "إِنْ شَاءَ اللَّه", tr: "in sha'a Allah", meaning: "If God wills it", task: "Say it tomorrow morning while planning your day." },
     { id: "mashallah", category: "Islam", title: "Mashallah", ar: "مَا شَاءَ اللَّه", tr: "ma sha'a Allah", meaning: "What God has willed (admiration)", task: "Say something kind to someone and add Mashallah." },
     { id: "subhanallah", category: "Islam", title: "Subhanallah", ar: "سُبْحَانَ اللَّه", tr: "subhan Allah", meaning: "Glory to God (wonder at beauty)", task: "Repeat 33 times as a form of meditation." },
-    { id: "poland_ar", category: "Poland & Indonesia", title: "Poland", ar: "بُولَنْدَا", tr: "bulanda", meaning: "Poland", task: "Write the word from memory." },
-    { id: "warsaw_ar", category: "Poland & Indonesia", title: "Warsaw", ar: "وَارْسُو", tr: "warsaw", meaning: "Warsaw", task: "Find the letter و in the alphabet." },
-    { id: "indonesia_ar", category: "Poland & Indonesia", title: "Indonesia", ar: "إِنْدُونِيسِيَا", tr: "indunisia", meaning: "Indonesia", task: "Say it 5 times aloud." },
-    { id: "surabaya_ar", category: "Poland & Indonesia", title: "Surabaya", ar: "سُورَابَايَا", tr: "surabaya", meaning: "Surabaya (city in Indonesia)", task: "Write the letters س ر ب on the canvas." },
     { id: "shahada", category: "Islam – Essential", title: "Shahada", ar: "لَا إِلَٰهَ إِلَّا اللَّهُ مُحَمَّدٌ رَسُولُ اللَّهِ", tr: "la ilaha illallah, Muhammadun rasulullah", meaning: "There is no god but Allah, Muhammad is His messenger", task: "Repeat slowly understanding each word." },
     { id: "fatiha", category: "Islam – Essential", title: "Al-Fatiha (opening)", ar: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", tr: "alhamdulillahi rabbil alamin", meaning: "All praise to God, Lord of all worlds (Al-Fatiha 1:2)", task: "Memorize this verse — it is recited in every rak'ah of prayer." },
     { id: "ayat_kursi_intro", category: "Islam – Essential", title: "Ayat al-Kursi (opening)", ar: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ", tr: "Allahu la ilaha illa huwal hayyul qayyum", meaning: "Allah — there is no god but Him, the Living, the Eternal", task: "Ayat al-Kursi is the greatest verse in the Quran (2:255). Memorize its opening." },
@@ -434,10 +289,7 @@ const WORD_MEANINGS_EN = {
   islam: "Islam",
   quran: "Quran",
   masjid: "mosque",
-  polska: "Poland",
-  warsaw: "Warsaw",
   lublin: "Lublin",
-  indonesia: "Indonesia",
   batik: "batik",
   borobudur: "Borobudur",
   orangutan: "orangutan",
@@ -527,6 +379,7 @@ const defaultState = {
   lessonsTab: "lessons",
   faqTab: "basics",
   muallafChecklist: [],
+  prayerLog: {},
   prayerGuideSessions: 0,
   lastPrayerGuide: null,
   prayerLocations: null,
@@ -595,7 +448,6 @@ function updateDocumentI18nMeta() {
 
 function themeMeta(theme) {
   if (theme === "dark") return { icon: "☾", title: "Dark" };
-  if (theme === "romantic") return { icon: "🌸", title: "Romantic" };
   return { icon: "☀", title: "Light" };
 }
 
@@ -716,7 +568,6 @@ function init() {
   renderNav();
   bindGlobalEvents();
   mountAiAssistant();
-  scheduleRomanticToast();
   initSearch();
   window.addEventListener("hashchange", () => {
     route = location.hash.replace("#", "") || "home";
@@ -792,26 +643,14 @@ function updateInstallButtons() {
   });
 }
 
-function romanticLine() {
-  return ROMANTIC_LINES[Math.floor(Math.random() * ROMANTIC_LINES.length)];
-}
-
-function showLoveToast(message = romanticLine()) {
-  const old = document.querySelector(".love-toast");
+function showLoveToast(message = tx("Zapisano", "Saved")) {
+  const old = document.querySelector(".app-toast");
   if (old) old.remove();
   const toast = document.createElement("div");
-  toast.className = "love-toast";
+  toast.className = "app-toast";
   toast.textContent = message;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 5800);
-}
-
-function scheduleRomanticToast() {
-  const delay = (2 + Math.random() * 1) * 60 * 1000;
-  setTimeout(() => {
-    showLoveToast();
-    scheduleRomanticToast();
-  }, delay);
 }
 
 function registerPwa() {
@@ -937,11 +776,26 @@ function render() {
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
   const books = () => setRoute("culture");
-  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, zakat, halalharam, islamfaq };
+  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, zakat, halalharam, islamfaq, adventure, glossary };
   (views[route] || home)();
 }
 
 const MUALLAF_CHECKLIST_GROUPS = [
+  {
+    id: "7",
+    icon: "7",
+    titlePl: "Pierwsze 7 dni: spokojny start",
+    titleEn: "First 7 days: calm start",
+    leadPl: "Tylko fundament: szahada, modlitwa krok po kroku i jedna mala rutyna dziennie.",
+    leadEn: "Only the foundation: shahada, step-by-step prayer and one small daily routine.",
+    items: [
+      { id: "7_shahada", pl: "Powtorz szahade z tlumaczeniem i zapisz pytania do dziennika.", en: "Repeat the shahada with translation and write questions in the journal." },
+      { id: "7_fatiha", pl: "Sluchaj Al-Fatihy codziennie przez 3-5 minut.", en: "Listen to Al-Fatiha daily for 3-5 minutes." },
+      { id: "7_prayer", pl: "Otworz Prayer Mode i przejdz jedna modlitwe bez presji perfekcji.", en: "Open Prayer Mode and walk through one prayer without pressure to be perfect." },
+      { id: "7_wudu", pl: "Naucz sie kolejnosci wudu i przejdz ja powoli raz dziennie.", en: "Learn the order of wudu and practice it slowly once a day." },
+      { id: "7_support", pl: "Wybierz jedna zaufana osobe albo meczet do przyszlych pytan.", en: "Choose one trusted person or mosque for future questions." }
+    ]
+  },
   {
     id: "30",
     icon: "30",
@@ -1076,7 +930,7 @@ function muallaf() {
         { icon: "🤝", pl: "Nie musisz ogłaszać swojej konwersji — to między tobą a Allahem.", en: "You don't need to announce your conversion — it is between you and Allah." },
         { icon: "📖", pl: "Zacznij od krótkiej sury Al-Ikhlas (112) — 4 wersety, serce teologii islamu.", en: "Start with the short surah Al-Ikhlas (112) — 4 verses, the heart of Islamic theology." },
         { icon: "💚", pl: "Błędy w wymowie są wybaczalne — Allah wie, co jest w sercu.", en: "Pronunciation mistakes are forgivable — Allah knows what is in the heart." },
-        { icon: "🌍", pl: "Indonesia, Pakistan, Nigeria, Turcja — muzułmanie są wszędzie. Nie jesteś sam.", en: "Indonesia, Pakistan, Nigeria, Turkey — Muslims are everywhere. You are not alone." },
+        { icon: "🌍", pl: "Rozne kraje i kultury — muzułmanie są wszędzie. Nie jesteś sam.", en: "Many countries and cultures — Muslims are everywhere. You are not alone." },
         { icon: "🤲", pl: "Modlitwa (salat) może być uczona stopniowo — ważna jest intencja, nie perfekcja.", en: "Prayer (salat) can be learned gradually — what matters is intention, not perfection." },
       ].map(tip => `
         <div class="panel p-4 flex gap-3 items-start">
@@ -1285,7 +1139,7 @@ function islam() {
     { route: "dhikr",   icon: "📿", titlePl: "Dhikr",             titleEn: "Dhikr",            descPl: "Licznik Subhanallah · Alhamdulillah · Allahu Akbar",     descEn: "Subhanallah · Alhamdulillah · Allahu Akbar counter" },
     { route: "pillars", icon: "⭐", titlePl: "Filary Islamu",     titleEn: "Pillars of Islam", descPl: "5 Filarów Islamu + 6 Filarów Imanu",                    descEn: "5 Pillars of Islam + 6 Pillars of Iman" },
     { route: "prayerGuide", icon: "🧎", titlePl: "Prayer Mode",   titleEn: "Prayer Mode",      descPl: "Przewodnik salat krok po kroku dla początkujących",       descEn: "Step-by-step salat guide for beginners" },
-    { route: "prayer",  icon: "🕌", titlePl: "Czasy modlitw",     titleEn: "Prayer times",     descPl: "Borzęta 🇵🇱 + Surabaya 🇮🇩 + Qibla",                     descEn: "Borzęta 🇵🇱 + Surabaya 🇮🇩 + Qibla" },
+    { route: "prayer",  icon: "🕌", titlePl: "Czasy modlitw",     titleEn: "Prayer times",     descPl: "Makkah + Madinah + Qibla",                     descEn: "Makkah + Madinah + Qibla" },
     { route: "asmaul",  icon: "☪",  titlePl: "99 Imion Allaha",  titleEn: "99 Names of Allah",descPl: "Asma ul-Husna — piękne imiona Boga",                    descEn: "Asma ul-Husna — beautiful Names of God" },
     { route: "seerah",  icon: "🌙", titlePl: "Seerah",            titleEn: "Seerah",           descPl: "Życie Proroka Muhammada ﷺ",                             descEn: "Life of Prophet Muhammad ﷺ" },
     { route: "tajweed", icon: "🔤", titlePl: "Tadżwid",           titleEn: "Tajweed",          descPl: "8 zasad prawidłowej recytacji",                         descEn: "8 rules for correct Quran recitation" },
@@ -1293,6 +1147,7 @@ function islam() {
     { route: "zakat",      icon: "💰", titlePl: "Kalkulator zakat", titleEn: "Zakat calculator",  descPl: "Aktywa, długi i edukacyjne przybliżenie 2.5%",                descEn: "Assets, debts and an educational 2.5% estimate" },
     { route: "halalharam", icon: "⚖",  titlePl: "Halal & Haram",   titleEn: "Halal & Haram",   descPl: "Jedzenie, napoje, zachowanie — co wolno, czego nie",          descEn: "Food, drinks, behaviour — what is and isn't allowed" },
     { route: "islamfaq",   icon: "❓", titlePl: "FAQ islamu",       titleEn: "Islam FAQ",        descPl: "Mity, islamofobia, kobiety, terroryzm, inne religie",         descEn: "Myths, Islamophobia, women, terrorism, other religions" },
+    { route: "glossary",   icon: "Aa", titlePl: "Slownik pojec",    titleEn: "Glossary",         descPl: "Wudu, ghusl, sunnah, fiqh, aqidah i inne podstawy",          descEn: "Wudu, ghusl, sunnah, fiqh, aqidah and other basics" },
   ];
   view.innerHTML = `
     <div class="mb-5">
@@ -1316,6 +1171,39 @@ function islam() {
   );
 }
 
+const ISLAM_GLOSSARY = [
+  { term: "Wudu", pl: "Rytualne obmycie przed modlitwa.", en: "Ritual washing before prayer." },
+  { term: "Ghusl", pl: "Pelna kapiel rytualna wymagana w okreslonych sytuacjach.", en: "Full ritual bath required in specific situations." },
+  { term: "Sunnah", pl: "Droga i praktyka Proroka Muhammada ﷺ.", en: "The way and practice of Prophet Muhammad ﷺ." },
+  { term: "Fiqh", pl: "Islamskie rozumienie prawa praktycznego: modlitwy, handel, rodzina i codziennosc.", en: "Islamic practical law: prayer, trade, family and daily life." },
+  { term: "Aqidah", pl: "Podstawy wiary: Allah, aniolowie, Ksiegi, prorocy, Dzien Sadu i przeznaczenie.", en: "Creed: Allah, angels, Books, prophets, the Last Day and decree." },
+  { term: "Tawhid", pl: "Jednosc Allaha: wiara, ze tylko On jest godny czci.", en: "Oneness of Allah: only He is worthy of worship." },
+  { term: "Bid'ah", pl: "Innowacja religijna; temat wymaga ostroznosci i wiedzy uczonych.", en: "Religious innovation; a topic requiring care and scholarly knowledge." },
+  { term: "Halal", pl: "Dozwolone.", en: "Permissible." },
+  { term: "Haram", pl: "Zakazane.", en: "Forbidden." },
+  { term: "Makruh", pl: "Odradzane, ale nie zawsze zakazane.", en: "Disliked, but not always forbidden." },
+  { term: "Raka'ah", pl: "Jednostka modlitwy skladajaca sie ze stania, recytacji, ruku i sujud.", en: "A prayer unit with standing, recitation, ruku and sujud." },
+  { term: "Sujud", pl: "Poklon czolem do ziemi w modlitwie.", en: "Prostration in prayer." }
+];
+
+function glossary() {
+  view.innerHTML = `
+    <div class="mb-5">
+      <h1 class="text-3xl font-black">${tx("Slownik pojec islamskich", "Islamic Glossary")}</h1>
+      <p class="text-[var(--muted)]">${tx("Krotkie, praktyczne definicje dla poczatkujacych.", "Short, practical definitions for beginners.")}</p>
+    </div>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      ${ISLAM_GLOSSARY.map(item => `
+        <article class="panel p-4">
+          <h2 class="text-lg font-black">${escapeHtml(item.term)}</h2>
+          <p class="mt-2 text-sm text-[var(--muted)]">${escapeHtml(state.lang === "pl" ? item.pl : item.en)}</p>
+        </article>
+      `).join("")}
+    </div>
+    <div class="panel p-3 mt-4 text-xs text-[var(--muted)]">${tx(RELIGIOUS_NOTICE.pl, RELIGIOUS_NOTICE.en)}</div>
+  `;
+}
+
 function homeFavoriteItems() {
   return [
     ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
@@ -1334,6 +1222,55 @@ function homeFavoriteItems() {
   ];
 }
 
+function nextStepSuggestion() {
+  if ((state.muallafChecklist || []).length < 3) {
+    return {
+      route: "muallaf",
+      title: tx("Nastepny krok", "Next step"),
+      text: tx("Zrob pierwszy tydzien planu po szahadzie: szahada, Al-Fatiha i jedna modlitwa z przewodnikiem.", "Start the first week plan after shahada: shahada, Al-Fatiha and one guided prayer."),
+      action: tx("Otworz plan", "Open plan")
+    };
+  }
+  const todayLog = state.prayerLog?.[today()] || {};
+  if (Object.keys(todayLog).length < 5) {
+    return {
+      route: "prayer",
+      title: tx("Dziennik modlitw", "Prayer journal"),
+      text: tx("Zaznacz dzisiejsze modlitwy i sprawdz najblizszy czas salat.", "Tick today's prayers and check the next salat time."),
+      action: tx("Zaznacz modlitwy", "Track prayers")
+    };
+  }
+  if (!state.hifzProgress?.[112] || state.hifzProgress[112] !== "memorized") {
+    return {
+      route: "koran",
+      quranTab: "hifz",
+      title: tx("Nauka krotkich sur", "Short surah practice"),
+      text: tx("Zacznij od Al-Ikhlas: 4 wersety i bardzo mocny fundament aqidah.", "Start with Al-Ikhlas: 4 verses and a strong aqidah foundation."),
+      action: tx("Otworz nauke sur", "Open surah practice")
+    };
+  }
+  return {
+    route: "glossary",
+    title: tx("Slownik pojec", "Glossary"),
+    text: tx("Utrwal podstawowe pojecia: wudu, ghusl, sunnah, fiqh, aqidah.", "Review key terms: wudu, ghusl, sunnah, fiqh, aqidah."),
+    action: tx("Otworz slownik", "Open glossary")
+  };
+}
+
+function nextStepCard() {
+  const next = nextStepSuggestion();
+  return `
+    <button class="panel p-4 text-left w-full flex items-center justify-between gap-3 active:scale-95 transition-transform" data-route="${next.route}" ${next.quranTab ? `data-quran-tab="${next.quranTab}"` : ""}>
+      <div>
+        <h2 class="text-base font-black">${next.title}</h2>
+        <p class="text-xs text-[var(--muted)] mt-0.5">${next.text}</p>
+        <p class="mt-2 text-xs font-black text-emerald-600">${next.action}</p>
+      </div>
+      <span class="text-xl">Next</span>
+    </button>
+  `;
+}
+
 function home() {
   const tasks = activeDailyTasks();
   const task = tasks[new Date().getDate() % tasks.length];
@@ -1349,7 +1286,7 @@ function home() {
 
   view.innerHTML = `
     <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-      <section class="panel romantic-hero p-5 sm:p-7">
+      <section class="panel p-5 sm:p-7">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p class="font-bold text-emerald-600">${t("welcome")}</p>
@@ -1406,6 +1343,7 @@ function home() {
           </div>
           <span class="text-xl">⚙️</span>
         </button>
+        ${nextStepCard()}
         ${hijriWidget()}
         <div id="ayatOfDay" class="panel p-5">
            <h2 class="text-xl font-black mb-3">✨ ${tx("Ayat Dnia", "Ayat of the Day")}</h2>
@@ -1429,13 +1367,12 @@ function home() {
         </button>
       </aside>
     </div>
-
-    ${journeyWidget()}
   `;
 
   loadAyatOfDay();
   view.querySelectorAll("[data-route]").forEach((button) => {
     button.addEventListener("click", () => {
+      if (button.dataset.quranTab) state.quranTab = button.dataset.quranTab;
       if (button.dataset.route === "ai") openAiChat();
       else setRoute(button.dataset.route);
     });
@@ -1507,38 +1444,6 @@ async function loadAyatOfDay() {
   } catch (e) {
     container.innerHTML = `<p class="text-xs text-[var(--muted)]">${tx("Nie udało się pobrać wersetu.", "Could not load ayah.")}</p>`;
   }
-}
-
-function journeyWidget() {
-  const target = new Date("2026-06-11T00:00:00+07:00");
-  const diff = target - new Date();
-  const days = Math.max(0, Math.floor(diff / 86400000));
-  const hours = Math.max(0, Math.floor((diff % 86400000) / 3600000));
-  const myslenice = new Intl.DateTimeFormat(localeTag(), { timeZone: "Europe/Warsaw", hour: "numeric", minute: "2-digit", hour12: true }).format(new Date());
-  const surabaya = new Intl.DateTimeFormat(localeTag(), { timeZone: "Asia/Jakarta", hour: "numeric", minute: "2-digit", hour12: true }).format(new Date());
-  return `
-    <section class="panel romantic-hero mt-4 p-5 sm:p-6">
-      <div class="relative z-10 grid gap-5 lg:grid-cols-[1fr_1.3fr_1fr] lg:items-center">
-        <div>
-          <p class="text-sm font-black text-emerald-700">${tx("Dwa miasta, jedno serce", "Two cities, one heart")}</p>
-          <h2 class="mt-1 text-2xl font-black">Borzęta - Surabaya</h2>
-        </div>
-        <div>
-          <div class="mb-3 flex justify-between gap-3 text-sm font-black">
-            <span>Borzęta ${myslenice}</span>
-            <span>Surabaya ${surabaya}</span>
-          </div>
-          <div class="journey-line"></div>
-          <p class="mt-3 text-center text-sm text-[var(--muted)]">~10 700 km · PL ↔ ID</p>
-        </div>
-        <div class="soft-panel p-4 text-center">
-          <p class="text-sm font-black text-amber-600">${tx("Do wylotu do Surabayi", "Until Surabaya flight")}</p>
-          <p class="mt-1 text-3xl font-black">${days}d ${hours}h</p>
-          <p class="text-xs text-[var(--muted)]">11.06.2026</p>
-        </div>
-      </div>
-    </section>
-  `;
 }
 
 function statCard(title, value, hint) {
@@ -1690,6 +1595,8 @@ const SURAH_EXTRA = {
 };
 
 const ESSENTIAL_SURAHS = [1, 112, 113, 114, 67, 36, 55, 18, 2, 56];
+const HIFZ_SURAHS = [1, 112, 113, 114];
+const HIFZ_STATES = ["not-started", "in-progress", "memorized"];
 
 const SURAH_LENGTH_GROUPS = [
   { key: "xs",      labelPl: "Bardzo krótkie (≤6)",    labelEn: "Very short (≤6)",      min: 1,   max: 6   },
@@ -1953,6 +1860,50 @@ function renderSurahList() {
   bindSurahListEvents();
 }
 
+function hifzStateLabel(status) {
+  if (status === "memorized") return tx("Zapamietana", "Memorized");
+  if (status === "in-progress") return tx("W trakcie", "In progress");
+  return tx("Nie zaczeta", "Not started");
+}
+
+function hifzNextStatus(current) {
+  const index = Math.max(0, HIFZ_STATES.indexOf(current));
+  return HIFZ_STATES[(index + 1) % HIFZ_STATES.length];
+}
+
+function renderHifzTab() {
+  const memorized = HIFZ_SURAHS.filter(num => state.hifzProgress?.[num] === "memorized").length;
+  return `
+    <div class="panel p-4 mb-4">
+      <h2 class="text-xl font-black">${tx("Tryb nauki krotkich sur", "Short Surah Learning")}</h2>
+      <p class="text-sm text-[var(--muted)] mt-1">${tx("Najpierw Al-Fatiha, potem Al-Ikhlas, Al-Falaq i An-Nas. Odhaczaj postep bez presji.", "Start with Al-Fatiha, then Al-Ikhlas, Al-Falaq and An-Nas. Track progress without pressure.")}</p>
+      <p class="mt-3 text-sm font-black text-emerald-600">${memorized}/${HIFZ_SURAHS.length} ${tx("zapamietane", "memorized")}</p>
+    </div>
+    <div class="grid gap-3 sm:grid-cols-2">
+      ${HIFZ_SURAHS.map(num => {
+        const surah = SURAH_LIST.find(s => s.number === num);
+        const status = state.hifzProgress?.[num] || "not-started";
+        return `
+          <article class="hifz-surah ${status} panel p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-xs font-black text-[var(--muted)]">${tx("Sura", "Surah")} ${num}</p>
+                <h3 class="text-lg font-black">${escapeHtml(surah?.enName || String(num))}</h3>
+                <p class="text-sm text-[var(--muted)]">${escapeHtml(surah?.meaning || "")} · ${surah?.numberOfAyahs || "?"} ${tx("wersetow", "ayahs")}</p>
+              </div>
+              <span class="trust-badge ${status === "memorized" ? "verified" : status === "in-progress" ? "context-dependent" : "unverified"}">${hifzStateLabel(status)}</span>
+            </div>
+            <div class="mt-4 grid gap-2 sm:grid-cols-2">
+              <button class="big-action border border-[var(--line)]" data-read-surah="${num}">${tx("Czytaj", "Read")}</button>
+              <button class="big-action bg-emerald-500 text-white" data-hifz-toggle="${num}">${tx("Zmien status", "Change status")}</button>
+            </div>
+          </article>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
 function koran() {
   const activeTab = state.quranTab || "surahs";
   const favCount = (state.quranSurahFavorites || []).length;
@@ -1961,6 +1912,7 @@ function koran() {
       <h1 class="text-2xl font-black px-4 pt-4">${t("koranTitle")}</h1>
       <div class="flex border-b border-[var(--line)] mt-3 px-2 gap-0 overflow-x-auto">
         <button class="px-4 py-2.5 text-sm font-black border-b-2 shrink-0 ${activeTab === "surahs" ? "border-emerald-500 text-emerald-600" : "border-transparent text-[var(--muted)]"}" data-tab="surahs">${tx("Sury", "Surahs")}</button>
+        <button class="px-4 py-2.5 text-sm font-black border-b-2 shrink-0 ${activeTab === "hifz" ? "border-emerald-500 text-emerald-600" : "border-transparent text-[var(--muted)]"}" data-tab="hifz">${tx("Nauka sur", "Surah learning")}</button>
         <button class="px-4 py-2.5 text-sm font-black border-b-2 shrink-0 ${activeTab === "dua" ? "border-emerald-500 text-emerald-600" : "border-transparent text-[var(--muted)]"}" data-tab="dua">${tx("Dua", "Dua")}</button>
         <button class="px-4 py-2.5 text-sm font-black border-b-2 shrink-0 ${activeTab === "favayahs" ? "border-emerald-500 text-emerald-600" : "border-transparent text-[var(--muted)]"}" data-tab="favayahs">${tx("Ulubione", "Favorites")} ${favCount > 0 ? `<span class="ml-1 rounded-full bg-emerald-100 text-emerald-700 text-xs px-1.5">${favCount}</span>` : ""}</button>
       </div>
@@ -1981,6 +1933,10 @@ function koran() {
         </div>
         <div id="surahList" class="grid gap-2 sm:grid-cols-3 lg:grid-cols-4"></div>
         <div id="surahContent" class="mt-6"></div>
+      </div>
+
+      <div id="tabHifz" class="${activeTab !== "hifz" ? "hidden" : ""}">
+        ${renderHifzTab()}
       </div>
 
       <!-- DUA TAB -->
@@ -2071,6 +2027,21 @@ function koran() {
       saveState();
       renderSurahList();
     });
+  }
+
+  if (activeTab === "hifz") {
+    view.querySelectorAll("[data-read-surah]").forEach(btn => btn.addEventListener("click", () => {
+      state.quranTab = "surahs";
+      saveState();
+      koran();
+      setTimeout(() => openSurah(Number(btn.dataset.readSurah)), 100);
+    }));
+    view.querySelectorAll("[data-hifz-toggle]").forEach(btn => btn.addEventListener("click", () => {
+      const num = Number(btn.dataset.hifzToggle);
+      state.hifzProgress = { ...(state.hifzProgress || {}), [num]: hifzNextStatus(state.hifzProgress?.[num] || "not-started") };
+      saveState();
+      koran();
+    }));
   }
 
   if (activeTab === "dua") {
@@ -2250,11 +2221,10 @@ function settings() {
       </section>
       <section class="panel p-5">
         <h2 class="text-xl font-black">${tx("Motyw", "Theme")}</h2>
-        <p class="mt-2 text-[var(--muted)]">${tx("Wybierz klasyczny light, dark albo rozowo-bezowy romantic.", "Choose classic light, dark, or pink-beige romantic.")}</p>
-        <div class="mt-4 grid grid-cols-3 gap-2">
+        <p class="mt-2 text-[var(--muted)]">${tx("Wybierz jasny albo ciemny motyw.", "Choose light or dark theme.")}</p>
+        <div class="mt-4 grid grid-cols-2 gap-2">
           <button class="big-action ${state.theme === "light" ? "bg-amber-100 border border-amber-300" : "border border-[var(--line)] bg-[var(--surface)]"}" data-theme-set="light">☀ Light</button>
           <button class="big-action ${state.theme === "dark" ? "bg-emerald-900 text-white" : "border border-[var(--line)] bg-[var(--surface)]"}" data-theme-set="dark">☾ Dark</button>
-          <button class="big-action ${state.theme === "romantic" ? "gold-btn" : "border border-[var(--line)] bg-[var(--surface)]"}" data-theme-set="romantic">🌸 Romantic</button>
         </div>
       </section>
       <section class="panel p-5">
@@ -2345,6 +2315,8 @@ function settings() {
     state.catchHistory = [];
     state.writingAttempts = [];
     state.recordings = {};
+    state.prayerLog = {};
+    state.hifzProgress = {};
     saveState();
     render();
   });
@@ -3109,6 +3081,10 @@ function adventure() {
     if (text) events.push({ date, icon: "📝", text: escapeHtml(text), type: "note" });
   });
 
+  (state.adventureStories || []).forEach(story => {
+    if (story?.text) events.push({ date: story.id || today(), icon: "AI", text: `${escapeHtml(story.title || tx("Wpis AI", "AI entry"))}: ${escapeHtml(story.text)}`, type: "note" });
+  });
+
   if (state.learnedLetters.length >= 28) events.push({ date: today(), icon: "🏆", text: tx("Poznałeś/aś cały alfabet arabski!", "You learned the full Arabic alphabet!"), type: "milestone" });
   else if (state.learnedLetters.length >= 14) events.push({ date: today(), icon: "⭐", text: tx(`Połowa alfabetu! ${state.learnedLetters.length}/28 liter poznanych.`, `Halfway! ${state.learnedLetters.length}/28 letters learned.`), type: "milestone" });
 
@@ -3138,16 +3114,16 @@ function adventure() {
 
   view.innerHTML = `
     <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Oś Czasu Nauki", "Learning Timeline")}</h1>
-      <p class="text-[var(--muted)]">${tx("Automatyczny dziennik Twoich postępów. Każda litera, sura i kamień milowy.", "Automatic log of your progress. Every letter, surah and milestone.")}</p>
+      <h1 class="text-3xl font-black">${tx("Dziennik nauki", "Learning Journal")}</h1>
+      <p class="text-[var(--muted)]">${tx("Twoje notatki, postepy, modlitwy, sury i kamienie milowe.", "Your notes, progress, prayers, surahs and milestones.")}</p>
     </div>
     <div class="panel mb-4 p-5">
-      <h2 class="text-lg font-black mb-3">${tx("Dodaj wpis do osi czasu", "Add timeline entry")}</h2>
+      <h2 class="text-lg font-black mb-3">${tx("Dodaj wpis do dziennika", "Add journal entry")}</h2>
       <textarea id="adventureNoteInput" class="min-h-20 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3" placeholder="${tx("Napisz coś, co chcesz zapamiętać... (np. dzisiaj nauczyłem się...)", "Write something to remember... (e.g. today I learned...)")}"></textarea>
       <button id="addAdventureNoteBtn" class="big-action mt-3 w-full bg-emerald-500 text-white">${tx("Dodaj wpis", "Add entry")}</button>
     </div>
     <div class="panel p-5">
-      <h2 class="text-lg font-black mb-4">${tx("Twoja oś czasu", "Your timeline")} · ${events.length} ${tx("zdarzeń", "events")}</h2>
+      <h2 class="text-lg font-black mb-4">${tx("Twoj dziennik", "Your journal")} ? ${events.length} ${tx("zdarzen", "events")}</h2>
       <div class="mt-2">${timelineHtml}</div>
     </div>
   `;
@@ -3164,7 +3140,7 @@ function adventure() {
 }
 
 async function generateAdventureStory() {
-  const promptValue = $("#storyPrompt").value.trim() || tx("Napisz krótką, ciepłą historyjkę o dwóch miastach: Borzęcie i Surabayi, z trzema prostymi arabskimi słowami.", "Write a short warm story about two cities — Borzęta and Surabaya — using three simple Arabic words.");
+  const promptValue = $("#storyPrompt").value.trim() || tx("Napisz krotka, ciepla historyjke edukacyjna z trzema prostymi arabskimi slowami.", "Write a short warm learning story using three simple Arabic words.");
   $("#generateStoryBtn").textContent = tx("Analizuję zdjęcie...", "Analyzing photo...");
   
   const hasPhoto = !!state.pendingAdventurePhoto;
@@ -3172,12 +3148,12 @@ async function generateAdventureStory() {
   
   try {
     const aiPrompt = tx(
-      `Stworz czysta, romantyczna, ciepla historyjke do sekcji Nasza Przygoda. ${hasPhoto ? "OPISZ DOKŁADNIE CO WIDZISZ NA ZAŁĄCZONYM ZDJĘCIU i wpleć to w historię." : ""} Nie dodawaj surowych linkow markdown ani listy przyciskow. Dodaj 3 proste arabskie slowa z naturalnym objasnieniem w tekscie. ${promptValue}`,
-      `Create a clean, romantic, warm story for the Our Adventure section. ${hasPhoto ? "DESCRIBE EXACTLY WHAT YOU SEE IN THE ATTACHED PHOTO and weave it into the story." : ""} Do not add raw markdown links or button lists. Add 3 simple Arabic words with natural explanation inside the story. ${promptValue}`
+      `Stworz czysta, ciepla historyjke edukacyjna do osi czasu nauki. ${hasPhoto ? "OPISZ DOKŁADNIE CO WIDZISZ NA ZAŁĄCZONYM ZDJĘCIU i wpleć to w historię." : ""} Nie dodawaj surowych linkow markdown ani listy przyciskow. Dodaj 3 proste arabskie slowa z naturalnym objasnieniem w tekscie. ${promptValue}`,
+      `Create a clean, warm learning story for the Learning Timeline section. ${hasPhoto ? "DESCRIBE EXACTLY WHAT YOU SEE IN THE ATTACHED PHOTO and weave it into the story." : ""} Do not add raw markdown links or button lists. Add 3 simple Arabic words with natural explanation inside the story. ${promptValue}`
     );
     
     const text = cleanAiText(await askGroq([{ role: "user", content: aiPrompt }], model, state.pendingAdventurePhoto));
-    const story = { id: crypto.randomUUID(), title: tx(`Przygoda ${new Date().toLocaleDateString(localeTag())}`, `Adventure ${new Date().toLocaleDateString(localeTag())}`), text, photo: state.pendingAdventurePhoto };
+    const story = { id: crypto.randomUUID(), title: tx(`Wpis AI ${new Date().toLocaleDateString(localeTag())}`, `AI Journal ${new Date().toLocaleDateString(localeTag())}`), text, photo: state.pendingAdventurePhoto };
     state.adventureStories.unshift(story);
     if (state.pendingAdventurePhoto) state.adventurePhotos.unshift(state.pendingAdventurePhoto);
     state.pendingAdventurePhoto = null;
@@ -3201,7 +3177,7 @@ function books() {
     </div>
     <div class="panel mb-4 p-5">
       <h2 class="text-lg font-black mb-3">${tx("Wygeneruj bajkę arabską z AI", "Generate Arabic story with AI")}</h2>
-      <textarea id="aiStoryPrompt" class="min-h-20 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3 mb-3" placeholder="${tx("Temat bajki (np. przygoda w Indonezji, kolorowe ptaki, księżyc nad Surabayą...)", "Story theme (e.g. adventure in Indonesia, colorful birds, the moon over Surabaya...)")}"></textarea>
+      <textarea id="aiStoryPrompt" class="min-h-20 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3 mb-3" placeholder="${tx("Temat bajki (np. podroz, dobre uczynki, nauka liter...)", "Story theme (e.g. travel, good deeds, learning letters...)")}"></textarea>
       <button id="generateAiBookBtn" class="big-action w-full bg-emerald-500 text-white">${tx("Wygeneruj bajkę", "Generate story")}</button>
     </div>
     <details class="panel mb-4 p-5">
@@ -3473,7 +3449,7 @@ function culture() {
   view.innerHTML = `
     <div class="mb-4">
       <h1 class="text-3xl font-black">${tx("Kultura i ciekawostki", "Culture and facts")}</h1>
-      <p class="text-[var(--muted)]">${tx("Ciekawostki dnia o arabskim, islamie, Indonezji i codziennych zwyczajach.", "Daily facts about Arabic, Islam, Indonesia and everyday customs.")}</p>
+      <p class="text-[var(--muted)]">${tx("Ciekawostki dnia o arabskim, islamie i codziennych zwyczajach.", "Daily facts about Arabic, Islam and everyday customs.")}</p>
     </div>
     <section class="panel p-5">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -3521,7 +3497,7 @@ FAKT: [2-4 zdania ciekawostki]
 SŁOWO: [jedno arabskie słowo]
 WYMOWA: [transliteracja]
 ZNACZENIE: [polskie tłumaczenie]`,
-      `Write ONE short culture fact (2-4 sentences) about Arabic culture, Islam or Indonesia. Do NOT generate flashcard lists. Do NOT use headers. ${avoidNote}
+      `Write ONE short culture fact (2-4 sentences) about Arabic culture or Islam. Do NOT generate flashcard lists. Do NOT use headers. ${avoidNote}
 Response format:
 TITLE: [short title 3-5 words]
 FACT: [2-4 sentences]
@@ -4205,8 +4181,8 @@ async function sendAiMessage(event) {
   renderAiMessages();
   try {
     const appContext = tx(
-      `Kontekst aplikacji: uzytkownik ma ${state.points} punktow, poziom ${level()}, zna ${state.learnedLetters.length}/28 liter. Sekcje: Alfabet, Lekcje, Fiszki, Wymowa, Pisanie, Nasza Przygoda, Kultura, Gry, Qur'an, Islam.`,
-      `App context: user has ${state.points} points, level ${level()}, knows ${state.learnedLetters.length}/28 letters. Sections: Alphabet, Lessons, Flashcards, Speech, Writing, Our Adventure, Culture, Games, Qur'an, Islam.`
+      `Kontekst aplikacji: uzytkownik ma ${state.points} punktow, poziom ${level()}, zna ${state.learnedLetters.length}/28 liter. Sekcje: Alfabet, Lekcje, Fiszki, Wymowa, Pisanie, O? czasu nauki, Kultura, Gry, Qur'an, Islam.`,
+      `App context: user has ${state.points} points, level ${level()}, knows ${state.learnedLetters.length}/28 letters. Sections: Alphabet, Lessons, Flashcards, Speech, Writing, Learning Timeline, Culture, Games, Qur'an, Islam.`
     );
     const islamicSourceContext = isIslamicQuery(content) ? buildIslamicSourceContext(content) : "";
     const recent = state.aiMessages.filter((message) => message.content !== aiThinking).slice(-8);
@@ -4222,7 +4198,6 @@ async function sendAiMessage(event) {
         )
       : answer;
     state.aiMessages[state.aiMessages.length - 1] = { role: "assistant", content: guardedAnswer };
-    if (Math.random() < 0.35) showLoveToast(romanticLine());
   } catch (error) {
     state.aiMessages[state.aiMessages.length - 1] = { role: "assistant", content: tx("Nie udalo mi sie polaczyc z Groq. Sprawdz internet, CORS albo limit API i sprobuj ponownie.", "I could not connect to Groq. Check internet, CORS, or API limits and try again.") };
   }
@@ -4346,7 +4321,7 @@ function handleAiAction(action, messageIndex) {
     setRoute("books");
   }
   if (action === "adventure") {
-    state.adventureStories.unshift({ id: crypto.randomUUID(), title: tx(`Historia AI ${new Date().toLocaleDateString(localeTag())}`, `AI Story ${new Date().toLocaleDateString(localeTag())}`), text: message.content });
+    state.adventureStories.unshift({ id: crypto.randomUUID(), title: tx(`Wpis AI ${new Date().toLocaleDateString(localeTag())}`, `AI Journal ${new Date().toLocaleDateString(localeTag())}`), text: message.content });
     saveState();
     setRoute("adventure");
   }
@@ -4948,17 +4923,19 @@ function prayerGuide() {
 }
 
 // ============================================================
-// PRAYER TIMES — Borzęta (Poland) + Surabaya (Indonesia)
+// PRAYER TIMES - configurable locations
 // ============================================================
 const PRAYER_LOCATIONS = [
-  { id: 'polska', label: 'Polska 🇵🇱', city: 'Poland', tz: 'Europe/Warsaw', lat: '52.2297', lng: '21.0122', method: 3 },
-  { id: 'surabaya', label: 'Surabaya 🇮🇩', city: 'Surabaya', tz: 'Asia/Jakarta', lat: '-7.2575', lng: '112.7521', method: 3 }
+  { id: 'makkah', label: 'Makkah', city: 'Makkah', tz: 'Asia/Riyadh', lat: '21.3891', lng: '39.8579', method: 4 },
+  { id: 'madinah', label: 'Madinah', city: 'Madinah', tz: 'Asia/Riyadh', lat: '24.4672', lng: '39.6111', method: 4 }
 ];
 function getPrayerLocations() {
   return state.prayerLocations?.length ? state.prayerLocations : PRAYER_LOCATIONS;
 }
 const PRAYER_NAMES = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 const PRAYER_NAMES_PL = ['Fadżr', 'Wschód', 'Dhuhr', 'Asr', 'Maghrib', 'Isza'];
+const OBLIGATORY_PRAYERS = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+const OBLIGATORY_PRAYERS_PL = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isza'];
 
 async function fetchPrayerTimes(loc) {
   const today = new Date();
@@ -5037,6 +5014,37 @@ function getNextPrayer(timings) {
   return 'Fajr';
 }
 
+function prayerLogForToday() {
+  const key = today();
+  if (!state.prayerLog) state.prayerLog = {};
+  if (!state.prayerLog[key]) state.prayerLog[key] = {};
+  return state.prayerLog[key];
+}
+
+function prayerJournalHtml() {
+  const log = prayerLogForToday();
+  const done = OBLIGATORY_PRAYERS.filter(name => log[name]).length;
+  return `
+    <section class="panel p-5 mb-4">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 class="text-xl font-black">${tx("Dziennik modlitw", "Prayer journal")}</h2>
+          <p class="text-sm text-[var(--muted)]">${tx("Zaznacz dzisiejsze modlitwy. To lokalny dziennik na tym urzadzeniu.", "Tick today's prayers. This is a local journal on this device.")}</p>
+        </div>
+        <span class="trust-badge verified">${done}/5</span>
+      </div>
+      <div class="mt-4 grid gap-2 sm:grid-cols-5">
+        ${OBLIGATORY_PRAYERS.map((name, index) => `
+          <label class="muallaf-check-item">
+            <input type="checkbox" data-prayer-log="${name}" ${log[name] ? "checked" : ""}>
+            <span>${state.lang === "pl" ? OBLIGATORY_PRAYERS_PL[index] : name}</span>
+          </label>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
 async function prayer() {
   if (prayerClockInterval) { clearInterval(prayerClockInterval); prayerClockInterval = null; }
   if (compassWatchId !== null) { try { window.removeEventListener('deviceorientationabsolute', compassWatchId); window.removeEventListener('deviceorientation', compassWatchId); } catch {} compassWatchId = null; }
@@ -5045,16 +5053,24 @@ async function prayer() {
   view.innerHTML = `
     <div class="mb-4">
       <h1 class="text-3xl font-black">${tx("Czasy modlitw", "Prayer Times")}</h1>
-      <p class="text-[var(--muted)]">${tx("Dwie lokalizacje live: Polska i Surabaya.", "Two live locations: Poland and Surabaya.")}</p>
+      <p class="text-[var(--muted)]">${tx("Dwie lokalizacje live: Makkah i Madinah.", "Two live locations: Makkah and Madinah.")}</p>
       <p class="text-xs text-[var(--muted)] mt-1">${tx("Mozesz edytowac lokalizacje: miasto, szerokosc, dlugosc i strefe.", "You can edit locations: city, latitude, longitude, and timezone.")}</p>
       <a class="inline-flex mt-3 items-center gap-2 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm font-bold" href="https://www.google.com/maps/search/mosque+near+me" target="_blank" rel="noopener noreferrer">${tx("Znajdz meczet w okolicy", "Find a mosque nearby")}</a>
     </div>
+    ${prayerJournalHtml()}
     <button id="editPrayerLocations" class="big-action mb-3 border border-[var(--line)]">${tx("Edytuj lokalizacje", "Edit locations")}</button>
     <div class="grid gap-4 lg:grid-cols-2">
-      <div id="prayerPolska" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
-      <div id="prayerSurabaya" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
+      <div id="prayerMakkah" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
+      <div id="prayerMadinah" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
     </div>
   `;
+
+  view.querySelectorAll("[data-prayer-log]").forEach(input => input.addEventListener("change", () => {
+    const log = prayerLogForToday();
+    log[input.dataset.prayerLog] = input.checked;
+    saveState();
+    prayer();
+  }));
 
   const results = {};
   for (const loc of activeLocations) {
@@ -5128,11 +5144,11 @@ async function prayer() {
   }
   $("#editPrayerLocations")?.addEventListener("click", () => {
     const current = getPrayerLocations();
-    const city1 = prompt(tx("Lokalizacja 1: miasto/kraj", "Location 1: city/country"), current[0]?.city || "Poland");
+    const city1 = prompt(tx("Lokalizacja 1: miasto/kraj", "Location 1: city/country"), current[0]?.city || "Makkah");
     const lat1 = prompt("Lat 1", current[0]?.lat || "52.2297");
     const lng1 = prompt("Lng 1", current[0]?.lng || "21.0122");
-    const tz1 = prompt("TZ 1", current[0]?.tz || "Europe/Warsaw");
-    const city2 = prompt(tx("Lokalizacja 2: miasto/kraj", "Location 2: city/country"), current[1]?.city || "Surabaya");
+    const tz1 = prompt("TZ 1", current[0]?.tz || "Asia/Riyadh");
+    const city2 = prompt(tx("Lokalizacja 2: miasto/kraj", "Location 2: city/country"), current[1]?.city || "Makkah");
     const lat2 = prompt("Lat 2", current[1]?.lat || "-7.2575");
     const lng2 = prompt("Lng 2", current[1]?.lng || "112.7521");
     const tz2 = prompt("TZ 2", current[1]?.tz || "Asia/Jakarta");

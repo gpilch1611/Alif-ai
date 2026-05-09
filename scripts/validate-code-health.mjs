@@ -20,6 +20,9 @@ assert(appJs.includes("appendTextBlock(article, \"p\", \"whitespace-pre-wrap\", 
 assert(!appJs.includes("box.innerHTML = state.aiMessages.map"), "AI messages still render through innerHTML mapping.");
 assert(appJs.includes("religious-risk-note"), "High-risk religious note UI is missing.");
 assert(appJs.includes("trust-badge high-risk"), "High-risk religious badge is missing.");
+assert(!appJs.includes("FAQ_REFERENCE_FIXES"), "app.js should not keep FAQ_REFERENCE_FIXES after FAQ metadata migration to data.js.");
+assert(!appJs.includes("faqExtraUnique"), "app.js should not define or render faqExtraUnique after FAQ migration to data.js.");
+assert(!/extra\s+FAQ/i.test(appJs), "app.js should not keep extra FAQ migration-era wording after FAQ migration to data.js.");
 assert(appJs.includes("function zakat()"), "Zakat calculator view is missing.");
 assert(appJs.includes("muallafChecklist"), "Muallaf 30/90 checklist state is missing.");
 assert(appJs.includes("Plan 30/90 dni po szahadzie"), "Muallaf 30/90 checklist UI is missing.");

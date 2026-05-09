@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "content:report": "node scripts/content-review-report.mjs",
-    "lint": "node --check app.js && node --check service-worker.js && node --check scripts/validate-islamic-data.mjs && node --check scripts/validate-code-health.mjs",
-    "test": "node scripts/validate-islamic-data.mjs && node scripts/validate-code-health.mjs"
+    "lint": "node --check app.js && node --check service-worker.js && node --check data.js && node --check data/content-metadata.js && node --check data/quran-surahs.js && node --check data/islamic-hadith.js && node --check data/halal-haram.js && node --check data/islamic-faq.js && node --check scripts/validate-islamic-data.mjs && node --check scripts/validate-code-health.mjs",
+    "test": "node scripts/validate-islamic-data.mjs && node scripts/validate-code-health.mjs",
+    "verify": "npm.cmd run lint && npm.cmd test && npm.cmd run content:report"
   }
 }

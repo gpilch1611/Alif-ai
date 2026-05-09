@@ -50,7 +50,7 @@ npm test
 npm run content:report
 ```
 
-`lint` sprawdza składnię głównych plików JS, `test` uruchamia walidację danych islamskich i podstawową kontrolę jakości kodu, a `content:report` pokazuje lokalny raport przeglądu treści bez zależności npm i bez internetu.
+`lint` sprawdza składnię głównych plików JS, `test` uruchamia walidację danych islamskich i podstawową kontrolę jakości kodu, a `content:report` pokazuje lokalny raport przeglądu treści bez zależności npm i bez internetu. Raport liczy FAQ wyłącznie z `data.js` i pokazuje rozkład FAQ po `confidence`, `source_type` oraz `high_risk`. Docelowa walidacja oczekuje 44 FAQ w `data.js`, formalnych metadanych `source_type`, `confidence` i `reviewed_at` przy każdym FAQ oraz braku przejściowych `FAQ_REFERENCE_FIXES`, `faqExtraUnique` / extra FAQ w `app.js`.
 
 ## AI Assistant
 

@@ -1,4 +1,4 @@
-﻿@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Fraunces:opsz,wght@9..144,700;9..144,800&family=Amiri:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Fraunces:opsz,wght@9..144,700;9..144,800&family=Amiri:wght@400;700&display=swap");
 
 :root {
   --bg: #f7f7f7;
@@ -14,7 +14,6 @@
   --radius-sm: 12px;
   --shadow-soft: 0 14px 34px rgba(15, 23, 42, 0.08);
   --shadow-pop: 0 20px 42px rgba(15, 23, 42, 0.13);
-  --romantic: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(234, 179, 8, 0.1));
   /* Theme-agnostic semantic variables (used by new components) */
   --panel: var(--surface);
   --border: var(--line);
@@ -29,7 +28,6 @@
   --text: #1f2937;
   --muted: #6b7280;
   --line: rgba(148, 163, 184, 0.34);
-  --romantic: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(234, 179, 8, 0.1));
   --emoji-opacity: 0.09;
   --panel: var(--surface);
   --border: var(--line);
@@ -51,25 +49,6 @@
   --border: var(--line);
   --accent: #10b981;
   --accent2: #059669;
-}
-
-[data-theme="romantic"] {
-  --bg: #fff8ef;
-  --surface: #fffdf8;
-  --surface-soft: #ffeef5;
-  --text: #2a1713;
-  --muted: #8b5569;
-  --line: rgba(230, 87, 135, 0.34);
-  --emerald: #e65787;
-  --gold: #f28eb0;
-  --shadow-soft: 0 16px 40px rgba(96, 39, 27, 0.12);
-  --shadow-pop: 0 24px 62px rgba(96, 39, 27, 0.2);
-  --romantic: linear-gradient(135deg, rgba(230, 87, 135, 0.24), rgba(247, 143, 179, 0.28), rgba(255, 216, 202, 0.38));
-  --emoji-opacity: 0.34;
-  --panel: var(--surface);
-  --border: var(--line);
-  --accent: #e65787;
-  --accent2: #f28eb0;
 }
 
 * {
@@ -103,15 +82,6 @@ body {
     linear-gradient(180deg, var(--bg), var(--bg));
 }
 
-[data-theme="romantic"] body {
-  background:
-    radial-gradient(circle at 8% 12%, rgba(247, 165, 193, 0.52), transparent 30rem),
-    radial-gradient(circle at 92% 11%, rgba(255, 193, 167, 0.34), transparent 26rem),
-    radial-gradient(circle at 83% 75%, rgba(244, 114, 182, 0.26), transparent 24rem),
-    radial-gradient(circle at 12% 72%, rgba(230, 87, 135, 0.2), transparent 24rem),
-    linear-gradient(180deg, var(--bg), var(--bg));
-}
-
 body::before {
   content: "";
   position: fixed;
@@ -129,12 +99,6 @@ body::before {
   transform: translateY(0);
   filter: saturate(1.08);
   mix-blend-mode: multiply;
-}
-
-[data-theme="romantic"] body::before {
-  content: "🌸 💕 🌺 💐 ❤️ 🥰 💞 🌷 💘 🌹\A💗 🌸 💞 💕 🌺 ❤️ 🥰 💐 🌷 💘\A🌹 💕 💗 🌸 💞 ❤️ 🥰 🌺 💐 🌷\A💘 🌹 💕 💗 🌸 💞 ❤️ 🥰 🌺 💐\A🌷 💘 🌹 💕 💗 🌸 💞 ❤️ 🥰 🌺\A💐 🌷 💘 🌹 💕 💗 🌸 💞 ❤️ 🥰";
-  opacity: var(--emoji-opacity, 0.34);
-  animation: float-romance 16s ease-in-out infinite;
 }
 
 body::after {
@@ -262,12 +226,6 @@ select {
   color: #c7fff1;
 }
 
-[data-theme="romantic"] .nav-btn.active {
-  color: #7f1d3f;
-  background: linear-gradient(135deg, rgba(230, 87, 135, 0.2), rgba(247, 143, 179, 0.24));
-  box-shadow: inset 0 0 0 1px rgba(230, 87, 135, 0.35);
-}
-
 .tab-btn,
 .mode-btn {
   min-height: 44px;
@@ -283,12 +241,6 @@ select {
   background: linear-gradient(135deg, #10b981, #eab308);
   color: white;
   border-color: #eab308;
-}
-
-[data-theme="romantic"] .tab-btn.active,
-[data-theme="romantic"] .mode-btn.active {
-  background: linear-gradient(135deg, #e65787, #f28eb0);
-  border-color: #e65787;
 }
 
 .big-action {
@@ -331,32 +283,11 @@ select {
   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.12);
 }
 
-.romantic-hero {
-  position: relative;
-  overflow: hidden;
-  background: var(--romantic), var(--surface);
-}
-
-.romantic-hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.55), transparent 15rem);
-}
-
 .gold-btn {
   color: #3b2500;
   background: linear-gradient(135deg, #facc15, #eab308);
   border: 1px solid rgba(180, 83, 9, 0.28);
   box-shadow: 0 12px 26px rgba(234, 179, 8, 0.18);
-}
-
-[data-theme="romantic"] .gold-btn {
-  color: #5b1b35;
-  background: linear-gradient(135deg, #f7a3c2, #f28eb0);
-  border: 1px solid rgba(230, 87, 135, 0.34);
-  box-shadow: 0 14px 28px rgba(230, 87, 135, 0.22);
 }
 
 .speaker-btn {
@@ -585,12 +516,6 @@ select {
   box-shadow: 0 18px 38px rgba(6, 78, 59, 0.22);
 }
 
-[data-theme="romantic"] .ai-fab {
-  border-color: rgba(230, 87, 135, 0.45);
-  background: linear-gradient(135deg, #e65787, #f28eb0 62%, #ffb9a2);
-  box-shadow: 0 20px 40px rgba(230, 87, 135, 0.28);
-}
-
 .ai-fab:hover {
   transform: translateY(-1px);
 }
@@ -626,10 +551,6 @@ select {
   padding: 16px 18px;
   color: white;
   background: linear-gradient(135deg, #047857, #10b981);
-}
-
-[data-theme="romantic"] .ai-header {
-  background: linear-gradient(135deg, #c73f73, #e65787 58%, #f7a3c2);
 }
 
 .ai-header h2,
@@ -676,11 +597,6 @@ h3 {
   background: #10b981;
 }
 
-[data-theme="romantic"] .ai-message.user {
-  border-color: #d94f7f;
-  background: #e65787;
-}
-
 .ai-message.assistant {
   justify-self: start;
 }
@@ -724,10 +640,6 @@ h3 {
   font-weight: 900;
 }
 
-[data-theme="romantic"] .ai-send {
-  background: #e65787;
-}
-
 .catch-arena {
   position: relative;
   min-height: 360px;
@@ -755,31 +667,7 @@ h3 {
   animation: fall-letter 4.2s linear forwards;
 }
 
-[data-theme="romantic"] .falling-letter {
-  background: #e65787;
-  border-color: #f7a3c2;
-}
-
-[data-theme="romantic"] .bg-emerald-500,
-[data-theme="romantic"] .bg-emerald-700,
-[data-theme="romantic"] .bg-emerald-900 {
-  background-color: #e65787 !important;
-}
-
-[data-theme="romantic"] .bg-emerald-100 {
-  background-color: #ffd3e4 !important;
-}
-
-[data-theme="romantic"] .bg-amber-500 {
-  background-color: #f28eb0 !important;
-}
-
-[data-theme="romantic"] .text-emerald-600,
-[data-theme="romantic"] .text-emerald-700 {
-  color: #c73f73 !important;
-}
-
-.love-toast {
+.app-toast {
   position: fixed;
   left: 50%;
   bottom: calc(112px + env(safe-area-inset-bottom));
@@ -795,10 +683,10 @@ h3 {
   font-weight: 900;
   opacity: 0;
   pointer-events: none;
-  animation: love-toast 5.6s ease both;
+  animation: app-toast 5.6s ease both;
 }
 
-@keyframes love-toast {
+@keyframes app-toast {
   0% {
     opacity: 0;
     transform: translateX(-50%) translateY(16px) scale(.98);
@@ -1026,7 +914,7 @@ h3 {
 }
 
 /* ============================================================
-   Mobile nav labels — very small screens (≤ 360px)
+   Mobile nav labels � very small screens (? 360px)
    ============================================================ */
 @media (max-width: 360px) {
   .nav-label { font-size: 9px; }
@@ -1034,7 +922,7 @@ h3 {
 }
 
 /* ============================================================
-   PC Sidebar — replaces bottom nav on large screens (≥ 1024px)
+   PC Sidebar � replaces bottom nav on large screens (? 1024px)
    ============================================================ */
 @media (min-width: 1024px) {
   /* Hide the bottom nav bar chrome on PC */
@@ -1593,7 +1481,7 @@ a:focus-visible {
 }
 
 .hijri-widget::before {
-  content: "☪";
+  content: "?";
   position: absolute;
   right: 16px;
   top: 50%;
@@ -1789,7 +1677,7 @@ a:focus-visible {
   line-height: 1.4;
 }
 
-/* ── Surah Quiz ────────────────────────────────────── */
+/* �� Surah Quiz �������������������������������������� */
 .surah-quiz-name {
   font-family: "Amiri", serif;
   direction: rtl;
@@ -1800,7 +1688,7 @@ a:focus-visible {
   margin: 16px 0;
 }
 
-/* ── Dhikr Speed Game ──────────────────────────────── */
+/* �� Dhikr Speed Game �������������������������������� */
 .dhikr-game-btn {
   width: 180px;
   height: 180px;
@@ -2105,7 +1993,7 @@ a:focus-visible {
 }
 
 /* ============================================================
-   Verdict badge (MIT / FAKT / ZŁOŻONE)
+   Verdict badge (MIT / FAKT / Z�O�ONE)
    ============================================================ */
 .verdict-badge {
   display: inline-block;

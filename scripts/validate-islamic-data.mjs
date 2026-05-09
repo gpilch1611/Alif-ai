@@ -14,19 +14,22 @@ const assert = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
-const faqReferenceFixes = {
-  salam: "Abu Dawud 5193; Tirmidhi 2689",
-  ramadan_respect: "Quran 2:183-185",
-  mosque_visit: "Quran 9:18; general adab of masjid",
-  convert_steps: "Muslim 21; Bukhari 8",
-  arabs: "Quran 49:13",
-  music: "Scholarly disagreement; no explicit Quranic prohibition"
-};
+const validConfidence = new Set([
+  "VERIFIED",
+  "CONTEXT_DEPENDENT",
+  "SCHOLARLY_DISAGREEMENT",
+  "HIGH_RISK",
+  "UNVERIFIED"
+]);
+
+const hasText = (value) => typeof value === "string" && value.trim().length > 0;
+const isIsoDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(String(value ?? ""));
 
 assert(quranSurahs.length === 114, `Expected 114 surahs, got ${quranSurahs.length}.`);
 assert(asmaulHusna.length === 99, `Expected 99 Asmaul Husna names, got ${asmaulHusna.length}.`);
 assert(islamicMonths.length === 12, `Expected 12 Islamic months, got ${islamicMonths.length}.`);
 assert(islamicHadith.length === 30, `Expected the curated hadith list to stay at 30 verified items, got ${islamicHadith.length}.`);
+assert(islamicFaq.length === 44, `Expected 44 FAQ items in data.js after migration, got ${islamicFaq.length}.`);
 
 const surahNumbers = new Set(quranSurahs.map((surah) => surah.number));
 for (let number = 1; number <= 114; number += 1) {
@@ -38,8 +41,11 @@ for (const item of islamicFaq) {
   assert(!faqIds.has(item.id), `Duplicate FAQ id: ${item.id}.`);
   faqIds.add(item.id);
   assert(item.qPl && item.qEn && item.aPl && item.aEn, `FAQ ${item.id} is missing text.`);
-  assert(item.ref || faqReferenceFixes[item.id], `FAQ ${item.id} is missing a source reference.`);
-  assert(!/\(\.\.\.\s*\d+\)|extra_/i.test(item.id), `FAQ ${item.id} looks artificially expanded.`);
+  assert(hasText(item.ref), `FAQ ${item.id} is missing a source reference.`);
+  assert(hasText(item.source_type), `FAQ ${item.id} is missing source_type.`);
+  assert(validConfidence.has(item.confidence), `FAQ ${item.id} has invalid confidence: ${item.confidence}.`);
+  assert(isIsoDate(item.reviewed_at), `FAQ ${item.id} reviewed_at must be YYYY-MM-DD.`);
+  assert(!/\(\.\.\.\s*\d+\)/i.test(item.id), `FAQ ${item.id} looks artificially expanded.`);
 }
 
 for (const hadith of islamicHadith) {
@@ -48,8 +54,9 @@ for (const hadith of islamicHadith) {
 }
 
 assert(!appJs.includes("<<<<<<<") && !appJs.includes(">>>>>>>"), "app.js contains unresolved merge markers.");
-assert(!appJs.includes("[...islamicFaq, ...faqExtraUnique, ...faqExtraUnique]"), "app.js duplicates curated extra FAQ items.");
-assert(appJs.includes("const islamicFaqExpanded = [...islamicFaq, ...faqExtraUnique].map"), "Curated extra FAQ items are not included in the FAQ dataset.");
+assert(!appJs.includes("FAQ_REFERENCE_FIXES"), "app.js should not keep FAQ_REFERENCE_FIXES after FAQ metadata migration to data.js.");
+assert(!appJs.includes("faqExtraUnique"), "app.js should not define or render faqExtraUnique after FAQ migration to data.js.");
+assert(!/extra\s+FAQ/i.test(appJs), "app.js should not keep extra FAQ migration-era wording after FAQ migration to data.js.");
 assert(appJs.includes("CONTENT_TRUST"), "Content trust taxonomy is missing.");
 assert(appJs.includes("SCHOLARLY_DISAGREEMENT"), "Scholarly disagreement trust level is missing.");
 assert(appJs.includes("CONTEXT_DEPENDENT"), "Context-dependent trust level is missing.");

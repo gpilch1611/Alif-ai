@@ -3,7 +3,6 @@ import {
   islamicFaq,
   islamicHadith
 } from "../data.js";
-import { readFile } from "node:fs/promises";
 
 const sourceFields = ["source", "ref", "source_ref", "reference", "references"];
 const contextWords = [
@@ -93,19 +92,6 @@ const printMetric = (label, value) => {
   console.log(`${label.padEnd(36, ".")} ${value}`);
 };
 
-const appJs = await readFile(new URL("../app.js", import.meta.url), "utf8");
-const appExtraFaqIds = [...appJs.matchAll(/id:\s*"extra_[^"]+"/g)].map((match) => match[0].match(/"([^"]+)"/)[1]);
-const appReferenceFixIds = new Set([...appJs.matchAll(/^\s*([a-z0-9_]+):\s*"[^"]+"/gm)].map((match) => match[1]));
-const appExtraInlineSourceIds = new Set(
-  appJs
-    .split("\n")
-    .filter((line) => /id:\s*"extra_[^"]+"/.test(line) && /ref:\s*"[^"]+"/.test(line) && !/ref:\s*""/.test(line))
-    .map((line) => line.match(/id:\s*"([^"]+)"/)?.[1])
-    .filter(Boolean)
-);
-const appExtraFaqSourced = appExtraFaqIds.filter((id) => appReferenceFixIds.has(id) || appExtraInlineSourceIds.has(id)).length;
-const renderedFaqEstimate = islamicFaq.length + appExtraFaqIds.length;
-
 const halalHaramItems = flattenHalalHaram(halalHaramData);
 const religiousContent = [
   ...islamicFaq.map((item) => ({ ...item, contentType: "FAQ" })),
@@ -121,8 +107,6 @@ const highRisk = religiousContent.filter(isHighRisk);
 console.log("Content review report");
 console.log("=====================");
 printMetric("FAQ items in data.js", islamicFaq.length);
-printMetric("Extra FAQ items in app.js", appExtraFaqIds.length);
-printMetric("Rendered FAQ estimate", renderedFaqEstimate);
 printMetric("Hadith items", islamicHadith.length);
 printMetric("Halal/Haram items", halalHaramItems.length);
 printMetric("All reviewed data items", religiousContent.length);
@@ -134,12 +118,18 @@ printMetric("By status", formatCounts(countBy(halalHaramItems, (item) => item.st
 printMetric("By category", formatCounts(countBy(halalHaramItems, (item) => item.category)));
 console.log("");
 
+console.log("FAQ metadata breakdown");
+console.log("----------------------");
+printMetric("By confidence", formatCounts(countBy(islamicFaq, (item) => item.confidence)));
+printMetric("By source_type", formatCounts(countBy(islamicFaq, (item) => item.source_type)));
+printMetric("By high_risk", formatCounts(countBy(islamicFaq, (item) => String(item.high_risk === true))));
+console.log("");
+
 console.log("Source coverage");
 console.log("---------------");
 printMetric("Items with sources", sourced.length);
 printMetric("Items missing sources", missingSources.length);
 printMetric("FAQ missing sources", islamicFaq.filter((item) => !hasSource(item)).length);
-printMetric("Extra FAQ missing sources", appExtraFaqIds.length - appExtraFaqSourced);
 printMetric("Hadith missing sources", islamicHadith.filter((item) => !hasSource(item)).length);
 printMetric("Halal/Haram missing sources", halalHaramItems.filter((item) => !hasSource(item)).length);
 console.log("");
