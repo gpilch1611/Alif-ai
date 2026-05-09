@@ -180,6 +180,16 @@ button:active {
   transform: translateY(1px) scale(0.99);
 }
 
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid color-mix(in oklab, var(--accent) 65%, white 35%);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
 input,
 textarea,
 select {
