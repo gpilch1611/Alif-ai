@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "types": ["node"]
+  },
+  "include": [
+    "app.js",
+    "data.js",
+    "data/**/*.js",
+    "scripts/**/*.mjs",
+    "playwright.config.js",
+    "tests/**/*.js",
+    "types/**/*.d.ts"
+  ],
+  "exclude": ["node_modules", "playwright-report", "test-results", "service-worker.js"]
+}

@@ -54,7 +54,19 @@ const navItems = [
 
 const secondaryNavItems = [["adventure", "Note", "navAdventure"]];
 
-const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","zakat","halalharam","islamfaq","prayer","prayerGuide","glossary"];
+const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","prayer","prayerGuide","glossary"];
+const APP_ROUTES = new Set([
+  ...navItems.map(([id]) => id),
+  ...secondaryNavItems.map(([id]) => id),
+  ...ISLAM_ROUTES,
+  "alphabet",
+  "badges",
+  "flashcards",
+  "speech",
+  "settings",
+  "writing",
+  "books"
+]);
 const CONTENT_VERSION = "2026.05";
 const CONTENT_UPDATED_AT = "2026-05-08";
 
@@ -384,7 +396,9 @@ const defaultState = {
   lastPrayerGuide: null,
   prayerLocations: null,
   asmaChallengeBest: 0,
-  asmaChallengeHistory: []
+  asmaChallengeHistory: [],
+  onboardingComplete: false,
+  learningGoal: ""
 };
 
 let state = loadState();
@@ -539,9 +553,17 @@ function progressPercent() {
 }
 
 function setRoute(next) {
-  route = next;
-  location.hash = next;
+  route = APP_ROUTES.has(next) ? next : "home";
+  location.hash = route;
   render();
+}
+
+function normalizeRoute() {
+  if (APP_ROUTES.has(route)) return;
+  route = "home";
+  if (location.hash && location.hash !== "#home") {
+    history.replaceState(null, "", "#home");
+  }
 }
 
 function applyThemeMeta() {
@@ -571,8 +593,10 @@ function init() {
   initSearch();
   window.addEventListener("hashchange", () => {
     route = location.hash.replace("#", "") || "home";
+    normalizeRoute();
     render();
   });
+  normalizeRoute();
   render();
 }
 
@@ -651,6 +675,18 @@ function showLoveToast(message = tx("Zapisano", "Saved")) {
   toast.textContent = message;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 5800);
+}
+
+const showToast = showLoveToast;
+
+function openMiniLesson(lessonId) {
+  state.lessonsTab = "lessons";
+  saveState();
+  setRoute("lessons");
+  setTimeout(() => {
+    const lessonButton = view.querySelector(`[data-lesson="${CSS.escape(lessonId)}"]`);
+    lessonButton?.closest("article")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, 650);
 }
 
 function registerPwa() {
@@ -776,7 +812,7 @@ function render() {
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
   const books = () => setRoute("culture");
-  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, zakat, halalharam, islamfaq, adventure, glossary };
+  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq, adventure: learningJournal, glossary };
   (views[route] || home)();
 }
 
@@ -953,55 +989,6 @@ function muallaf() {
   });
 }
 
-function zakat() {
-  view.innerHTML = `
-    <div class="mb-5">
-      <h1 class="text-3xl font-black">💰 ${tx("Kalkulator zakat", "Zakat calculator")}</h1>
-      <p class="text-[var(--muted)] mt-1">${tx("Proste przybliżenie: aktywa minus krótkoterminowe długi, a następnie 2.5% od nadwyżki.", "A simple estimate: assets minus short-term debts, then 2.5% of the surplus.")}</p>
-    </div>
-    <section class="zakat-card panel p-5">
-      <div class="zakat-form-grid">
-        <label class="zakat-field">
-          <span>${tx("Aktywa zakatowe", "Zakatable assets")}</span>
-          <input id="zakatAssets" type="text" inputmode="decimal" pattern="[0-9]+([,.][0-9]+)?" placeholder="0.00">
-          <small>${tx("Gotówka, oszczędności, złoto/srebro, inwestycje i towary handlowe.", "Cash, savings, gold/silver, investments and trade goods.")}</small>
-        </label>
-        <label class="zakat-field">
-          <span>${tx("Długi do odjęcia", "Debts to subtract")}</span>
-          <input id="zakatDebts" type="text" inputmode="decimal" pattern="[0-9]+([,.][0-9]+)?" placeholder="0.00">
-          <small>${tx("Najczęściej bieżące, wymagalne zobowiązania.", "Usually current, immediately due obligations.")}</small>
-        </label>
-      </div>
-      <div class="zakat-result" aria-live="polite">
-        <div>
-          <p>${tx("Nadwyżka po długach", "Surplus after debts")}</p>
-          <strong id="zakatSurplus">0.00</strong>
-        </div>
-        <div>
-          <p>${tx("Przybliżony zakat 2.5%", "Estimated zakat 2.5%")}</p>
-          <strong id="zakatDue">0.00</strong>
-        </div>
-      </div>
-      <p class="zakat-disclaimer">${tx("To narzędzie jest edukacyjne i nie zastępuje indywidualnej fatwy ani porady finansowej. Zakat zależy od nisabu, roku księżycowego, rodzaju majątku i szczegółów długów; w sprawach osobistych skonsultuj lokalnego imama lub kwalifikowanego uczonego.", "This tool is educational and does not replace a personal fatwa or financial advice. Zakat depends on nisab, the lunar year, asset type and debt details; for personal cases consult a local imam or qualified scholar.")}</p>
-    </section>
-  `;
-
-  const assetsInput = $("#zakatAssets");
-  const debtsInput = $("#zakatDebts");
-  const surplusOutput = $("#zakatSurplus");
-  const dueOutput = $("#zakatDue");
-  const formatter = new Intl.NumberFormat(localeTag(), { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const readAmount = (input) => Math.max(0, Number.parseFloat(String(input.value || "0").replace(",", ".")) || 0);
-  const renderZakat = () => {
-    const surplus = Math.max(0, readAmount(assetsInput) - readAmount(debtsInput));
-    const due = surplus * 0.025;
-    surplusOutput.textContent = formatter.format(surplus);
-    dueOutput.textContent = formatter.format(due);
-  };
-  [assetsInput, debtsInput].forEach(input => input.addEventListener("input", renderZakat));
-  renderZakat();
-}
-
 function halalharam() {
   const tabs = [
     { id: "food",     labelPl: "🥩 Jedzenie",   labelEn: "🥩 Food" },
@@ -1144,7 +1131,6 @@ function islam() {
     { route: "seerah",  icon: "🌙", titlePl: "Seerah",            titleEn: "Seerah",           descPl: "Życie Proroka Muhammada ﷺ",                             descEn: "Life of Prophet Muhammad ﷺ" },
     { route: "tajweed", icon: "🔤", titlePl: "Tadżwid",           titleEn: "Tajweed",          descPl: "8 zasad prawidłowej recytacji",                         descEn: "8 rules for correct Quran recitation" },
     { route: "muallaf",    icon: "🌱", titlePl: "Nowy muzułmanin",  titleEn: "New Muslim",       descPl: "Pierwsze kroki, szahada i nie musisz być perfekcyjny",        descEn: "First steps, shahada and you don't need to be perfect" },
-    { route: "zakat",      icon: "💰", titlePl: "Kalkulator zakat", titleEn: "Zakat calculator",  descPl: "Aktywa, długi i edukacyjne przybliżenie 2.5%",                descEn: "Assets, debts and an educational 2.5% estimate" },
     { route: "halalharam", icon: "⚖",  titlePl: "Halal & Haram",   titleEn: "Halal & Haram",   descPl: "Jedzenie, napoje, zachowanie — co wolno, czego nie",          descEn: "Food, drinks, behaviour — what is and isn't allowed" },
     { route: "islamfaq",   icon: "❓", titlePl: "FAQ islamu",       titleEn: "Islam FAQ",        descPl: "Mity, islamofobia, kobiety, terroryzm, inne religie",         descEn: "Myths, Islamophobia, women, terrorism, other religions" },
     { route: "glossary",   icon: "Aa", titlePl: "Slownik pojec",    titleEn: "Glossary",         descPl: "Wudu, ghusl, sunnah, fiqh, aqidah i inne podstawy",          descEn: "Wudu, ghusl, sunnah, fiqh, aqidah and other basics" },
@@ -1232,7 +1218,7 @@ function nextStepSuggestion() {
     };
   }
   const todayLog = state.prayerLog?.[today()] || {};
-  if (Object.keys(todayLog).length < 5) {
+  if (OBLIGATORY_PRAYERS.filter(name => todayLog[name]).length < 5) {
     return {
       route: "prayer",
       title: tx("Dziennik modlitw", "Prayer journal"),
@@ -1266,8 +1252,37 @@ function nextStepCard() {
         <p class="text-xs text-[var(--muted)] mt-0.5">${next.text}</p>
         <p class="mt-2 text-xs font-black text-emerald-600">${next.action}</p>
       </div>
-      <span class="text-xl">Next</span>
+      <span class="text-xl">&gt;</span>
     </button>
+  `;
+}
+
+const ONBOARDING_GOALS = [
+  { id: "letters", route: "alphabet", icon: "Aa", pl: "Chcę zacząć od liter", en: "Start with letters" },
+  { id: "muallaf", route: "muallaf", icon: "01", pl: "Jestem nowym muzułmaninem", en: "I am a new Muslim" },
+  { id: "prayer", route: "prayerGuide", icon: "5x", pl: "Chcę nauczyć się modlitwy", en: "Learn prayer" },
+  { id: "quran", route: "koran", icon: "Q", pl: "Chcę czytać Quran", en: "Read Quran" }
+];
+
+function onboardingPanel() {
+  if (state.onboardingComplete) return "";
+  return `
+    <section class="onboarding-panel panel p-5 sm:p-6 mb-4">
+      <div>
+        <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Spokojny start", "Calm start")}</p>
+        <h2 class="mt-1 text-2xl font-black">${tx("Wybierz swoją pierwszą ścieżkę", "Choose your first path")}</h2>
+        <p class="mt-2 text-sm text-[var(--muted)]">${tx("Aplikacja dopasuje następny krok. Możesz to później zmienić w zwykłej nauce.", "The app will shape the next step. You can change direction any time.")}</p>
+      </div>
+      <div class="onboarding-grid mt-4">
+        ${ONBOARDING_GOALS.map(goal => `
+          <button class="onboarding-choice soft-panel" data-onboarding-goal="${goal.id}" data-route="${goal.route}">
+            <span>${goal.icon}</span>
+            <strong>${state.lang === "pl" ? goal.pl : goal.en}</strong>
+          </button>
+        `).join("")}
+      </div>
+      <button class="mt-3 text-xs font-black text-[var(--muted)]" data-onboarding-skip>${tx("Pomiń na razie", "Skip for now")}</button>
+    </section>
   `;
 }
 
@@ -1285,6 +1300,7 @@ function home() {
   const homeFavItems = homeFavoriteItems();
 
   view.innerHTML = `
+    ${onboardingPanel()}
     <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
       <section class="panel p-5 sm:p-7">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -1295,7 +1311,7 @@ function home() {
           </div>
           <div class="grid h-28 w-28 shrink-0 place-items-center rounded-lg bg-emerald-500 text-5xl text-white shadow-sm">☪</div>
         </div>
-        <div class="mt-6 grid gap-2 sm:grid-cols-5">
+        <div class="home-quick-grid mt-6">
           ${[
             { route: "lessons", icon: "Aa", pl: "Uczę się liter", en: "Learning letters" },
             { route: "muallaf", icon: "01", pl: "Nowy muzułmanin", en: "New Muslim" },
@@ -1303,13 +1319,13 @@ function home() {
             { route: "koran", icon: "Q", pl: "Czytam Quran", en: "Read Quran" },
             { route: "islamfaq", icon: "?", pl: "Mam pytanie", en: "I have a question" }
           ].map(item => `
-            <button class="soft-panel p-3 text-left active:scale-95 transition-transform" data-route="${item.route}">
+            <button class="home-quick-card soft-panel active:scale-95 transition-transform" data-route="${item.route}">
               <span class="grid h-8 w-8 place-items-center rounded-lg bg-emerald-100 text-xs font-black text-emerald-700">${item.icon}</span>
-              <span class="mt-2 block text-sm font-black">${state.lang === "pl" ? item.pl : item.en}</span>
+              <span>${state.lang === "pl" ? item.pl : item.en}</span>
             </button>
           `).join("")}
         </div>
-        <div class="mt-7 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <div class="home-stat-grid mt-7">
           ${statCard(t("streak"), `${state.streak} ${tx("dni", "days")}`, tx("Codzienna obecnosc", "Daily presence"))}
           ${statCard(t("level"), `${t("level")} ${level()}`, `${state.points} ${t("points")}`)}
           ${statCard(t("alphabetProgress"), `${progressPercent()}%`, `${state.learnedLetters.length}/28`)}
@@ -1370,6 +1386,19 @@ function home() {
   `;
 
   loadAyatOfDay();
+  view.querySelectorAll("[data-onboarding-goal]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.learningGoal = button.dataset.onboardingGoal;
+      state.onboardingComplete = true;
+      saveState();
+      setRoute(button.dataset.route);
+    });
+  });
+  view.querySelector("[data-onboarding-skip]")?.addEventListener("click", () => {
+    state.onboardingComplete = true;
+    saveState();
+    render();
+  });
   view.querySelectorAll("[data-route]").forEach((button) => {
     button.addEventListener("click", () => {
       if (button.dataset.quranTab) state.quranTab = button.dataset.quranTab;
@@ -1388,17 +1417,6 @@ function home() {
       if (num) setTimeout(() => openSurah(num), 150);
     });
   });
-}
-
-function getNextLessonBadgeLink() {
-  const lessonBadgeMap = { bismillah: "bismillah", shahada_badge: "shahada" };
-  for (const badge of BADGES_CATALOG) {
-    if (state.badges.includes(badge.id)) continue;
-    const lessonId = lessonBadgeMap[badge.id];
-    if (!lessonId) continue;
-    return { ...badge, lessonId };
-  }
-  return null;
 }
 
 async function loadAyatOfDay() {
@@ -1441,20 +1459,14 @@ async function loadAyatOfDay() {
       saveState();
       renderAyatCache(cache);
     }
-  } catch (e) {
+  } catch {
     container.innerHTML = `<p class="text-xs text-[var(--muted)]">${tx("Nie udało się pobrać wersetu.", "Could not load ayah.")}</p>`;
   }
 }
 
 function statCard(title, value, hint) {
-  return `<div class="soft-panel p-4"><p class="text-sm font-bold text-[var(--muted)]">${title}</p><p class="mt-1 text-2xl font-black">${value}</p><p class="text-xs text-[var(--muted)]">${hint}</p></div>`;
+  return `<div class="home-stat-card soft-panel"><p>${title}</p><strong>${value}</strong><small>${hint}</small></div>`;
 }
-
-function quickLink(title, text, routeName) {
-  return `<button class="panel min-h-28 p-4 text-left" data-route="${routeName}"><strong class="block text-lg">${title}</strong><span class="text-sm text-[var(--muted)]">${text}</span></button>`;
-}
-
-
 
 const QURAN_RECITERS = [
   { id: "ar.alafasy", name: "Mishary Rashid Alafasy" },
@@ -2169,7 +2181,7 @@ async function openSurah(num) {
         playNext();
       });
     }
-  } catch (e) {
+  } catch {
     container.innerHTML = `<div class="panel p-8 text-center text-red-500">${tx("Nie udało się pobrać treści sury.", "Failed to fetch surah content.")}</div>`;
   }
 }
@@ -2233,14 +2245,38 @@ function settings() {
         <div class="mt-4">${installButtonHtml("")}</div>
       </section>
       <section class="panel p-5">
-        <h2 class="text-xl font-black">${t("exportProgress")}</h2>
-        <p class="mt-2 text-[var(--muted)]">${t("exportHint")}</p>
-        <button id="exportStateBtn" class="big-action mt-4 w-full bg-emerald-500 text-white">${t("exportProgress")}</button>
+        <h2 class="text-xl font-black">${tx("Prywatnosc danych", "Data privacy")}</h2>
+        <div class="mt-3 grid gap-2 text-sm text-[var(--muted)]">
+          <p>${tx("Postep, dziennik, ustawienia i klucz Groq sa zapisywane lokalnie w tej przegladarce.", "Progress, journal, settings and the Groq key are saved locally in this browser.")}</p>
+          <p>${tx("Eksport tworzy plik JSON z Twoimi danymi. Import nadpisuje lokalny stan aplikacji.", "Export creates a JSON file with your data. Import replaces the local app state.")}</p>
+          <p>${tx("Gdy korzystasz z AI, tresc rozmowy jest wysylana do uslugi Groq, zeby wygenerowac odpowiedz.", "When you use AI, the conversation content is sent to Groq to generate a reply.")}</p>
+        </div>
+      </section>
+      <section class="panel p-5 lg:col-span-2">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 class="text-xl font-black">${tx("Backup i przenoszenie danych", "Backup and data transfer")}</h2>
+            <p class="mt-2 text-[var(--muted)]">${tx("Eksport zapisuje caly lokalny postep do pliku JSON. Import wczytuje backup na tym urzadzeniu.", "Export saves all local progress to a JSON file. Import restores a backup on this device.")}</p>
+          </div>
+          <span class="trust-badge verified">${CONTENT_VERSION}</span>
+        </div>
+        <div class="mt-4 grid gap-3 sm:grid-cols-2">
+          <div class="soft-panel p-4">
+            <h3 class="font-black">${t("exportProgress")}</h3>
+            <p class="mt-1 text-sm text-[var(--muted)]">${t("exportHint")}</p>
+            <button id="exportStateBtn" class="big-action mt-4 w-full bg-emerald-500 text-white">${t("exportProgress")}</button>
+          </div>
+          <div class="soft-panel p-4">
+            <h3 class="font-black">${t("importProgress")}</h3>
+            <p class="mt-1 text-sm text-[var(--muted)]">${t("importHint")}</p>
+            <input id="importStateFile" class="mt-4 block w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-4" type="file" accept="application/json" />
+          </div>
+        </div>
       </section>
       <section class="panel p-5">
-        <h2 class="text-xl font-black">${t("importProgress")}</h2>
-        <p class="mt-2 text-[var(--muted)]">${t("importHint")}</p>
-        <input id="importStateFile" class="mt-4 block w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-4" type="file" accept="application/json" />
+        <h2 class="text-xl font-black">${tx("Pierwsza sciezka", "First path")}</h2>
+        <p class="mt-2 text-[var(--muted)]">${tx("Pokaz ponownie wybor spokojnego startu na stronie glownej.", "Show the calm-start choice again on the home screen.")}</p>
+        <button id="restartOnboardingBtn" class="big-action mt-4 w-full border border-[var(--line)] bg-[var(--surface)]">${tx("Pokaz onboarding", "Show onboarding")}</button>
       </section>
       <section class="panel p-5">
         <h2 class="text-xl font-black">${t("dangerZone")}</h2>
@@ -2284,6 +2320,11 @@ function settings() {
   }));
   $("#exportStateBtn").addEventListener("click", exportState);
   $("#importStateFile").addEventListener("change", importState);
+  $("#restartOnboardingBtn")?.addEventListener("click", () => {
+    state.onboardingComplete = false;
+    saveState();
+    setRoute("home");
+  });
   $("#saveGroqKeyBtn")?.addEventListener("click", () => {
     state.groqApiKey = $("#groqApiKeyInput").value.trim();
     saveState();
@@ -2330,7 +2371,13 @@ function settings() {
 }
 
 function exportState() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const backup = {
+    app: "Alif AI",
+    version: CONTENT_VERSION,
+    exportedAt: new Date().toISOString(),
+    state
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -2339,19 +2386,32 @@ function exportState() {
   URL.revokeObjectURL(url);
 }
 
+function readImportedState(imported) {
+  const candidate = imported?.state && typeof imported.state === "object" ? imported.state : imported;
+  if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) {
+    throw new Error("Invalid backup");
+  }
+  if (candidate.lang && !["pl", "en"].includes(candidate.lang)) {
+    throw new Error("Invalid language");
+  }
+  return { ...defaultState, ...candidate };
+}
+
 function importState(event) {
   const file = event.target.files?.[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = () => {
     try {
-      const imported = JSON.parse(reader.result);
-      state = { ...defaultState, ...imported };
+      const imported = JSON.parse(String(reader.result || "{}"));
+      state = readImportedState(imported);
       saveState();
       render();
+      showLoveToast(t("imported"));
     } catch {
       alert(state.lang === "pl" ? "Nieprawidłowy plik JSON." : "Invalid JSON file.");
     }
+    event.target.value = "";
   };
   reader.readAsText(file);
 }
@@ -3066,7 +3126,26 @@ function setupCanvas() {
   };
 }
 
-function adventure() {
+function learningJournalStats() {
+  const todayLog = state.prayerLog?.[today()] || {};
+  const prayersDone = OBLIGATORY_PRAYERS.filter(name => todayLog[name]).length;
+  const memorized = HIFZ_SURAHS.filter(num => state.hifzProgress?.[num] === "memorized").length;
+  const noteCount = Object.values(state.adventureNotes || {}).filter(Boolean).length + (state.adventureStories || []).filter(story => story?.text).length;
+  const lettersDone = state.learnedLetters?.length || 0;
+  return [
+    { value: `${lettersDone}/28`, label: tx("Litery", "Letters"), route: "alphabet" },
+    { value: `${prayersDone}/5`, label: tx("Modlitwy dzisiaj", "Prayers today"), route: "prayer" },
+    { value: `${memorized}/${HIFZ_SURAHS.length}`, label: tx("Krotkie sury", "Short surahs"), route: "koran", quranTab: "hifz" },
+    { value: String(noteCount), label: tx("Wpisy", "Entries"), route: "adventure" }
+  ].map(item => `
+    <button class="panel p-4 text-left active:scale-95 transition-transform" data-journal-route="${item.route}" ${item.quranTab ? `data-quran-tab="${item.quranTab}"` : ""}>
+      <p class="text-2xl font-black text-[var(--accent)]">${item.value}</p>
+      <p class="text-xs font-bold text-[var(--muted)] mt-1">${item.label}</p>
+    </button>
+  `).join("");
+}
+
+function learningJournal() {
   if (!state.learnedLettersLog) state.learnedLettersLog = [];
   if (!state.adventureNotes) state.adventureNotes = {};
 
@@ -3098,6 +3177,7 @@ function adventure() {
   if (state.streak >= 7) events.push({ date: today(), icon: "🔥", text: tx(`Seria ${state.streak} dni nauki z rzędu!`, `${state.streak}-day learning streak!`), type: "milestone" });
 
   events.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  const next = nextStepSuggestion();
 
   const timelineHtml = events.length ? events.map(ev => `
     <div class="flex gap-4 items-start">
@@ -3117,10 +3197,27 @@ function adventure() {
       <h1 class="text-3xl font-black">${tx("Dziennik nauki", "Learning Journal")}</h1>
       <p class="text-[var(--muted)]">${tx("Twoje notatki, postepy, modlitwy, sury i kamienie milowe.", "Your notes, progress, prayers, surahs and milestones.")}</p>
     </div>
+    <div class="grid gap-3 sm:grid-cols-4 mb-4">
+      ${learningJournalStats()}
+    </div>
+    <button class="panel p-4 mb-4 text-left w-full flex items-center justify-between gap-3 active:scale-95 transition-transform" data-journal-route="${next.route}" ${next.quranTab ? `data-quran-tab="${next.quranTab}"` : ""}>
+      <div>
+        <p class="text-xs font-black uppercase tracking-wide text-[var(--muted)]">${tx("Nastepny maly krok", "Next small step")}</p>
+        <h2 class="text-lg font-black mt-1">${next.title}</h2>
+        <p class="text-sm text-[var(--muted)] mt-1">${next.text}</p>
+        <p class="mt-2 text-xs font-black text-emerald-600">${next.action}</p>
+      </div>
+      <span class="text-xl">&gt;</span>
+    </button>
     <div class="panel mb-4 p-5">
       <h2 class="text-lg font-black mb-3">${tx("Dodaj wpis do dziennika", "Add journal entry")}</h2>
       <textarea id="adventureNoteInput" class="min-h-20 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3" placeholder="${tx("Napisz coś, co chcesz zapamiętać... (np. dzisiaj nauczyłem się...)", "Write something to remember... (e.g. today I learned...)")}"></textarea>
       <button id="addAdventureNoteBtn" class="big-action mt-3 w-full bg-emerald-500 text-white">${tx("Dodaj wpis", "Add entry")}</button>
+    </div>
+    <div class="panel mb-4 p-5">
+      <h2 class="text-lg font-black mb-3">${tx("Wpis AI do dziennika", "AI journal entry")}</h2>
+      <input id="storyPrompt" class="w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3" placeholder="${tx("Np. opisz dzisiejszą naukę liter i jedną krótką surę", "E.g. describe today's letter practice and one short surah")}" />
+      <button id="generateStoryBtn" class="big-action mt-3 w-full border border-[var(--line)] bg-[var(--surface)]">${tx("Wygeneruj wpis AI", "Generate AI entry")}</button>
     </div>
     <div class="panel p-5">
       <h2 class="text-lg font-black mb-4">${tx("Twoj dziennik", "Your journal")} ? ${events.length} ${tx("zdarzen", "events")}</h2>
@@ -3135,8 +3232,13 @@ function adventure() {
     const key = new Date().toISOString();
     state.adventureNotes[key] = text;
     saveState();
-    adventure();
+    learningJournal();
   });
+  $("#generateStoryBtn")?.addEventListener("click", generateAdventureStory);
+  view.querySelectorAll("[data-journal-route]").forEach(btn => btn.addEventListener("click", () => {
+    if (btn.dataset.quranTab) state.quranTab = btn.dataset.quranTab;
+    setRoute(btn.dataset.journalRoute);
+  }));
 }
 
 async function generateAdventureStory() {
@@ -3158,9 +3260,9 @@ async function generateAdventureStory() {
     if (state.pendingAdventurePhoto) state.adventurePhotos.unshift(state.pendingAdventurePhoto);
     state.pendingAdventurePhoto = null;
     saveState();
-    adventure();
+    learningJournal();
     confetti();
-  } catch (error) {
+  } catch {
     $("#generateStoryBtn").textContent = tx("Blad AI", "AI error");
   }
 }
@@ -3252,7 +3354,7 @@ Do NOT use: headers, markdown, numbers, "Front/Back" labels.`
     saveInteractiveBook(title, text);
     openInteractiveBook(state.interactiveBooks[0].id);
     confetti();
-  } catch (e) {
+  } catch {
     btn.textContent = tx("Błąd AI", "AI error");
     btn.disabled = false;
   }
@@ -3291,12 +3393,13 @@ async function extractBook() {
     state.interactiveBooks.unshift({ id: crypto.randomUUID(), title, rawText: text.slice(0, 12000), cards });
     saveState();
     books();
-  } catch (error) {
+  } catch {
     button.textContent = tx("Nie udalo sie odczytac", "Could not read");
   }
 }
 
 async function extractPdfText(source) {
+  // @ts-ignore CDN ESM import is loaded by the browser at runtime.
   const pdfjs = await import("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs");
   pdfjs.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
   const loadingTask = typeof source === "string" ? pdfjs.getDocument(source) : pdfjs.getDocument({ data: source });
@@ -3679,8 +3782,8 @@ function renderQuiz() {
 function renderMemory() {
   const letters = [...arabicAlphabet].sort(() => Math.random() - 0.5).slice(0, 12);
   const cards = letters.flatMap((letter) => [
-    { key: letter.id, label: letter.forms.isolated, sound: letter.forms.isolated, type: "ar" },
-    { key: letter.id, label: letterName(letter), sound: letter.forms.isolated, type: "pl" }
+    { key: letter.id, label: letter.forms.isolated, sound: letter.forms.isolated, type: "ar", matched: false },
+    { key: letter.id, label: letterName(letter), sound: letter.forms.isolated, type: "pl", matched: false }
   ]);
   cards.push({ key: "bonus", label: "★", sound: "سلام", type: "bonus", matched: true });
   cards.sort(() => Math.random() - 0.5);
@@ -4198,7 +4301,7 @@ async function sendAiMessage(event) {
         )
       : answer;
     state.aiMessages[state.aiMessages.length - 1] = { role: "assistant", content: guardedAnswer };
-  } catch (error) {
+  } catch {
     state.aiMessages[state.aiMessages.length - 1] = { role: "assistant", content: tx("Nie udalo mi sie polaczyc z Groq. Sprawdz internet, CORS albo limit API i sprobuj ponownie.", "I could not connect to Groq. Check internet, CORS, or API limits and try again.") };
   }
   state.aiMessages = state.aiMessages.slice(-25);
@@ -4383,10 +4486,6 @@ function addAiFlashcards(text) {
   state.customFlashcards.unshift(...created);
   saveState();
   showToast(tx(`Dodano ${created.length} fiszek ✓`, `Added ${created.length} flashcards ✓`));
-}
-
-function extractNearbyLine(text, needle) {
-  return text.split("\n").find((line) => line.includes(needle))?.replace(needle, "").replace(/[-–—:|]/g, " ").trim().slice(0, 180);
 }
 
 function confetti() {
@@ -5122,14 +5221,15 @@ async function prayer() {
   compassWatchId = orientationHandler;
 
   if (typeof DeviceOrientationEvent !== 'undefined') {
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+    const orientationPermission = /** @type {any} */ (DeviceOrientationEvent).requestPermission;
+    if (typeof orientationPermission === 'function') {
       // iOS 13+ requires permission
       const permBtn = document.createElement('button');
       permBtn.className = 'big-action bg-emerald-500 text-white mt-4 w-full';
       permBtn.textContent = tx('Włącz kompas live (wymagane uprawnienie)', 'Enable live compass (permission required)');
       permBtn.addEventListener('click', async () => {
         try {
-          const perm = await DeviceOrientationEvent.requestPermission();
+          const perm = await orientationPermission();
           if (perm === 'granted') {
             window.addEventListener('deviceorientation', orientationHandler);
             permBtn.remove();

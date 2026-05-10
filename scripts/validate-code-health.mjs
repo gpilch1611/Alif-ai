@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 
 const appJs = await readFile(new URL("../app.js", import.meta.url), "utf8");
 const swJs = await readFile(new URL("../service-worker.js", import.meta.url), "utf8");
+const stylesCss = await readFile(new URL("../styles.css", import.meta.url), "utf8");
 
 const failures = [];
 const assert = (condition, message) => {
@@ -23,10 +24,32 @@ assert(appJs.includes("trust-badge high-risk"), "High-risk religious badge is mi
 assert(!appJs.includes("FAQ_REFERENCE_FIXES"), "app.js should not keep FAQ_REFERENCE_FIXES after FAQ metadata migration to data.js.");
 assert(!appJs.includes("faqExtraUnique"), "app.js should not define or render faqExtraUnique after FAQ migration to data.js.");
 assert(!/extra\s+FAQ/i.test(appJs), "app.js should not keep extra FAQ migration-era wording after FAQ migration to data.js.");
-assert(appJs.includes("function zakat()"), "Zakat calculator view is missing.");
+assert(!/romantic|romance|ROMANTIC|love-toast/i.test(appJs), "Personal romantic UI should not return to app.js.");
+assert(!/romantic|romance|love-toast/i.test(stylesCss), "Personal romantic styles should not return to styles.css.");
+assert(!/poland_ar|warsaw_ar|indonesia_ar|surabaya_ar|borze_ar/.test(appJs), "Local place vocabulary lessons should stay removed.");
+assert(!/zakat|Zakat/.test(appJs), "Zakat calculator should stay removed from app.js.");
+assert(!/zakat|Zakat/.test(stylesCss), "Zakat calculator styles should stay removed from styles.css.");
 assert(appJs.includes("muallafChecklist"), "Muallaf 30/90 checklist state is missing.");
 assert(appJs.includes("Plan 30/90 dni po szahadzie"), "Muallaf 30/90 checklist UI is missing.");
-assert(appJs.includes('"zakat"'), "Zakat route is missing.");
+assert(appJs.includes("Pierwsze 7 dni: spokojny start"), "Muallaf 7-day starter plan is missing.");
+assert(appJs.includes("adventure: learningJournal"), "Learning journal route alias is missing.");
+assert(appJs.includes("function learningJournal()"), "Learning journal route is missing.");
+assert(appJs.includes("function learningJournalStats()"), "Learning journal progress summary is missing.");
+assert(appJs.includes("Dziennik nauki"), "Learning journal label is missing.");
+assert(appJs.includes("function renderHifzTab()"), "Short surah learning mode is missing.");
+assert(appJs.includes("function prayerJournalHtml()"), "Prayer journal UI is missing.");
+assert(appJs.includes("function glossary()"), "Islamic glossary route is missing.");
+assert(appJs.includes("function nextStepSuggestion()"), "Home next-step recommendation is missing.");
+assert(appJs.includes("Prywatnosc danych"), "Settings privacy section is missing.");
+assert(appJs.includes("function normalizeRoute()"), "Unknown route normalization is missing.");
+assert(appJs.includes("function readImportedState("), "Import validation helper is missing.");
+assert(appJs.includes('app: "Alif AI"'), "Progress export metadata is missing.");
+assert(appJs.includes("function onboardingPanel()"), "Home onboarding panel is missing.");
+assert(appJs.includes("restartOnboardingBtn"), "Settings should allow restarting onboarding.");
+assert(appJs.includes("Backup i przenoszenie danych"), "Backup/privacy settings panel is missing.");
+assert(stylesCss.includes(".home-quick-grid"), "Home quick grid responsive styles are missing.");
+assert(stylesCss.includes(".home-stat-card"), "Home stat card overflow-safe styles are missing.");
+assert(stylesCss.includes(".onboarding-choice"), "Onboarding responsive styles are missing.");
 assert(swJs.includes("Response.error()"), "service worker should not fallback to index.html for failed asset requests.");
 
 if (failures.length) {

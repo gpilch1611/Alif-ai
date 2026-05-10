@@ -4,7 +4,8 @@ import {
   islamicFaq,
   islamicHadith,
   islamicMonths,
-  quranSurahs
+  quranSurahs,
+  words
 } from "../data.js";
 
 const appJs = await readFile(new URL("../app.js", import.meta.url), "utf8");
@@ -30,6 +31,9 @@ assert(asmaulHusna.length === 99, `Expected 99 Asmaul Husna names, got ${asmaulH
 assert(islamicMonths.length === 12, `Expected 12 Islamic months, got ${islamicMonths.length}.`);
 assert(islamicHadith.length === 30, `Expected the curated hadith list to stay at 30 verified items, got ${islamicHadith.length}.`);
 assert(islamicFaq.length === 44, `Expected 44 FAQ items in data.js after migration, got ${islamicFaq.length}.`);
+for (const localWordId of ["polska", "warsaw", "indonesia", "surabaya", "borze"]) {
+  assert(!words.some((word) => word.id === localWordId), `Local vocabulary word should stay removed: ${localWordId}.`);
+}
 
 const surahNumbers = new Set(quranSurahs.map((surah) => surah.number));
 for (let number = 1; number <= 114; number += 1) {

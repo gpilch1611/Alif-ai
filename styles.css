@@ -117,16 +117,6 @@ body::after {
   margin-inline: auto;
 }
 
-@keyframes float-romance {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(8px, -10px, 0);
-  }
-}
-
 button,
 input,
 select,
@@ -181,6 +171,115 @@ select {
   border: 1px solid var(--line);
   background: var(--surface-soft);
   border-radius: var(--radius-sm);
+}
+
+.home-quick-grid,
+.home-stat-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+}
+
+.home-quick-card {
+  min-width: 0;
+  min-height: 106px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px;
+  text-align: left;
+}
+
+.home-quick-card span:last-child {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: 0.88rem;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.home-stat-grid {
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+}
+
+.home-stat-card {
+  min-width: 0;
+  min-height: 124px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px;
+}
+
+.home-stat-card p,
+.home-stat-card small {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+
+.home-stat-card p {
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.home-stat-card strong {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: clamp(1.45rem, 2.6vw, 2rem);
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.home-stat-card small {
+  font-size: 0.78rem;
+  line-height: 1.25;
+}
+
+.onboarding-panel {
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--accent) 12%, transparent), transparent 58%),
+    var(--surface);
+}
+
+.onboarding-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+}
+
+.onboarding-choice {
+  min-width: 0;
+  min-height: 104px;
+  display: grid;
+  align-content: space-between;
+  gap: 10px;
+  padding: 14px;
+  text-align: left;
+}
+
+.onboarding-choice span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 10px;
+  color: #047857;
+  background: #d1fae5;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.onboarding-choice strong {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: 0.92rem;
+  line-height: 1.25;
 }
 
 .nav-btn {
@@ -785,6 +884,11 @@ h3 {
   background: var(--bg);
   padding: 2rem;
   overflow-y: auto;
+}
+
+.focus-overlay.hidden {
+  display: none;
+  pointer-events: none;
 }
 
 .exit-focus {
@@ -1395,17 +1499,13 @@ a:focus-visible {
 .hifz-surah {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 8px;
-  text-align: center;
-  cursor: pointer;
+  border-radius: 14px;
+  text-align: left;
   transition: all 0.2s;
-  font-size: 12px;
 }
 
 .hifz-surah.memorized {
-  background: var(--accent);
-  color: white;
+  background: color-mix(in oklab, var(--accent) 14%, var(--panel));
   border-color: var(--accent);
 }
 
@@ -1421,7 +1521,7 @@ a:focus-visible {
 }
 
 .hifz-surah.not-started {
-  opacity: 0.6;
+  opacity: 0.88;
 }
 
 /* ============================================================
@@ -1882,81 +1982,8 @@ a:focus-visible {
   text-decoration: line-through;
 }
 
-/* ============================================================
-   Zakat calculator
-   ============================================================ */
-.zakat-card {
-  background:
-    linear-gradient(135deg, color-mix(in oklab, var(--gold) 12%, transparent), transparent 58%),
-    var(--panel);
-}
-.zakat-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-.zakat-field {
-  display: grid;
-  gap: 8px;
-}
-.zakat-field span {
-  font-size: 0.9rem;
-  font-weight: 900;
-}
-.zakat-field input {
-  width: 100%;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px 12px;
-  background: var(--surface);
-  color: var(--text);
-  font-weight: 800;
-}
-.zakat-field small {
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.45;
-}
-.zakat-result {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 18px;
-}
-.zakat-result > div {
-  min-width: 0;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 14px;
-  background: var(--bg);
-}
-.zakat-result p {
-  margin: 0 0 6px;
-  color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 800;
-}
-.zakat-result strong {
-  display: block;
-  overflow-wrap: anywhere;
-  color: var(--accent);
-  font-size: clamp(1.4rem, 4vw, 2rem);
-  font-weight: 900;
-}
-.zakat-disclaimer {
-  margin: 18px 0 0;
-  padding: 12px 14px;
-  border-left: 4px solid var(--gold);
-  border-radius: 10px;
-  background: color-mix(in oklab, var(--gold) 10%, var(--surface));
-  color: var(--muted);
-  font-size: 0.84rem;
-  line-height: 1.55;
-}
 @media (max-width: 720px) {
-  .muallaf-checklist-grid,
-  .zakat-form-grid,
-  .zakat-result {
+  .muallaf-checklist-grid {
     grid-template-columns: 1fr;
   }
   .muallaf-progress {
