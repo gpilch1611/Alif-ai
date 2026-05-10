@@ -1,7 +1,13 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": ["app.js", "data.js", "service-worker.js", "scripts/*.mjs", "tests/*.js"],
-  "project": ["**/*.{js,mjs}", "!node_modules/**", "!playwright-report/**", "!test-results/**"],
-  "ignoreBinaries": ["npm.cmd"],
-  "ignoreDependencies": ["@lhci/cli"]
+  "project": [
+    "**/*.{js,mjs}",
+    "!node_modules/**",
+    "!playwright-report/**",
+    "!test-results/**",
+    "!.lighthouse-profile/**",
+    "!lighthouse-report/**"
+  ],
+  "ignoreBinaries": ["npm.cmd"]
 }

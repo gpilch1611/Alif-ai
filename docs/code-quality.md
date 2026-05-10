@@ -56,4 +56,4 @@ Odpala Playwright i axe: realne kliknięcia w przeglądarce oraz podstawowe test
 npm.cmd run lhci
 ```
 
-Uruchamia Lighthouse CI. Na tej maszynie audyt startuje, ale Chrome/Lighthouse potrafi zakończyć się błędem `EPERM` przy sprzątaniu profilu tymczasowego. Traktuj to narzędzie jako raport pomocniczy, nie jako blokadę pracy.
+Uruchamia lokalny audyt Lighthouse przez Chrome/Edge i zapisuje raporty do `lighthouse-report/alif-ai.report.html` oraz `lighthouse-report/alif-ai.report.json`. To narzędzie jest raportem pomocniczym do decyzji o wydajności, SEO i dostępności.

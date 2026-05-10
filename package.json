@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "content:report": "node scripts/content-review-report.mjs",
-    "lint": "node --check app.js && node --check service-worker.js && node --check data.js && node --check data/content-metadata.js && node --check data/quran-surahs.js && node --check data/islamic-hadith.js && node --check data/halal-haram.js && node --check data/islamic-faq.js && node --check scripts/serve-static.mjs && node --check scripts/run-e2e.mjs && node --check scripts/run-lighthouse.mjs && node --check scripts/validate-islamic-data.mjs && node --check scripts/validate-code-health.mjs && node --check playwright.config.js && node --check tests/smoke.spec.js && npm.cmd run lint:eslint",
+    "lint": "node --check app.js && node --check service-worker.js && node --check data.js && node --check data/content-metadata.js && node --check data/quran-surahs.js && node --check data/islamic-hadith.js && node --check data/halal-haram.js && node --check data/islamic-faq.js && node --check data/prayer-mode.js && node --check scripts/serve-static.mjs && node --check scripts/run-e2e.mjs && node --check scripts/run-lighthouse.mjs && node --check scripts/validate-islamic-data.mjs && node --check scripts/validate-code-health.mjs && node --check playwright.config.js && node --check tests/smoke.spec.js && npm.cmd run lint:eslint",
     "lint:eslint": "eslint .",
-    "format": "prettier eslint.config.js playwright.config.js lighthouserc.cjs package.json tsconfig.json knip.json .prettierrc.json scripts/run-e2e.mjs scripts/run-lighthouse.mjs scripts/serve-static.mjs tests/smoke.spec.js types/alif-globals.d.ts docs/playwright.md docs/code-quality.md --write",
-    "format:check": "prettier eslint.config.js playwright.config.js lighthouserc.cjs package.json tsconfig.json knip.json .prettierrc.json scripts/run-e2e.mjs scripts/run-lighthouse.mjs scripts/serve-static.mjs tests/smoke.spec.js types/alif-globals.d.ts docs/playwright.md docs/code-quality.md --check",
+    "format": "prettier eslint.config.js playwright.config.js lighthouserc.cjs package.json tsconfig.json knip.json .prettierrc.json service-worker.js data/prayer-mode.js scripts/run-e2e.mjs scripts/run-lighthouse.mjs scripts/serve-static.mjs scripts/validate-code-health.mjs tests/smoke.spec.js types/alif-globals.d.ts docs/playwright.md docs/code-quality.md docs/release-checklist.md --write",
+    "format:check": "prettier eslint.config.js playwright.config.js lighthouserc.cjs package.json tsconfig.json knip.json .prettierrc.json service-worker.js data/prayer-mode.js scripts/run-e2e.mjs scripts/run-lighthouse.mjs scripts/serve-static.mjs scripts/validate-code-health.mjs tests/smoke.spec.js types/alif-globals.d.ts docs/playwright.md docs/code-quality.md docs/release-checklist.md --check",
     "typecheck": "tsc -p tsconfig.json",
     "knip": "knip",
     "lhci": "node scripts/run-lighthouse.mjs",
@@ -24,11 +24,11 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
     "@eslint/js": "^10.0.1",
-    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.59.1",
     "eslint": "^10.3.0",
     "globals": "^17.6.0",
     "knip": "^6.12.2",
+    "lighthouse": "^13.3.0",
     "prettier": "^3.8.3",
     "typescript": "^6.0.3"
   }

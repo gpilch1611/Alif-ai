@@ -3,7 +3,13 @@ import globals from "globals";
 
 export default [
   {
-    ignores: ["node_modules/**", "playwright-report/**", "test-results/**"]
+    ignores: [
+      "node_modules/**",
+      "playwright-report/**",
+      "test-results/**",
+      ".lighthouse-profile/**",
+      "lighthouse-report/**"
+    ]
   },
   js.configs.recommended,
   {

@@ -4,4 +4,5 @@ test-results/
 lighthouse-report/
 .lighthouseci/
 .lighthouse-tmp/
+.lighthouse-profile/
 *.log

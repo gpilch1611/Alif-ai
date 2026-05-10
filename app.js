@@ -7,6 +7,17 @@ import {
   RELIGIOUS_NOTICE,
   TRUST_LEVEL
 } from "./data/content-metadata.js";
+import {
+  OBLIGATORY_PRAYERS,
+  OBLIGATORY_PRAYERS_PL,
+  PRAYER_GUIDE_CORE_STEPS,
+  PRAYER_GUIDE_PRAYERS,
+  PRAYER_LOCATIONS,
+  PRAYER_MODE_TABS,
+  PRAYER_NAMES,
+  PRAYER_NAMES_PL,
+  WUDU_STEPS
+} from "./data/prayer-mode.js";
 
 const GROQ_API_KEY = "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";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
@@ -328,8 +339,6 @@ let dhikrGameTimer = null;
 let catchScore = 0;
 let catchMisses = 0;
 let speechUnlocked = false;
-let prayerClockInterval = null;
-let compassWatchId = null;
 let prayerGuidePrayer = "fajr";
 let prayerGuideStep = 0;
 
@@ -373,6 +382,7 @@ const defaultState = {
   quranSurahFavorites: [],
   quranTab: "surahs",
   ayatCache: null,
+  prayerTimesCache: {},
   learnedLettersLog: [],
   ttsWarningShown: false,
   hifzProgress: {},
@@ -395,9 +405,18 @@ const defaultState = {
   prayerGuideSessions: 0,
   lastPrayerGuide: null,
   prayerLocations: null,
+  prayerModeTab: "today",
+  prayerGuideProgress: {},
+  wuduChecklist: [],
+  prayerLocationMode: "default",
+  gpsPrayerLocation: null,
+  prayerHistory: [],
+  prayerFocusMode: false,
   asmaChallengeBest: 0,
   asmaChallengeHistory: [],
   onboardingComplete: false,
+  onboardingLevel: "beginner",
+  onboardingPrayerFocus: "yes",
   learningGoal: ""
 };
 
@@ -452,9 +471,9 @@ function activeDailyTasks() {
 function updateDocumentI18nMeta() {
   document.documentElement.lang = state.lang;
   document.title = tx("Alif AI - alfabet arabski", "Alif AI - Arabic alphabet");
-  $("#homeLogo")?.setAttribute("aria-label", tx("Przejdz na strone glowna", "Go to home page"));
-  $("#quickLangBtn")?.setAttribute("aria-label", tx("Zmien jezyk", "Change language"));
-  $("#themeBtn")?.setAttribute("aria-label", tx("Zmien motyw", "Change theme"));
+  $("#homeLogo")?.setAttribute("aria-label", tx("Alif AI - przejdz na strone glowna", "Alif AI - go to home page"));
+  $("#quickLangBtn")?.setAttribute("aria-label", state.lang === "pl" ? "PL - zmien jezyk" : "EN - change language");
+  $("#themeBtn")?.setAttribute("aria-label", tx("Motyw - zmien motyw", "Theme - change theme"));
   $("#closeModal")?.setAttribute("aria-label", tx("Zamknij", "Close"));
   $("#aiFab")?.setAttribute("aria-label", tx("Otworz AI Assistant", "Open AI Assistant"));
   $("#closeAi")?.setAttribute("aria-label", tx("Zamknij", "Close"));
@@ -484,6 +503,11 @@ function loadState() {
     if (!THEMES.includes(next.theme)) next.theme = "light";
     next.learnedLetters = [...new Set(next.learnedLetters || [])].filter((id) => arabicAlphabet.some((letter) => letter.id === id));
     if (!next.quranSurahFavorites) next.quranSurahFavorites = [];
+    if (!next.prayerModeTab) next.prayerModeTab = "today";
+    if (!next.prayerGuideProgress) next.prayerGuideProgress = {};
+    if (!next.wuduChecklist) next.wuduChecklist = [];
+    if (!next.prayerHistory) next.prayerHistory = [];
+    if (!next.prayerTimesCache) next.prayerTimesCache = {};
     return next;
   } catch {
     return { ...defaultState };
@@ -495,7 +519,7 @@ function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch(e) {
     if (e.name === 'QuotaExceededError' || e.code === 22) {
-      showLoveToast(tx("⚠️ Pamięć urządzenia jest pełna. Usuń stare zdjęcia lub PDF-y w Ustawieniach.", "⚠️ Device storage is full. Remove old photos or PDFs in Settings."));
+      showToast(tx("⚠️ Pamięć urządzenia jest pełna. Usuń stare zdjęcia lub PDF-y w Ustawieniach.", "⚠️ Device storage is full. Remove old photos or PDFs in Settings."));
     }
   }
 }
@@ -550,6 +574,17 @@ function level() {
 function progressPercent() {
   const learned = new Set(state.learnedLetters).size;
   return Math.max(0, Math.min(100, Math.round((learned / arabicAlphabet.length) * 100)));
+}
+
+function formatDateOffset(days) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+function isFreshCache(entry, maxAgeDays = 7) {
+  if (!entry?.cachedAt) return false;
+  return Date.now() - Date.parse(entry.cachedAt) < maxAgeDays * 86400000;
 }
 
 function setRoute(next) {
@@ -667,7 +702,7 @@ function updateInstallButtons() {
   });
 }
 
-function showLoveToast(message = tx("Zapisano", "Saved")) {
+function showToast(message = tx("Zapisano", "Saved")) {
   const old = document.querySelector(".app-toast");
   if (old) old.remove();
   const toast = document.createElement("div");
@@ -677,7 +712,6 @@ function showLoveToast(message = tx("Zapisano", "Saved")) {
   setTimeout(() => toast.remove(), 5800);
 }
 
-const showToast = showLoveToast;
 
 function openMiniLesson(lessonId) {
   state.lessonsTab = "lessons";
@@ -784,14 +818,6 @@ function render() {
   if (dhikrGameTimer) {
     clearInterval(dhikrGameTimer);
     dhikrGameTimer = null;
-  }
-  if (prayerClockInterval) {
-    clearInterval(prayerClockInterval);
-    prayerClockInterval = null;
-  }
-  if (compassWatchId !== null) {
-    try { window.removeEventListener('deviceorientationabsolute', compassWatchId); window.removeEventListener('deviceorientation', compassWatchId); } catch {}
-    compassWatchId = null;
   }
   renderNav();
   const currentThemeMeta = themeMeta(state.theme);
@@ -1191,17 +1217,18 @@ function glossary() {
 }
 
 function homeFavoriteItems() {
+  const favoriteLimit = 16;
   return [
-    ...(state.quranSurahFavorites || []).slice(0, 8).map(num => {
+    ...(state.quranSurahFavorites || []).slice(0, favoriteLimit).map(num => {
       const s = SURAH_LIST.find(x => x.number === num);
       return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
     }).filter(Boolean),
-    ...(state.quranFavorites || []).slice(0, 8).map(entry => {
+    ...(state.quranFavorites || []).slice(0, favoriteLimit).map(entry => {
       const num = typeof entry === "object" ? entry.num : entry;
       const surah = typeof entry === "object" ? entry.surahName : "";
       return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
     }),
-    ...(state.quranDuaFavorites || []).slice(0, 8).map(id => {
+    ...(state.quranDuaFavorites || []).slice(0, favoriteLimit).map(id => {
       const dua = DUA_DATA.find(d => d.id === id);
       return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
     }).filter(Boolean)
@@ -1209,6 +1236,39 @@ function homeFavoriteItems() {
 }
 
 function nextStepSuggestion() {
+  if (state.learningGoal === "letters") {
+    return {
+      route: "alphabet",
+      title: tx("Alfabet od podstaw", "Alphabet from zero"),
+      text: tx("Poznaj 3 litery i zrob jedna spokojna powtorke.", "Learn 3 letters and do one calm review."),
+      action: tx("Otworz alfabet", "Open alphabet")
+    };
+  }
+  if (state.learningGoal === "prayer" || state.onboardingPrayerFocus === "yes") {
+    return {
+      route: "prayer",
+      title: tx("Modlitwa krok po kroku", "Prayer step by step"),
+      text: tx("Otworz Prayer Mode: dziennik, wudu, qibla i przewodnik salat.", "Open Prayer Mode: journal, wudu, qibla and salat guide."),
+      action: tx("Otworz Prayer Mode", "Open Prayer Mode")
+    };
+  }
+  if (state.learningGoal === "quran") {
+    return {
+      route: "koran",
+      quranTab: "hifz",
+      title: tx("Quran i krotkie sury", "Quran and short surahs"),
+      text: tx("Zacznij od Al-Ikhlas, potem Al-Falaq i An-Nas.", "Start with Al-Ikhlas, then Al-Falaq and An-Nas."),
+      action: tx("Otworz Quran", "Open Quran")
+    };
+  }
+  if (state.learningGoal === "basics") {
+    return {
+      route: "islam",
+      title: tx("Podstawy islamu", "Islam basics"),
+      text: tx("Przejdz przez filary, FAQ i slownik pojec bez presji.", "Go through pillars, FAQ and glossary without pressure."),
+      action: tx("Otworz Islam", "Open Islam")
+    };
+  }
   if ((state.muallafChecklist || []).length < 3) {
     return {
       route: "muallaf",
@@ -1257,11 +1317,134 @@ function nextStepCard() {
   `;
 }
 
+function reviewBuckets() {
+  const now = Date.now();
+  const tomorrow = now + 86400000;
+  const later = tomorrow + 86400000;
+  return Object.values(state.flashcards || {}).reduce((acc, meta) => {
+    if (!meta?.due) return acc;
+    if (meta.due <= now) acc.today += 1;
+    else if (meta.due <= tomorrow) acc.tomorrow += 1;
+    else if (meta.due <= later) acc.later += 1;
+    return acc;
+  }, { today: 0, tomorrow: 0, later: 0 });
+}
+
+function reviewCalendarHtml() {
+  const buckets = reviewBuckets();
+  const items = [
+    { label: tx("Dzis", "Today"), value: buckets.today, date: today() },
+    { label: tx("Jutro", "Tomorrow"), value: buckets.tomorrow, date: formatDateOffset(1) },
+    { label: tx("Pozniej", "Later"), value: buckets.later, date: formatDateOffset(2) }
+  ];
+  return `
+    <div class="learning-mini-grid mt-4">
+      ${items.map(item => `
+        <button class="learning-mini-card" data-route="flashcards">
+          <strong>${item.value}</strong>
+          <span>${item.label}</span>
+          <small>${item.date}</small>
+        </button>
+      `).join("")}
+    </div>
+  `;
+}
+
+function skillSnapshotHtml() {
+  const prayerDone = Object.values(state.prayerLog?.[today()] || {}).filter(Boolean).length;
+  const memorized = HIFZ_SURAHS.filter(num => state.hifzProgress?.[num] === "memorized").length;
+  const wrongAnswers = Number(state.quizStats?.wrong || 0) + Number(state.memoryStats?.wrong || 0) + Number(state.surahQuizStats?.wrong || 0) + Number(state.pillarsQuizStats?.wrong || 0);
+  const items = [
+    { route: "alphabet", label: tx("Alfabet", "Alphabet"), value: `${state.learnedLetters.length}/28`, hint: tx("Co umiem", "Known") },
+    { route: "flashcards", label: tx("Fiszki", "Flashcards"), value: String(Object.keys(state.flashcards || {}).length), hint: tx("Powtorki", "Reviews") },
+    { route: "koran", label: tx("Sury", "Surahs"), value: `${memorized}/${HIFZ_SURAHS.length}`, hint: tx("Hifz", "Hifz"), quranTab: "hifz" },
+    { route: "koran", label: tx("Dua", "Duas"), value: String(state.quranDuaFavorites?.length || 0), hint: tx("Ulubione", "Favorites"), quranTab: "dua" },
+    { route: "prayer", label: tx("Modlitwy", "Prayers"), value: `${prayerDone}/5`, hint: tx("Dzisiaj", "Today") },
+    { route: wrongAnswers ? "games" : "writing", label: tx("Do poprawy", "To improve"), value: String(wrongAnswers), hint: tx("Bledy", "Mistakes") }
+  ];
+  return `
+    <div class="learning-snapshot mt-4">
+      ${items.map(item => `
+        <button class="learning-snapshot-card" data-route="${item.route}" ${item.quranTab ? `data-quran-tab="${item.quranTab}"` : ""}>
+          <span>${item.value}</span>
+          <strong>${item.label}</strong>
+          <small>${item.hint}</small>
+        </button>
+      `).join("")}
+    </div>
+  `;
+}
+
+function learningCenter() {
+  const dueNow = Date.now();
+  const dueCards = Object.values(state.flashcards || {}).filter((meta) => meta?.due && meta.due <= dueNow).length;
+  const wrongAnswers = Number(state.quizStats?.wrong || 0) + Number(state.memoryStats?.wrong || 0) + Number(state.surahQuizStats?.wrong || 0) + Number(state.pillarsQuizStats?.wrong || 0);
+  const latestWriting = (state.writingAttempts || [])[0];
+  const lastMistake = latestWriting && latestWriting.score < 70
+    ? tx(`Pisanie litery: ${latestWriting.letter}`, `Writing letter: ${latestWriting.letter}`)
+    : wrongAnswers > 0
+      ? tx(`${wrongAnswers} odpowiedzi do poprawy`, `${wrongAnswers} answers to revisit`)
+      : tx("Brak zapisanych bledow", "No saved mistakes");
+  const reviewText = dueCards > 0
+    ? tx(`${dueCards} fiszek czeka`, `${dueCards} flashcards due`)
+    : tx("Zrob 3 spokojne fiszki", "Do 3 calm flashcards");
+  const next = nextStepSuggestion();
+  const prayerDone = Object.values(state.prayerLog?.[today()] || {}).filter(Boolean).length;
+
+  return `
+    <section class="learning-center panel p-5 sm:p-6 mb-4" aria-label="${tx("Centrum nauki", "Learning center")}">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Centrum nauki", "Learning center")}</p>
+          <h2 class="mt-1 text-2xl font-black">${tx("Co robimy teraz?", "What now?")}</h2>
+        </div>
+        <button class="big-action bg-emerald-500 text-white" data-route="${next.route}" ${next.quranTab ? `data-quran-tab="${next.quranTab}"` : ""}>${next.action}</button>
+      </div>
+      <div class="learning-center-grid mt-4">
+        <button class="learning-center-card" data-route="${next.route}" ${next.quranTab ? `data-quran-tab="${next.quranTab}"` : ""}>
+          <span>01</span>
+          <strong>${tx("Dzisiejsza lekcja", "Today's lesson")}</strong>
+          <small>${next.text}</small>
+        </button>
+        <button class="learning-center-card" data-route="flashcards">
+          <span>02</span>
+          <strong>${tx("Nastepna powtorka", "Next review")}</strong>
+          <small>${reviewText}</small>
+        </button>
+        <button class="learning-center-card" data-route="${latestWriting?.score < 70 ? "writing" : "games"}">
+          <span>03</span>
+          <strong>${tx("Ostatni blad", "Last mistake")}</strong>
+          <small>${lastMistake}</small>
+        </button>
+        <button class="learning-center-card" data-route="prayer">
+          <span>${prayerDone}/5</span>
+          <strong>${tx("Modlitwy dzisiaj", "Prayers today")}</strong>
+          <small>${tx("Lokalny dziennik bez wysylania danych", "Local journal, no data sent")}</small>
+        </button>
+      </div>
+      ${reviewCalendarHtml()}
+      ${skillSnapshotHtml()}
+    </section>
+  `;
+}
+
 const ONBOARDING_GOALS = [
   { id: "letters", route: "alphabet", icon: "Aa", pl: "Chcę zacząć od liter", en: "Start with letters" },
   { id: "muallaf", route: "muallaf", icon: "01", pl: "Jestem nowym muzułmaninem", en: "I am a new Muslim" },
   { id: "prayer", route: "prayerGuide", icon: "5x", pl: "Chcę nauczyć się modlitwy", en: "Learn prayer" },
-  { id: "quran", route: "koran", icon: "Q", pl: "Chcę czytać Quran", en: "Read Quran" }
+  { id: "quran", route: "koran", icon: "Q", pl: "Chcę czytać Quran", en: "Read Quran" },
+  { id: "basics", route: "islam", icon: "?", pl: "Chcę podstaw islamu", en: "Learn Islam basics" }
+];
+
+const ONBOARDING_LEVELS = [
+  { id: "beginner", pl: "Zaczynam od zera", en: "Starting from zero" },
+  { id: "some", pl: "Coś już umiem", en: "I know a little" },
+  { id: "returning", pl: "Wracam do nauki", en: "Returning to practice" }
+];
+
+const ONBOARDING_PRAYER_FOCUS = [
+  { id: "yes", pl: "Tak, modlitwa jest priorytetem", en: "Yes, prayer is a priority" },
+  { id: "later", pl: "Później, najpierw podstawy", en: "Later, basics first" }
 ];
 
 function onboardingPanel() {
@@ -1270,9 +1453,10 @@ function onboardingPanel() {
     <section class="onboarding-panel panel p-5 sm:p-6 mb-4">
       <div>
         <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Spokojny start", "Calm start")}</p>
-        <h2 class="mt-1 text-2xl font-black">${tx("Wybierz swoją pierwszą ścieżkę", "Choose your first path")}</h2>
-        <p class="mt-2 text-sm text-[var(--muted)]">${tx("Aplikacja dopasuje następny krok. Możesz to później zmienić w zwykłej nauce.", "The app will shape the next step. You can change direction any time.")}</p>
+        <h2 class="mt-1 text-2xl font-black">${tx("Ustaw pierwszą ścieżkę w 3 krokach", "Set your first path in 3 steps")}</h2>
+        <p class="mt-2 text-sm text-[var(--muted)]">${tx("Wybierz cel, poziom i priorytet modlitwy. Centrum nauki dopasuje kolejny krok.", "Choose a goal, level, and prayer priority. The learning center will shape the next step.")}</p>
       </div>
+      <p class="mt-4 text-xs font-black uppercase tracking-wide text-[var(--muted)]">${tx("1. Cel", "1. Goal")}</p>
       <div class="onboarding-grid mt-4">
         ${ONBOARDING_GOALS.map(goal => `
           <button class="onboarding-choice soft-panel" data-onboarding-goal="${goal.id}" data-route="${goal.route}">
@@ -1280,6 +1464,14 @@ function onboardingPanel() {
             <strong>${state.lang === "pl" ? goal.pl : goal.en}</strong>
           </button>
         `).join("")}
+      </div>
+      <p class="mt-4 text-xs font-black uppercase tracking-wide text-[var(--muted)]">${tx("2. Poziom", "2. Level")}</p>
+      <div class="onboarding-segments mt-2">
+        ${ONBOARDING_LEVELS.map(level => `<button class="${state.onboardingLevel === level.id ? "active" : ""}" data-onboarding-level="${level.id}">${state.lang === "pl" ? level.pl : level.en}</button>`).join("")}
+      </div>
+      <p class="mt-4 text-xs font-black uppercase tracking-wide text-[var(--muted)]">${tx("3. Modlitwa", "3. Prayer")}</p>
+      <div class="onboarding-segments mt-2">
+        ${ONBOARDING_PRAYER_FOCUS.map(item => `<button class="${state.onboardingPrayerFocus === item.id ? "active" : ""}" data-onboarding-prayer="${item.id}">${state.lang === "pl" ? item.pl : item.en}</button>`).join("")}
       </div>
       <button class="mt-3 text-xs font-black text-[var(--muted)]" data-onboarding-skip>${tx("Pomiń na razie", "Skip for now")}</button>
     </section>
@@ -1301,8 +1493,9 @@ function home() {
 
   view.innerHTML = `
     ${onboardingPanel()}
-    <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-      <section class="panel p-5 sm:p-7">
+    ${learningCenter()}
+    <div class="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+      <section class="panel min-w-0 p-5 sm:p-7">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p class="font-bold text-emerald-600">${t("welcome")}</p>
@@ -1334,11 +1527,11 @@ function home() {
           ${statCard(tx("Ulubione ayaty", "Favorite ayahs"), `${favAyahs}`, tx("Do szybkich powtórek", "For quick revision"))}
           ${statCard(tx("Ulubione dua", "Favorite duas"), `${favDua}`, tx("Najczęściej czytane", "Most revisited"))}
         </div>
-        <div class="mt-4">
+        <div class="home-favorites mt-4">
           <p class="text-xs font-black uppercase tracking-wide text-[var(--muted)]">${tx("Ulubione (przewijane)", "Favorites (scrollable)")}</p>
-          <div class="mt-2 flex gap-2 overflow-x-auto pb-1">
+          <div class="home-favorites-strip mt-2">
             ${homeFavItems.length ? homeFavItems.map(item => `
-              <button class="soft-panel p-3 min-w-[220px] text-left" data-home-fav="${item.target}" ${item.quranTab ? `data-quran-tab="${item.quranTab}"` : ""} ${item.openSurah ? `data-home-surah="${item.openSurah}"` : ""}>
+              <button class="home-favorite-card soft-panel p-3 text-left" data-home-fav="${item.target}" ${item.quranTab ? `data-quran-tab="${item.quranTab}"` : ""} ${item.openSurah ? `data-home-surah="${item.openSurah}"` : ""}>
                 <p class="text-sm font-black">${escapeHtml(item.title)}</p>
                 <p class="text-xs text-[var(--muted)] mt-1">${escapeHtml(item.sub)}</p>
               </button>
@@ -1346,7 +1539,7 @@ function home() {
           </div>
         </div>
       </section>
-      <aside class="grid gap-4">
+      <aside class="grid min-w-0 gap-4">
         <div class="soft-panel p-5">
           <h2 class="text-xl font-black">${t("todayTask")}</h2>
           <p class="mt-2 text-[var(--muted)]">${task}</p>
@@ -1385,7 +1578,21 @@ function home() {
     </div>
   `;
 
-  loadAyatOfDay();
+  scheduleAyatOfDay();
+  view.querySelectorAll("[data-onboarding-level]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.onboardingLevel = button.dataset.onboardingLevel;
+      saveState();
+      render();
+    });
+  });
+  view.querySelectorAll("[data-onboarding-prayer]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.onboardingPrayerFocus = button.dataset.onboardingPrayer;
+      saveState();
+      render();
+    });
+  });
   view.querySelectorAll("[data-onboarding-goal]").forEach((button) => {
     button.addEventListener("click", () => {
       state.learningGoal = button.dataset.onboardingGoal;
@@ -1419,6 +1626,15 @@ function home() {
   });
 }
 
+function scheduleAyatOfDay() {
+  const run = () => loadAyatOfDay();
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(run, { timeout: 2000 });
+    return;
+  }
+  setTimeout(run, 800);
+}
+
 async function loadAyatOfDay() {
   const container = $("#ayatOfDay");
   const todayDate = today();
@@ -1433,9 +1649,9 @@ async function loadAyatOfDay() {
     `;
   }
 
-  if (state.ayatCache?.date === todayDate) {
+  if (state.ayatCache?.date === todayDate || isFreshCache(state.ayatCache)) {
     renderAyatCache(state.ayatCache);
-    return;
+    if (state.ayatCache?.date === todayDate) return;
   }
 
   try {
@@ -1449,6 +1665,7 @@ async function loadAyatOfDay() {
     if (dataPl.code === 200) {
       const cache = {
         date: todayDate,
+        cachedAt: new Date().toISOString(),
         ar: dataAr.data.text,
         pl: dataPl.data.text,
         en: dataEn.code === 200 ? dataEn.data.text : dataPl.data.text,
@@ -1460,6 +1677,10 @@ async function loadAyatOfDay() {
       renderAyatCache(cache);
     }
   } catch {
+    if (isFreshCache(state.ayatCache)) {
+      renderAyatCache(state.ayatCache);
+      return;
+    }
     container.innerHTML = `<p class="text-xs text-[var(--muted)]">${tx("Nie udało się pobrać wersetu.", "Could not load ayah.")}</p>`;
   }
 }
@@ -1809,7 +2030,7 @@ function bindSurahListEvents() {
     const num = Number(btn.dataset.favSurah);
     if (!state.quranSurahFavorites) state.quranSurahFavorites = [];
     const idx = state.quranSurahFavorites.indexOf(num);
-    if (idx === -1) { state.quranSurahFavorites.push(num); showLoveToast(tx("Dodano do ulubionych", "Added to favorites")); }
+    if (idx === -1) { state.quranSurahFavorites.push(num); showToast(tx("Dodano do ulubionych", "Added to favorites")); }
     else state.quranSurahFavorites.splice(idx, 1);
     saveState();
     renderSurahList();
@@ -2157,13 +2378,13 @@ async function openSurah(num) {
           state.quranFavorites.push({ num: ayahNum, ar, tr, trans, surahName, surahNum });
         }
         saveState();
-        showLoveToast(tx("Dodano werset do ulubionych", "Ayah added to favorites"));
+        showToast(tx("Dodano werset do ulubionych", "Ayah added to favorites"));
       }));
 
       container.querySelectorAll("[data-copy-ayah]").forEach(btn => btn.addEventListener("click", () => {
         const text = btn.dataset.copyText;
         if (navigator.clipboard) {
-          navigator.clipboard.writeText(text).then(() => showLoveToast(tx("Skopiowano werset", "Ayah copied")));
+          navigator.clipboard.writeText(text).then(() => showToast(tx("Skopiowano werset", "Ayah copied")));
         }
       }));
 
@@ -2322,13 +2543,15 @@ function settings() {
   $("#importStateFile").addEventListener("change", importState);
   $("#restartOnboardingBtn")?.addEventListener("click", () => {
     state.onboardingComplete = false;
+    state.onboardingLevel = state.onboardingLevel || "beginner";
+    state.onboardingPrayerFocus = state.onboardingPrayerFocus || "yes";
     saveState();
     setRoute("home");
   });
   $("#saveGroqKeyBtn")?.addEventListener("click", () => {
     state.groqApiKey = $("#groqApiKeyInput").value.trim();
     saveState();
-    showLoveToast(tx("✅ Klucz Groq zapisany", "✅ Groq key saved"));
+    showToast(tx("✅ Klucz Groq zapisany", "✅ Groq key saved"));
   });
   $("#resetTodayBtn").addEventListener("click", () => {
     state.lastActive = "";
@@ -2357,6 +2580,9 @@ function settings() {
     state.writingAttempts = [];
     state.recordings = {};
     state.prayerLog = {};
+    state.prayerGuideProgress = {};
+    state.wuduChecklist = [];
+    state.prayerHistory = [];
     state.hifzProgress = {};
     saveState();
     render();
@@ -2407,7 +2633,7 @@ function importState(event) {
       state = readImportedState(imported);
       saveState();
       render();
-      showLoveToast(t("imported"));
+      showToast(t("imported"));
     } catch {
       alert(state.lang === "pl" ? "Nieprawidłowy plik JSON." : "Invalid JSON file.");
     }
@@ -2499,14 +2725,14 @@ function openLetter(id) {
       updateAlphabetCounter();
       e.target.textContent = tx("Oznacz jako poznaną", "Mark as learned");
       e.target.className = "big-action bg-emerald-500 text-white";
-      showLoveToast(tx(`Cofnięto: litera ${letterName(letter)}`, `Unmarked: letter ${letterName(letter)}`));
+      showToast(tx(`Cofnięto: litera ${letterName(letter)}`, `Unmarked: letter ${letterName(letter)}`));
     } else {
       markLetterLearned(id);
       checkBadges();
       updateAlphabetCounter();
       e.target.textContent = tx("✓ Poznana — cofnij", "✓ Learned — undo");
       e.target.className = "big-action bg-emerald-100 text-emerald-700 border border-emerald-300";
-      showLoveToast(tx(`Litera ${letterName(letter)} poznana!`, `Letter ${letterName(letter)} learned!`));
+      showToast(tx(`Litera ${letterName(letter)} poznana!`, `Letter ${letterName(letter)} learned!`));
     }
   });
 }
@@ -2814,7 +3040,7 @@ function speakArabicGoogleTTS(text) {
     if (!state.ttsWarningShown) {
       state.ttsWarningShown = true;
       saveState();
-      showLoveToast(tx("Brak arabskiego TTS. Zainstaluj język arabski w systemie lub użyj Chrome.", "No Arabic TTS. Install Arabic language pack or use Chrome."));
+      showToast(tx("Brak arabskiego TTS. Zainstaluj język arabski w systemie lub użyj Chrome.", "No Arabic TTS. Install Arabic language pack or use Chrome."));
     }
   });
 }
@@ -4155,7 +4381,7 @@ function renderAsmaChallenge() {
     state.asmaChallengeHistory.unshift({ score, date: new Date().toISOString() });
     state.asmaChallengeHistory = state.asmaChallengeHistory.slice(0, 20);
     saveState();
-    showLoveToast(`${tx("Wynik", "Score")}: ${score}/99`);
+    showToast(`${tx("Wynik", "Score")}: ${score}/99`);
   };
   timer = setInterval(() => {
     secondsLeft -= 1;
@@ -4646,7 +4872,7 @@ function unlockBadge(id, name) {
   if (state.badges.includes(id)) return;
   state.badges.push(id);
   saveState();
-  showLoveToast(`🏆 ${name}!`);
+  showToast(`🏆 ${name}!`);
   confetti();
   triggerHaptic();
 }
@@ -4740,7 +4966,7 @@ function dhikr() {
       if (!state.dhikrCounts) state.dhikrCounts = { subhana: 0, alhamdu: 0, allahu: 0 };
       state.dhikrCounts[key] = (state.dhikrCounts[key] || 0) + 1;
       if (state.dhikrCounts[key] === target) {
-        showLoveToast(tx(`🤲 ${items.find(i=>i.key===key).tr} ukończony!`, `🤲 ${items.find(i=>i.key===key).tr} complete!`));
+        showToast(tx(`🤲 ${items.find(i=>i.key===key).tr} ukończony!`, `🤲 ${items.find(i=>i.key===key).tr} complete!`));
         triggerHaptic();
       }
       triggerHaptic();
@@ -4759,160 +4985,6 @@ function dhikr() {
 // ============================================================
 // PRAYER MODE — beginner salat guide
 // ============================================================
-const PRAYER_GUIDE_PRAYERS = [
-  { id: "fajr", pl: "Fadżr", en: "Fajr", rakat: 2 },
-  { id: "dhuhr", pl: "Dhuhr", en: "Dhuhr", rakat: 4 },
-  { id: "asr", pl: "Asr", en: "Asr", rakat: 4 },
-  { id: "maghrib", pl: "Maghrib", en: "Maghrib", rakat: 3 },
-  { id: "isha", pl: "Isza", en: "Isha", rakat: 4 }
-];
-
-const PRAYER_GUIDE_CORE_STEPS = [
-  {
-    id: "intro",
-    titlePl: "Start i intencja",
-    titleEn: "Start and intention",
-    bodyPl: "Stań spokojnie twarzą w stronę Qibla. W sercu wiesz, którą modlitwę wykonujesz. Nie musisz wypowiadać intencji na głos.",
-    bodyEn: "Stand calmly facing the Qibla. In your heart, know which prayer you are praying. You do not need to say the intention out loud.",
-    ar: "",
-    tr: "",
-    meaningPl: "Ten tryb zaczyna od samej modlitwy, bez instrukcji wudu.",
-    meaningEn: "This mode starts with the prayer itself, without wudu instructions."
-  },
-  {
-    id: "qiyam",
-    titlePl: "Qiyam — stanie",
-    titleEn: "Qiyam — standing",
-    bodyPl: "Stań prosto. Wzrok skieruj w miejsce sujud. Ręce przygotuj do pierwszego takbiru.",
-    bodyEn: "Stand upright. Look toward the place of sujud. Prepare your hands for the opening takbir.",
-    ar: "",
-    tr: "qiyam",
-    meaningPl: "Pozycja stojąca na początku raka'at.",
-    meaningEn: "Standing position at the beginning of the raka'ah."
-  },
-  {
-    id: "takbir",
-    titlePl: "Takbir otwierający",
-    titleEn: "Opening takbir",
-    bodyPl: "Podnieś dłonie przy uszach lub ramionach i powiedz Allahu Akbar. Potem połóż prawą dłoń na lewej.",
-    bodyEn: "Raise your hands near your ears or shoulders and say Allahu Akbar. Then place your right hand over your left.",
-    ar: "الله أكبر",
-    tr: "Allahu Akbar",
-    meaningPl: "Allah jest Największy.",
-    meaningEn: "Allah is the Greatest."
-  },
-  {
-    id: "fatiha",
-    titlePl: "Al-Fatiha",
-    titleEn: "Al-Fatiha",
-    bodyPl: "Recytuj Al-Fatihę spokojnie. Na początku możesz czytać z ekranu, żeby uczyć się poprawnej kolejności.",
-    bodyEn: "Recite Al-Fatiha calmly. At the beginning, you may read from the screen to learn the correct order.",
-    ar: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
-    tr: "Alhamdu lillahi rabbil alamin",
-    meaningPl: "Chwała Allahowi, Panu światów.",
-    meaningEn: "All praise is for Allah, Lord of all worlds."
-  },
-  {
-    id: "short-surah",
-    titlePl: "Krótka sura",
-    titleEn: "Short surah",
-    bodyPl: "Po Al-Fatiha recytuj krótką surę. Dla początkującego najlepsza jest Al-Ikhlas.",
-    bodyEn: "After Al-Fatiha, recite a short surah. For beginners, Al-Ikhlas is a good start.",
-    ar: "قُلْ هُوَ اللَّهُ أَحَدٌ",
-    tr: "Qul huwa Allahu ahad",
-    meaningPl: "Powiedz: On, Allah, jest Jeden.",
-    meaningEn: "Say: He is Allah, One."
-  },
-  {
-    id: "ruku",
-    titlePl: "Ruku — skłon",
-    titleEn: "Ruku — bowing",
-    bodyPl: "Powiedz Allahu Akbar i pochyl się, opierając dłonie na kolanach. Plecy trzymaj możliwie prosto.",
-    bodyEn: "Say Allahu Akbar and bow, placing your hands on your knees. Keep your back as straight as you can.",
-    ar: "سُبْحَانَ رَبِّيَ الْعَظِيم",
-    tr: "Subhana rabbiyal azim",
-    meaningPl: "Chwała mojemu Panu, Najwspanialszemu.",
-    meaningEn: "Glory be to my Lord, the Magnificent."
-  },
-  {
-    id: "rise",
-    titlePl: "Powrót ze skłonu",
-    titleEn: "Rise from bowing",
-    bodyPl: "Podnieś się z ruku do stania. Najpierw wypowiedz odpowiedź podczas podnoszenia, potem krótką pochwałę.",
-    bodyEn: "Rise from ruku back to standing. Say the response while rising, then the short praise.",
-    ar: "سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ\nرَبَّنَا وَلَكَ الْحَمْد",
-    tr: "Sami Allahu liman hamidah. Rabbana wa laka al-hamd",
-    meaningPl: "Allah słyszy tego, kto Go chwali. Panie nasz, Tobie należy się chwała.",
-    meaningEn: "Allah hears the one who praises Him. Our Lord, to You belongs praise."
-  },
-  {
-    id: "sujud1",
-    titlePl: "Pierwszy sujud",
-    titleEn: "First sujud",
-    bodyPl: "Powiedz Allahu Akbar i przejdź do pokłonu: czoło, nos, dłonie, kolana i palce stóp dotykają ziemi.",
-    bodyEn: "Say Allahu Akbar and go down: forehead, nose, hands, knees and toes touch the ground.",
-    ar: "سُبْحَانَ رَبِّيَ الْأَعْلَى",
-    tr: "Subhana rabbiyal a'la",
-    meaningPl: "Chwała mojemu Panu, Najwyższemu.",
-    meaningEn: "Glory be to my Lord, the Most High."
-  },
-  {
-    id: "sit",
-    titlePl: "Siedzenie między sujud",
-    titleEn: "Sitting between sujud",
-    bodyPl: "Usiądź spokojnie między dwoma pokłonami. To krótka pauza i prośba o przebaczenie.",
-    bodyEn: "Sit calmly between the two prostrations. This is a short pause and a request for forgiveness.",
-    ar: "رَبِّ اغْفِرْ لِي",
-    tr: "Rabbi ghfir li",
-    meaningPl: "Panie mój, przebacz mi.",
-    meaningEn: "My Lord, forgive me."
-  },
-  {
-    id: "sujud2",
-    titlePl: "Drugi sujud",
-    titleEn: "Second sujud",
-    bodyPl: "Powiedz Allahu Akbar i wykonaj drugi sujud tak samo jak pierwszy.",
-    bodyEn: "Say Allahu Akbar and perform the second sujud the same way as the first.",
-    ar: "سُبْحَانَ رَبِّيَ الْأَعْلَى",
-    tr: "Subhana rabbiyal a'la",
-    meaningPl: "Chwała mojemu Panu, Najwyższemu.",
-    meaningEn: "Glory be to my Lord, the Most High."
-  },
-  {
-    id: "next-rakah",
-    titlePl: "Kolejna raka'at",
-    titleEn: "Next raka'ah",
-    bodyPl: "Wstań do kolejnej raka'at i powtórz: Al-Fatiha, krótka sura, ruku, powrót, dwa sujud.",
-    bodyEn: "Stand for the next raka'ah and repeat: Al-Fatiha, short surah, ruku, rising, and two sujud.",
-    ar: "الله أكبر",
-    tr: "Allahu Akbar",
-    meaningPl: "Przechodzisz do następnej jednostki modlitwy.",
-    meaningEn: "You are moving into the next prayer unit."
-  },
-  {
-    id: "tashahhud",
-    titlePl: "Tashahhud",
-    titleEn: "Tashahhud",
-    bodyPl: "Po ostatniej raka'at usiądź. Na początku ucz się tej formuły powoli, fragment po fragmencie.",
-    bodyEn: "After the final raka'ah, sit. At first, learn this formula slowly, piece by piece.",
-    ar: "التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَات",
-    tr: "At-tahiyyatu lillahi was-salawatu wat-tayyibat",
-    meaningPl: "Pozdrowienia, modlitwy i dobre rzeczy należą do Allaha.",
-    meaningEn: "Greetings, prayers and good things belong to Allah."
-  },
-  {
-    id: "salam",
-    titlePl: "Salam — zakończenie",
-    titleEn: "Salam — closing",
-    bodyPl: "Obróć głowę w prawo i wypowiedz salam, potem w lewo. To kończy modlitwę.",
-    bodyEn: "Turn your head to the right and say salam, then to the left. This completes the prayer.",
-    ar: "السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّه",
-    tr: "As-salamu alaykum wa rahmatullah",
-    meaningPl: "Pokój z wami i miłosierdzie Allaha.",
-    meaningEn: "Peace be upon you and the mercy of Allah."
-  }
-];
-
 function prayerGuideStepsFor(prayer) {
   const repeated = [];
   const rakatCount = prayer?.rakat || 2;
@@ -4939,110 +5011,41 @@ function prayerGuideStepsFor(prayer) {
 }
 
 function prayerGuide() {
-  const selected = PRAYER_GUIDE_PRAYERS.find(p => p.id === prayerGuidePrayer) || PRAYER_GUIDE_PRAYERS[0];
-  prayerGuidePrayer = selected.id;
-  const steps = prayerGuideStepsFor(selected);
-  prayerGuideStep = Math.max(0, Math.min(prayerGuideStep, steps.length - 1));
-  const step = steps[prayerGuideStep];
-  const progress = Math.round(((prayerGuideStep + 1) / steps.length) * 100);
-
-  view.innerHTML = `
-    <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Prayer Mode", "Prayer Mode")} 🧎</h1>
-      <p class="text-[var(--muted)]">${tx("Przewodnik salat od pierwszego ruchu. Bez sekcji wudu — tylko sama modlitwa krok po kroku.", "A salat guide from the first movement. No wudu section — only the prayer itself, step by step.")}</p>
-      <p class="text-xs text-[var(--muted)] mt-2">${tx(RELIGIOUS_NOTICE.pl, RELIGIOUS_NOTICE.en)}</p>
-    </div>
-
-    <div class="prayer-guide-shell">
-      <div class="prayer-guide-selector">
-        ${PRAYER_GUIDE_PRAYERS.map(p => `
-          <button class="mode-btn ${p.id === selected.id ? "active" : ""}" data-prayer-guide="${p.id}">
-            ${state.lang === "pl" ? p.pl : p.en}
-            <span>${p.rakat} raka'at</span>
-          </button>
-        `).join("")}
-      </div>
-
-      <article class="prayer-guide-card">
-        <div class="flex items-center justify-between gap-3">
-          <div>
-            <p class="text-xs font-black uppercase text-[var(--muted)]">${state.lang === "pl" ? selected.pl : selected.en} · ${selected.rakat} raka'at</p>
-            <h2 class="mt-1 text-2xl font-black">${state.lang === "pl" ? step.titlePl : step.titleEn}</h2>
-          </div>
-          <span class="prayer-guide-count">${prayerGuideStep + 1}/${steps.length}</span>
-        </div>
-        <div class="mt-4 h-2 overflow-hidden rounded-full bg-emerald-100">
-          <div class="h-full bg-emerald-500 transition-all" style="width:${progress}%"></div>
-        </div>
-
-        <p class="mt-5 text-[var(--muted)]">${state.lang === "pl" ? step.bodyPl : step.bodyEn}</p>
-        ${step.ar ? `<div class="prayer-guide-arabic arabic">${step.ar.replace(/\n/g, "<br>")}</div>` : ""}
-        ${step.tr ? `<p class="mt-3 text-lg font-black text-[var(--accent)]">${step.tr}</p>` : ""}
-        <p class="mt-2 text-sm text-[var(--muted)]">${state.lang === "pl" ? step.meaningPl : step.meaningEn}</p>
-
-        <div class="mt-6 grid gap-2 sm:grid-cols-3">
-          <button class="big-action border border-[var(--line)] bg-[var(--surface)]" id="prayerPrev" ${prayerGuideStep === 0 ? "disabled" : ""}>${tx("Wstecz", "Back")}</button>
-          <button class="big-action border border-[var(--line)] bg-[var(--surface)]" id="prayerSpeak" ${step.ar ? "" : "disabled"}>${t("play")}</button>
-          <button class="big-action bg-emerald-500 text-white" id="prayerNext">${prayerGuideStep === steps.length - 1 ? tx("Zakończ", "Finish") : tx("Dalej", "Next")}</button>
-        </div>
-      </article>
-    </div>
-  `;
-
-  view.querySelectorAll("[data-prayer-guide]").forEach(btn => btn.addEventListener("click", () => {
-    prayerGuidePrayer = btn.dataset.prayerGuide;
-    prayerGuideStep = 0;
-    state.lastPrayerGuide = prayerGuidePrayer;
-    saveState();
-    prayerGuide();
-  }));
-  $("#prayerPrev")?.addEventListener("click", () => {
-    prayerGuideStep = Math.max(0, prayerGuideStep - 1);
-    prayerGuide();
-  });
-  $("#prayerSpeak")?.addEventListener("click", () => {
-    if (step.ar) speakArabic(step.ar.replace(/\n/g, " "));
-  });
-  $("#prayerNext")?.addEventListener("click", () => {
-    if (prayerGuideStep < steps.length - 1) {
-      prayerGuideStep += 1;
-      prayerGuide();
-      return;
-    }
-    state.prayerGuideSessions = (state.prayerGuideSessions || 0) + 1;
-    state.lastPrayerGuide = selected.id;
-    addPoints(35, false);
-    checkBadges();
-    saveState();
-    showLoveToast(tx("Modlitwa ukończona krok po kroku", "Prayer completed step by step"));
-    confetti();
-    prayerGuideStep = 0;
-    prayerGuide();
-  });
+  state.prayerModeTab = "guide";
+  saveState();
+  prayer();
 }
 
 // ============================================================
 // PRAYER TIMES - configurable locations
 // ============================================================
-const PRAYER_LOCATIONS = [
-  { id: 'makkah', label: 'Makkah', city: 'Makkah', tz: 'Asia/Riyadh', lat: '21.3891', lng: '39.8579', method: 4 },
-  { id: 'madinah', label: 'Madinah', city: 'Madinah', tz: 'Asia/Riyadh', lat: '24.4672', lng: '39.6111', method: 4 }
-];
 function getPrayerLocations() {
   return state.prayerLocations?.length ? state.prayerLocations : PRAYER_LOCATIONS;
 }
-const PRAYER_NAMES = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-const PRAYER_NAMES_PL = ['Fadżr', 'Wschód', 'Dhuhr', 'Asr', 'Maghrib', 'Isza'];
-const OBLIGATORY_PRAYERS = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-const OBLIGATORY_PRAYERS_PL = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isza'];
 
 async function fetchPrayerTimes(loc) {
-  const today = new Date();
-  const d = today.getDate(), m = today.getMonth() + 1, y = today.getFullYear();
+  const cacheKey = `${today()}-${loc.id}-${loc.lat}-${loc.lng}-${loc.method}`;
+  const cached = state.prayerTimesCache?.[cacheKey];
+  if (isFreshCache(cached)) return cached.timings;
+  const now = new Date();
+  const d = now.getDate(), m = now.getMonth() + 1, y = now.getFullYear();
   const url = `https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${loc.lat}&longitude=${loc.lng}&method=${loc.method}`;
-  const res = await fetch(url);
-  const data = await res.json();
-  return data.data?.timings || null;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    const timings = data.data?.timings || null;
+    if (timings) {
+      state.prayerTimesCache = {
+        ...(state.prayerTimesCache || {}),
+        [cacheKey]: { cachedAt: new Date().toISOString(), timings }
+      };
+      saveState();
+    }
+    return timings;
+  } catch (error) {
+    if (cached?.timings) return cached.timings;
+    throw error;
+  }
 }
 
 async function fetchQibla(loc) {
@@ -5144,121 +5147,311 @@ function prayerJournalHtml() {
   `;
 }
 
-async function prayer() {
-  if (prayerClockInterval) { clearInterval(prayerClockInterval); prayerClockInterval = null; }
-  if (compassWatchId !== null) { try { window.removeEventListener('deviceorientationabsolute', compassWatchId); window.removeEventListener('deviceorientation', compassWatchId); } catch {} compassWatchId = null; }
-
-  const activeLocations = getPrayerLocations();
-  view.innerHTML = `
-    <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Czasy modlitw", "Prayer Times")}</h1>
-      <p class="text-[var(--muted)]">${tx("Dwie lokalizacje live: Makkah i Madinah.", "Two live locations: Makkah and Madinah.")}</p>
-      <p class="text-xs text-[var(--muted)] mt-1">${tx("Mozesz edytowac lokalizacje: miasto, szerokosc, dlugosc i strefe.", "You can edit locations: city, latitude, longitude, and timezone.")}</p>
-      <a class="inline-flex mt-3 items-center gap-2 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm font-bold" href="https://www.google.com/maps/search/mosque+near+me" target="_blank" rel="noopener noreferrer">${tx("Znajdz meczet w okolicy", "Find a mosque nearby")}</a>
-    </div>
-    ${prayerJournalHtml()}
-    <button id="editPrayerLocations" class="big-action mb-3 border border-[var(--line)]">${tx("Edytuj lokalizacje", "Edit locations")}</button>
-    <div class="grid gap-4 lg:grid-cols-2">
-      <div id="prayerMakkah" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
-      <div id="prayerMadinah" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>
+function prayerModeTabsHtml() {
+  return `
+    <div class="prayer-mode-tabs" role="tablist" aria-label="${tx("Zakładki Prayer Mode", "Prayer Mode tabs")}">
+      ${PRAYER_MODE_TABS.map(tab => `<button class="${state.prayerModeTab === tab.id ? "active" : ""}" data-prayer-tab="${tab.id}" role="tab">${state.lang === "pl" ? tab.pl : tab.en}</button>`).join("")}
     </div>
   `;
+}
 
-  view.querySelectorAll("[data-prayer-log]").forEach(input => input.addEventListener("change", () => {
-    const log = prayerLogForToday();
-    log[input.dataset.prayerLog] = input.checked;
+function prayerTodayPanel() {
+  const log = prayerLogForToday();
+  const done = OBLIGATORY_PRAYERS.filter(name => log[name]).length;
+  return `
+    <section class="prayer-mode-grid">
+      <article class="panel p-5">
+        <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Dzisiaj", "Today")}</p>
+        <h2 class="mt-1 text-2xl font-black">${tx("Modlitwa i spokojny rytm", "Prayer and calm rhythm")}</h2>
+        <p class="mt-2 text-sm text-[var(--muted)]">${tx("Zaznacz modlitwy, sprawdź czas i przejdź do przewodnika bez szukania po aplikacji.", "Track prayers, check time, and open the guide without hunting through the app.")}</p>
+        <div class="mt-4 text-4xl font-black text-[var(--accent)]">${done}/5</div>
+        <button class="big-action mt-4 w-full bg-emerald-500 text-white" data-prayer-tab="guide">${tx("Rozpocznij przewodnik", "Start guide")}</button>
+      </article>
+      <div>
+        ${prayerJournalHtml()}
+        <article id="todayPrayerPreview" class="panel p-5"><div class="skeleton h-32 w-full"></div></article>
+      </div>
+    </section>
+  `;
+}
+
+function prayerGuidePanel() {
+  const selected = PRAYER_GUIDE_PRAYERS.find(p => p.id === prayerGuidePrayer) || PRAYER_GUIDE_PRAYERS[0];
+  prayerGuidePrayer = selected.id;
+  const saved = state.prayerGuideProgress?.[selected.id];
+  if (Number.isInteger(saved) && saved !== prayerGuideStep) prayerGuideStep = saved;
+  const steps = prayerGuideStepsFor(selected);
+  prayerGuideStep = Math.max(0, Math.min(prayerGuideStep, steps.length - 1));
+  const step = steps[prayerGuideStep];
+  const progress = Math.round(((prayerGuideStep + 1) / steps.length) * 100);
+
+  return `
+    <section class="prayer-guide-shell ${state.prayerFocusMode ? "prayer-focus-mode" : ""}">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div class="prayer-guide-selector">
+        ${PRAYER_GUIDE_PRAYERS.map(p => `
+          <button class="mode-btn ${p.id === selected.id ? "active" : ""}" data-prayer-guide="${p.id}">
+            ${state.lang === "pl" ? p.pl : p.en}
+            <span>${p.rakat} raka'at</span>
+          </button>
+        `).join("")}
+        </div>
+        <button id="togglePrayerFocus" class="big-action border border-[var(--line)] bg-[var(--surface)]">${state.prayerFocusMode ? tx("Wyjdź z pełnego ekranu", "Exit focus") : tx("Pełny ekran", "Focus view")}</button>
+      </div>
+      <article class="prayer-guide-card ${state.prayerFocusMode ? "prayer-guide-card-focus" : ""}">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="text-xs font-black uppercase text-[var(--muted)]">${state.lang === "pl" ? selected.pl : selected.en} · ${selected.rakat} raka'at</p>
+            <h2 class="mt-1 text-2xl font-black">${state.lang === "pl" ? step.titlePl : step.titleEn}</h2>
+          </div>
+          <span class="prayer-guide-count">${prayerGuideStep + 1}/${steps.length}</span>
+        </div>
+        <div class="mt-4 h-2 overflow-hidden rounded-full bg-emerald-100">
+          <div class="h-full bg-emerald-500 transition-all" style="width:${progress}%"></div>
+        </div>
+        <p class="mt-5 text-[var(--muted)]">${state.lang === "pl" ? step.bodyPl : step.bodyEn}</p>
+        ${step.ar ? `<div class="prayer-guide-arabic arabic">${step.ar.replace(/\n/g, "<br>")}</div>` : ""}
+        ${step.tr ? `<p class="mt-3 text-lg font-black text-[var(--accent)]">${step.tr}</p>` : ""}
+        <p class="mt-2 text-sm text-[var(--muted)]">${state.lang === "pl" ? step.meaningPl : step.meaningEn}</p>
+        <div class="mt-6 grid gap-2 sm:grid-cols-3">
+          <button class="big-action border border-[var(--line)] bg-[var(--surface)]" id="prayerPrev" ${prayerGuideStep === 0 ? "disabled" : ""}>${tx("Wstecz", "Back")}</button>
+          <button class="big-action border border-[var(--line)] bg-[var(--surface)]" id="prayerSpeak" ${step.ar ? "" : "disabled"}>${t("play")}</button>
+          <button class="big-action bg-emerald-500 text-white" id="prayerNext">${prayerGuideStep === steps.length - 1 ? tx("Zakończ", "Finish") : tx("Dalej", "Next")}</button>
+        </div>
+      </article>
+    </section>
+  `;
+}
+
+function wuduPanel() {
+  const done = new Set(state.wuduChecklist || []);
+  return `
+    <section class="panel p-5">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 class="text-2xl font-black">${tx("Wudu przed modlitwą", "Wudu before prayer")}</h2>
+          <p class="mt-2 text-sm text-[var(--muted)]">${tx("Edukacyjna checklista dla początkującego. W szczegółach szkoły prawne mogą się różnić.", "Educational beginner checklist. Legal-school details can differ.")}</p>
+        </div>
+        <span class="trust-badge context-dependent">${done.size}/${WUDU_STEPS.length}</span>
+      </div>
+      <div class="mt-4 grid gap-2">
+        ${WUDU_STEPS.map((step, index) => `
+          <label class="muallaf-check-item">
+            <input type="checkbox" data-wudu-step="${step.id}" ${done.has(step.id) ? "checked" : ""}>
+            <span><strong>${index + 1}.</strong> ${state.lang === "pl" ? step.pl : step.en}</span>
+          </label>
+        `).join("")}
+      </div>
+      <div class="religious-risk-note">${tx(RELIGIOUS_NOTICE.pl, RELIGIOUS_NOTICE.en)}</div>
+    </section>
+  `;
+}
+
+function qiblaPanel() {
+  return `
+    <section class="grid gap-4">
+      <article class="panel p-5">
+        <h2 class="text-2xl font-black">${tx("Qibla i czasy modlitw", "Qibla and prayer times")}</h2>
+        <p class="mt-2 text-sm text-[var(--muted)]">${tx("GPS jest opcjonalny i uruchamia się dopiero po kliknięciu. Domyślnie używamy neutralnie Makkah i Madinah.", "GPS is optional and starts only after a click. By default, Makkah and Madinah are used neutrally.")}</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button id="useGpsPrayerLocation" class="big-action bg-emerald-500 text-white">${tx("Użyj GPS", "Use GPS")}</button>
+          <button id="editPrayerLocations" class="big-action border border-[var(--line)] bg-[var(--surface)]">${tx("Wpisz ręcznie", "Enter manually")}</button>
+        </div>
+        <p id="gpsPrayerStatus" class="mt-3 text-sm text-[var(--muted)]">${state.gpsPrayerLocation ? tx("GPS zapisany lokalnie.", "GPS saved locally.") : tx("GPS nieaktywny. Możesz zostać przy Makkah/Madinah.", "GPS inactive. You can stay with Makkah/Madinah.")}</p>
+      </article>
+      <div class="grid gap-4 lg:grid-cols-2" id="prayerTimesGrid">
+        ${getPrayerLocations().map(loc => `<div id="prayer-${loc.id}" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>`).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function prayerHistoryPanel() {
+  const days = Array.from({ length: 7 }, (_, index) => {
+    const date = formatDateOffset(-index);
+    const log = state.prayerLog?.[date] || {};
+    const done = OBLIGATORY_PRAYERS.filter(name => log[name]).length;
+    return { date, done };
+  });
+  return `
+    <section class="panel p-5">
+      <h2 class="text-2xl font-black">${tx("Ostatnie 7 dni", "Last 7 days")}</h2>
+      <p class="mt-2 text-sm text-[var(--muted)]">${tx("Lokalna historia modlitw i ukończonych sesji przewodnika.", "Local history of prayers and completed guide sessions.")}</p>
+      <div class="mt-4 grid gap-2">
+        ${days.map(day => `
+          <div class="prayer-history-row">
+            <span>${day.date}</span>
+            <strong>${day.done}/5</strong>
+          </div>
+        `).join("")}
+      </div>
+      <div class="mt-4 soft-panel p-4">
+        <p class="text-sm font-black">${tx("Sesje przewodnika", "Guide sessions")}</p>
+        <p class="mt-1 text-3xl font-black text-[var(--accent)]">${state.prayerGuideSessions || 0}</p>
+      </div>
+    </section>
+  `;
+}
+
+function prayerModePanel() {
+  if (state.prayerModeTab === "guide") return prayerGuidePanel();
+  if (state.prayerModeTab === "wudu") return wuduPanel();
+  if (state.prayerModeTab === "qibla") return qiblaPanel();
+  if (state.prayerModeTab === "history") return prayerHistoryPanel();
+  return prayerTodayPanel();
+}
+
+function bindPrayerModeEvents() {
+  view.querySelectorAll("[data-prayer-tab]").forEach(btn => btn.addEventListener("click", () => {
+    state.prayerModeTab = btn.dataset.prayerTab;
     saveState();
     prayer();
   }));
+  view.querySelectorAll("[data-prayer-log]").forEach(input => input.addEventListener("change", () => {
+    const log = prayerLogForToday();
+    log[input.dataset.prayerLog] = input.checked;
+    state.prayerHistory = [{ date: today(), done: OBLIGATORY_PRAYERS.filter(name => log[name]).length }, ...(state.prayerHistory || [])].slice(0, 30);
+    saveState();
+    prayer();
+  }));
+  view.querySelectorAll("[data-wudu-step]").forEach(input => input.addEventListener("change", () => {
+    const done = new Set(state.wuduChecklist || []);
+    if (input.checked) done.add(input.dataset.wuduStep);
+    else done.delete(input.dataset.wuduStep);
+    state.wuduChecklist = [...done];
+    saveState();
+    prayer();
+  }));
+  view.querySelectorAll("[data-prayer-guide]").forEach(btn => btn.addEventListener("click", () => {
+    prayerGuidePrayer = btn.dataset.prayerGuide;
+    prayerGuideStep = state.prayerGuideProgress?.[prayerGuidePrayer] || 0;
+    state.lastPrayerGuide = prayerGuidePrayer;
+    saveState();
+    prayer();
+  }));
+  $("#prayerPrev")?.addEventListener("click", () => {
+    prayerGuideStep = Math.max(0, prayerGuideStep - 1);
+    state.prayerGuideProgress = { ...(state.prayerGuideProgress || {}), [prayerGuidePrayer]: prayerGuideStep };
+    saveState();
+    prayer();
+  });
+  $("#prayerSpeak")?.addEventListener("click", () => {
+    const selected = PRAYER_GUIDE_PRAYERS.find(p => p.id === prayerGuidePrayer) || PRAYER_GUIDE_PRAYERS[0];
+    const step = prayerGuideStepsFor(selected)[prayerGuideStep];
+    if (step?.ar) speakArabic(step.ar.replace(/\n/g, " "));
+  });
+  $("#prayerNext")?.addEventListener("click", () => {
+    const selected = PRAYER_GUIDE_PRAYERS.find(p => p.id === prayerGuidePrayer) || PRAYER_GUIDE_PRAYERS[0];
+    const steps = prayerGuideStepsFor(selected);
+    if (prayerGuideStep < steps.length - 1) {
+      prayerGuideStep += 1;
+      state.prayerGuideProgress = { ...(state.prayerGuideProgress || {}), [selected.id]: prayerGuideStep };
+      saveState();
+      prayer();
+      return;
+    }
+    state.prayerGuideSessions = (state.prayerGuideSessions || 0) + 1;
+    state.lastPrayerGuide = selected.id;
+    state.prayerGuideProgress = { ...(state.prayerGuideProgress || {}), [selected.id]: 0 };
+    addPoints(35, false);
+    checkBadges();
+    saveState();
+    showToast(tx("Modlitwa ukończona krok po kroku", "Prayer completed step by step"));
+    confetti();
+    prayerGuideStep = 0;
+    prayer();
+  });
+  $("#togglePrayerFocus")?.addEventListener("click", () => {
+    state.prayerFocusMode = !state.prayerFocusMode;
+    saveState();
+    prayer();
+  });
+  $("#useGpsPrayerLocation")?.addEventListener("click", requestPrayerGps);
+  $("#editPrayerLocations")?.addEventListener("click", editPrayerLocations);
+}
 
-  const results = {};
+async function requestPrayerGps() {
+  const status = $("#gpsPrayerStatus");
+  if (!navigator.geolocation) {
+    if (status) status.textContent = tx("Ta przeglądarka nie obsługuje GPS. Użyj wpisania ręcznego.", "This browser does not support GPS. Use manual entry.");
+    return;
+  }
+  if (status) status.textContent = tx("Pytam przeglądarkę o lokalizację...", "Asking the browser for location...");
+  navigator.geolocation.getCurrentPosition((position) => {
+    const loc = {
+      id: "gps",
+      label: tx("Moja lokalizacja", "My location"),
+      city: tx("Moja lokalizacja", "My location"),
+      tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+      lat: String(position.coords.latitude),
+      lng: String(position.coords.longitude),
+      method: 2
+    };
+    state.prayerLocationMode = "gps";
+    state.gpsPrayerLocation = loc;
+    state.prayerLocations = [loc, ...PRAYER_LOCATIONS];
+    saveState();
+    prayer();
+  }, () => {
+    if (status) status.textContent = tx("Nie udało się pobrać GPS. Zostaje ręczny fallback.", "Could not get GPS. Manual fallback remains available.");
+  }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 });
+}
+
+function editPrayerLocations() {
+  const current = getPrayerLocations();
+  const city1 = prompt(tx("Lokalizacja 1: miasto/kraj", "Location 1: city/country"), current[0]?.city || "Makkah");
+  const lat1 = prompt("Lat 1", current[0]?.lat || "21.3891");
+  const lng1 = prompt("Lng 1", current[0]?.lng || "39.8579");
+  const tz1 = prompt("TZ 1", current[0]?.tz || "Asia/Riyadh");
+  const city2 = prompt(tx("Lokalizacja 2: miasto/kraj", "Location 2: city/country"), current[1]?.city || "Madinah");
+  const lat2 = prompt("Lat 2", current[1]?.lat || "24.4672");
+  const lng2 = prompt("Lng 2", current[1]?.lng || "39.6111");
+  const tz2 = prompt("TZ 2", current[1]?.tz || "Asia/Riyadh");
+  state.prayerLocationMode = "manual";
+  state.prayerLocations = [
+    { ...PRAYER_LOCATIONS[0], city: city1 || current[0]?.city, label: city1 || "Location 1", lat: lat1 || current[0]?.lat, lng: lng1 || current[0]?.lng, tz: tz1 || current[0]?.tz },
+    { ...PRAYER_LOCATIONS[1], city: city2 || current[1]?.city, label: city2 || "Location 2", lat: lat2 || current[1]?.lat, lng: lng2 || current[1]?.lng, tz: tz2 || current[1]?.tz }
+  ];
+  saveState();
+  prayer();
+}
+
+async function hydratePrayerTimesPreview() {
+  if (state.prayerModeTab !== "today" && state.prayerModeTab !== "qibla") return;
+  const activeLocations = getPrayerLocations();
   for (const loc of activeLocations) {
     try {
       const [timings, qibla] = await Promise.all([fetchPrayerTimes(loc), fetchQibla(loc)]);
       const nextKey = getNextPrayer(timings);
-      const elId = `prayer${loc.id.charAt(0).toUpperCase() + loc.id.slice(1)}`;
-      const el = $(`#${elId}`);
-      if (el) el.innerHTML = prayerTimesCard(loc.label, timings, qibla, nextKey, loc.tz, loc.id);
-      results[loc.id] = { qibla };
+      const target = state.prayerModeTab === "today" ? $("#todayPrayerPreview") : $(`#prayer-${loc.id}`);
+      if (target) target.innerHTML = prayerTimesCard(loc.label, timings, qibla, nextKey, loc.tz, loc.id);
     } catch {
-      const elId = `prayer${loc.id.charAt(0).toUpperCase() + loc.id.slice(1)}`;
-      const el = $(`#${elId}`);
-      if (el) el.innerHTML = `<p class="text-[var(--muted)]">${tx("Błąd ładowania. Sprawdź połączenie.", "Load error. Check your connection.")}</p>`;
+      const target = state.prayerModeTab === "today" ? $("#todayPrayerPreview") : $(`#prayer-${loc.id}`);
+      if (target) target.innerHTML = `<p class="text-[var(--muted)]">${tx("Błąd ładowania. Sprawdź połączenie.", "Load error. Check your connection.")}</p>`;
     }
+    if (state.prayerModeTab === "today") break;
   }
+}
 
-  // Live clocks — update every second
-  prayerClockInterval = setInterval(() => {
-    for (const loc of activeLocations) {
-      const clockEl = $(`#clock-${loc.id}`);
-      if (clockEl) clockEl.textContent = formatLocalTime(loc.tz);
-    }
-  }, 1000);
+async function prayerMode() {
+  if (!PRAYER_MODE_TABS.some(tab => tab.id === state.prayerModeTab)) state.prayerModeTab = "today";
 
-  // Live compass using device orientation
-  const orientationHandler = (e) => {
-    let heading = null;
-    if (e.webkitCompassHeading !== undefined) {
-      heading = e.webkitCompassHeading;
-    } else if (e.absolute && e.alpha !== null) {
-      heading = 360 - e.alpha;
-    } else if (e.alpha !== null) {
-      heading = 360 - e.alpha;
-    }
-    if (heading === null) return;
-    for (const loc of activeLocations) {
-      const qiblaDir = results[loc.id]?.qibla;
-      if (qiblaDir === undefined || qiblaDir === null) continue;
-      const needle = $(`#needle-${loc.id}`);
-      const statusEl = $(`#compass-status-${loc.id}`);
-      if (needle) {
-        const angle = qiblaDir - heading;
-        needle.style.transform = `rotate(${angle}deg)`;
-      }
-      if (statusEl) statusEl.textContent = tx("Kompas na żywo ✓", "Live compass ✓");
-    }
-  };
-  compassWatchId = orientationHandler;
+  view.innerHTML = `
+    <div class="mb-4">
+      <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Centrum modlitwy", "Prayer center")}</p>
+      <h1 class="text-3xl font-black">${tx("Prayer Mode", "Prayer Mode")}</h1>
+      <p class="text-[var(--muted)]">${tx("Dziennik, wudu, qibla, czasy i przewodnik salat w jednym miejscu.", "Journal, wudu, qibla, times and salat guide in one place.")}</p>
+      <p class="text-xs text-[var(--muted)] mt-2">${tx(RELIGIOUS_NOTICE.pl, RELIGIOUS_NOTICE.en)}</p>
+    </div>
+    ${prayerModeTabsHtml()}
+    <div class="mt-4">${prayerModePanel()}</div>
+  `;
+  bindPrayerModeEvents();
+  await hydratePrayerTimesPreview();
+}
 
-  if (typeof DeviceOrientationEvent !== 'undefined') {
-    const orientationPermission = /** @type {any} */ (DeviceOrientationEvent).requestPermission;
-    if (typeof orientationPermission === 'function') {
-      // iOS 13+ requires permission
-      const permBtn = document.createElement('button');
-      permBtn.className = 'big-action bg-emerald-500 text-white mt-4 w-full';
-      permBtn.textContent = tx('Włącz kompas live (wymagane uprawnienie)', 'Enable live compass (permission required)');
-      permBtn.addEventListener('click', async () => {
-        try {
-          const perm = await orientationPermission();
-          if (perm === 'granted') {
-            window.addEventListener('deviceorientation', orientationHandler);
-            permBtn.remove();
-          }
-        } catch {}
-      });
-      view.appendChild(permBtn);
-    } else {
-      window.addEventListener('deviceorientationabsolute', orientationHandler, true);
-      window.addEventListener('deviceorientation', orientationHandler, true);
-    }
-  }
-  $("#editPrayerLocations")?.addEventListener("click", () => {
-    const current = getPrayerLocations();
-    const city1 = prompt(tx("Lokalizacja 1: miasto/kraj", "Location 1: city/country"), current[0]?.city || "Makkah");
-    const lat1 = prompt("Lat 1", current[0]?.lat || "52.2297");
-    const lng1 = prompt("Lng 1", current[0]?.lng || "21.0122");
-    const tz1 = prompt("TZ 1", current[0]?.tz || "Asia/Riyadh");
-    const city2 = prompt(tx("Lokalizacja 2: miasto/kraj", "Location 2: city/country"), current[1]?.city || "Makkah");
-    const lat2 = prompt("Lat 2", current[1]?.lat || "-7.2575");
-    const lng2 = prompt("Lng 2", current[1]?.lng || "112.7521");
-    const tz2 = prompt("TZ 2", current[1]?.tz || "Asia/Jakarta");
-    state.prayerLocations = [
-      { ...PRAYER_LOCATIONS[0], city: city1 || current[0]?.city, label: `${city1 || "Location 1"} 🕌`, lat: lat1 || current[0]?.lat, lng: lng1 || current[0]?.lng, tz: tz1 || current[0]?.tz },
-      { ...PRAYER_LOCATIONS[1], city: city2 || current[1]?.city, label: `${city2 || "Location 2"} 🕌`, lat: lat2 || current[1]?.lat, lng: lng2 || current[1]?.lng, tz: tz2 || current[1]?.tz }
-    ];
-    saveState();
-    prayer();
-  });
+async function prayer() {
+  return prayerMode();
 }
 
 // ============================================================

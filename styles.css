@@ -241,6 +241,36 @@ select {
   line-height: 1.25;
 }
 
+.home-favorites {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.home-favorites-strip {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+.home-favorite-card {
+  flex: 0 0 clamp(180px, 46vw, 230px);
+  min-width: 0;
+  max-width: 230px;
+}
+
+.home-favorite-card p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 .onboarding-panel {
   background:
     linear-gradient(135deg, color-mix(in oklab, var(--accent) 12%, transparent), transparent 58%),
@@ -280,6 +310,213 @@ select {
   overflow-wrap: anywhere;
   font-size: 0.92rem;
   line-height: 1.25;
+}
+
+.onboarding-segments,
+.prayer-mode-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.onboarding-segments::-webkit-scrollbar,
+.prayer-mode-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.onboarding-segments button,
+.prayer-mode-tabs button {
+  flex: 0 0 auto;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0 14px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.onboarding-segments button.active,
+.prayer-mode-tabs button.active {
+  color: white;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.learning-center {
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--accent) 10%, transparent), transparent 54%),
+    var(--surface);
+}
+
+.learning-center-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.learning-center-card {
+  min-width: 0;
+  min-height: 124px;
+  display: grid;
+  align-content: space-between;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: left;
+  background: var(--surface-soft);
+}
+
+.learning-center-card span {
+  display: inline-grid;
+  width: fit-content;
+  min-width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 10px;
+  padding: 0 9px;
+  color: #047857;
+  background: #d1fae5;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.learning-center-card strong,
+.learning-center-card small {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.learning-center-card strong {
+  font-size: 0.94rem;
+  line-height: 1.2;
+}
+
+.learning-center-card small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.learning-mini-grid,
+.learning-snapshot {
+  display: grid;
+  gap: 8px;
+}
+
+.learning-mini-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.learning-snapshot {
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+}
+
+.learning-mini-card,
+.learning-snapshot-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: left;
+  background: var(--surface);
+}
+
+.learning-mini-card strong,
+.learning-snapshot-card span {
+  display: block;
+  color: var(--accent);
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.learning-mini-card span,
+.learning-snapshot-card strong {
+  display: block;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+  font-size: 0.82rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.learning-mini-card small,
+.learning-snapshot-card small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+
+.prayer-mode-tabs {
+  margin-bottom: 4px;
+}
+
+.prayer-mode-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+}
+
+.prayer-history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: var(--surface-soft);
+}
+
+.prayer-history-row span,
+.prayer-history-row strong {
+  overflow-wrap: anywhere;
+}
+
+.prayer-history-row strong {
+  color: var(--accent);
+}
+
+.prayer-focus-mode .prayer-guide-selector,
+.prayer-focus-mode #togglePrayerFocus {
+  position: sticky;
+  top: 76px;
+  z-index: 5;
+}
+
+.prayer-guide-card-focus {
+  min-height: min(78dvh, 820px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(20px, 4vw, 44px);
+}
+
+.prayer-guide-card-focus h2 {
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+}
+
+.prayer-guide-card-focus > p {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.prayer-guide-card-focus .prayer-guide-arabic {
+  font-size: clamp(2.2rem, 7vw, 5rem);
+}
+
+@media (max-width: 760px) {
+  .learning-mini-grid,
+  .prayer-mode-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .nav-btn {
