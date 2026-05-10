@@ -1,4 +1,4 @@
-const CACHE_NAME = "alif-ai-v14";
+const CACHE_NAME = "alif-ai-v15";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const APP_SHELL = [
   "./data/islamic-faq.js",
   "./data/islamic-hadith.js",
   "./data/prayer-mode.js",
+  "./data/quran-mode.js",
   "./data/quran-surahs.js",
   "./manifest.json",
   "./assets/icon.svg",

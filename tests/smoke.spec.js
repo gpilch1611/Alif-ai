@@ -29,17 +29,50 @@ async function expectNoOverflow(locator) {
   }
 }
 
+async function mockSurahApi(page, surahNumber = 1) {
+  await page.route(`**/v1/surah/${surahNumber}/**`, async (route) => {
+    const url = route.request().url();
+    const isTransliteration = url.includes("en.transliteration");
+    const isTranslation = url.includes("pl.bielawskiego") || url.includes("en.asad");
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        code: 200,
+        data: {
+          number: surahNumber,
+          name: "الفاتحة",
+          englishName: "Al-Fatiha",
+          englishNameTranslation: "The Opening",
+          ayahs: [
+            {
+              number: 1,
+              numberInSurah: 1,
+              text: isTransliteration
+                ? "Bismi Allahi alrrahmani alrraheemi"
+                : isTranslation
+                  ? "W imię Boga Miłosiernego, Litościwego"
+                  : "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+              audio: "https://example.test/fatiha-1.mp3"
+            }
+          ]
+        }
+      })
+    });
+  });
+}
+
 test.describe("Alif AI smoke", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => localStorage.clear());
     await page.goto("/");
   });
 
-  test("Start in Polish keeps quick cards and stat cards inside their boxes", async ({ page }) => {
+  test("Start in Polish keeps learning center and stat cards inside their boxes", async ({ page }) => {
     await expect(page.getByRole("heading", { name: /Islam/ })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Co robimy teraz/ })).toBeVisible();
-    await expect(page.locator(".home-quick-card")).toHaveCount(5);
-    await expectNoOverflow(page.locator(".home-quick-card"));
+    await expect(page.locator(".home-quick-card")).toHaveCount(0);
+    await expect(page.locator(".learning-center-card")).toHaveCount(4);
+    await expectNoOverflow(page.locator(".learning-center-card"));
     await expectNoOverflow(page.locator(".home-stat-card"));
     await expect(page.locator("body")).not.toContainText("Kalkulator zakat");
   });
@@ -54,19 +87,184 @@ test.describe("Alif AI smoke", () => {
           quranSurahFavorites: Array.from({ length: 60 }, (_, index) => index + 1),
           quranFavorites: Array.from({ length: 60 }, (_, index) => ({
             num: String(index + 1),
-            surahName: `Very long favorite surah name ${index + 1}`
+            surahName: `Very long favorite surah name ${index + 1}`,
+            trans: `Very long favorite translation text ${index + 1}`
           })),
-          quranDuaFavorites: Array.from({ length: 20 }, (_, index) => `dua_${index + 1}`)
+          quranDuaFavorites: ["bismillah", "after_eating", "leaving_home"]
         })
       );
     });
     await page.goto("/");
-    await expect(page.locator(".home-favorites-strip")).toBeVisible();
+    await expect(page.locator(".home-favorites-carousel")).toHaveCount(3);
+    await expect(page.locator(".home-carousel-track").first()).toBeVisible();
+    await expect(page.locator(".home-carousel-card").first()).toBeVisible();
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth
     );
     expect(overflow).toBeLessThanOrEqual(2);
-    await expectNoOverflow(page.locator(".home-favorite-card").first());
+    await expectNoOverflow(page.locator(".home-carousel-card").first());
+  });
+
+  test("Home favorite carousels link to Quran sections", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "alif-ai-state",
+        JSON.stringify({
+          lang: "pl",
+          theme: "light",
+          quranSurahFavorites: [1, 2],
+          quranDuaFavorites: ["bismillah"],
+          quranFavorites: [{ num: "2", surahName: "Al-Fatiha", trans: "The Opening" }]
+        })
+      );
+    });
+    await page.goto("/");
+    await page.locator(".home-favorites-carousel").nth(0).locator(".home-carousel-card").first().click();
+    await expect(page).toHaveURL(/#koran$/);
+
+    await page.goto("/");
+    await page.locator(".home-favorites-carousel").nth(1).locator(".home-carousel-card").first().click();
+    await expect(page).toHaveURL(/#koran$/);
+    await expect(page.getByRole("button", { name: /Dua/ })).toHaveClass(/border-emerald-500/);
+
+    await page.goto("/");
+    await page.locator(".home-favorites-carousel").nth(2).locator(".home-carousel-card").first().click();
+    await expect(page).toHaveURL(/#koran$/);
+    await expect(page.getByRole("button", { name: /Ulubione|Favorites/ })).toHaveClass(/border-emerald-500/);
+  });
+
+  test("Home surah favorite opens a focused Quran reader", async ({ page }) => {
+    await mockSurahApi(page, 1);
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "alif-ai-state",
+        JSON.stringify({
+          lang: "pl",
+          theme: "light",
+          quranTab: "dua",
+          quranSurahFavorites: [1],
+          quranDuaFavorites: [],
+          quranFavorites: []
+        })
+      );
+    });
+    await page.goto("/");
+    await page.locator(".home-favorites-carousel").nth(0).locator(".home-carousel-card").first().click();
+    await expect(page).toHaveURL(/#koran$/);
+    await expect(page.getByRole("button", { name: /Sury|Surahs/ })).toHaveClass(/border-emerald-500/);
+    await expect(page.locator("#tabSurahs")).toBeVisible();
+    await expect(page.locator(".surah-reader[data-open-surah='1']")).toBeVisible();
+    await expect(page.locator(".surah-reader")).toContainText("Al-Fatiha");
+  });
+
+  test("Islamic calendar opens from Home and renders Hijri months", async ({ page }) => {
+    await page.locator(".hijri-widget").click();
+    await expect(page).toHaveURL(/#calendar$/);
+    await expect(page.getByRole("heading", { name: /Kalendarz islamski|Islamic calendar/ })).toBeVisible();
+    await expect(page.locator(".calendar-month-card")).toHaveCount(12);
+    await expect(page.locator(".calendar-month-card.is-current")).toBeVisible();
+    await expect(page.locator("body")).toContainText(/obserwacji księżyca|moon sighting/);
+  });
+
+  test("Learning journal navigation uses an icon instead of Note text", async ({ page }) => {
+    await expect(page.locator("#bottomNav")).not.toContainText("Note");
+    await expect(page.locator("#bottomNav [data-route='adventure'] span").first()).toContainText("✎");
+  });
+
+  test("99 Names Challenge accepts prefixes, meanings and simple typos once", async ({ page }) => {
+    await page.goto("/#games");
+    await page.locator("[data-game='asmaChallenge']").click();
+    await expect(page.locator("#asmaChallengeBox")).toBeVisible();
+    await page.locator("#asmaInput").fill("ar rahman");
+    await page.locator("#asmaAdd").click();
+    await expect(page.locator("#asmaScore")).toHaveText("1 / 99");
+    await expect(page.locator("#asmaFound")).toContainText(/Ar-Rahman/i);
+
+    await page.locator("#asmaInput").fill("rahman");
+    await page.locator("#asmaAdd").click();
+    await expect(page.locator("#asmaScore")).toHaveText("1 / 99");
+
+    await page.locator("#asmaInput").fill("merciful");
+    await page.locator("#asmaAdd").click();
+    await expect(page.locator("#asmaScore")).toHaveText("2 / 99");
+  });
+
+  test("Review center lists active mistakes and opens practice", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "alif-ai-state",
+        JSON.stringify({
+          lang: "pl",
+          theme: "light",
+          onboardingComplete: true,
+          reviewMistakes: {
+            "quiz:alif": 2,
+            "surah:112": 1
+          }
+        })
+      );
+    });
+    await page.goto("/");
+    await page.getByText(/odpowiedzi do poprawy/).click();
+    await expect(page).toHaveURL(/#review$/);
+    await expect(page.getByRole("heading", { name: /Do poprawy|To improve/ })).toBeVisible();
+    await expect(page.locator(".review-card")).toHaveCount(2);
+    await expect(page.locator(".review-card").first()).toContainText(/Alif|Al-Ikhlas/);
+    await page
+      .locator(".review-card")
+      .filter({ hasText: /Quiz liter|Letter quiz/ })
+      .getByRole("button")
+      .click();
+    await expect(page).toHaveURL(/#games$/);
+    await expect(page.locator("#quizBox")).toBeVisible();
+  });
+
+  test("Review center sanitizes and clears active mistakes", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "alif-ai-state",
+        JSON.stringify({
+          lang: "pl",
+          theme: "light",
+          onboardingComplete: true,
+          reviewMistakes: {
+            "quiz:ba": 2,
+            "surah:112": "bad",
+            "unknown:<script>": 7,
+            "memory:ta": 120
+          }
+        })
+      );
+    });
+    await page.goto("/?review-sanitize=1#review");
+    await expect(page.locator(".review-card")).toHaveCount(2);
+    await expect(page.locator("body")).not.toContainText("script");
+    await page.locator("#clearReviewMistakes").click();
+    await expect(page.locator(".review-card")).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: /Czysto|All clear/ })).toBeVisible();
+  });
+
+  test("Mobile nav More and AI button do not overlap", async ({ page }) => {
+    const viewport = page.viewportSize();
+    if (!viewport || viewport.width >= 640) return;
+    const boxes = await page.evaluate(() => {
+      const nav = document.querySelector("#bottomNav")?.getBoundingClientRect();
+      const fab = document.querySelector("#aiFab")?.getBoundingClientRect();
+      return nav && fab
+        ? {
+            navTop: nav.top,
+            navHeight: nav.height,
+            fabBottom: fab.bottom
+          }
+        : null;
+    });
+    expect(boxes).not.toBeNull();
+    expect(boxes.navHeight).toBeLessThan(90);
+    expect(boxes.fabBottom).toBeLessThanOrEqual(boxes.navTop - 4);
+    await page.locator("#moreNavBtn").click();
+    await expect(page.locator("#bottomSheet.active")).toBeVisible();
+    await page.locator("[data-sheet-route='adventure']").click();
+    await expect(page).toHaveURL(/#adventure$/);
   });
 
   test("removed route falls back to Start", async ({ page }) => {

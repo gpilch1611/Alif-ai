@@ -18,6 +18,16 @@ import {
   PRAYER_NAMES_PL,
   WUDU_STEPS
 } from "./data/prayer-mode.js";
+import {
+  DUA_SOURCE_MAP,
+  ESSENTIAL_SURAHS,
+  HIFZ_STATES,
+  HIFZ_SURAHS,
+  QURAN_RECITERS,
+  SURAH_EXTRA,
+  SURAH_LENGTH_GROUPS,
+  SURAH_LIST
+} from "./data/quran-mode.js";
 
 const GROQ_API_KEY = "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";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
@@ -49,6 +59,7 @@ const nav = $("#bottomNav");
 const modal = $("#letterModal");
 const modalContent = $("#modalContent");
 const STORAGE_KEY = "alif-ai-state";
+let muteBadgeNotifications = false;
 const THEMES = ["light", "dark"];
 const THEME_COLOR = {
   light: "#f7f7f7",
@@ -63,7 +74,7 @@ const navItems = [
   ["games",   "◎",  "navGames"]
 ];
 
-const secondaryNavItems = [["adventure", "Note", "navAdventure"]];
+const secondaryNavItems = [["adventure", "✎", "navAdventure"]];
 
 const ISLAM_ROUTES = ["islam","koran","dhikr","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","prayer","prayerGuide","glossary"];
 const APP_ROUTES = new Set([
@@ -71,6 +82,8 @@ const APP_ROUTES = new Set([
   ...secondaryNavItems.map(([id]) => id),
   ...ISLAM_ROUTES,
   "alphabet",
+  "calendar",
+  "review",
   "badges",
   "flashcards",
   "speech",
@@ -366,6 +379,7 @@ const defaultState = {
   writingAttempts: [],
   quizStats: { correct: 0, wrong: 0 },
   quizHistory: [],
+  reviewMistakes: {},
   memoryStats: { correct: 0, wrong: 0 },
   catchHistory: [],
   pendingAdventurePhoto: null,
@@ -508,6 +522,7 @@ function loadState() {
     if (!next.wuduChecklist) next.wuduChecklist = [];
     if (!next.prayerHistory) next.prayerHistory = [];
     if (!next.prayerTimesCache) next.prayerTimesCache = {};
+    next.reviewMistakes = sanitizeReviewMistakes(next.reviewMistakes);
     return next;
   } catch {
     return { ...defaultState };
@@ -587,6 +602,33 @@ function isFreshCache(entry, maxAgeDays = 7) {
   return Date.now() - Date.parse(entry.cachedAt) < maxAgeDays * 86400000;
 }
 
+function sanitizeReviewMistakes(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return {};
+  const clean = {};
+  Object.entries(input).forEach(([rawKey, rawValue]) => {
+    const key = String(rawKey).slice(0, 80);
+    const value = Math.max(0, Math.min(99, Math.floor(Number(rawValue) || 0)));
+    if (/^(quiz|memory|surah|pillars):[a-z0-9:_ -]+$/i.test(key) && value > 0) clean[key] = value;
+  });
+  return clean;
+}
+
+function activeMistakeTotal() {
+  return Object.values(state.reviewMistakes || {}).reduce((sum, value) => sum + Math.max(0, Number(value) || 0), 0);
+}
+
+function updateReviewMistake(key, isCorrect) {
+  state.reviewMistakes = state.reviewMistakes || {};
+  const current = Math.max(0, Number(state.reviewMistakes[key]) || 0);
+  const next = isCorrect ? Math.max(0, current - 1) : current + 1;
+  if (next > 0) state.reviewMistakes[key] = next;
+  else delete state.reviewMistakes[key];
+}
+
+function shuffledForHome(items) {
+  return [...items].sort(() => Math.random() - 0.5);
+}
+
 function setRoute(next) {
   route = APP_ROUTES.has(next) ? next : "home";
   location.hash = route;
@@ -617,7 +659,9 @@ function unlockSpeech() {
 
 function init() {
   markActiveDay();
+  muteBadgeNotifications = true;
   checkBadges();
+  muteBadgeNotifications = false;
   document.documentElement.dataset.theme = state.theme;
   applyThemeMeta();
   updateDocumentI18nMeta();
@@ -838,7 +882,7 @@ function render() {
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
   const books = () => setRoute("culture");
-  const views = { home, islam, koran, alphabet, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq, adventure: learningJournal, glossary };
+  const views = { home, islam, koran, alphabet, calendar: islamicCalendar, review: reviewCenter, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq, adventure: learningJournal, glossary };
   (views[route] || home)();
 }
 
@@ -1216,32 +1260,92 @@ function glossary() {
   `;
 }
 
-function homeFavoriteItems() {
-  const favoriteLimit = 16;
-  return [
-    ...(state.quranSurahFavorites || []).slice(0, favoriteLimit).map(num => {
-      const s = SURAH_LIST.find(x => x.number === num);
-      return s ? { type: "surah", title: `${s.number}. ${s.enName}`, sub: s.meaning, target: "koran", openSurah: s.number } : null;
-    }).filter(Boolean),
-    ...(state.quranFavorites || []).slice(0, favoriteLimit).map(entry => {
-      const num = typeof entry === "object" ? entry.num : entry;
-      const surah = typeof entry === "object" ? entry.surahName : "";
-      return { type: "ayah", title: `${tx("Werset", "Ayah")} ${num}`, sub: surah || tx("Ulubiony werset", "Favorite ayah"), target: "koran" };
-    }),
-    ...(state.quranDuaFavorites || []).slice(0, favoriteLimit).map(id => {
-      const dua = DUA_DATA.find(d => d.id === id);
-      return dua ? { type: "dua", title: tx("Ulubione dua", "Favorite dua"), sub: state.lang === "pl" ? dua.pl : dua.en, target: "koran", quranTab: "dua" } : null;
-    }).filter(Boolean)
-  ];
+function homeFavoriteGroups() {
+  const favoriteLimit = 24;
+  const surahs = shuffledForHome((state.quranSurahFavorites || []).slice(0, favoriteLimit))
+    .map(num => {
+      const surah = SURAH_LIST.find(item => item.number === num);
+      return surah
+        ? {
+            type: "surah",
+            title: `${surah.number}. ${surah.enName}`,
+            sub: `${surah.meaning} · ${surah.numberOfAyahs} ${tx("wersetow", "ayahs")}`,
+            target: "koran",
+            quranTab: "surahs",
+            openSurah: surah.number
+          }
+        : null;
+    })
+    .filter(Boolean);
+  const duas = shuffledForHome((state.quranDuaFavorites || []).slice(0, favoriteLimit))
+    .map(id => {
+      const dua = DUA_DATA.find(item => item.id === id);
+      return dua
+        ? {
+            type: "dua",
+            title: state.lang === "pl" ? dua.pl : dua.en,
+            sub: dua.tr,
+            target: "koran",
+            quranTab: "dua"
+          }
+        : null;
+    })
+    .filter(Boolean);
+  const ayahs = shuffledForHome((state.quranFavorites || []).slice(0, favoriteLimit)).map(entry => {
+    const isObj = typeof entry === "object";
+    const num = isObj ? entry.num : entry;
+    const surah = isObj ? entry.surahName || "" : "";
+    const trans = isObj ? entry.trans || "" : "";
+    const ar = isObj ? entry.ar || "" : "";
+    return {
+      type: "ayah",
+      title: `${surah ? `${surah} · ` : ""}${tx("Werset", "Ayah")} ${num}`,
+      sub: trans || tx("Ulubiony werset", "Favorite ayah"),
+      ar,
+      target: "koran",
+      quranTab: "favayahs"
+    };
+  });
+  return { surahs, duas, ayahs };
+}
+
+function homeFavoritesCarousel(title, items, emptyText, emptyRoute, emptyTab = "") {
+  return `
+    <section class="home-favorites-carousel">
+      <div class="mb-2 flex items-center justify-between gap-3">
+        <h3 class="text-sm font-black uppercase tracking-wide text-[var(--muted)]">${title}</h3>
+        <span class="text-xs font-black text-[var(--muted)]">${items.length}</span>
+      </div>
+      ${
+        items.length
+          ? `<div class="home-carousel-track">
+              ${items
+                .map(
+                  item => `
+                <button class="home-carousel-card soft-panel text-left" data-home-fav="${item.target}" ${item.quranTab ? `data-quran-tab="${item.quranTab}"` : ""} ${item.openSurah ? `data-home-surah="${item.openSurah}"` : ""}>
+                  <p class="text-sm font-black">${escapeHtml(item.title)}</p>
+                  ${item.ar ? `<p class="arabic mt-3 text-right text-2xl leading-loose">${escapeHtml(item.ar)}</p>` : ""}
+                  <p class="mt-2 text-xs text-[var(--muted)]">${escapeHtml(item.sub)}</p>
+                </button>
+              `
+                )
+                .join("")}
+            </div>`
+          : `<button class="home-carousel-empty soft-panel text-left" data-route="${emptyRoute}" ${emptyTab ? `data-quran-tab="${emptyTab}"` : ""}>
+              ${emptyText}
+            </button>`
+      }
+    </section>
+  `;
 }
 
 function nextStepSuggestion() {
   if (state.learningGoal === "letters") {
     return {
-      route: "alphabet",
-      title: tx("Alfabet od podstaw", "Alphabet from zero"),
-      text: tx("Poznaj 3 litery i zrob jedna spokojna powtorke.", "Learn 3 letters and do one calm review."),
-      action: tx("Otworz alfabet", "Open alphabet")
+      route: "lessons",
+      title: tx("Dzisiejsza lekcja", "Today's lesson"),
+      text: tx("Zrob jedna spokojna lekcje i potem mala powtorke.", "Do one calm lesson and then a small review."),
+      action: tx("Otworz lekcje", "Open lessons")
     };
   }
   if (state.learningGoal === "prayer" || state.onboardingPrayerFocus === "yes") {
@@ -1350,35 +1454,130 @@ function reviewCalendarHtml() {
   `;
 }
 
-function skillSnapshotHtml() {
-  const prayerDone = Object.values(state.prayerLog?.[today()] || {}).filter(Boolean).length;
-  const memorized = HIFZ_SURAHS.filter(num => state.hifzProgress?.[num] === "memorized").length;
-  const wrongAnswers = Number(state.quizStats?.wrong || 0) + Number(state.memoryStats?.wrong || 0) + Number(state.surahQuizStats?.wrong || 0) + Number(state.pillarsQuizStats?.wrong || 0);
-  const items = [
-    { route: "alphabet", label: tx("Alfabet", "Alphabet"), value: `${state.learnedLetters.length}/28`, hint: tx("Co umiem", "Known") },
-    { route: "flashcards", label: tx("Fiszki", "Flashcards"), value: String(Object.keys(state.flashcards || {}).length), hint: tx("Powtorki", "Reviews") },
-    { route: "koran", label: tx("Sury", "Surahs"), value: `${memorized}/${HIFZ_SURAHS.length}`, hint: tx("Hifz", "Hifz"), quranTab: "hifz" },
-    { route: "koran", label: tx("Dua", "Duas"), value: String(state.quranDuaFavorites?.length || 0), hint: tx("Ulubione", "Favorites"), quranTab: "dua" },
-    { route: "prayer", label: tx("Modlitwy", "Prayers"), value: `${prayerDone}/5`, hint: tx("Dzisiaj", "Today") },
-    { route: wrongAnswers ? "games" : "writing", label: tx("Do poprawy", "To improve"), value: String(wrongAnswers), hint: tx("Bledy", "Mistakes") }
-  ];
-  return `
-    <div class="learning-snapshot mt-4">
-      ${items.map(item => `
-        <button class="learning-snapshot-card" data-route="${item.route}" ${item.quranTab ? `data-quran-tab="${item.quranTab}"` : ""}>
-          <span>${item.value}</span>
-          <strong>${item.label}</strong>
-          <small>${item.hint}</small>
-        </button>
-      `).join("")}
+function reviewMistakeDetail(key, count) {
+  const [type, rawId = ""] = String(key).split(":");
+  const amount = Math.max(0, Number(count) || 0);
+  if (!amount) return null;
+  if (type === "quiz" || type === "memory") {
+    const letter = arabicAlphabet.find(item => item.id === rawId);
+    return {
+      key,
+      count: amount,
+      title: letter ? letterName(letter) : rawId,
+      sub: type === "quiz" ? tx("Quiz liter", "Letter quiz") : tx("Memory Match", "Memory Match"),
+      route: "games",
+      game: type === "quiz" ? "quiz" : "memory"
+    };
+  }
+  if (type === "surah") {
+    const surah = SURAH_LIST.find(item => String(item.number) === rawId);
+    return {
+      key,
+      count: amount,
+      title: surah ? `${surah.number}. ${surah.enName}` : tx("Sura", "Surah"),
+      sub: tx("Quiz sur Koranu", "Quran surah quiz"),
+      route: "games",
+      game: "surahQuiz"
+    };
+  }
+  if (type === "pillars") {
+    const allPillars = [
+      ...pillarsOfIslam.map(item => ({ ...item, kind: "islam", category: tx("Filary Islamu", "Pillars of Islam") })),
+      ...pillarsOfIman.map(item => ({ ...item, kind: "iman", category: tx("Filary Imanu", "Pillars of Iman") }))
+    ];
+    const pillar = allPillars.find(item => `${item.kind}-${item.n}` === rawId || `${item.n}-${item.category}` === rawId);
+    return {
+      key,
+      count: amount,
+      title: pillar ? (state.lang === "pl" ? pillar.pl : pillar.en) : tx("Filary", "Pillars"),
+      sub: tx("Quiz filarow", "Pillars quiz"),
+      route: "games",
+      game: "pillarsQuiz"
+    };
+  }
+  return {
+    key,
+    count: amount,
+    title: rawId || key,
+    sub: tx("Powtorka", "Review"),
+    route: "games",
+    game: "quiz"
+  };
+}
+
+function reviewMistakeItems() {
+  return Object.entries(state.reviewMistakes || {})
+    .map(([key, count]) => reviewMistakeDetail(key, count))
+    .filter(Boolean)
+    .sort((a, b) => b.count - a.count || a.title.localeCompare(b.title, localeTag()));
+}
+
+function reviewCenter() {
+  const items = reviewMistakeItems();
+  const total = activeMistakeTotal();
+  view.innerHTML = `
+    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="font-bold text-emerald-600">${tx("Centrum nauki", "Learning center")}</p>
+        <h1 class="text-3xl font-black">${tx("Do poprawy", "To improve")}</h1>
+        <p class="mt-2 text-sm text-[var(--muted)]">${tx("Aktywne zaleglosci maleja, gdy odpowiesz poprawnie w danym trybie.", "Active items decrease when you answer correctly in that mode.")}</p>
+      </div>
+      <button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-route="home">${tx("Wroc", "Back")}</button>
     </div>
+    <section class="panel p-5">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="text-xs font-black uppercase tracking-wide text-[var(--muted)]">${tx("Aktywne bledy", "Active mistakes")}</p>
+          <p class="mt-1 text-4xl font-black text-[var(--accent)]">${total}</p>
+        </div>
+        <button id="clearReviewMistakes" class="big-action border border-[var(--line)] bg-[var(--surface)] ${total ? "" : "opacity-50"}" ${total ? "" : "disabled"}>${tx("Wyczysc liste", "Clear list")}</button>
+      </div>
+    </section>
+    <section class="review-grid mt-4">
+      ${
+        items.length
+          ? items
+              .map(
+                item => `
+          <article class="review-card">
+            <div>
+              <p class="text-xs font-black uppercase tracking-wide text-[var(--muted)]">${escapeHtml(item.sub)}</p>
+              <h2 class="mt-1 text-lg font-black">${escapeHtml(item.title)}</h2>
+              <p class="mt-2 text-sm text-[var(--muted)]">${tx("Zaleglosci:", "Due:")} ${item.count}</p>
+            </div>
+            <button class="big-action bg-emerald-500 text-white" data-review-game="${item.game}" data-route="${item.route}">${tx("Cwicz", "Practice")}</button>
+          </article>
+        `
+              )
+              .join("")
+          : `<div class="panel p-6 text-center">
+              <h2 class="text-xl font-black">${tx("Czysto", "All clear")}</h2>
+              <p class="mt-2 text-sm text-[var(--muted)]">${tx("Nie masz teraz aktywnych bledow. Zrob krotki quiz albo fiszki.", "You have no active mistakes right now. Do a short quiz or flashcards.")}</p>
+              <button class="big-action mt-4 bg-emerald-500 text-white" data-route="games">${tx("Otworz gry", "Open games")}</button>
+            </div>`
+      }
+    </section>
   `;
+  $("#clearReviewMistakes")?.addEventListener("click", () => {
+    state.reviewMistakes = {};
+    saveState();
+    reviewCenter();
+  });
+  view.querySelectorAll("[data-route]").forEach(button => {
+    button.addEventListener("click", () => {
+      if (button.dataset.reviewGame) {
+        state.activeGame = button.dataset.reviewGame;
+        saveState();
+      }
+      setRoute(button.dataset.route);
+    });
+  });
 }
 
 function learningCenter() {
   const dueNow = Date.now();
   const dueCards = Object.values(state.flashcards || {}).filter((meta) => meta?.due && meta.due <= dueNow).length;
-  const wrongAnswers = Number(state.quizStats?.wrong || 0) + Number(state.memoryStats?.wrong || 0) + Number(state.surahQuizStats?.wrong || 0) + Number(state.pillarsQuizStats?.wrong || 0);
+  const wrongAnswers = activeMistakeTotal();
   const latestWriting = (state.writingAttempts || [])[0];
   const lastMistake = latestWriting && latestWriting.score < 70
     ? tx(`Pisanie litery: ${latestWriting.letter}`, `Writing letter: ${latestWriting.letter}`)
@@ -1411,7 +1610,7 @@ function learningCenter() {
           <strong>${tx("Nastepna powtorka", "Next review")}</strong>
           <small>${reviewText}</small>
         </button>
-        <button class="learning-center-card" data-route="${latestWriting?.score < 70 ? "writing" : "games"}">
+        <button class="learning-center-card" data-route="${wrongAnswers > 0 ? "review" : latestWriting?.score < 70 ? "writing" : "games"}">
           <span>03</span>
           <strong>${tx("Ostatni blad", "Last mistake")}</strong>
           <small>${lastMistake}</small>
@@ -1423,7 +1622,6 @@ function learningCenter() {
         </button>
       </div>
       ${reviewCalendarHtml()}
-      ${skillSnapshotHtml()}
     </section>
   `;
 }
@@ -1489,7 +1687,7 @@ function home() {
   const learnedDua = state.miniLessonsDone.filter(id => id.startsWith("dua_")).length;
   const favAyahs = (state.quranFavorites || []).length;
   const favDua = (state.quranDuaFavorites || []).length;
-  const homeFavItems = homeFavoriteItems();
+  const favoriteGroups = homeFavoriteGroups();
 
   view.innerHTML = `
     ${onboardingPanel()}
@@ -1504,20 +1702,6 @@ function home() {
           </div>
           <div class="grid h-28 w-28 shrink-0 place-items-center rounded-lg bg-emerald-500 text-5xl text-white shadow-sm">☪</div>
         </div>
-        <div class="home-quick-grid mt-6">
-          ${[
-            { route: "lessons", icon: "Aa", pl: "Uczę się liter", en: "Learning letters" },
-            { route: "muallaf", icon: "01", pl: "Nowy muzułmanin", en: "New Muslim" },
-            { route: "prayerGuide", icon: "5x", pl: "Chcę modlitwę", en: "Prayer guide" },
-            { route: "koran", icon: "Q", pl: "Czytam Quran", en: "Read Quran" },
-            { route: "islamfaq", icon: "?", pl: "Mam pytanie", en: "I have a question" }
-          ].map(item => `
-            <button class="home-quick-card soft-panel active:scale-95 transition-transform" data-route="${item.route}">
-              <span class="grid h-8 w-8 place-items-center rounded-lg bg-emerald-100 text-xs font-black text-emerald-700">${item.icon}</span>
-              <span>${state.lang === "pl" ? item.pl : item.en}</span>
-            </button>
-          `).join("")}
-        </div>
         <div class="home-stat-grid mt-7">
           ${statCard(t("streak"), `${state.streak} ${tx("dni", "days")}`, tx("Codzienna obecnosc", "Daily presence"))}
           ${statCard(t("level"), `${t("level")} ${level()}`, `${state.points} ${t("points")}`)}
@@ -1527,16 +1711,10 @@ function home() {
           ${statCard(tx("Ulubione ayaty", "Favorite ayahs"), `${favAyahs}`, tx("Do szybkich powtórek", "For quick revision"))}
           ${statCard(tx("Ulubione dua", "Favorite duas"), `${favDua}`, tx("Najczęściej czytane", "Most revisited"))}
         </div>
-        <div class="home-favorites mt-4">
-          <p class="text-xs font-black uppercase tracking-wide text-[var(--muted)]">${tx("Ulubione (przewijane)", "Favorites (scrollable)")}</p>
-          <div class="home-favorites-strip mt-2">
-            ${homeFavItems.length ? homeFavItems.map(item => `
-              <button class="home-favorite-card soft-panel p-3 text-left" data-home-fav="${item.target}" ${item.quranTab ? `data-quran-tab="${item.quranTab}"` : ""} ${item.openSurah ? `data-home-surah="${item.openSurah}"` : ""}>
-                <p class="text-sm font-black">${escapeHtml(item.title)}</p>
-                <p class="text-xs text-[var(--muted)] mt-1">${escapeHtml(item.sub)}</p>
-              </button>
-            `).join("") : `<div class="soft-panel p-3 text-xs text-[var(--muted)]">${tx("Dodaj ulubione sury/ayaty, aby pojawiły się tutaj.", "Add favorite surahs/ayahs to see them here.")}</div>`}
-          </div>
+        <div class="home-favorites mt-5">
+          ${homeFavoritesCarousel(tx("Ulubione sury", "Favorite surahs"), favoriteGroups.surahs, tx("Dodaj ulubione sury w Quran.", "Add favorite surahs in Quran."), "koran", "surahs")}
+          ${homeFavoritesCarousel(tx("Ulubione dua", "Favorite duas"), favoriteGroups.duas, tx("Dodaj ulubione dua w Quran.", "Add favorite duas in Quran."), "koran", "dua")}
+          ${homeFavoritesCarousel(tx("Ulubione wersety", "Favorite ayahs"), favoriteGroups.ayahs, tx("Dodaj ulubione wersety podczas czytania sur.", "Add favorite ayahs while reading surahs."), "koran", "favayahs")}
         </div>
       </section>
       <aside class="grid min-w-0 gap-4">
@@ -1618,10 +1796,10 @@ function home() {
   });
   view.querySelectorAll("[data-home-fav]").forEach((button) => {
     button.addEventListener("click", () => {
-      setRoute(button.dataset.homeFav);
       if (button.dataset.quranTab) state.quranTab = button.dataset.quranTab;
+      setRoute(button.dataset.homeFav);
       const num = Number(button.dataset.homeSurah || 0);
-      if (num) setTimeout(() => openSurah(num), 150);
+      if (num) setTimeout(() => openSurah(num, { focusReader: true }), 150);
     });
   });
 }
@@ -1688,157 +1866,6 @@ async function loadAyatOfDay() {
 function statCard(title, value, hint) {
   return `<div class="home-stat-card soft-panel"><p>${title}</p><strong>${value}</strong><small>${hint}</small></div>`;
 }
-
-const QURAN_RECITERS = [
-  { id: "ar.alafasy", name: "Mishary Rashid Alafasy" },
-  { id: "ar.abdulsamad", name: "Abdul Basit Abdus Samad" },
-  { id: "ar.minshawi", name: "Mohamed Siddiq al-Minshawi" }
-];
-
-const SURAH_LIST = [
-  {number:1,  arName:"الفاتحة",   enName:"Al-Fatiha",     meaning:"The Opening",              numberOfAyahs:7,   revelationType:"Meccan"},
-  {number:2,  arName:"البقرة",    enName:"Al-Baqarah",    meaning:"The Cow",                  numberOfAyahs:286, revelationType:"Medinan"},
-  {number:3,  arName:"آل عمران", enName:"Al-Imran",      meaning:"Family of Imran",           numberOfAyahs:200, revelationType:"Medinan"},
-  {number:4,  arName:"النساء",   enName:"An-Nisa",       meaning:"The Women",                numberOfAyahs:176, revelationType:"Medinan"},
-  {number:5,  arName:"المائدة",  enName:"Al-Maidah",     meaning:"The Table Spread",         numberOfAyahs:120, revelationType:"Medinan"},
-  {number:6,  arName:"الأنعام",  enName:"Al-Anam",       meaning:"The Cattle",               numberOfAyahs:165, revelationType:"Meccan"},
-  {number:7,  arName:"الأعراف",  enName:"Al-Araf",       meaning:"The Heights",              numberOfAyahs:206, revelationType:"Meccan"},
-  {number:8,  arName:"الأنفال",  enName:"Al-Anfal",      meaning:"The Spoils of War",        numberOfAyahs:75,  revelationType:"Medinan"},
-  {number:9,  arName:"التوبة",   enName:"At-Tawbah",     meaning:"The Repentance",           numberOfAyahs:129, revelationType:"Medinan"},
-  {number:10, arName:"يونس",     enName:"Yunus",         meaning:"Jonah",                    numberOfAyahs:109, revelationType:"Meccan"},
-  {number:11, arName:"هود",      enName:"Hud",           meaning:"Hud",                      numberOfAyahs:123, revelationType:"Meccan"},
-  {number:12, arName:"يوسف",     enName:"Yusuf",         meaning:"Joseph",                   numberOfAyahs:111, revelationType:"Meccan"},
-  {number:13, arName:"الرعد",    enName:"Ar-Rad",        meaning:"The Thunder",              numberOfAyahs:43,  revelationType:"Medinan"},
-  {number:14, arName:"إبراهيم",  enName:"Ibrahim",       meaning:"Abraham",                  numberOfAyahs:52,  revelationType:"Meccan"},
-  {number:15, arName:"الحجر",    enName:"Al-Hijr",       meaning:"The Rocky Tract",          numberOfAyahs:99,  revelationType:"Meccan"},
-  {number:16, arName:"النحل",    enName:"An-Nahl",       meaning:"The Bee",                  numberOfAyahs:128, revelationType:"Meccan"},
-  {number:17, arName:"الإسراء",  enName:"Al-Isra",       meaning:"The Night Journey",        numberOfAyahs:111, revelationType:"Meccan"},
-  {number:18, arName:"الكهف",    enName:"Al-Kahf",       meaning:"The Cave",                 numberOfAyahs:110, revelationType:"Meccan"},
-  {number:19, arName:"مريم",     enName:"Maryam",        meaning:"Mary",                     numberOfAyahs:98,  revelationType:"Meccan"},
-  {number:20, arName:"طه",       enName:"Ta-Ha",         meaning:"Ta-Ha",                    numberOfAyahs:135, revelationType:"Meccan"},
-  {number:21, arName:"الأنبياء", enName:"Al-Anbiya",     meaning:"The Prophets",             numberOfAyahs:112, revelationType:"Meccan"},
-  {number:22, arName:"الحج",     enName:"Al-Hajj",       meaning:"The Pilgrimage",           numberOfAyahs:78,  revelationType:"Medinan"},
-  {number:23, arName:"المؤمنون", enName:"Al-Muminun",    meaning:"The Believers",            numberOfAyahs:118, revelationType:"Meccan"},
-  {number:24, arName:"النور",    enName:"An-Nur",        meaning:"The Light",                numberOfAyahs:64,  revelationType:"Medinan"},
-  {number:25, arName:"الفرقان",  enName:"Al-Furqan",     meaning:"The Criterion",            numberOfAyahs:77,  revelationType:"Meccan"},
-  {number:26, arName:"الشعراء",  enName:"Ash-Shuara",    meaning:"The Poets",                numberOfAyahs:227, revelationType:"Meccan"},
-  {number:27, arName:"النمل",    enName:"An-Naml",       meaning:"The Ant",                  numberOfAyahs:93,  revelationType:"Meccan"},
-  {number:28, arName:"القصص",    enName:"Al-Qasas",      meaning:"The Stories",              numberOfAyahs:88,  revelationType:"Meccan"},
-  {number:29, arName:"العنكبوت", enName:"Al-Ankabut",    meaning:"The Spider",               numberOfAyahs:69,  revelationType:"Meccan"},
-  {number:30, arName:"الروم",    enName:"Ar-Rum",        meaning:"The Romans",               numberOfAyahs:60,  revelationType:"Meccan"},
-  {number:31, arName:"لقمان",    enName:"Luqman",        meaning:"Luqman",                   numberOfAyahs:34,  revelationType:"Meccan"},
-  {number:32, arName:"السجدة",   enName:"As-Sajdah",     meaning:"The Prostration",          numberOfAyahs:30,  revelationType:"Meccan"},
-  {number:33, arName:"الأحزاب",  enName:"Al-Ahzab",      meaning:"The Combined Forces",      numberOfAyahs:73,  revelationType:"Medinan"},
-  {number:34, arName:"سبأ",      enName:"Saba",          meaning:"Sheba",                    numberOfAyahs:54,  revelationType:"Meccan"},
-  {number:35, arName:"فاطر",     enName:"Fatir",         meaning:"Originator",               numberOfAyahs:45,  revelationType:"Meccan"},
-  {number:36, arName:"يس",       enName:"Ya-Sin",        meaning:"Ya Sin",                   numberOfAyahs:83,  revelationType:"Meccan"},
-  {number:37, arName:"الصافات",  enName:"As-Saffat",     meaning:"Those Ranged in Ranks",    numberOfAyahs:182, revelationType:"Meccan"},
-  {number:38, arName:"ص",        enName:"Sad",           meaning:"Sad",                      numberOfAyahs:88,  revelationType:"Meccan"},
-  {number:39, arName:"الزمر",    enName:"Az-Zumar",      meaning:"The Groups",               numberOfAyahs:75,  revelationType:"Meccan"},
-  {number:40, arName:"غافر",     enName:"Ghafir",        meaning:"The Forgiver",             numberOfAyahs:85,  revelationType:"Meccan"},
-  {number:41, arName:"فصلت",     enName:"Fussilat",      meaning:"Explained in Detail",      numberOfAyahs:54,  revelationType:"Meccan"},
-  {number:42, arName:"الشورى",   enName:"Ash-Shura",     meaning:"The Consultation",         numberOfAyahs:53,  revelationType:"Meccan"},
-  {number:43, arName:"الزخرف",   enName:"Az-Zukhruf",    meaning:"The Gold Adornments",      numberOfAyahs:89,  revelationType:"Meccan"},
-  {number:44, arName:"الدخان",   enName:"Ad-Dukhan",     meaning:"The Smoke",                numberOfAyahs:59,  revelationType:"Meccan"},
-  {number:45, arName:"الجاثية",  enName:"Al-Jathiyah",   meaning:"The Crouching",            numberOfAyahs:37,  revelationType:"Meccan"},
-  {number:46, arName:"الأحقاف",  enName:"Al-Ahqaf",      meaning:"The Wind-Curved Sandhills",numberOfAyahs:35,  revelationType:"Meccan"},
-  {number:47, arName:"محمد",     enName:"Muhammad",      meaning:"Muhammad",                 numberOfAyahs:38,  revelationType:"Medinan"},
-  {number:48, arName:"الفتح",    enName:"Al-Fath",       meaning:"The Victory",              numberOfAyahs:29,  revelationType:"Medinan"},
-  {number:49, arName:"الحجرات",  enName:"Al-Hujurat",    meaning:"The Rooms",                numberOfAyahs:18,  revelationType:"Medinan"},
-  {number:50, arName:"ق",        enName:"Qaf",           meaning:"Qaf",                      numberOfAyahs:45,  revelationType:"Meccan"},
-  {number:51, arName:"الذاريات", enName:"Adh-Dhariyat",  meaning:"The Winnowing Winds",      numberOfAyahs:60,  revelationType:"Meccan"},
-  {number:52, arName:"الطور",    enName:"At-Tur",        meaning:"The Mount",                numberOfAyahs:49,  revelationType:"Meccan"},
-  {number:53, arName:"النجم",    enName:"An-Najm",       meaning:"The Star",                 numberOfAyahs:62,  revelationType:"Meccan"},
-  {number:54, arName:"القمر",    enName:"Al-Qamar",      meaning:"The Moon",                 numberOfAyahs:55,  revelationType:"Meccan"},
-  {number:55, arName:"الرحمن",   enName:"Ar-Rahman",     meaning:"The Most Gracious",        numberOfAyahs:78,  revelationType:"Medinan"},
-  {number:56, arName:"الواقعة",  enName:"Al-Waqiah",     meaning:"The Inevitable",           numberOfAyahs:96,  revelationType:"Meccan"},
-  {number:57, arName:"الحديد",   enName:"Al-Hadid",      meaning:"The Iron",                 numberOfAyahs:29,  revelationType:"Medinan"},
-  {number:58, arName:"المجادلة", enName:"Al-Mujadila",   meaning:"The Pleading Woman",       numberOfAyahs:22,  revelationType:"Medinan"},
-  {number:59, arName:"الحشر",    enName:"Al-Hashr",      meaning:"The Exile",                numberOfAyahs:24,  revelationType:"Medinan"},
-  {number:60, arName:"الممتحنة", enName:"Al-Mumtahanah", meaning:"She That is to be Examined",numberOfAyahs:13, revelationType:"Medinan"},
-  {number:61, arName:"الصف",     enName:"As-Saf",        meaning:"The Ranks",                numberOfAyahs:14,  revelationType:"Medinan"},
-  {number:62, arName:"الجمعة",   enName:"Al-Jumuah",     meaning:"Friday",                   numberOfAyahs:11,  revelationType:"Medinan"},
-  {number:63, arName:"المنافقون",enName:"Al-Munafiqun",  meaning:"The Hypocrites",           numberOfAyahs:11,  revelationType:"Medinan"},
-  {number:64, arName:"التغابن",  enName:"At-Taghabun",   meaning:"The Mutual Disillusion",   numberOfAyahs:18,  revelationType:"Medinan"},
-  {number:65, arName:"الطلاق",   enName:"At-Talaq",      meaning:"The Divorce",              numberOfAyahs:12,  revelationType:"Medinan"},
-  {number:66, arName:"التحريم",  enName:"At-Tahrim",     meaning:"The Prohibition",          numberOfAyahs:12,  revelationType:"Medinan"},
-  {number:67, arName:"الملك",    enName:"Al-Mulk",       meaning:"The Sovereignty",          numberOfAyahs:30,  revelationType:"Meccan"},
-  {number:68, arName:"القلم",    enName:"Al-Qalam",      meaning:"The Pen",                  numberOfAyahs:52,  revelationType:"Meccan"},
-  {number:69, arName:"الحاقة",   enName:"Al-Haqqah",     meaning:"The Reality",              numberOfAyahs:52,  revelationType:"Meccan"},
-  {number:70, arName:"المعارج",  enName:"Al-Maarij",     meaning:"The Ascending Stairways",  numberOfAyahs:44,  revelationType:"Meccan"},
-  {number:71, arName:"نوح",      enName:"Nuh",           meaning:"Noah",                     numberOfAyahs:28,  revelationType:"Meccan"},
-  {number:72, arName:"الجن",     enName:"Al-Jinn",       meaning:"The Jinn",                 numberOfAyahs:28,  revelationType:"Meccan"},
-  {number:73, arName:"المزمل",   enName:"Al-Muzzammil",  meaning:"The Enshrouded One",       numberOfAyahs:20,  revelationType:"Meccan"},
-  {number:74, arName:"المدثر",   enName:"Al-Muddaththir",meaning:"The Cloaked One",          numberOfAyahs:56,  revelationType:"Meccan"},
-  {number:75, arName:"القيامة",  enName:"Al-Qiyamah",    meaning:"The Resurrection",         numberOfAyahs:40,  revelationType:"Meccan"},
-  {number:76, arName:"الإنسان",  enName:"Al-Insan",      meaning:"The Man",                  numberOfAyahs:31,  revelationType:"Medinan"},
-  {number:77, arName:"المرسلات", enName:"Al-Mursalat",   meaning:"The Emissaries",           numberOfAyahs:50,  revelationType:"Meccan"},
-  {number:78, arName:"النبأ",    enName:"An-Naba",       meaning:"The Tidings",              numberOfAyahs:40,  revelationType:"Meccan"},
-  {number:79, arName:"النازعات", enName:"An-Naziat",     meaning:"Those Who Drag Forth",     numberOfAyahs:46,  revelationType:"Meccan"},
-  {number:80, arName:"عبس",      enName:"Abasa",         meaning:"He Frowned",               numberOfAyahs:42,  revelationType:"Meccan"},
-  {number:81, arName:"التكوير",  enName:"At-Takwir",     meaning:"The Overthrowing",         numberOfAyahs:29,  revelationType:"Meccan"},
-  {number:82, arName:"الانفطار", enName:"Al-Infitar",    meaning:"The Cleaving",             numberOfAyahs:19,  revelationType:"Meccan"},
-  {number:83, arName:"المطففين", enName:"Al-Mutaffifin", meaning:"The Defrauding",           numberOfAyahs:36,  revelationType:"Meccan"},
-  {number:84, arName:"الانشقاق", enName:"Al-Inshiqaq",   meaning:"The Sundering",            numberOfAyahs:25,  revelationType:"Meccan"},
-  {number:85, arName:"البروج",   enName:"Al-Buruj",      meaning:"The Mansions of the Stars",numberOfAyahs:22,  revelationType:"Meccan"},
-  {number:86, arName:"الطارق",   enName:"At-Tariq",      meaning:"The Night-Comer",          numberOfAyahs:17,  revelationType:"Meccan"},
-  {number:87, arName:"الأعلى",   enName:"Al-Ala",        meaning:"The Most High",            numberOfAyahs:19,  revelationType:"Meccan"},
-  {number:88, arName:"الغاشية",  enName:"Al-Ghashiyah",  meaning:"The Overwhelming",         numberOfAyahs:26,  revelationType:"Meccan"},
-  {number:89, arName:"الفجر",    enName:"Al-Fajr",       meaning:"The Dawn",                 numberOfAyahs:30,  revelationType:"Meccan"},
-  {number:90, arName:"البلد",    enName:"Al-Balad",      meaning:"The City",                 numberOfAyahs:20,  revelationType:"Meccan"},
-  {number:91, arName:"الشمس",    enName:"Ash-Shams",     meaning:"The Sun",                  numberOfAyahs:15,  revelationType:"Meccan"},
-  {number:92, arName:"الليل",    enName:"Al-Layl",       meaning:"The Night",                numberOfAyahs:21,  revelationType:"Meccan"},
-  {number:93, arName:"الضحى",    enName:"Ad-Duha",       meaning:"The Morning Hours",        numberOfAyahs:11,  revelationType:"Meccan"},
-  {number:94, arName:"الشرح",    enName:"Ash-Sharh",     meaning:"The Relief",               numberOfAyahs:8,   revelationType:"Meccan"},
-  {number:95, arName:"التين",    enName:"At-Tin",        meaning:"The Fig",                  numberOfAyahs:8,   revelationType:"Meccan"},
-  {number:96, arName:"العلق",    enName:"Al-Alaq",       meaning:"The Clot",                 numberOfAyahs:19,  revelationType:"Meccan"},
-  {number:97, arName:"القدر",    enName:"Al-Qadr",       meaning:"The Power",                numberOfAyahs:5,   revelationType:"Meccan"},
-  {number:98, arName:"البينة",   enName:"Al-Bayyinah",   meaning:"The Clear Proof",          numberOfAyahs:8,   revelationType:"Medinan"},
-  {number:99, arName:"الزلزلة",  enName:"Az-Zalzalah",   meaning:"The Earthquake",           numberOfAyahs:8,   revelationType:"Medinan"},
-  {number:100,arName:"العاديات", enName:"Al-Adiyat",     meaning:"The Courser",              numberOfAyahs:11,  revelationType:"Meccan"},
-  {number:101,arName:"القارعة",  enName:"Al-Qariah",     meaning:"The Calamity",             numberOfAyahs:11,  revelationType:"Meccan"},
-  {number:102,arName:"التكاثر",  enName:"At-Takathur",   meaning:"The Rivalry in World Increase",numberOfAyahs:8,revelationType:"Meccan"},
-  {number:103,arName:"العصر",    enName:"Al-Asr",        meaning:"The Declining Day",        numberOfAyahs:3,   revelationType:"Meccan"},
-  {number:104,arName:"الهمزة",   enName:"Al-Humazah",    meaning:"The Traducer",             numberOfAyahs:9,   revelationType:"Meccan"},
-  {number:105,arName:"الفيل",    enName:"Al-Fil",        meaning:"The Elephant",             numberOfAyahs:5,   revelationType:"Meccan"},
-  {number:106,arName:"قريش",     enName:"Quraysh",       meaning:"Quraysh",                  numberOfAyahs:4,   revelationType:"Meccan"},
-  {number:107,arName:"الماعون",  enName:"Al-Maun",       meaning:"The Small Kindnesses",     numberOfAyahs:7,   revelationType:"Meccan"},
-  {number:108,arName:"الكوثر",   enName:"Al-Kawthar",    meaning:"The Abundance",            numberOfAyahs:3,   revelationType:"Meccan"},
-  {number:109,arName:"الكافرون", enName:"Al-Kafirun",    meaning:"The Disbelievers",         numberOfAyahs:6,   revelationType:"Meccan"},
-  {number:110,arName:"النصر",    enName:"An-Nasr",       meaning:"The Divine Support",       numberOfAyahs:3,   revelationType:"Medinan"},
-  {number:111,arName:"المسد",    enName:"Al-Masad",      meaning:"The Palm Fibre",           numberOfAyahs:5,   revelationType:"Meccan"},
-  {number:112,arName:"الإخلاص",  enName:"Al-Ikhlas",     meaning:"The Sincerity",            numberOfAyahs:4,   revelationType:"Meccan"},
-  {number:113,arName:"الفلق",    enName:"Al-Falaq",      meaning:"The Daybreak",             numberOfAyahs:5,   revelationType:"Meccan"},
-  {number:114,arName:"الناس",    enName:"An-Nas",        meaning:"The Mankind",              numberOfAyahs:6,   revelationType:"Meccan"},
-];
-
-const SURAH_EXTRA = {
-  1:   { badge_pl: "Fard ✓",       badge_en: "Obligatory ✓", tip_pl: "Recytowana w każdej rak'ah — bez niej modlitwa nieważna", tip_en: "Recited in every rak'ah — prayer invalid without it" },
-  2:   { badge_pl: "Ayat al-Kursi",badge_en: "Ayat al-Kursi",tip_pl: "Zawiera Ayat al-Kursi (2:255) — recytuj po każdej modlitwie", tip_en: "Contains Ayat al-Kursi (2:255) — recite after every prayer" },
-  18:  { badge_pl: "Piątek 🌙",    badge_en: "Friday 🌙",    tip_pl: "Recytuj co piątek — ochrona przed Dajjalem (Muslim 809)", tip_en: "Recite every Friday — protection from Dajjal (Muslim 809)" },
-  36:  { badge_pl: "Serce ♥",      badge_en: "Heart ♥",      tip_pl: "Ya-Sin — Serce Koranu (at-Tirmidhi 2812)", tip_en: "Ya-Sin — Heart of the Quran (at-Tirmidhi 2812)" },
-  44:  { badge_pl: "Noc piątku",   badge_en: "Friday night", tip_pl: "Recytuj w nocy czwartku/piątku — wielka nagroda", tip_en: "Recite on Thursday/Friday night — great reward" },
-  55:  { badge_pl: "Oblubienica",  badge_en: "Bride",        tip_pl: "Az-Zahra — Oblubienica Koranu, 31× 'Które łaski Pana swego odrzucicie?'", tip_en: "Az-Zahra — Bride of the Quran, 31× 'Which favors of your Lord will you deny?'" },
-  56:  { badge_pl: "Bogactwo",     badge_en: "Wealth",       tip_pl: "Recytuj każdej nocy — chroni przed ubóstwem (Ibn Masud)", tip_en: "Recite every night — protects from poverty (Ibn Masud)" },
-  67:  { badge_pl: "Tarcza 🛡",    badge_en: "Shield 🛡",    tip_pl: "Al-Mulk — chroni przed karą grobu, recytuj przed snem (Abu Dawud 1400)", tip_en: "Al-Mulk — protects from grave punishment, recite before sleep (Abu Dawud 1400)" },
-  110: { badge_pl: "Pożegnanie",   badge_en: "Farewell",     tip_pl: "Jedna z ostatnich objawień — Prorok ﷺ wiedział, że czas mu się kończy", tip_en: "One of the last revelations — the Prophet ﷺ knew his time was near" },
-  112: { badge_pl: "1/3 Koranu",   badge_en: "1/3 Quran",   tip_pl: "Równoważna 1/3 Koranu w nagrodzie — recytuj 3× = cały Koran (Bukhari 5013)", tip_en: "Equivalent to 1/3 of the Quran in reward — recite 3× = whole Quran (Bukhari 5013)" },
-  113: { badge_pl: "Schronienie",  badge_en: "Refuge",       tip_pl: "Al-Mu'awwidhatain — recytuj rano ×3, wieczorem ×3 (Abu Dawud 5082)", tip_en: "Al-Mu'awwidhatain — recite ×3 morning and evening (Abu Dawud 5082)" },
-  114: { badge_pl: "Schronienie",  badge_en: "Refuge",       tip_pl: "Recytuj razem z Al-Falaq rano i wieczorem ×3", tip_en: "Recite together with Al-Falaq morning and evening ×3" },
-};
-
-const ESSENTIAL_SURAHS = [1, 112, 113, 114, 67, 36, 55, 18, 2, 56];
-const HIFZ_SURAHS = [1, 112, 113, 114];
-const HIFZ_STATES = ["not-started", "in-progress", "memorized"];
-
-const SURAH_LENGTH_GROUPS = [
-  { key: "xs",      labelPl: "Bardzo krótkie (≤6)",    labelEn: "Very short (≤6)",      min: 1,   max: 6   },
-  { key: "short",   labelPl: "Krótkie (7–12)",          labelEn: "Short (7–12)",         min: 7,   max: 12  },
-  { key: "smed",    labelPl: "Krótko-średnie (13–20)",  labelEn: "Short-medium (13–20)", min: 13,  max: 20  },
-  { key: "med",     labelPl: "Średnie (21–50)",         labelEn: "Medium (21–50)",       min: 21,  max: 50  },
-  { key: "medlong", labelPl: "Średnio-długie (51–100)", labelEn: "Medium-long (51–100)", min: 51,  max: 100 },
-  { key: "long",    labelPl: "Długie (>100)",           labelEn: "Long (>100)",          min: 101, max: 999 },
-];
 
 const DUA_DATA = [
   {
@@ -1931,24 +1958,6 @@ const DUA_DATA = [
     pl: "Panie, nie odwracaj naszych serc po tym, jak nas prowadziłeś, i obdarz nas miłosierdziem (Koran 3:8)", en: "Our Lord, do not let our hearts deviate after You have guided us (Quran 3:8)"
   },
 ];
-
-const DUA_SOURCE_MAP = {
-  bismillah: "Bukhari 5376; Muslim 2022",
-  after_eating: "Abu Dawud 3850; Tirmidhi 3457",
-  leaving_home: "Abu Dawud 5095; Tirmidhi 3426",
-  entering_home: "Abu Dawud 5096",
-  morning: "Muslim 2723",
-  evening: "Muslim 2723",
-  sleeping: "Bukhari 6324",
-  waking: "Bukhari 6312",
-  travel: "Quran 43:13-14; Muslim 1342",
-  forgiveness: "Abu Dawud 1517; Tirmidhi 3577",
-  anxiety: "Bukhari 6369",
-  parents: "Quran 17:24",
-  knowledge: "Quran 20:114",
-  good_end: "Quran 2:201",
-  heart: "Quran 3:8"
-};
 
 function duaQuality(dua) {
   return {
@@ -2307,10 +2316,9 @@ function koran() {
 }
 
 
-async function openSurah(num) {
+async function openSurah(num, options = {}) {
   const container = $("#surahContent");
   container.innerHTML = `<div class="panel p-8 text-center">${tx("Ładowanie treści...", "Loading content...")}</div>`;
-  container.scrollIntoView({ behavior: "smooth" });
   try {
     const reciter = state.quranReciter || "ar.alafasy";
     const transEdition = state.lang === "pl" ? "pl.bielawskiego" : "en.asad";
@@ -2330,7 +2338,7 @@ async function openSurah(num) {
       trAyahs.forEach(a => { trMap[a.numberInSurah] = a.text; });
 
       container.innerHTML = `
-        <div class="panel p-5 sm:p-8">
+        <div class="panel surah-reader p-5 sm:p-8" data-open-surah="${s.number}">
           <div class="mb-6 text-center">
             <h2 class="arabic text-5xl">${escapeHtml(s.name)}</h2>
             <p class="mt-2 font-black">${escapeHtml(s.englishName)} · ${escapeHtml(s.englishNameTranslation)}</p>
@@ -2401,6 +2409,12 @@ async function openSurah(num) {
         };
         playNext();
       });
+      const reader = container.querySelector(".surah-reader");
+      if (options.focusReader) {
+        requestAnimationFrame(() => reader?.scrollIntoView({ behavior: "smooth", block: "start" }));
+      } else {
+        reader?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   } catch {
     container.innerHTML = `<div class="panel p-8 text-center text-red-500">${tx("Nie udało się pobrać treści sury.", "Failed to fetch surah content.")}</div>`;
@@ -2578,6 +2592,7 @@ function settings() {
     state.memoryStats = { correct: 0, wrong: 0 };
     state.catchHistory = [];
     state.writingAttempts = [];
+    state.reviewMistakes = {};
     state.recordings = {};
     state.prayerLog = {};
     state.prayerGuideProgress = {};
@@ -2620,7 +2635,7 @@ function readImportedState(imported) {
   if (candidate.lang && !["pl", "en"].includes(candidate.lang)) {
     throw new Error("Invalid language");
   }
-  return { ...defaultState, ...candidate };
+  return { ...defaultState, ...candidate, reviewMistakes: sanitizeReviewMistakes(candidate.reviewMistakes) };
 }
 
 function importState(event) {
@@ -3988,6 +4003,7 @@ function renderQuiz() {
     if (button.dataset.answer === correct.id) {
       button.className = "big-action bg-emerald-500 text-white";
       state.quizStats.correct += 1;
+      updateReviewMistake(`quiz:${correct.id}`, true);
       state.quizHistory.unshift({ ok: true, letter: correct.forms.isolated, date: new Date().toISOString() });
       state.quizHistory = state.quizHistory.slice(0, 20);
       state.points += 10;
@@ -3998,6 +4014,7 @@ function renderQuiz() {
     } else {
       button.className = "big-action bg-red-500 text-white";
       state.quizStats.wrong += 1;
+      updateReviewMistake(`quiz:${correct.id}`, false);
       state.quizHistory.unshift({ ok: false, letter: correct.forms.isolated, date: new Date().toISOString() });
       state.quizHistory = state.quizHistory.slice(0, 20);
       saveState();
@@ -4041,6 +4058,7 @@ function renderMemory() {
       first.classList.add("matched");
       button.classList.add("matched");
       state.memoryStats.correct += 1;
+      updateReviewMistake(`memory:${button.dataset.key}`, true);
       saveState();
       matched += 1;
       first = null;
@@ -4053,6 +4071,7 @@ function renderMemory() {
       return;
     }
     state.memoryStats.wrong += 1;
+    updateReviewMistake(`memory:${first.dataset.key}`, false);
     saveState();
     locked = true;
     setTimeout(() => {
@@ -4147,11 +4166,11 @@ function spawnFallingLetter(arena) {
 
 function renderPillarsQuiz() {
   const allPillars = [
-    ...pillarsOfIslam.map(p => ({ ...p, category: tx("Filary Islamu", "Pillars of Islam") })),
-    ...pillarsOfIman.map(p => ({ ...p, category: tx("Filary Imanu", "Pillars of Iman") }))
+    ...pillarsOfIslam.map(p => ({ ...p, kind: "islam", category: tx("Filary Islamu", "Pillars of Islam") })),
+    ...pillarsOfIman.map(p => ({ ...p, kind: "iman", category: tx("Filary Imanu", "Pillars of Iman") }))
   ];
   const correct = allPillars[Math.floor(Math.random() * allPillars.length)];
-  const others = allPillars.filter(p => !(p.n === correct.n && p.category === correct.category));
+  const others = allPillars.filter(p => !(p.n === correct.n && p.kind === correct.kind));
   const choices = [correct, ...others.sort(() => Math.random() - 0.5).slice(0, 3)].sort(() => Math.random() - 0.5);
   const correctLabel = state.lang === "pl" ? correct.pl : correct.en;
 
@@ -4164,7 +4183,7 @@ function renderPillarsQuiz() {
       <p class="text-xs text-[var(--muted)]">${escapeHtml(correct.tr)} · ${correct.category}</p>
     </div>
     <div class="grid gap-2">
-      ${choices.map(c => `<button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-pillar-id="${c.n}-${c.category}">${escapeHtml(state.lang === "pl" ? c.pl : c.en)}</button>`).join("")}
+      ${choices.map(c => `<button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-pillar-id="${c.kind}-${c.n}">${escapeHtml(state.lang === "pl" ? c.pl : c.en)}</button>`).join("")}
     </div>
     <div class="mt-4">
       <h3 class="font-black text-sm">${t("history")}</h3>
@@ -4174,12 +4193,13 @@ function renderPillarsQuiz() {
     </div>
   `;
 
-  const correctKey = `${correct.n}-${correct.category}`;
+  const correctKey = `${correct.kind}-${correct.n}`;
   $("#pillarsQuizBox").querySelectorAll("[data-pillar-id]").forEach(btn => {
     btn.addEventListener("click", () => {
       if (btn.dataset.pillarId === correctKey) {
         btn.className = "big-action bg-emerald-500 text-white";
         state.pillarsQuizStats.correct += 1;
+        updateReviewMistake(`pillars:${correctKey}`, true);
         state.pillarsQuizHistory.unshift({ ok: true, name: correctLabel, date: new Date().toISOString() });
         state.pillarsQuizHistory = state.pillarsQuizHistory.slice(0, 20);
         state.points += 15;
@@ -4190,6 +4210,7 @@ function renderPillarsQuiz() {
       } else {
         btn.className = "big-action bg-red-500 text-white";
         state.pillarsQuizStats.wrong += 1;
+        updateReviewMistake(`pillars:${correctKey}`, false);
         state.pillarsQuizHistory.unshift({ ok: false, name: correctLabel, date: new Date().toISOString() });
         state.pillarsQuizHistory = state.pillarsQuizHistory.slice(0, 20);
         saveState();
@@ -4228,6 +4249,7 @@ function renderSurahQuiz() {
       if (parseInt(btn.dataset.surahNum) === correct.number) {
         btn.className = "big-action bg-emerald-500 text-white";
         state.surahQuizStats.correct += 1;
+        updateReviewMistake(`surah:${correct.number}`, true);
         currentStreak += 1;
         if (currentStreak > state.surahQuizBest) { state.surahQuizBest = currentStreak; }
         state.surahQuizHistory.unshift({ ok: true, name: correct.arName, date: new Date().toISOString() });
@@ -4240,6 +4262,7 @@ function renderSurahQuiz() {
       } else {
         btn.className = "big-action bg-red-500 text-white";
         state.surahQuizStats.wrong += 1;
+        updateReviewMistake(`surah:${correct.number}`, false);
         currentStreak = 0;
         state.surahQuizHistory.unshift({ ok: false, name: correct.arName, date: new Date().toISOString() });
         state.surahQuizHistory = state.surahQuizHistory.slice(0, 20);
@@ -4330,38 +4353,62 @@ function renderDhikrGame() {
 }
 
 function normalizeNameInput(s) {
-  return (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const cleaned = (s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ł/g, "l")
+    .replace(/[^a-z0-9]/g, "");
+  return cleaned.replace(/^(allah|ash|adh|ath|al|ar|as|at|ad|an|az)/, "");
+}
+
+function editDistanceWithin(input, target, maxEdits) {
+  if (Math.abs(input.length - target.length) > maxEdits) return false;
+  const row = Array.from({ length: target.length + 1 }, (_, index) => index);
+  for (let i = 1; i <= input.length; i += 1) {
+    let diagonal = row[0];
+    row[0] = i;
+    let rowMin = row[0];
+    for (let j = 1; j <= target.length; j += 1) {
+      const old = row[j];
+      row[j] = Math.min(row[j] + 1, row[j - 1] + 1, diagonal + (input[i - 1] === target[j - 1] ? 0 : 1));
+      diagonal = old;
+      rowMin = Math.min(rowMin, row[j]);
+    }
+    if (rowMin > maxEdits) return false;
+  }
+  return row[target.length] <= maxEdits;
 }
 
 function isCloseEnoughName(input, target) {
+  if (!input || !target) return false;
   if (input === target) return true;
-  if (Math.abs(input.length - target.length) > 1) return false;
-  let i = 0, j = 0, edits = 0;
-  while (i < input.length && j < target.length) {
-    if (input[i] === target[j]) { i += 1; j += 1; continue; }
-    edits += 1;
-    if (edits > 1) return false;
-    if (input.length > target.length) i += 1;
-    else if (target.length > input.length) j += 1;
-    else { i += 1; j += 1; }
-  }
-  if (i < input.length || j < target.length) edits += 1;
-  return edits <= 1;
+  return editDistanceWithin(input, target, target.length >= 7 ? 2 : 1);
+}
+
+function asmaChallengeAliases(name) {
+  const meaningParts = [...String(name.en || "").split("/"), ...String(name.pl || "").split("/")];
+  const meaningWords = meaningParts.flatMap(part => String(part).split(/[\s,;()]+/));
+  return [...new Set([name.tr, name.en, name.pl, ...meaningParts, ...meaningWords].map(normalizeNameInput).filter(Boolean))];
 }
 
 function renderAsmaChallenge() {
   const DURATION = 20 * 60;
-  const pool = asmaulHusna.map(n => normalizeNameInput(n.tr));
+  const pool = asmaulHusna.map(name => ({
+    id: normalizeNameInput(name.tr),
+    label: name.tr,
+    aliases: asmaChallengeAliases(name)
+  }));
   const found = new Set();
   let secondsLeft = DURATION;
   let timer = null;
 
   $("#asmaChallengeBox").innerHTML = `
     <h2 class="text-2xl font-black">${tx("99 Imion Allaha — Challenge", "99 Names of Allah — Challenge")}</h2>
-    <p class="text-sm text-[var(--muted)] mt-1">${tx("Masz 20 minut. Wpisuj transliteracje (np. arrahman). 1 literówka jest akceptowana.", "You have 20 minutes. Type transliterations (e.g. arrahman). 1 typo is accepted.")}</p>
+    <p class="text-sm text-[var(--muted)] mt-1">${tx("Masz 20 minut. Wpisuj transliteracje albo znaczenia po polsku/angielsku. Prefixy typu al-/ar- i drobne literówki są akceptowane.", "You have 20 minutes. Type transliterations or meanings in English/Polish. Prefixes like al-/ar- and small typos are accepted.")}</p>
     <p class="mt-2 font-black">${tx("Rekord", "Best")}: ${state.asmaChallengeBest || 0} / 99</p>
     <div class="mt-4 flex gap-2">
-      <input id="asmaInput" class="flex-1 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 h-11" placeholder="ar-rahman" />
+      <input id="asmaInput" class="flex-1 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 h-11" placeholder="${tx("rahman / miłosierny", "rahman / merciful")}" />
       <button id="asmaAdd" class="big-action bg-emerald-500 text-white">${tx("Dodaj", "Add")}</button>
     </div>
     <div class="mt-3 flex items-center justify-between">
@@ -4394,11 +4441,15 @@ function renderAsmaChallenge() {
     const raw = input.value.trim();
     const q = normalizeNameInput(raw);
     if (!q) return;
-    const match = pool.find(name => isCloseEnoughName(q, name));
-    if (match && !found.has(match)) {
-      found.add(match);
+    const match = pool.find(name => name.aliases.some(alias => isCloseEnoughName(q, alias)));
+    if (match && !found.has(match.id)) {
+      found.add(match.id);
       scoreEl.textContent = `${found.size} / 99`;
-      foundEl.textContent = [...found].slice(-12).join(", ");
+      foundEl.textContent = pool
+        .filter(name => found.has(name.id))
+        .slice(-12)
+        .map(name => name.label)
+        .join(", ");
       input.value = "";
     }
   });
@@ -4872,6 +4923,7 @@ function unlockBadge(id, name) {
   if (state.badges.includes(id)) return;
   state.badges.push(id);
   saveState();
+  if (muteBadgeNotifications) return;
   showToast(`🏆 ${name}!`);
   confetti();
   triggerHaptic();
@@ -4898,12 +4950,67 @@ function hijriWidget() {
   const monthNames = islamicMonths[h.month - 1];
   const monthName = monthNames ? (state.lang === 'pl' ? monthNames.pl : monthNames.en) : '';
   const gregStr = new Date().toLocaleDateString(state.lang === 'pl' ? 'pl-PL' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' });
-  return `<div class="hijri-widget">
+  return `<button class="hijri-widget w-full text-left" data-route="calendar">
     <div class="hijri-label">${tx("Kalendarz islamski (Hidżra)", "Islamic Calendar (Hijri)")}</div>
     <div class="hijri-date">${h.day} ${monthName} ${h.year} H</div>
     <div class="hijri-month" style="direction:rtl">${monthNames?.ar || ''} — ${monthNames?.tr || ''}</div>
     <div class="hijri-gregorian">${gregStr}</div>
-  </div>`;
+  </button>`;
+}
+
+function islamicMonthHighlights(monthNumber) {
+  const highlights = {
+    1: [tx("10 Muharram: Ashura, dzień postu i refleksji.", "10 Muharram: Ashura, a day of fasting and reflection.")],
+    7: [tx("Rajab: jeden z czterech świętych miesięcy.", "Rajab: one of the four sacred months."), tx("27 Rajab: Isra wal-Mi'raj według wielu kalendarzy.", "27 Rajab: Isra wal-Mi'raj in many calendars.")],
+    8: [tx("Sha'ban: przygotowanie do Ramadanu.", "Sha'ban: preparation for Ramadan.")],
+    9: [tx("Ramadan: miesiąc postu i Koranu.", "Ramadan: month of fasting and Quran."), tx("Ostatnie 10 nocy: szczególna modlitwa i poszukiwanie Laylat al-Qadr.", "Last 10 nights: special worship and seeking Laylat al-Qadr.")],
+    10: [tx("1 Shawwal: Eid al-Fitr.", "1 Shawwal: Eid al-Fitr."), tx("Sześć dni postu w Shawwal jako zalecana praktyka.", "Six days of fasting in Shawwal as a recommended practice.")],
+    11: [tx("Dhu al-Qi'dah: jeden z czterech świętych miesięcy.", "Dhu al-Qi'dah: one of the four sacred months.")],
+    12: [tx("8-13 Dhu al-Hijjah: dni Hajj.", "8-13 Dhu al-Hijjah: days of Hajj."), tx("9 Dhu al-Hijjah: dzień Arafah.", "9 Dhu al-Hijjah: day of Arafah."), tx("10 Dhu al-Hijjah: Eid al-Adha.", "10 Dhu al-Hijjah: Eid al-Adha.")]
+  };
+  return highlights[monthNumber] || [];
+}
+
+function islamicCalendar() {
+  const today = gregorianToHijri(Date.now());
+  const todayMonth = islamicMonths[today.month - 1];
+  const todayMonthName = todayMonth ? (state.lang === "pl" ? todayMonth.pl : todayMonth.en) : "";
+  const gregStr = new Date().toLocaleDateString(state.lang === "pl" ? "pl-PL" : "en-US", { day: "numeric", month: "long", year: "numeric" });
+  view.innerHTML = `
+    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="font-bold text-emerald-600">${tx("Kalendarz Hijri", "Hijri Calendar")}</p>
+        <h1 class="text-3xl font-black">${tx("Kalendarz islamski", "Islamic calendar")}</h1>
+        <p class="mt-2 text-sm text-[var(--muted)]">${tx("Dzisiaj:", "Today:")} ${today.day} ${todayMonthName} ${today.year} H · ${gregStr}</p>
+      </div>
+      <button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-route="home">${tx("Wróć", "Back")}</button>
+    </div>
+    <section class="panel p-4">
+      <p class="text-sm text-[var(--muted)]">${tx("Daty islamskie mogą różnić się zależnie od obserwacji księżyca i lokalnej wspólnoty. Ten widok jest edukacyjny i nie zastępuje ogłoszeń meczetu ani lokalnych uczonych.", "Islamic dates can differ depending on moon sighting and the local community. This view is educational and does not replace mosque announcements or local scholars.")}</p>
+    </section>
+    <section class="calendar-month-grid mt-4">
+      ${islamicMonths.map(month => {
+        const active = month.n === today.month;
+        const highlights = islamicMonthHighlights(month.n);
+        return `<article class="calendar-month-card ${active ? "is-current" : ""}">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-xs font-black text-[var(--muted)]">${tx("Miesiąc", "Month")} ${month.n}</p>
+              <h2 class="mt-1 text-xl font-black">${state.lang === "pl" ? month.pl : month.en}</h2>
+              <p class="text-sm font-bold text-[var(--accent)]">${month.tr}</p>
+            </div>
+            <p class="arabic text-2xl leading-none" style="direction:rtl">${month.ar}</p>
+          </div>
+          ${active ? `<p class="mt-3 rounded-lg bg-emerald-500 px-3 py-2 text-xs font-black text-white">${tx("Aktualny miesiąc", "Current month")} · ${today.day}</p>` : ""}
+          <p class="mt-3 text-sm text-[var(--muted)]">${state.lang === "pl" ? month.note_pl : month.note_en}</p>
+          ${highlights.length ? `<ul class="mt-3 grid gap-2">${highlights.map(item => `<li class="calendar-highlight">${item}</li>`).join("")}</ul>` : ""}
+        </article>`;
+      }).join("")}
+    </section>
+  `;
+  view.querySelectorAll("[data-route]").forEach(button => {
+    button.addEventListener("click", () => setRoute(button.dataset.route));
+  });
 }
 
 function hadithOfDayWidget() {

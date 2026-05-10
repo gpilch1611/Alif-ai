@@ -12,8 +12,9 @@ const assert = (condition, message) => {
 const count = (text, pattern) => (text.match(pattern) || []).length;
 
 assert(count(appJs, /const learnedSurahs =/g) === 1, "home() has duplicated learnedSurahs declarations.");
-assert(count(appJs, /const homeFavItems =/g) === 1, "home() has duplicated homeFavItems declarations.");
-assert(appJs.includes("function homeFavoriteItems()"), "home favorites helper is missing.");
+assert(count(appJs, /const favoriteGroups = homeFavoriteGroups/g) === 1, "home() should build favorite groups once.");
+assert(appJs.includes("function homeFavoriteGroups()"), "home favorites grouped helper is missing.");
+assert(appJs.includes("function homeFavoritesCarousel("), "home favorites carousel helper is missing.");
 assert(appJs.includes("function setTrustedHtml("), "central trusted HTML helper is missing.");
 assert(appJs.includes("function appendTextBlock("), "safe text DOM helper is missing.");
 assert(appJs.includes('box.textContent = "";'), "AI message list should clear via textContent, not user/API HTML.");
@@ -60,6 +61,9 @@ assert(
 );
 assert(!appJs.includes("const PRAYER_GUIDE_CORE_STEPS ="), "Prayer guide steps should stay out of app.js.");
 assert(!appJs.includes("const WUDU_STEPS ="), "Wudu static steps should stay out of app.js.");
+assert(appJs.includes('from "./data/quran-mode.js"'), "Quran static data should be imported from data/quran-mode.js.");
+assert(!appJs.includes("const SURAH_LIST ="), "Quran surah list should stay out of app.js.");
+assert(!appJs.includes("const DUA_SOURCE_MAP ="), "Dua source map should stay out of app.js.");
 assert(!appJs.includes("_legacyPrayer"), "Legacy Prayer Mode implementations should stay removed.");
 assert(!appJs.includes("prayerClockInterval"), "Removed live-clock timer code should not return.");
 assert(!appJs.includes("compassWatchId"), "Removed device-orientation compass code should not return.");
@@ -72,9 +76,24 @@ assert(appJs.includes('app: "Alif AI"'), "Progress export metadata is missing.")
 assert(appJs.includes("function onboardingPanel()"), "Home onboarding panel is missing.");
 assert(appJs.includes("restartOnboardingBtn"), "Settings should allow restarting onboarding.");
 assert(appJs.includes("Backup i przenoszenie danych"), "Backup/privacy settings panel is missing.");
-assert(stylesCss.includes(".home-quick-grid"), "Home quick grid responsive styles are missing.");
+assert(!appJs.includes("home-quick-card"), "Home quick cards should stay removed.");
+assert(!stylesCss.includes(".home-quick-card"), "Home quick card styles should stay removed.");
+assert(stylesCss.includes(".home-carousel-track"), "Home favorites carousel track styles are missing.");
+assert(stylesCss.includes(".home-carousel-card"), "Home favorites carousel card styles are missing.");
 assert(stylesCss.includes(".home-stat-card"), "Home stat card overflow-safe styles are missing.");
 assert(stylesCss.includes(".onboarding-choice"), "Onboarding responsive styles are missing.");
+assert(appJs.includes("calendar: islamicCalendar"), "Islamic calendar route is missing.");
+assert(appJs.includes("function islamicCalendar()"), "Islamic calendar view is missing.");
+assert(stylesCss.includes(".calendar-month-card"), "Islamic calendar month card styles are missing.");
+assert(stylesCss.includes(".hijri-widget"), "Hijri widget styles are missing.");
+assert(appJs.includes("review: reviewCenter"), "Active mistakes review route is missing.");
+assert(appJs.includes("function reviewCenter()"), "Active mistakes review center is missing.");
+assert(stylesCss.includes(".review-card"), "Active mistakes review card styles are missing.");
+assert(!appJs.includes('["adventure", "Note", "navAdventure"]'), "Learning journal nav should not use text icon Note.");
+assert(appJs.includes("reviewMistakes"), "Active review mistakes state is missing.");
+assert(appJs.includes("function renderAsmaChallenge()"), "Asma challenge renderer is missing.");
+assert(appJs.includes("function asmaChallengeAliases("), "Asma challenge alias matching is missing.");
+assert(appJs.includes('quranTab: "surahs"'), "Home favorite surahs should switch Quran to the Surahs tab.");
 assert(
   swJs.includes("Response.error()"),
   "service worker should not fallback to index.html for failed asset requests."
@@ -85,6 +104,7 @@ for (const path of [
   "./data/islamic-faq.js",
   "./data/islamic-hadith.js",
   "./data/prayer-mode.js",
+  "./data/quran-mode.js",
   "./data/quran-surahs.js"
 ]) {
   assert(swJs.includes(path), `service worker should precache ${path}.`);

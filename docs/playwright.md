@@ -1,8 +1,8 @@
-# Playwright w Alif AI
+﻿# Playwright w Alif AI
 
-Playwright uruchamia aplikację jak prawdziwy użytkownik w przeglądarce. W tym projekcie sprawdza między innymi ekran Start po polsku, brak kalkulatora zakat, Dziennik nauki, Islam i ustawienia prywatności.
+Playwright uruchamia aplikacjÄ™ jak prawdziwy uĹĽytkownik w przeglÄ…darce. W tym projekcie sprawdza miÄ™dzy innymi ekran Start po polsku, brak kalkulatora zakat, Dziennik nauki, Islam i ustawienia prywatnoĹ›ci.
 
-## Najważniejsze komendy
+## NajwaĹĽniejsze komendy
 
 ```powershell
 npm.cmd run test:e2e
@@ -14,57 +14,57 @@ Uruchamia testy desktop + mobile w tle.
 npm.cmd run test:e2e:headed
 ```
 
-Uruchamia testy w widocznej przeglądarce. Dobre do nauki, bo widzisz, gdzie Playwright klika.
+Uruchamia testy w widocznej przeglÄ…darce. Dobre do nauki, bo widzisz, gdzie Playwright klika.
 
 ```powershell
 npm.cmd run test:e2e:ui
 ```
 
-Otwiera tryb UI Playwrighta: możesz wybierać testy, odpalać je pojedynczo i oglądać przebieg.
+Otwiera tryb UI Playwrighta: moĹĽesz wybieraÄ‡ testy, odpalaÄ‡ je pojedynczo i oglÄ…daÄ‡ przebieg.
 
 ```powershell
 npm.cmd run verify:full
 ```
 
-Uruchamia zwykłą weryfikację projektu oraz testy Playwright.
+Uruchamia zwykĹ‚Ä… weryfikacjÄ™ projektu oraz testy Playwright.
 
-## Jak czytać błąd
+## Jak czytaÄ‡ bĹ‚Ä…d
 
-Gdy test nie przejdzie, Playwright zapisuje materiały w:
+Gdy test nie przejdzie, Playwright zapisuje materiaĹ‚y w:
 
 ```text
 test-results/
 playwright-report/
 ```
 
-Najczęściej patrz na:
+NajczÄ™Ĺ›ciej patrz na:
 
-- `error-context.md` — opis błędu i snapshot strony.
-- `test-failed-1.png` — screenshot w momencie błędu.
-- `npm.cmd run test:e2e:report` — raport HTML po testach.
+- `error-context.md` â€” opis bĹ‚Ä™du i snapshot strony.
+- `test-failed-1.png` â€” screenshot w momencie bĹ‚Ä™du.
+- `npm.cmd run test:e2e:report` â€” raport HTML po testach.
 
-## Gdzie są testy
+## Gdzie sÄ… testy
 
 ```text
 tests/smoke.spec.js
 ```
 
-Każdy test ma prosty scenariusz:
+KaĹĽdy test ma prosty scenariusz:
 
-1. Otwórz aplikację.
-2. Wykonaj akcję użytkownika.
-3. Sprawdź, czy ważny tekst, przycisk albo układ istnieje.
+1. OtwĂłrz aplikacjÄ™.
+2. Wykonaj akcjÄ™ uĹĽytkownika.
+3. SprawdĹş, czy waĹĽny tekst, przycisk albo ukĹ‚ad istnieje.
 
-Przykład:
+PrzykĹ‚ad:
 
 ```js
 await page.goto("/");
-await expect(page.locator(".home-quick-card")).toHaveCount(5);
+await expect(page.locator(".learning-center-card")).toHaveCount(4);
 ```
 
-To znaczy: otwórz Start i sprawdź, czy jest 5 szybkich kafelków.
+To znaczy: otwórz Start i sprawdź, czy Centrum nauki ma 4 kafelki.
 
-## Jak dodać nowy test
+## Jak dodaÄ‡ nowy test
 
 Dodaj kolejny blok w `tests/smoke.spec.js`:
 
@@ -75,4 +75,4 @@ test("opis co sprawdzam", async ({ page }) => {
 });
 ```
 
-Najlepsza zasada: testuj zachowanie użytkownika, nie wewnętrzne szczegóły kodu.
+Najlepsza zasada: testuj zachowanie uĹĽytkownika, nie wewnÄ™trzne szczegĂłĹ‚y kodu.

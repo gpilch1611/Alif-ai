@@ -173,32 +173,10 @@ select {
   border-radius: var(--radius-sm);
 }
 
-.home-quick-grid,
 .home-stat-grid {
   display: grid;
   gap: 10px;
   grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
-}
-
-.home-quick-card {
-  min-width: 0;
-  min-height: 106px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 12px;
-  text-align: left;
-}
-
-.home-quick-card span:last-child {
-  display: block;
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  font-size: 0.88rem;
-  font-weight: 900;
-  line-height: 1.25;
 }
 
 .home-stat-grid {
@@ -244,31 +222,63 @@ select {
 .home-favorites {
   min-width: 0;
   max-width: 100%;
-  overflow: hidden;
+  display: grid;
+  gap: 18px;
+  overflow: clip;
 }
 
-.home-favorites-strip {
+.home-favorites-carousel {
+  min-width: 0;
+}
+
+.home-carousel-track {
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  display: flex;
-  gap: 8px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(78%, 1fr);
+  gap: 12px;
   overflow-x: auto;
   overflow-y: hidden;
-  padding-bottom: 4px;
+  padding: 2px 12% 8px 0;
   overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
   scrollbar-width: thin;
 }
 
-.home-favorite-card {
-  flex: 0 0 clamp(180px, 46vw, 230px);
+.home-carousel-card,
+.home-carousel-empty {
   min-width: 0;
-  max-width: 230px;
+  min-height: 132px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px;
+  scroll-snap-align: center;
 }
 
-.home-favorite-card p {
+.home-carousel-card {
+  cursor: pointer;
+}
+
+.home-carousel-empty {
+  width: 100%;
+  color: var(--muted);
+}
+
+.home-carousel-card p,
+.home-carousel-empty {
   max-width: 100%;
   overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .home-carousel-track {
+    grid-auto-columns: minmax(84%, 1fr);
+    padding-right: 10%;
+  }
 }
 
 .onboarding-panel {
@@ -452,6 +462,29 @@ select {
   color: var(--muted);
   font-size: 0.72rem;
   line-height: 1.2;
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.review-card {
+  min-width: 0;
+  display: grid;
+  align-content: space-between;
+  gap: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: 18px;
+}
+
+.review-card h2,
+.review-card p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .prayer-mode-tabs {
@@ -1196,13 +1229,17 @@ h3 {
 
   .nav-btn {
     min-width: 0;
-    min-height: 52px;
-    font-size: 9px;
+    min-height: 54px;
+    font-size: 8px;
     padding-inline: 1px;
   }
 
+  .nav-label {
+    line-height: 1.05;
+  }
+
   .nav-btn .text-xl {
-    font-size: 18px;
+    font-size: 17px;
     line-height: 1;
   }
 
@@ -1216,7 +1253,7 @@ h3 {
 
   .ai-fab {
     right: 12px;
-    bottom: calc(88px + env(safe-area-inset-bottom));
+    bottom: calc(98px + env(safe-area-inset-bottom));
     width: 58px;
     padding: 0;
     justify-content: center;
@@ -1815,6 +1852,7 @@ a:focus-visible {
   margin-bottom: 16px;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .hijri-widget::before {
@@ -1853,6 +1891,38 @@ a:focus-visible {
   font-size: 12px;
   color: var(--muted);
   margin-top: 4px;
+}
+
+.calendar-month-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.calendar-month-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: 18px;
+}
+
+.calendar-month-card.is-current {
+  border-color: color-mix(in oklab, var(--accent) 60%, var(--line));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 35%, transparent);
+}
+
+.calendar-highlight {
+  border-radius: 8px;
+  background: var(--surface-soft);
+  padding: 9px 10px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.calendar-month-card .arabic {
+  line-height: 1.45;
 }
 
 /* ============================================================
