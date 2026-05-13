@@ -71,10 +71,11 @@ const navItems = [
   ["islam",   "☪",  "navIslam"],
   ["lessons", "Aa", "navLessons"],
   ["culture", "✦",  "navCulture"],
-  ["games",   "◎",  "navGames"]
+  ["games",   "◎",  "navGames"],
+  ["adventure", "✎", "navAdventure"]
 ];
 
-const secondaryNavItems = [["adventure", "✎", "navAdventure"]];
+const secondaryNavItems = [];
 
 const ISLAM_ROUTES = ["islam","koran","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","prayer","prayerGuide"];
 const APP_ROUTES = new Set([
