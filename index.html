@@ -34,12 +34,39 @@
         </button>
         <div class="flex items-center gap-2">
           <div id="searchContainer" class="hidden sm:flex items-center relative">
-             <input id="globalSearch" type="search" class="h-10 w-40 md:w-64 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-9 text-sm focus:w-72 transition-all" placeholder="Szukaj..." />
+             <input id="globalSearch" type="search" class="h-10 w-40 md:w-64 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-9 text-sm focus:w-72 transition-all" placeholder="Szukaj.[...]"/>
              <span class="absolute left-3 text-[var(--muted)]">🔍</span>
           </div>
           <button id="installBtn" class="hidden min-h-11 rounded-lg bg-emerald-500 px-4 font-semibold text-white shadow-sm">Zainstaluj</button>
-          <button id="quickLangBtn" class="grid h-11 min-w-11 place-items-center rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 text-sm font-black" aria-label="PL — zmień język">PL</button>
-          <button id="themeBtn" class="grid h-11 w-11 place-items-center rounded-lg border border-[var(--line)] bg-[var(--surface)] text-xl" aria-label="☾ — zmień motyw">☾</button>
+          
+          <!-- Settings Dropdown Menu -->
+          <div class="header-menu-container relative">
+            <button id="headerMenuBtn" class="grid h-11 min-w-11 place-items-center rounded-lg border border-[var(--line)] bg-[var(--surface)] text-lg" aria-label="Menu — język, motyw, ustawienia" aria-expanded="false" aria-controls="headerMenuDropdown">⚙️</button>
+            <div id="headerMenuDropdown" class="header-menu-dropdown hidden absolute right-0 mt-2 w-56 border border-[var(--line)] rounded-lg bg-[var(--surface)] shadow-lg z-50">
+              <div class="p-3 space-y-2">
+                <!-- Language Section -->
+                <div class="pb-3 border-b border-[var(--line)]">
+                  <p class="text-xs font-black uppercase tracking-wide text-[var(--muted)] px-3 py-2">Język / Language</p>
+                  <div class="grid grid-cols-2 gap-2 px-2">
+                    <button class="header-menu-option text-sm font-black py-2 px-3 rounded-lg border border-[var(--line)] bg-[var(--surface)] transition-all" data-lang="pl">🇵🇱 PL</button>
+                    <button class="header-menu-option text-sm font-black py-2 px-3 rounded-lg border border-[var(--line)] bg-[var(--surface)] transition-all" data-lang="en">🇬🇧 EN</button>
+                  </div>
+                </div>
+                
+                <!-- Theme Section -->
+                <div class="pb-3 border-b border-[var(--line)]">
+                  <p class="text-xs font-black uppercase tracking-wide text-[var(--muted)] px-3 py-2">Motyw / Theme</p>
+                  <div class="grid grid-cols-2 gap-2 px-2">
+                    <button class="header-menu-option text-sm font-black py-2 px-3 rounded-lg border border-[var(--line)] bg-[var(--surface)] transition-all" data-theme="light">☀️ Light</button>
+                    <button class="header-menu-option text-sm font-black py-2 px-3 rounded-lg border border-[var(--line)] bg-[var(--surface)] transition-all" data-theme="dark">☾ Dark</button>
+                  </div>
+                </div>
+                
+                <!-- Settings Button -->
+                <button id="openSettingsBtn" class="w-full text-left text-sm font-black py-2 px-3 rounded-lg border border-[var(--line)] bg-[var(--surface)] hover:bg-[var(--surface-soft)] transition-all">⚙️ Ustawienia / Settings</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </header>
