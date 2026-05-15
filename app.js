@@ -84,6 +84,7 @@ const APP_ROUTES = new Set([
   ...ISLAM_ROUTES,
   "alphabet",
   "calendar",
+  "dhikr",
   "review",
   "badges",
   "flashcards",
@@ -487,11 +488,16 @@ function updateDocumentI18nMeta() {
   document.documentElement.lang = state.lang;
   document.title = tx("Alif AI - alfabet arabski", "Alif AI - Arabic alphabet");
   $("#homeLogo")?.setAttribute("aria-label", tx("Alif AI - przejdz na strone glowna", "Alif AI - go to home page"));
-  $("#quickLangBtn")?.setAttribute("aria-label", state.lang === "pl" ? "PL - zmien jezyk" : "EN - change language");
-  $("#themeBtn")?.setAttribute("aria-label", tx("Motyw - zmien motyw", "Theme - change theme"));
+  $("#headerMenuBtn")?.setAttribute("aria-label", tx("Menu — język, motyw, ustawienia", "Menu — language, theme, settings"));
   $("#closeModal")?.setAttribute("aria-label", tx("Zamknij", "Close"));
   $("#aiFab")?.setAttribute("aria-label", tx("Otworz AI Assistant", "Open AI Assistant"));
   $("#closeAi")?.setAttribute("aria-label", tx("Zamknij", "Close"));
+  const menuLang = $("#menuLangLabel");
+  if (menuLang) menuLang.textContent = tx("Język", "Language");
+  const menuTheme = $("#menuThemeLabel");
+  if (menuTheme) menuTheme.textContent = tx("Motyw", "Theme");
+  const menuSet = $("#openSettingsBtn");
+  if (menuSet) menuSet.textContent = "⚙️ " + tx("Ustawienia", "Settings");
 }
 
 function themeMeta(theme) {
@@ -684,17 +690,54 @@ function bindGlobalEvents() {
   window.addEventListener("pointerdown", unlockSpeech, { once: true, passive: true });
   window.addEventListener("keydown", unlockSpeech, { once: true });
   $("#homeLogo").addEventListener("click", () => setRoute("home"));
-  $("#quickLangBtn").addEventListener("click", () => {
-    state.lang = state.lang === "pl" ? "en" : "pl";
-    saveState();
-    render();
+
+  // Header Menu Dropdown
+  const headerMenuBtn = $("#headerMenuBtn");
+  const headerMenuDropdown = $("#headerMenuDropdown");
+
+  if (headerMenuBtn && headerMenuDropdown) {
+    headerMenuBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isHidden = headerMenuDropdown.classList.contains("hidden");
+      headerMenuDropdown.classList.toggle("hidden");
+      headerMenuBtn.setAttribute("aria-expanded", isHidden ? "true" : "false");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!headerMenuDropdown.classList.contains("hidden") && !headerMenuDropdown.contains(e.target)) {
+        headerMenuDropdown.classList.add("hidden");
+        headerMenuBtn.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  document.querySelectorAll(".header-menu-option[data-lang]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.lang = btn.dataset.lang;
+      saveState();
+      render();
+      headerMenuDropdown?.classList.add("hidden");
+      headerMenuBtn?.setAttribute("aria-expanded", "false");
+    });
   });
-  $("#themeBtn").addEventListener("click", () => {
-    state.theme = nextTheme(state.theme);
-    document.documentElement.dataset.theme = state.theme;
-    saveState();
-    render();
+
+  document.querySelectorAll(".header-menu-option[data-theme]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.theme = btn.dataset.theme;
+      document.documentElement.dataset.theme = state.theme;
+      saveState();
+      render();
+      headerMenuDropdown?.classList.add("hidden");
+      headerMenuBtn?.setAttribute("aria-expanded", "false");
+    });
   });
+
+  $("#openSettingsBtn")?.addEventListener("click", () => {
+    setRoute("settings");
+    headerMenuDropdown?.classList.add("hidden");
+    headerMenuBtn?.setAttribute("aria-expanded", "false");
+  });
+
   $("#closeModal").addEventListener("click", () => modal.close());
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
@@ -865,13 +908,18 @@ function render() {
     dhikrGameTimer = null;
   }
   renderNav();
-  const currentThemeMeta = themeMeta(state.theme);
-  $("#themeBtn").textContent = currentThemeMeta.icon;
-  $("#themeBtn").title = currentThemeMeta.title;
   applyThemeMeta();
   updateDocumentI18nMeta();
   $("#installBtn").textContent = t("install");
-  $("#quickLangBtn").textContent = state.lang === "pl" ? "PL" : "EN";
+
+  // Update active states in header menu
+  document.querySelectorAll(".header-menu-option[data-lang]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.lang === state.lang);
+  });
+  document.querySelectorAll(".header-menu-option[data-theme]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.theme === state.theme);
+  });
+
   $("#profileBadge").textContent = "ألف AI";
   const aiFabLabel = $("#aiFab .hidden");
   if (aiFabLabel) aiFabLabel.textContent = t("aiAssistant");
@@ -1202,6 +1250,7 @@ function islam() {
     { route: "tajweed", icon: "🔤", titlePl: "Tadżwid",           titleEn: "Tajweed",          descPl: "8 zasad prawidłowej recytacji",                         descEn: "8 rules for correct Quran recitation" },
     { route: "muallaf",    icon: "🌱", titlePl: "Nowy muzułmanin",  titleEn: "New Muslim",       descPl: "Pierwsze kroki, szahada i nie musisz być perfekcyjny",        descEn: "First steps, shahada and you don't need to be perfect" },
     { route: "halalharam", icon: "⚖",  titlePl: "Halal & Haram",   titleEn: "Halal & Haram",   descPl: "Jedzenie, napoje, zachowanie — co wolno, czego nie",          descEn: "Food, drinks, behaviour — what is and isn't allowed" },
+    { route: "dhikr",      icon: "📿", titlePl: "Dhikr",            titleEn: "Dhikr",           descPl: "Licznik subhanallah, alhamdulillah, allahu akbar",            descEn: "Subhanallah, alhamdulillah, allahu akbar counter" },
     { route: "islamfaq",   icon: "❓", titlePl: "FAQ islamu",       titleEn: "Islam FAQ",        descPl: "Mity, islamofobia, kobiety, terroryzm, inne religie",         descEn: "Myths, Islamophobia, women, terrorism, other religions" }
   ];
   view.innerHTML = `
@@ -4043,7 +4092,7 @@ function renderMemory() {
     </div>
     <p class="mt-2 text-[var(--muted)]">${tx("Polacz litere z nazwa.", "Match the letter with its name.")} ${t("record")}: ${state.memoryBest}</p>
     <p class="mt-1 text-sm font-bold text-[var(--muted)]">${t("correct")}: ${state.memoryStats.correct} · ${t("wrong")}: ${state.memoryStats.wrong}</p>
-    <div class="mt-4 grid grid-cols-5 gap-2">
+    <div class="mt-4 grid grid-cols-4 sm:grid-cols-5 gap-2">
       ${cards.map((card, index) => `<button class="memory-card text-sm sm:text-base ${card.key === "bonus" ? "matched" : ""}" data-index="${index}" data-key="${card.key}" data-label="${card.label}" data-sound="${card.sound}">${card.key === "bonus" ? "★" : "?"}</button>`).join("")}
     </div>
   `;
