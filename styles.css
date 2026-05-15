@@ -211,6 +211,30 @@ select {
   border-color: var(--accent);
 }
 
+.theme-btn-light, .theme-btn-dark {
+  font-size: 0.875rem;
+  font-weight: 900;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  transition: all 200ms;
+}
+
+.theme-btn-light {
+  background: #ffffff;
+  color: #1f2937;
+}
+
+.theme-btn-dark {
+  background: #0e2533;
+  color: #f1fbff;
+}
+
+.theme-btn-light.active, .theme-btn-dark.active {
+  box-shadow: 0 0 0 2px var(--accent);
+  border-color: var(--accent);
+}
+
 #openSettingsBtn {
   cursor: pointer;
 }
@@ -1345,6 +1369,34 @@ h3 {
   text-align: center;
   color: var(--accent);
   margin-bottom: 20px;
+}
+
+.calendar-month-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.calendar-month-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  position: relative;
+}
+
+.calendar-month-card.is-current {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.calendar-highlight {
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding: 4px 8px;
+  background: var(--surface-soft);
+  border-radius: 6px;
+  list-style: none;
 }
 
 .tajweed-card {

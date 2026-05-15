@@ -432,7 +432,9 @@ const defaultState = {
   onboardingComplete: false,
   onboardingLevel: "beginner",
   onboardingPrayerFocus: "yes",
-  learningGoal: ""
+  learningGoal: "",
+  flashcardsTab: "letters",
+  flashcardsMode: "random"
 };
 
 let state = loadState();
@@ -499,15 +501,6 @@ function updateDocumentI18nMeta() {
   if (menuSet) menuSet.textContent = "⚙️ " + tx("Ustawienia", "Settings");
 }
 
-function themeMeta(theme) {
-  if (theme === "dark") return { icon: "☾", title: "Dark" };
-  return { icon: "☀", title: "Light" };
-}
-
-function nextTheme(theme) {
-  const currentIndex = Math.max(0, THEMES.indexOf(theme));
-  return THEMES[(currentIndex + 1) % THEMES.length];
-}
 
 function aiSystemPrompt() {
   const sourceRule = state.lang === "en"
@@ -930,8 +923,39 @@ function render() {
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
   const books = () => setRoute("culture");
-  const views = { home, islam, koran, alphabet, calendar: islamicCalendar, review: reviewCenter, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq, adventure: learningJournal };
+  const views = { home, islam, koran, alphabet, calendar: islamicCalendar, review: reviewCenter, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq, glossary, adventure: learningJournal };
   (views[route] || home)();
+}
+
+function glossary() {
+  const terms = [
+    { ar: "وضوء", tr: "Wudu", pl: "Oczyszczenie rytualne przed modlitwą.", en: "Ritual purification before prayer." },
+    { ar: "غسل", tr: "Ghusl", pl: "Pełna kąpiel rytualna.", en: "Full ritual bath." },
+    { ar: "سنة", tr: "Sunnah", pl: "Tradycja i czyny Proroka ﷺ.", en: "Traditions and actions of the Prophet ﷺ." },
+    { ar: "فقه", tr: "Fiqh", pl: "Jurysprudencja islamska.", en: "Islamic jurisprudence." },
+    { ar: "عقيدة", tr: "Aqidah", pl: "Doktryna i fundamenty wiary.", en: "Creed and foundations of faith." },
+    { ar: "حلال", tr: "Halal", pl: "Dozwolone.", en: "Permissible." },
+    { ar: "حرام", tr: "Haram", pl: "Zakazane.", en: "Forbidden." },
+    { ar: "نية", tr: "Niyyah", pl: "Intencja w sercu przed czynem.", en: "Intention in the heart before an action." }
+  ];
+
+  view.innerHTML = `
+    <div class="mb-4">
+      <h1 class="text-3xl font-black">${tx("Słownik pojęć", "Glossary")}</h1>
+      <p class="text-[var(--muted)]">${tx("Podstawowe terminy, które warto znać.", "Basic terms worth knowing.")}</p>
+    </div>
+    <div class="grid gap-3">
+      ${terms.map(t => `
+        <div class="panel p-4 flex items-center justify-between gap-4">
+          <div>
+            <p class="font-black text-lg text-[var(--accent)]">${t.tr}</p>
+            <p class="text-sm text-[var(--muted)]">${state.lang === "pl" ? t.pl : t.en}</p>
+          </div>
+          <p class="arabic text-2xl">${t.ar}</p>
+        </div>
+      `).join("")}
+    </div>
+  `;
 }
 
 const MUALLAF_CHECKLIST_GROUPS = [
@@ -1436,38 +1460,7 @@ function nextStepCard() {
   `;
 }
 
-function reviewBuckets() {
-  const now = Date.now();
-  const tomorrow = now + 86400000;
-  const later = tomorrow + 86400000;
-  return Object.values(state.flashcards || {}).reduce((acc, meta) => {
-    if (!meta?.due) return acc;
-    if (meta.due <= now) acc.today += 1;
-    else if (meta.due <= tomorrow) acc.tomorrow += 1;
-    else if (meta.due <= later) acc.later += 1;
-    return acc;
-  }, { today: 0, tomorrow: 0, later: 0 });
-}
 
-function reviewCalendarHtml() {
-  const buckets = reviewBuckets();
-  const items = [
-    { label: tx("Dzis", "Today"), value: buckets.today, date: today() },
-    { label: tx("Jutro", "Tomorrow"), value: buckets.tomorrow, date: formatDateOffset(1) },
-    { label: tx("Pozniej", "Later"), value: buckets.later, date: formatDateOffset(2) }
-  ];
-  return `
-    <div class="learning-mini-grid mt-4">
-      ${items.map(item => `
-        <button class="learning-mini-card" data-route="flashcards">
-          <strong>${item.value}</strong>
-          <span>${item.label}</span>
-          <small>${item.date}</small>
-        </button>
-      `).join("")}
-    </div>
-  `;
-}
 
 function reviewMistakeDetail(key, count) {
   const [type, rawId = ""] = String(key).split(":");
@@ -1589,57 +1582,6 @@ function reviewCenter() {
   });
 }
 
-function learningCenter() {
-  const dueNow = Date.now();
-  const dueCards = Object.values(state.flashcards || {}).filter((meta) => meta?.due && meta.due <= dueNow).length;
-  const wrongAnswers = activeMistakeTotal();
-  const latestWriting = (state.writingAttempts || [])[0];
-  const lastMistake = latestWriting && latestWriting.score < 70
-    ? tx(`Pisanie litery: ${latestWriting.letter}`, `Writing letter: ${latestWriting.letter}`)
-    : wrongAnswers > 0
-      ? tx(`${wrongAnswers} odpowiedzi do poprawy`, `${wrongAnswers} answers to revisit`)
-      : tx("Brak zapisanych bledow", "No saved mistakes");
-  const reviewText = dueCards > 0
-    ? tx(`${dueCards} fiszek czeka`, `${dueCards} flashcards due`)
-    : tx("Zrob 3 spokojne fiszki", "Do 3 calm flashcards");
-  const next = nextStepSuggestion();
-  const prayerDone = Object.values(state.prayerLog?.[today()] || {}).filter(Boolean).length;
-
-  return `
-    <section class="learning-center panel p-5 sm:p-6 mb-4" aria-label="${tx("Centrum nauki", "Learning center")}">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Centrum nauki", "Learning center")}</p>
-          <h2 class="mt-1 text-2xl font-black">${tx("Co robimy teraz?", "What now?")}</h2>
-        </div>
-        <button class="big-action bg-emerald-500 text-white" data-route="${next.route}" ${next.quranTab ? `data-quran-tab="${next.quranTab}"` : ""}>${next.action}</button>
-      </div>
-      <div class="learning-center-grid mt-4">
-        <button class="learning-center-card" data-route="${next.route}" ${next.quranTab ? `data-quran-tab="${next.quranTab}"` : ""}>
-          <span>01</span>
-          <strong>${tx("Dzisiejsza lekcja", "Today's lesson")}</strong>
-          <small>${next.text}</small>
-        </button>
-        <button class="learning-center-card" data-route="flashcards">
-          <span>02</span>
-          <strong>${tx("Nastepna powtorka", "Next review")}</strong>
-          <small>${reviewText}</small>
-        </button>
-        <button class="learning-center-card" data-route="${wrongAnswers > 0 ? "review" : latestWriting?.score < 70 ? "writing" : "games"}">
-          <span>03</span>
-          <strong>${tx("Ostatni blad", "Last mistake")}</strong>
-          <small>${lastMistake}</small>
-        </button>
-        <button class="learning-center-card" data-route="prayer">
-          <span>${prayerDone}/5</span>
-          <strong>${tx("Modlitwy dzisiaj", "Prayers today")}</strong>
-          <small>${tx("Lokalny dziennik bez wysylania danych", "Local journal, no data sent")}</small>
-        </button>
-      </div>
-      ${reviewCalendarHtml()}
-    </section>
-  `;
-}
 
 const ONBOARDING_GOALS = [
   { id: "letters", route: "alphabet", icon: "Aa", pl: "Chcę zacząć od liter", en: "Start with letters" },
@@ -2905,33 +2847,37 @@ function renderLessonCategory(cat, allLessons, unlocked) {
 }
 
 function flashcards() {
+  if (!state.flashcardsTab) state.flashcardsTab = "letters";
+  if (!state.flashcardsMode) state.flashcardsMode = "random";
+
   view.innerHTML = `
     <div class="mb-4">
       <h1 class="text-3xl font-black">${tx("Fiszki", "Flashcards")}</h1>
       <p class="text-[var(--muted)]">${tx("Prosty SM-2: łatwe karty wracają później, trudne szybciej.", "Simple SM-2: easy cards return later, difficult ones sooner.")}</p>
     </div>
     <div class="mb-3 flex flex-wrap gap-2">
-      <button class="tab-btn active" data-tab="letters">${tx("Litery", "Letters")}</button>
-      <button class="tab-btn" data-tab="words">${tx("Słowa", "Words")}</button>
-      <button class="tab-btn" data-tab="ai">${tx("Fiszki AI", "AI Cards")}</button>
+      <button class="tab-btn ${state.flashcardsTab === "letters" ? "active" : ""}" data-tab="letters">${tx("Litery", "Letters")}</button>
+      <button class="tab-btn ${state.flashcardsTab === "words" ? "active" : ""}" data-tab="words">${tx("Słowa", "Words")}</button>
+      <button class="tab-btn ${state.flashcardsTab === "ai" ? "active" : ""}" data-tab="ai">${tx("Fiszki AI", "AI Cards")}</button>
     </div>
     <div class="mb-4 flex flex-wrap gap-2">
-      <button class="mode-btn active" data-mode="random">${tx("Losowo", "Random")}</button>
-      <button class="mode-btn" data-mode="unknown">${tx("Nieznane", "Unknown")}</button>
-      <button class="mode-btn" data-mode="review">${tx("Powtorki", "Reviews")}</button>
+      <button class="mode-btn ${state.flashcardsMode === "random" ? "active" : ""}" data-mode="random">${tx("Losowo", "Random")}</button>
+      <button class="mode-btn ${state.flashcardsMode === "unknown" ? "active" : ""}" data-mode="unknown">${tx("Nieznane", "Unknown")}</button>
+      <button class="mode-btn ${state.flashcardsMode === "review" ? "active" : ""}" data-mode="review">${tx("Powtorki", "Reviews")}</button>
     </div>
     <div id="flashArea"></div>
   `;
-  let tab = "letters";
-  let mode = "random";
-  const rebuild = () => buildFlashDeck(tab, mode);
+
+  const rebuild = () => buildFlashDeck(state.flashcardsTab, state.flashcardsMode);
   view.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => {
-    tab = button.dataset.tab;
+    state.flashcardsTab = button.dataset.tab;
+    saveState();
     view.querySelectorAll("[data-tab]").forEach((b) => b.classList.toggle("active", b === button));
     rebuild();
   }));
   view.querySelectorAll("[data-mode]").forEach((button) => button.addEventListener("click", () => {
-    mode = button.dataset.mode;
+    state.flashcardsMode = button.dataset.mode;
+    saveState();
     view.querySelectorAll("[data-mode]").forEach((b) => b.classList.toggle("active", b === button));
     rebuild();
   }));
@@ -3503,16 +3449,12 @@ function learningJournal() {
     saveState();
     learningJournal();
   });
-  $("#generateStoryBtn")?.addEventListener("click", generateAdventureStory);
   view.querySelectorAll("[data-journal-route]").forEach(btn => btn.addEventListener("click", () => {
     if (btn.dataset.quranTab) state.quranTab = btn.dataset.quranTab;
     setRoute(btn.dataset.journalRoute);
   }));
 }
 
-function cleanAiText(text) {
-  return text.replace(/\[(Dodaj|Add|Zapisz|Save)[^\]]*\]\([^)]+\)/gi, "").replace(/```/g, "").trim();
-}
 
 function books() {
   view.innerHTML = `
@@ -4848,7 +4790,7 @@ function addAiQuiz(text) {
       questions.push({
         question: qMatch[1].trim(),
         options: [aMatch[1].trim(), bMatch[1].trim(), cMatch[1].trim()],
-        correctIndex: corMatch[1].charCodeAt(0) - 65
+        correctIndex: corMatch[1].toUpperCase().charCodeAt(0) - 65
       });
     }
   });
