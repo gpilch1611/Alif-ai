@@ -1058,3 +1058,301 @@ h3 {
   color: var(--text);
   background: var(--surface);
 }
+/* Missing Component Styles */
+.quality-meta {
+  display: block;
+  margin-top: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.trust-badge, .verdict-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.trust-badge.verified { background: #d1fae5; color: #065f46; }
+.trust-badge.unverified { background: #f3f4f6; color: #374151; }
+.trust-badge.context-dependent { background: #fef3c7; color: #92400e; }
+.trust-badge.high-risk { background: #fee2e2; color: #991b1b; }
+
+.verdict-badge.halal { background: #10b981; color: white; }
+.verdict-badge.haram { background: #ef4444; color: white; }
+.verdict-badge.makruh { background: #f59e0b; color: white; }
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-soft) 25%, var(--line) 50%, var(--surface-soft) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Islam Section Components */
+.islam-tile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius);
+  text-align: left;
+}
+
+.islam-tile-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  background: var(--surface-soft);
+  border-radius: 12px;
+  font-size: 24px;
+}
+
+.islam-tile-title { font-weight: 900; font-size: 1.1rem; }
+.islam-tile-desc { font-size: 0.85rem; color: var(--muted); }
+
+.muallaf-step {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.muallaf-step-num {
+  width: 28px;
+  height: 28px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.muallaf-step-ar { font-family: "Amiri"; font-size: 1.5rem; color: var(--accent); margin-bottom: 4px; }
+.muallaf-tip { font-size: 0.8rem; background: var(--surface-soft); padding: 8px 12px; border-radius: 8px; margin-top: 8px; }
+
+.halalharam-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  margin-bottom: 12px;
+}
+.halalharam-card.halal { border-left: 4px solid #10b981; }
+.halalharam-card.haram { border-left: 4px solid #ef4444; }
+
+.faq-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.faq-question {
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 800;
+  text-align: left;
+}
+
+.faq-answer { padding: 0 16px 16px; font-size: 0.95rem; }
+
+.pillar-card {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+.pillar-number { font-size: 12px; font-weight: 900; color: var(--muted); }
+.pillar-arabic { font-family: "Amiri"; font-size: 2.2rem; color: var(--accent); margin: 8px 0; }
+.pillar-name { font-weight: 900; font-size: 1.1rem; }
+.pillar-desc { font-size: 0.85rem; color: var(--muted); margin-top: 10px; }
+
+/* Catch Game Styles */
+.catch-arena {
+  position: relative;
+  height: 400px;
+  background: var(--surface-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 2px dashed var(--line);
+}
+
+.falling-letter {
+  position: absolute;
+  top: -60px;
+  font-size: 3rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow-soft);
+  animation: fall 3s linear forwards;
+}
+
+@keyframes fall {
+  to { transform: translateY(500px); }
+}
+
+.dhikr-ring {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(var(--line) 0%, var(--line) 100%);
+}
+
+.dhikr-ring-inner {
+  width: 120px;
+  height: 120px;
+  background: var(--surface);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 2.5rem;
+  font-weight: 900;
+}
+
+.dhikr-game-btn {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 0 var(--accent2);
+}
+
+.dhikr-game-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 6px 0 var(--accent2);
+}
+
+.hijri-widget {
+  padding: 16px;
+  background: linear-gradient(135deg, #065f46, #10b981);
+  color: white;
+  border-radius: var(--radius);
+  border: none;
+}
+
+.hijri-label { font-size: 10px; font-weight: 900; text-transform: uppercase; opacity: 0.8; }
+.hijri-date { font-size: 1.4rem; font-weight: 900; margin: 4px 0; }
+.hijri-month { font-size: 0.9rem; font-weight: 700; }
+.hijri-gregorian { font-size: 0.75rem; margin-top: 8px; opacity: 0.7; }
+
+/* Additional Islam Section Styles */
+.asma-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+.asma-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: center;
+  position: relative;
+}
+.asma-number { position: absolute; top: 8px; left: 8px; font-size: 10px; font-weight: 900; color: var(--muted); }
+.asma-arabic { font-family: "Amiri"; font-size: 1.8rem; color: var(--accent); margin-bottom: 4px; }
+.asma-name { font-weight: 900; font-size: 1rem; }
+.asma-meaning { font-size: 0.8rem; color: var(--muted); }
+
+.seerah-timeline {
+  position: relative;
+  padding-left: 24px;
+  border-left: 2px solid var(--line);
+  margin-left: 12px;
+}
+.seerah-event {
+  position: relative;
+  margin-bottom: 24px;
+}
+.seerah-event::before {
+  content: "";
+  position: absolute;
+  left: -31px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface);
+}
+.seerah-year { font-weight: 900; font-size: 0.8rem; color: var(--accent); }
+.seerah-title { font-weight: 900; font-size: 1.1rem; margin-top: 2px; }
+.seerah-desc { font-size: 0.9rem; color: var(--muted); margin-top: 4px; }
+
+.surah-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  background: var(--surface-soft);
+  color: var(--muted);
+}
+.surah-badge--islamic { background: #dcfce7; color: #166534; }
+
+.surah-group-header {
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 24px 0 12px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 4px;
+}
+
+.surah-quiz-name {
+  font-family: "Amiri";
+  font-size: 4rem;
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.tajweed-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  margin-bottom: 12px;
+}
+.tajweed-rule-name { font-weight: 900; font-size: 1.1rem; margin-bottom: 4px; }
+.tajweed-arabic-example { font-family: "Amiri"; font-size: 2rem; background: var(--surface-soft); padding: 12px; border-radius: 8px; text-align: center; margin-top: 8px; }
