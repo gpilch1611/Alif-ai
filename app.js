@@ -2490,8 +2490,8 @@ function settings() {
         <h2 class="text-xl font-black">${tx("Motyw", "Theme")}</h2>
         <p class="mt-2 text-[var(--muted)]">${tx("Wybierz jasny albo ciemny motyw.", "Choose light or dark theme.")}</p>
         <div class="mt-4 grid grid-cols-2 gap-2">
-          <button class="big-action ${state.theme === "light" ? "bg-amber-100 border border-amber-300" : "border border-[var(--line)] bg-[var(--surface)]"}" data-theme-set="light">☀ Light</button>
-          <button class="big-action ${state.theme === "dark" ? "bg-emerald-900 text-white" : "border border-[var(--line)] bg-[var(--surface)]"}" data-theme-set="dark">☾ Dark</button>
+          <button class="big-action ${state.theme === "light" ? "bg-amber-100 text-amber-950 border-amber-300" : "bg-white text-[#1f2937] border border-[var(--line)]"}" data-theme-set="light">☀ Light</button>
+          <button class="big-action ${state.theme === "dark" ? "bg-emerald-900 text-white border-emerald-700" : "bg-[#0e2533] text-[#f1fbff] border border-[var(--line)]"}" data-theme-set="dark">☾ Dark</button>
         </div>
       </section>
       <section class="panel p-5">
