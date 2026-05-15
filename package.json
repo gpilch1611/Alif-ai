@@ -29,6 +29,7 @@
     "globals": "^17.6.0",
     "knip": "^6.12.2",
     "lighthouse": "^13.3.0",
+    "playwright": "^1.60.0",
     "prettier": "^3.8.3",
     "typescript": "^6.0.3"
   }

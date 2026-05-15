@@ -39,8 +39,6 @@ NIGDY nie używaj surowych linków markdown ani nie generuj zbędnego kodu.
 Zasady generowania treści:
 FISZKI: Format WYŁĄCZNIE "arabskie_słowo — polskie_tłumaczenie", jedna para na linię, BEZ numerów, BEZ "Strona przednia/tylna", BEZ zdań.
 Przykład poprawny: كِتَاب — książka
-BAJKA/HISTORIA: każda arabska linia, BEZPOŚREDNIO pod nią polskie tłumaczenie, pusta linia między parami. Na końcu słowniczek.
-CIEKAWOSTKA: jeden krótki fakt (2-4 zdania), NIE lista fiszek.
 ISLAM/MODLITWA/KORAN: odpowiadaj merytorycznie, z szacunkiem i precyzją.`;
 const AI_SYSTEM_PROMPT_EN = `You are an expert in Arabic language, Islam and Muslim culture inside the app 'Alif AI'. You help people learning Arabic and Islam — especially converts and beginners.
 Always reply ONLY in English. Be friendly, warm and encouraging.
@@ -49,8 +47,6 @@ NEVER use raw markdown links or generate unnecessary code.
 Content generation rules:
 FLASHCARDS: Format ONLY "arabic_word — english_translation", one pair per line, NO numbers, NO "Front/Back" labels, NO sentences.
 Correct example: كِتَاب — book
-STORY/BOOK: each Arabic line, IMMEDIATELY followed by English translation on next line, blank line between pairs. Mini glossary at end.
-CULTURE FACT: one short fact (2-4 sentences), NOT a list of flashcards.
 ISLAM/PRAYER/QURAN: answer accurately, with respect and precision.`;
 
 const $ = (selector) => document.querySelector(selector);
@@ -167,8 +163,9 @@ const I18N = {
     surahQuiz: "Quiz: Sury Koranu", surahQuizDesc: "Rozpoznaj arabskie nazwy sur",
     dhikrGame: "Szybki Dhikr", dhikrGameDesc: "33 razy — jak najszybciej!", dhikrGameStart: "Dotknij aby zacząć", dhikrGameResult: "Czas",
     streak: "Seria dni", level: "Poziom", alphabetProgress: "Alfabet", todayTask: "Dzisiejsze zadanie", start: "Zaczynam", progress: "Postęp", points: "pkt",
-    aiAssistant: "AI Assistant", aiPlaceholder: "Poproś o fiszki, quiz, historyjkę albo ciekawostkę...", send: "Wyślij", aiHello: "Cześć! Jestem Twoim Alif AI Assistantem. Mogę stworzyć fiszki, mini-lekcję, quiz, historyjkę albo ciekawostkę dnia.",
-    addFlashcards: "Dodaj do fiszek", saveBook: "Zapisz jako nową książeczkę", addAdventure: "Dodaj do dziennika nauki", addCulture: "Dodaj jako ciekawostkę",
+    aiAssistant: "AI Assistant", aiPlaceholder: "Poproś o fiszki, quiz albo zapytaj o coś...", send: "Wyślij", aiHello: "Cześć! Jestem Twoim Alif AI Assistantem. Mogę stworzyć dla Ciebie fiszki, mini-quiz albo odpowiedzieć na pytania o islamie i języku arabskim.",
+    addFlashcards: "Dodaj do fiszek",
+    aiGenerateFlashcards: "🗂️ Generuj fiszki", aiGenerateQuiz: "📝 Mini quiz", aiAskIslam: "🕌 Zapytaj o Islam",
     more: "Więcej", play: "Odtwórz", check: "Sprawdź", clear: "Wyczyść", next: "Następna", good: "dobrze", weak: "słabo", veryWeak: "bardzo słabo", attempts: "Historia prób",
     frontHint: "Dotknij karty, żeby ją odwrócić", hard: "Trudne", ok: "OK", easy: "Łatwe", noCards: "Nie ma kart w tym trybie",
     correct: "Dobrze", wrong: "Źle", history: "Historia", stop: "Stop", record: "Rekord", score: "Wynik",
@@ -184,8 +181,9 @@ const I18N = {
     surahQuiz: "Surah Quiz", surahQuizDesc: "Recognise Arabic surah names",
     dhikrGame: "Dhikr Speed", dhikrGameDesc: "33 taps — as fast as you can!", dhikrGameStart: "Tap to start", dhikrGameResult: "Time",
     streak: "Daily streak", level: "Level", alphabetProgress: "Alphabet", todayTask: "Today's task", start: "Start", progress: "Progress", points: "pts",
-    aiAssistant: "AI Assistant", aiPlaceholder: "Ask for flashcards, a quiz, a story or a culture fact...", send: "Send", aiHello: "Hi! I am your Alif AI Assistant. I can create flashcards, mini-lessons, quizzes, stories, or a daily culture fact.",
-    addFlashcards: "Add to flashcards", saveBook: "Save as new book", addAdventure: "Add to learning journal", addCulture: "Add as culture fact",
+    aiAssistant: "AI Assistant", aiPlaceholder: "Ask for flashcards, a quiz, or anything else...", send: "Send", aiHello: "Hi! I am your Alif AI Assistant. I can create flashcards, a mini-quiz, or answer your questions about Islam and Arabic.",
+    addFlashcards: "Add to flashcards",
+    aiGenerateFlashcards: "🗂️ Generate cards", aiGenerateQuiz: "📝 Mini quiz", aiAskIslam: "🕌 Ask about Islam",
     more: "More", play: "Play", check: "Check", clear: "Clear", next: "Next", good: "good", weak: "weak", veryWeak: "very weak", attempts: "Attempt history",
     frontHint: "Tap the card to flip it", hard: "Hard", ok: "OK", easy: "Easy", noCards: "No cards in this mode",
     correct: "Correct", wrong: "Wrong", history: "History", stop: "Stop", record: "Best", score: "Score",
@@ -4523,6 +4521,17 @@ function mountAiAssistant() {
           <button id="closeAi" class="ai-close" aria-label="Zamknij">×</button>
         </header>
         <div id="aiMessages" class="ai-messages"></div>
+        <div class="ai-quick-actions">
+          <button class="ai-action-btn" data-prompt="Generate 5 flashcards for beginners about food">
+            ${t("aiGenerateFlashcards")}
+          </button>
+          <button class="ai-action-btn" data-prompt="Give me a 3-question quiz about Islam pillars">
+            ${t("aiGenerateQuiz")}
+          </button>
+          <button class="ai-action-btn" data-prompt="Tell me more about the importance of prayer in Islam">
+            ${t("aiAskIslam")}
+          </button>
+        </div>
         <form id="aiForm" class="ai-form">
           <input id="aiInput" class="ai-input" placeholder="${t("aiPlaceholder")}" autocomplete="off" />
           <button class="ai-send" type="submit">${t("send")}</button>
@@ -4533,6 +4542,20 @@ function mountAiAssistant() {
   $("#aiFab").addEventListener("click", openAiChat);
   $("#closeAi").addEventListener("click", () => $("#aiDialog").close());
   $("#aiForm").addEventListener("submit", sendAiMessage);
+  document.querySelectorAll(".ai-action-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const prompt = btn.dataset.prompt;
+      if (prompt) {
+        $("#aiInput").value = tx(
+          btn.textContent.includes("🗂️") ? "Wygeneruj 5 fiszek dla początkujących" :
+          btn.textContent.includes("📝") ? "Zrób mi krótki quiz o filarach Islamu" :
+          "Opowiedz mi o znaczeniu modlitwy w Islamie",
+          prompt
+        );
+        sendAiMessage(new Event("submit"));
+      }
+    });
+  });
 }
 
 function openAiChat() {
@@ -4569,8 +4592,15 @@ function renderAiMessages() {
   });
 }
 
-function aiActionButtons(_index) {
-  return '';
+function aiActionButtons(index) {
+  const msg = state.aiMessages[index];
+  if (!msg || msg.role !== "assistant" || msg.content.includes("...")) return '';
+  let html = '<div class="flex flex-wrap gap-2 mt-3">';
+  if (/[\u0600-\u06FF].*[—\-–:=].+/.test(msg.content)) {
+    html += `<button class="ai-chip" data-ai-action="flashcards" data-message-index="${index}">🗂️ ${t("addFlashcards")}</button>`;
+  }
+  html += '</div>';
+  return html.includes('data-ai-action') ? html : '';
 }
 
 function isIslamicQuery(content = "") {
@@ -4747,20 +4777,6 @@ function handleAiAction(action, messageIndex) {
   if (action === "flashcards") {
     addAiFlashcards(message.content);
     setRoute("flashcards");
-  }
-  if (action === "book") {
-    saveInteractiveBook(tx(`Ksiazeczka AI ${new Date().toLocaleDateString(localeTag())}`, `AI Book ${new Date().toLocaleDateString(localeTag())}`), message.content);
-    setRoute("books");
-  }
-  if (action === "adventure") {
-    state.adventureStories.unshift({ id: crypto.randomUUID(), title: tx(`Wpis AI ${new Date().toLocaleDateString(localeTag())}`, `AI Journal ${new Date().toLocaleDateString(localeTag())}`), text: message.content });
-    saveState();
-    setRoute("adventure");
-  }
-  if (action === "culture") {
-    state.cultureFacts.unshift({ id: crypto.randomUUID(), date: today(), title: tx("Ciekawostka AI", "AI fact"), text: message.content });
-    saveState();
-    setRoute("culture");
   }
   $("#aiDialog").close();
   confetti();
