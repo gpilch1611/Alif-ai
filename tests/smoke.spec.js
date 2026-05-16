@@ -69,12 +69,14 @@ test.describe("Alif AI smoke", () => {
 
   test("Start in Polish keeps learning center and stat cards inside their boxes", async ({ page }) => {
     await expect(page.getByRole("heading", { name: /Islam/ })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Co robimy teraz/ })).toBeVisible();
     await expect(page.locator(".home-quick-card")).toHaveCount(0);
-    await expect(page.locator(".learning-center-card")).toHaveCount(4);
-    await expectNoOverflow(page.locator(".learning-center-card"));
+    await expect(page.locator("[data-stat-action='level']")).toBeVisible();
+    await page.locator("[data-stat-action='level']").click();
+    await expect(page.locator("#levelDetails")).toBeVisible();
     await expectNoOverflow(page.locator(".home-stat-card"));
+    await expectNoOverflow(page.locator(".level-activity"));
     await expect(page.locator("body")).not.toContainText("Kalkulator zakat");
+    await expect(page.locator("body")).not.toContainText("Poznane dua");
   });
 
   test("Start stays within viewport with many Quran favorites", async ({ page }) => {
@@ -94,7 +96,7 @@ test.describe("Alif AI smoke", () => {
         })
       );
     });
-    await page.goto("/");
+    await page.goto("/?favorites=1");
     await expect(page.locator(".home-favorites-carousel")).toHaveCount(3);
     await expect(page.locator(".home-carousel-track").first()).toBeVisible();
     await expect(page.locator(".home-carousel-card").first()).toBeVisible();
@@ -204,9 +206,7 @@ test.describe("Alif AI smoke", () => {
         })
       );
     });
-    await page.goto("/");
-    await page.getByText(/odpowiedzi do poprawy/).click();
-    await expect(page).toHaveURL(/#review$/);
+    await page.goto("/?review=active#review");
     await expect(page.getByRole("heading", { name: /Do poprawy|To improve/ })).toBeVisible();
     await expect(page.locator(".review-card")).toHaveCount(2);
     await expect(page.locator(".review-card").first()).toContainText(/Alif|Al-Ikhlas/);
@@ -261,9 +261,7 @@ test.describe("Alif AI smoke", () => {
     expect(boxes).not.toBeNull();
     expect(boxes.navHeight).toBeLessThan(90);
     expect(boxes.fabBottom).toBeLessThanOrEqual(boxes.navTop - 4);
-    await page.locator("#moreNavBtn").click();
-    await expect(page.locator("#bottomSheet.active")).toBeVisible();
-    await page.locator("[data-sheet-route='adventure']").click();
+    await page.getByRole("button", { name: /Dziennik|Journal/ }).click();
     await expect(page).toHaveURL(/#adventure$/);
   });
 
@@ -281,7 +279,33 @@ test.describe("Alif AI smoke", () => {
     await page.goto("/#adventure");
     await expect(page.getByRole("heading", { name: /Dziennik nauki/ })).toBeVisible();
     await expect(page.getByText(/Nastepny maly krok|Następny mały krok/)).toBeVisible();
-    await expect(page.getByRole("button", { name: /Wygeneruj wpis AI/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Moje wpisy/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Zdarzenia systemowe/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Wygeneruj wpis AI/ })).toHaveCount(0);
+  });
+
+  test("AI assistant topics and quiz hub use the new guarded creation flow", async ({ page }) => {
+    await page.goto("/#games");
+    await expect(page.getByRole("button", { name: /Quizy/ })).toBeVisible();
+    await expect(page.locator("body")).not.toContainText(/Łap literę|Catch the Letter/);
+    await page.getByRole("button", { name: /Quizy/ }).click();
+    await expect(page.getByRole("button", { name: /Quizy AI/ })).toBeVisible();
+    await page.getByRole("button", { name: /Quizy AI/ }).click();
+    await expect(page.getByRole("button", { name: /Generuj quiz/ })).toBeVisible();
+
+    await page.getByRole("button", { name: /AI Assistant/ }).click();
+    await page.getByRole("button", { name: /Generuj fiszki|Generate cards/ }).click();
+    await expect(page.getByText(/Wybierz temat|Choose a topic/)).toBeVisible();
+    await expect(page.getByText(/Modlitwa|Prayer/)).toBeVisible();
+  });
+
+  test("badges are grouped and locked badges navigate to unlock activities", async ({ page }) => {
+    await page.goto("/#badges");
+    await expect(page.getByRole("button", { name: /Nauka/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Ćwiczenia|Practice/ })).toBeVisible();
+    await page.getByRole("button", { name: /Ćwiczenia|Practice/ }).click();
+    await page.getByRole("button", { name: /Pierwszy quiz AI|First AI quiz/ }).click();
+    await expect(page).toHaveURL(/#games$/);
   });
 
   test("Prayer Mode renders center tabs and rakat-aware guide", async ({ page }) => {
@@ -356,10 +380,7 @@ test.describe("Alif AI smoke", () => {
   });
 
   test("settings exposes privacy and backup controls", async ({ page }) => {
-    await page
-      .getByRole("button", { name: /Ustawienia/ })
-      .first()
-      .click();
+    await page.goto("/#settings");
     await expect(page.getByRole("heading", { name: /Prywatnosc danych|Prywatność danych/ })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Backup/ })).toBeVisible();
     await expect(page.getByRole("button", { name: /Eksport postępu/ })).toBeVisible();
