@@ -185,7 +185,7 @@ test.describe("Alif AI smoke", () => {
 
   test("Learning journal navigation uses an icon instead of Note text", async ({ page }) => {
     await expect(page.locator("#bottomNav")).not.toContainText("Note");
-    await expect(page.locator("#moreNavBtn")).toHaveCount(1);
+    await expect(page.locator("#bottomNav [data-route='adventure'] span").first()).toContainText("✎");
   });
 
   test("99 Names Challenge accepts prefixes, meanings and simple typos once", async ({ page }) => {
