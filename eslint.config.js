@@ -8,7 +8,8 @@ export default [
       "playwright-report/**",
       "test-results/**",
       ".lighthouse-profile/**",
-      "lighthouse-report/**"
+      "lighthouse-report/**",
+      "scratch/**"
     ]
   },
   js.configs.recommended,
