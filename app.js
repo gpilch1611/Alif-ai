@@ -2625,16 +2625,14 @@ async function openSurah(num, options = {}) {
   try {
     const reciter = state.quranReciter || "ar.alafasy";
     const transEdition = state.lang === "pl" ? "pl.bielawskiego" : "en.asad";
-    const [resAudio, resTrans, resTr] = await Promise.all([
-      fetch(`https://api.alquran.cloud/v1/surah/${num}/${reciter}`),
-      fetch(`https://api.alquran.cloud/v1/surah/${num}/${transEdition}`),
-      fetch(`https://api.alquran.cloud/v1/surah/${num}/en.transliteration`)
-    ]);
-    const [dataAudio, dataTrans, dataTr] = await Promise.all([resAudio.json(), resTrans.json(), resTr.json()]);
-    if (dataAudio.code === 200) {
-      const s = dataAudio.data;
-      const transAyahs = dataTrans.code === 200 ? dataTrans.data.ayahs : [];
-      const trAyahs = dataTr.code === 200 ? dataTr.data.ayahs : [];
+    // BOLT OPTIMIZATION: Batch multiple API calls into a single request to reduce latency and server load.
+    const res = await fetch(`https://api.alquran.cloud/v1/surah/${num}/editions/${reciter},${transEdition},en.transliteration`);
+    const result = await res.json();
+    if (result.code === 200 && Array.isArray(result.data)) {
+      const [dataAudio, dataTrans, dataTr] = result.data;
+      const s = dataAudio;
+      const transAyahs = dataTrans?.ayahs || [];
+      const trAyahs = dataTr?.ayahs || [];
       const transMap = {};
       const trMap = {};
       transAyahs.forEach(a => { transMap[a.numberInSurah] = a.text; });
