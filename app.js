@@ -32,6 +32,7 @@ import {
 const GROQ_API_KEY = "gsk_" + "G4hS9B6aMbDC1S3eRxISWGdyb3FY7bOWRXYr4aAFm5NKQH1EVshH";
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
+const APP_VERSION = "20260516-2";
 const AI_SYSTEM_PROMPT_PL = `Jesteś ekspertem od języka arabskiego, islamu i kultury muzułmańskiej w aplikacji 'Alif AI'. Pomagasz osobom uczącym się arabskiego i islamu — zwłaszcza konwertytom i nowicjuszom.
 Zawsze odpowiadaj TYLKO w języku polskim. Bądź przyjacielski, ciepły i zachęcający.
 NIGDY nie używaj surowych linków markdown ani nie generuj zbędnego kodu.
@@ -356,9 +357,13 @@ let prayerGuideStep = 0;
 const AI_LIMITS = {
   maxPromptLength: 420,
   maxMessages: 16,
-  dailyRequests: 18,
-  minSecondsBetweenRequests: 18,
-  maxTokens: 650
+  dailyRequests: 10,
+  minSecondsBetweenRequests: 20,
+  maxTokens: 550,
+  maxGeneratedFlashcards: 6,
+  maxGeneratedQuizQuestions: 5,
+  maxStoredAiFlashcards: 80,
+  maxStoredAiQuizzes: 25
 };
 
 const AI_TOPIC_SUGGESTIONS = {
@@ -789,6 +794,7 @@ function init() {
   applyThemeMeta();
   updateDocumentI18nMeta();
   registerPwa();
+  watchAppVersion();
   renderNav();
   bindGlobalEvents();
   mountAiAssistant();
@@ -919,6 +925,66 @@ function showToast(message = tx("Zapisano", "Saved")) {
   toast.textContent = message;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 5800);
+}
+
+async function clearAppCaches() {
+  if ("caches" in window) {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter((key) => key.startsWith("alif-ai-")).map((key) => caches.delete(key)));
+  }
+}
+
+async function activateFreshAppVersion(reason = "version") {
+  if (window.__alifReloading) return;
+  window.__alifReloading = true;
+  try {
+    localStorage.setItem("alif-app-version", APP_VERSION);
+    showToast(tx("Aktualizuje aplikacje do najnowszej wersji...", "Updating the app to the newest version..."));
+    if ("serviceWorker" in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map(async (registration) => {
+        await registration.update().catch(() => {});
+        const worker = registration.waiting || registration.installing;
+        worker?.postMessage({ type: "SKIP_WAITING", reason });
+      }));
+    }
+    await clearAppCaches();
+  } catch {
+    // Reload even if cache cleanup failed; the next boot will try again.
+  } finally {
+    window.location.reload();
+  }
+}
+
+async function checkAppVersion() {
+  if (location.protocol === "file:") return;
+  try {
+    const response = await fetch(`./version.json?ts=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) return;
+    const remote = await response.json();
+    const remoteVersion = String(remote.version || "").trim();
+    if (!remoteVersion) return;
+    const storedVersion = localStorage.getItem("alif-app-version");
+    if (!storedVersion) {
+      localStorage.setItem("alif-app-version", remoteVersion);
+      return;
+    }
+    if (remoteVersion !== storedVersion || remoteVersion !== APP_VERSION) {
+      await activateFreshAppVersion("remote-version");
+    }
+  } catch {
+    // Offline use stays available; update check resumes on the next connection.
+  }
+}
+
+function watchAppVersion() {
+  localStorage.setItem("alif-app-version", localStorage.getItem("alif-app-version") || APP_VERSION);
+  checkAppVersion();
+  window.addEventListener("focus", checkAppVersion);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) checkAppVersion();
+  });
+  setInterval(checkAppVersion, 5 * 60 * 1000);
 }
 
 
@@ -5139,7 +5205,7 @@ function addAiQuiz(text, topic = "") {
       options: [optionAMatch[1].trim(), optionBMatch[1].trim(), optionCMatch[1].trim()],
       correctIndex: correctMatch[1].toUpperCase().charCodeAt(0) - 65
     };
-  }).filter(Boolean);
+  }).filter(Boolean).slice(0, AI_LIMITS.maxGeneratedQuizQuestions);
 
   if (!questions.length) {
     showToast(tx("Nie udało się odczytać pytań. Poproś AI o format QUIZ.", "Could not parse questions. Ask AI for QUIZ format."));
@@ -5153,6 +5219,7 @@ function addAiQuiz(text, topic = "") {
     return false;
   }
   state.aiQuizzes.unshift({ id: crypto.randomUUID(), title, questions });
+  state.aiQuizzes = state.aiQuizzes.slice(0, AI_LIMITS.maxStoredAiQuizzes);
   saveState();
   showToast(tx("Quiz został zapisany.", "Quiz saved."));
   return true;
@@ -5160,63 +5227,69 @@ function addAiQuiz(text, topic = "") {
 
 function addAiFlashcards(text) {
   const created = [];
-  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+  const lines = text.split(String.fromCharCode(10)).map(l => l.trim()).filter(Boolean);
   const existingFronts = new Set([...(state.aiFlashcards || []), ...(state.customFlashcards || []), ...words].map(card => normalizeCardKey(card.front || card.ar || "")));
+  const canAddMore = () => created.length < AI_LIMITS.maxGeneratedFlashcards;
+  const hasArabic = (value = "") => Array.from(value).some((char) => {
+    const code = char.charCodeAt(0);
+    return code >= 0x0600 && code <= 0x06ff;
+  });
+  const addCard = (front, back) => {
+    const cleanFront = String(front || "").trim();
+    const cleanBack = String(back || "").trim().slice(0, 180);
+    const key = normalizeCardKey(cleanFront);
+    if (!canAddMore() || cleanFront.length < 2 || cleanBack.length < 2 || !hasArabic(cleanFront) || hasArabic(cleanBack) || existingFronts.has(key)) return;
+    created.push({ id: `ai-${crypto.randomUUID()}`, front: cleanFront, back: cleanBack, hint: "AI" });
+    existingFronts.add(key);
+  };
+  const splitPair = (line) => {
+    const emDash = String.fromCharCode(0x2014);
+    const enDash = String.fromCharCode(0x2013);
+    const separators = [` ${emDash} `, ` ${enDash} `, " - ", " = ", " : ", emDash, enDash, "-", "=", ":"];
+    const separator = separators.find((item) => line.includes(item));
+    if (!separator) return null;
+    const index = line.indexOf(separator);
+    return [line.slice(0, index), line.slice(index + separator.length)];
+  };
 
-  // Pattern 1: Arabic — Translation (primary expected format)
   for (const line of lines) {
-    const m = line.match(/^([\u0600-\u06FF][\u0600-\u06FF\s\u064B-\u0652\u0600-\u06FF]*?)\s*[—\-–:=]+\s*(.+)$/);
-    if (m) {
-      const front = m[1].trim();
-      const back = m[2].trim().slice(0, 180);
-      if (front.length >= 2 && back.length >= 2 && !/[\u0600-\u06FF]{3,}/.test(back) && !existingFronts.has(normalizeCardKey(front))) {
-        created.push({ id: `ai-${crypto.randomUUID()}`, front, back, hint: "AI" });
-        existingFronts.add(normalizeCardKey(front));
-      }
-    }
+    if (!canAddMore()) break;
+    const pair = splitPair(line);
+    if (pair) addCard(pair[0], pair[1]);
   }
 
-  // Pattern 2: "Strona przednia: X" / "Strona tylna: Y" (AI old format)
   if (!created.length) {
     for (let i = 0; i < lines.length - 1; i++) {
-      const fM = lines[i].match(/(?:strona\s+przednia|front)[:\s]+(.+)/i);
-      const bM = lines[i + 1].match(/(?:strona\s+tylna|back)[:\s]+(.+)/i);
-      if (fM && bM) {
-        const front = fM[1].trim();
-        if (!existingFronts.has(normalizeCardKey(front))) {
-          created.push({ id: `ai-${crypto.randomUUID()}`, front, back: bM[1].trim().slice(0, 180), hint: "AI" });
-          existingFronts.add(normalizeCardKey(front));
-        }
-        i++;
-      }
+      if (!canAddMore()) break;
+      const frontLine = lines[i].toLowerCase();
+      const backLine = lines[i + 1].toLowerCase();
+      if ((!frontLine.includes("strona przednia") && !frontLine.includes("front")) || (!backLine.includes("strona tylna") && !backLine.includes("back"))) continue;
+      const front = lines[i].slice(lines[i].indexOf(":") + 1);
+      const back = lines[i + 1].slice(lines[i + 1].indexOf(":") + 1);
+      addCard(front, back);
+      i++;
     }
   }
 
-  // Pattern 3: "1. arabic - polish" numbered format
   if (!created.length) {
     for (const line of lines) {
-      const m = line.match(/^\d+[.)\s]+([\u0600-\u06FF][^—\-:=]*?)\s*[-—:]+\s*(.+)$/);
-      if (m) {
-        const front = m[1].trim();
-        const back = m[2].trim().slice(0, 180);
-        if (front.length >= 2 && back.length >= 2 && !existingFronts.has(normalizeCardKey(front))) {
-          created.push({ id: `ai-${crypto.randomUUID()}`, front, back, hint: "AI" });
-          existingFronts.add(normalizeCardKey(front));
-        }
-      }
+      if (!canAddMore()) break;
+      const withoutNumber = line.replace(/^\s*[0-9]+[.)]?\s*/, "");
+      const pair = splitPair(withoutNumber);
+      if (pair) addCard(pair[0], pair[1]);
     }
   }
 
   if (!created.length) {
-    showToast(tx("Nie znaleziono par słowo–tłumaczenie. Poproś AI o format: arabskie — polskie.", "No word-translation pairs found. Ask AI for format: arabic — translation."));
+    showToast(tx("Nie znaleziono par slowo-tlumaczenie. Popros AI o format: arabskie - polskie.", "No word-translation pairs found. Ask AI for format: arabic - translation."));
     return;
   }
   if (!state.aiFlashcards) state.aiFlashcards = [];
   state.aiFlashcards.unshift(...created);
+  state.aiFlashcards = state.aiFlashcards.slice(0, AI_LIMITS.maxStoredAiFlashcards);
   saveState();
-  showToast(tx(`Dodano ${created.length} fiszek ✓`, `Added ${created.length} flashcards ✓`));
+  showToast(tx(`Dodano ${created.length} fiszek. Limit jednego zapisu: ${AI_LIMITS.maxGeneratedFlashcards}.`, `Added ${created.length} flashcards. Per-save limit: ${AI_LIMITS.maxGeneratedFlashcards}.`));
 }
-
 function confetti() {
   const canvas = $("#confettiCanvas");
   const ctx = canvas.getContext("2d");
