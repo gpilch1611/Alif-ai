@@ -39,7 +39,8 @@ NIGDY nie używaj surowych linków markdown ani nie generuj zbędnego kodu.
 Zasady generowania treści:
 FISZKI: Format WYŁĄCZNIE "arabskie_słowo — polskie_tłumaczenie", jedna para na linię, BEZ numerów, BEZ "Strona przednia/tylna", BEZ zdań.
 Przykład poprawny: كِتَاب — książka
-ISLAM/MODLITWA/KORAN: odpowiadaj merytorycznie, z szacunkiem i precyzją.`;
+ISLAM/MODLITWA/KORAN: odpowiadaj merytorycznie, z szacunkiem i precyzją.
+QUIZ: Format "PYTANIE: [tekst] | A: [opcja] | B: [opcja] | C: [opcja] | POPRAWNA: [A/B/C]", jedna linia to jedno pytanie.`;
 const AI_SYSTEM_PROMPT_EN = `You are an expert in Arabic language, Islam and Muslim culture inside the app 'Alif AI'. You help people learning Arabic and Islam — especially converts and beginners.
 Always reply ONLY in English. Be friendly, warm and encouraging.
 NEVER use raw markdown links or generate unnecessary code.
@@ -47,7 +48,8 @@ NEVER use raw markdown links or generate unnecessary code.
 Content generation rules:
 FLASHCARDS: Format ONLY "arabic_word — english_translation", one pair per line, NO numbers, NO "Front/Back" labels, NO sentences.
 Correct example: كِتَاب — book
-ISLAM/PRAYER/QURAN: answer accurately, with respect and precision.`;
+ISLAM/PRAYER/QURAN: answer accurately, with respect and precision.
+QUIZ: Format "QUESTION: [text] | A: [option] | B: [option] | C: [option] | CORRECT: [A/B/C]", each line one question.`;
 
 const $ = (selector) => document.querySelector(selector);
 const view = $("#view");
@@ -73,7 +75,7 @@ const navItems = [
 
 const secondaryNavItems = [];
 
-const ISLAM_ROUTES = ["islam","koran","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","prayer","prayerGuide"];
+const ISLAM_ROUTES = ["islam","koran","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","glossary","prayer","prayerGuide"];
 const APP_ROUTES = new Set([
   ...navItems.map(([id]) => id),
   ...secondaryNavItems.map(([id]) => id),
@@ -366,8 +368,9 @@ const defaultState = {
   writingDone: [],
   flashcards: {},
   customFlashcards: [],
+  aiFlashcards: [],
+  aiQuizzes: [],
   adventurePhotos: [],
-  adventureStories: [],
   books: [],
   interactiveBooks: [],
   cultureFacts: [],
@@ -955,7 +958,7 @@ function render() {
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
   const books = () => setRoute("culture");
-  const views = { home, islam, koran, alphabet, calendar: islamicCalendar, review: reviewCenter, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq, adventure: learningJournal };
+  const views = { home, islam, koran, alphabet, calendar: islamicCalendar, review: reviewCenter, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq, glossary, adventure: learningJournal };
   (views[route] || home)();
 }
 
@@ -1275,7 +1278,8 @@ function islam() {
     { route: "muallaf",    icon: "🌱", titlePl: "Nowy muzułmanin",  titleEn: "New Muslim",       descPl: "Pierwsze kroki, szahada i nie musisz być perfekcyjny",        descEn: "First steps, shahada and you don't need to be perfect" },
     { route: "halalharam", icon: "⚖",  titlePl: "Halal & Haram",   titleEn: "Halal & Haram",   descPl: "Jedzenie, napoje, zachowanie — co wolno, czego nie",          descEn: "Food, drinks, behaviour — what is and isn't allowed" },
     { route: "dhikr",      icon: "📿", titlePl: "Dhikr",            titleEn: "Dhikr",           descPl: "Licznik subhanallah, alhamdulillah, allahu akbar",            descEn: "Subhanallah, alhamdulillah, allahu akbar counter" },
-    { route: "islamfaq",   icon: "❓", titlePl: "FAQ islamu",       titleEn: "Islam FAQ",        descPl: "Mity, islamofobia, kobiety, terroryzm, inne religie",         descEn: "Myths, Islamophobia, women, terrorism, other religions" }
+    { route: "islamfaq",   icon: "❓", titlePl: "FAQ islamu",       titleEn: "Islam FAQ",        descPl: "Mity, islamofobia, kobiety, terroryzm, inne religie",         descEn: "Myths, Islamophobia, women, terrorism, other religions" },
+    { route: "glossary",   icon: "Aa", titlePl: "Słownik pojęć",    titleEn: "Glossary",         descPl: "Najważniejsze słowa: wudu, sunnah, fiqh, aqidah",             descEn: "Key terms: wudu, sunnah, fiqh, aqidah" }
   ];
   view.innerHTML = `
     <div class="mb-5">
@@ -1297,6 +1301,42 @@ function islam() {
   view.querySelectorAll("[data-route]").forEach(btn =>
     btn.addEventListener("click", () => setRoute(btn.dataset.route))
   );
+}
+
+function glossary() {
+  const terms = [
+    { ar: "الوضوء", tr: "wudu", pl: "Obmycie przed modlitwą.", en: "Ritual washing before prayer." },
+    { ar: "الغسل", tr: "ghusl", pl: "Pełne obmycie rytualne.", en: "Full ritual washing." },
+    { ar: "السنة", tr: "sunnah", pl: "Praktyka i nauczanie Proroka Muhammada ﷺ.", en: "The practice and teaching of Prophet Muhammad ﷺ." },
+    { ar: "الفقه", tr: "fiqh", pl: "Rozumienie prawa islamskiego w praktyce.", en: "Practical understanding of Islamic law." },
+    { ar: "العقيدة", tr: "aqidah", pl: "Podstawy wiary i przekonań muzułmanina.", en: "Core beliefs of a Muslim." },
+    { ar: "الدعاء", tr: "dua", pl: "Osobista prośba i modlitwa do Allaha.", en: "Personal supplication to Allah." },
+    { ar: "الذكر", tr: "dhikr", pl: "Wspominanie Allaha słowami i sercem.", en: "Remembrance of Allah by words and heart." },
+    { ar: "الحلال", tr: "halal", pl: "To, co jest dozwolone.", en: "What is permissible." },
+    { ar: "الحرام", tr: "haram", pl: "To, co jest zakazane.", en: "What is forbidden." },
+    { ar: "النية", tr: "niyyah", pl: "Intencja stojąca za czynem.", en: "The intention behind an action." }
+  ];
+
+  view.innerHTML = `
+    <div class="mb-5">
+      <p class="font-bold text-emerald-600">${tx("Islam", "Islam")}</p>
+      <h1 class="text-3xl font-black">${tx("Słownik pojęć", "Glossary")}</h1>
+      <p class="text-[var(--muted)] mt-1">${tx("Krótka mapa podstawowych słów, które często wracają w nauce.", "A short map of key words that often return while learning.")}</p>
+    </div>
+    <div class="grid gap-3 sm:grid-cols-2">
+      ${terms.map(term => `
+        <article class="panel p-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h2 class="text-xl font-black">${escapeHtml(term.tr)}</h2>
+              <p class="text-sm text-[var(--muted)]">${state.lang === "pl" ? escapeHtml(term.pl) : escapeHtml(term.en)}</p>
+            </div>
+            <p class="arabic text-3xl leading-none" style="direction:rtl">${escapeHtml(term.ar)}</p>
+          </div>
+        </article>
+      `).join("")}
+    </div>
+  `;
 }
 
 
@@ -2623,6 +2663,8 @@ function settings() {
     state.writingDone = [];
     state.flashcards = {};
     state.customFlashcards = [];
+    state.aiFlashcards = [];
+    state.aiQuizzes = [];
     state.miniLessonsDone = [];
     state.quizStats = { correct: 0, wrong: 0 };
     state.quizHistory = [];
@@ -2939,6 +2981,7 @@ function flashcards() {
     <div class="mb-3 flex flex-wrap gap-2">
       <button class="tab-btn active" data-tab="letters">${tx("Litery", "Letters")}</button>
       <button class="tab-btn" data-tab="words">${tx("Słowa", "Words")}</button>
+      <button class="tab-btn" data-tab="ai">${tx("Fiszki AI", "AI Cards")}</button>
     </div>
     <div class="mb-4 flex flex-wrap gap-2">
       <button class="mode-btn active" data-mode="random">${tx("Losowo", "Random")}</button>
@@ -2964,21 +3007,24 @@ function flashcards() {
 }
 
 function buildFlashDeck(tab, mode) {
-  const source = tab === "letters"
-    ? arabicAlphabet.map((letter) => ({ id: `letter-${letter.id}`, front: letter.forms.isolated, translation: letterName(letter), transliteration: letter.transliteration, back: `${letterName(letter)} · ${letter.transliteration}`, hint: letterPronunciationText(letter) }))
-    : tab === "words"
-      ? words.map((word) => ({ id: `word-${word.id}`, front: word.ar, translation: wordMeaning(word), transliteration: word.tr, back: `${wordMeaning(word)} · ${word.tr}`, hint: tx("slowo", "word") }))
-      : state.customFlashcards.map((card) => {
-        const parsed = parseBack(card.back);
-        return {
-          id: card.id || `ai-${crypto.randomUUID()}`,
-          front: card.front || card.ar || "سلام",
-          translation: card.translation || parsed.translation || card.pl || (state.lang === "pl" ? "Karta AI" : "AI card"),
-          transliteration: card.transliteration || parsed.transliteration || card.tr || card.hint || "AI",
-          back: card.back || parsed.translation || card.pl || "AI",
-          hint: card.hint || "AI"
-        };
-      });
+  let source = [];
+  if (tab === "letters") {
+    source = arabicAlphabet.map((letter) => ({ id: `letter-${letter.id}`, front: letter.forms.isolated, translation: letterName(letter), transliteration: letter.transliteration, back: `${letterName(letter)} · ${letter.transliteration}`, hint: letterPronunciationText(letter) }));
+  } else if (tab === "words") {
+    source = words.map((word) => ({ id: `word-${word.id}`, front: word.ar, translation: wordMeaning(word), transliteration: word.tr, back: `${wordMeaning(word)} · ${word.tr}`, hint: tx("slowo", "word") }));
+  } else if (tab === "ai") {
+    source = (state.aiFlashcards || []).concat(state.customFlashcards || []).map((card) => {
+      const parsed = parseBack(card.back);
+      return {
+        id: card.id || `ai-${crypto.randomUUID()}`,
+        front: card.front || card.ar || "سلام",
+        translation: card.translation || parsed.translation || card.pl || (state.lang === "pl" ? "Karta AI" : "AI card"),
+        transliteration: card.transliteration || parsed.transliteration || card.tr || card.hint || "AI",
+        back: card.back || parsed.translation || card.pl || "AI",
+        hint: card.hint || "AI"
+      };
+    });
+  }
   const dueNow = Date.now();
   flashDeck = source.filter((card) => {
     const meta = state.flashcards[card.id];
@@ -3429,7 +3475,7 @@ function learningJournalStats() {
   const todayLog = state.prayerLog?.[today()] || {};
   const prayersDone = OBLIGATORY_PRAYERS.filter(name => todayLog[name]).length;
   const memorized = HIFZ_SURAHS.filter(num => state.hifzProgress?.[num] === "memorized").length;
-  const noteCount = Object.values(state.adventureNotes || {}).filter(Boolean).length + (state.adventureStories || []).filter(story => story?.text).length;
+  const noteCount = Object.values(state.adventureNotes || {}).filter(Boolean).length;
   const lettersDone = state.learnedLetters?.length || 0;
   return [
     { value: `${lettersDone}/28`, label: tx("Litery", "Letters"), route: "alphabet" },
@@ -3449,7 +3495,6 @@ function learningJournal() {
   if (!state.adventureNotes) state.adventureNotes = {};
 
   const events = [];
-  const aiEvents = [];
 
   (state.learnedLettersLog || []).forEach(entry => {
     const letter = arabicAlphabet.find(l => l.id === entry.id);
@@ -3458,10 +3503,6 @@ function learningJournal() {
 
   Object.entries(state.adventureNotes || {}).forEach(([date, text]) => {
     if (text) events.push({ date, icon: "📝", text: escapeHtml(text), type: "note" });
-  });
-
-  (state.adventureStories || []).forEach(story => {
-    if (story?.text) aiEvents.push({ date: story.id || today(), icon: "AI", text: `${escapeHtml(story.title || tx("Wpis AI", "AI entry"))}: ${escapeHtml(story.text)}`, type: "note" });
   });
 
   if (state.learnedLetters.length >= 28) events.push({ date: today(), icon: "🏆", text: tx("Poznałeś/aś cały alfabet arabski!", "You learned the full Arabic alphabet!"), type: "milestone" });
@@ -3477,7 +3518,6 @@ function learningJournal() {
   if (state.streak >= 7) events.push({ date: today(), icon: "🔥", text: tx(`Seria ${state.streak} dni nauki z rzędu!`, `${state.streak}-day learning streak!`), type: "milestone" });
 
   events.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
-  aiEvents.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
   const next = nextStepSuggestion();
 
   const timelineHtml = events.length ? events.map(ev => `
@@ -3492,19 +3532,6 @@ function learningJournal() {
       </div>
     </div>
   `).join("") : `<p class="text-[var(--muted)] text-center py-8">${tx("Brak zdarzeń. Zacznij uczyć się liter i dodawaj sury, by tu coś zobaczyć.", "No events yet. Start learning letters and add surahs to see your timeline.")}</p>`;
-
-  const aiTimelineHtml = aiEvents.length ? aiEvents.map(ev => `
-    <div class="flex gap-4 items-start">
-      <div class="flex flex-col items-center">
-        <div class="grid h-11 w-11 place-items-center rounded-full bg-blue-100 text-xl font-black">${ev.icon}</div>
-        <div class="flex-1 w-0.5 bg-[var(--line)] my-1 min-h-4"></div>
-      </div>
-      <div class="pb-4 flex-1 min-w-0">
-        <p class="font-black leading-snug">${ev.text}</p>
-        <p class="text-xs text-[var(--muted)] mt-1">${ev.date}</p>
-      </div>
-    </div>
-  `).join("") : `<p class="text-[var(--muted)] text-center py-8">${tx("Brak wpisów AI.", "No AI entries yet.")}</p>`;
 
   view.innerHTML = `
     <div class="mb-4">
@@ -3528,18 +3555,9 @@ function learningJournal() {
       <textarea id="adventureNoteInput" class="min-h-20 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3" placeholder="${tx("Napisz coś, co chcesz zapamiętać... (np. dzisiaj nauczyłem się...)", "Write something to remember... (e.g. today I learned...)")}"></textarea>
       <button id="addAdventureNoteBtn" class="big-action mt-3 w-full bg-emerald-500 text-white">${tx("Dodaj wpis", "Add entry")}</button>
     </div>
-    <div class="panel mb-4 p-5">
-      <h2 class="text-lg font-black mb-3">${tx("Wpis AI do dziennika", "AI journal entry")}</h2>
-      <input id="storyPrompt" class="w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3" placeholder="${tx("Np. opisz dzisiejszą naukę liter i jedną krótką surę", "E.g. describe today's letter practice and one short surah")}" />
-      <button id="generateStoryBtn" class="big-action mt-3 w-full border border-[var(--line)] bg-[var(--surface)]">${tx("Wygeneruj wpis AI", "Generate AI entry")}</button>
-    </div>
     <div class="panel p-5 mb-4">
       <h2 class="text-lg font-black mb-4">${tx("Zdarzenia", "Events")} · ${events.length}</h2>
       <div class="mt-2">${timelineHtml}</div>
-    </div>
-    <div class="panel p-5">
-      <h2 class="text-lg font-black mb-4">${tx("Wpisy AI", "AI entries")} · ${aiEvents.length}</h2>
-      <div class="mt-2">${aiTimelineHtml}</div>
     </div>
   `;
 
@@ -3552,37 +3570,10 @@ function learningJournal() {
     saveState();
     learningJournal();
   });
-  $("#generateStoryBtn")?.addEventListener("click", generateAdventureStory);
   view.querySelectorAll("[data-journal-route]").forEach(btn => btn.addEventListener("click", () => {
     if (btn.dataset.quranTab) state.quranTab = btn.dataset.quranTab;
     setRoute(btn.dataset.journalRoute);
   }));
-}
-
-async function generateAdventureStory() {
-  const promptValue = $("#storyPrompt").value.trim() || tx("Napisz krotka, ciepla historyjke edukacyjna z trzema prostymi arabskimi slowami.", "Write a short warm learning story using three simple Arabic words.");
-  $("#generateStoryBtn").textContent = tx("Analizuję zdjęcie...", "Analyzing photo...");
-  
-  const hasPhoto = !!state.pendingAdventurePhoto;
-  const model = hasPhoto ? "llama-3.2-11b-vision-preview" : GROQ_MODEL;
-  
-  try {
-    const aiPrompt = tx(
-      `Stworz czysta, ciepla historyjke edukacyjna do osi czasu nauki. ${hasPhoto ? "OPISZ DOKŁADNIE CO WIDZISZ NA ZAŁĄCZONYM ZDJĘCIU i wpleć to w historię." : ""} Nie dodawaj surowych linkow markdown ani listy przyciskow. Dodaj 3 proste arabskie slowa z naturalnym objasnieniem w tekscie. ${promptValue}`,
-      `Create a clean, warm learning story for the Learning Timeline section. ${hasPhoto ? "DESCRIBE EXACTLY WHAT YOU SEE IN THE ATTACHED PHOTO and weave it into the story." : ""} Do not add raw markdown links or button lists. Add 3 simple Arabic words with natural explanation inside the story. ${promptValue}`
-    );
-    
-    const text = cleanAiText(await askGroq([{ role: "user", content: aiPrompt }], model, state.pendingAdventurePhoto));
-    const story = { id: crypto.randomUUID(), title: tx(`Wpis AI ${new Date().toLocaleDateString(localeTag())}`, `AI Journal ${new Date().toLocaleDateString(localeTag())}`), text, photo: state.pendingAdventurePhoto };
-    state.adventureStories.unshift(story);
-    if (state.pendingAdventurePhoto) state.adventurePhotos.unshift(state.pendingAdventurePhoto);
-    state.pendingAdventurePhoto = null;
-    saveState();
-    learningJournal();
-    confetti();
-  } catch {
-    $("#generateStoryBtn").textContent = tx("Blad AI", "AI error");
-  }
 }
 
 function cleanAiText(text) {
@@ -3958,6 +3949,7 @@ function games() {
       surahQuiz:   '<div id="surahQuizBox" class="panel p-5"></div>',
       pillarsQuiz: '<div id="pillarsQuizBox" class="panel p-5"></div>',
       asmaChallenge: '<div id="asmaChallengeBox" class="panel p-5"></div>',
+      aiQuiz:      '<div id="aiQuizBox" class="panel p-5"></div>',
     };
     const directMap = {
       flashcards: flashcardsView,
@@ -3966,7 +3958,7 @@ function games() {
     };
     if (containerMap[state.activeGame]) {
       view.innerHTML = containerMap[state.activeGame];
-      const renderers = { quiz: renderQuiz, memory: renderMemory, catch: renderCatchGame, dhikrGame: renderDhikrGame, surahQuiz: renderSurahQuiz, pillarsQuiz: renderPillarsQuiz, asmaChallenge: renderAsmaChallenge };
+      const renderers = { quiz: renderQuiz, memory: renderMemory, catch: renderCatchGame, dhikrGame: renderDhikrGame, surahQuiz: renderSurahQuiz, pillarsQuiz: renderPillarsQuiz, asmaChallenge: renderAsmaChallenge, aiQuiz: renderAiQuiz };
       (renderers[state.activeGame] || (() => {}))();
     } else if (directMap[state.activeGame]) {
       directMap[state.activeGame]();
@@ -3996,6 +3988,7 @@ function games() {
     { id: "surahQuiz",   icon: "📖", titlePl: "Quiz Surah",    titleEn: "Surah Quiz",       descPl: "Rozpoznaj surę Koranu", descEn: "Identify Quran surahs" },
     { id: "pillarsQuiz", icon: "⭐", titlePl: "Quiz Filarów",  titleEn: "Pillars Quiz",     descPl: "Test wiedzy o filarach islamu", descEn: "Islamic pillars knowledge test" },
     { id: "asmaChallenge", icon: "🕋", titlePl: "99 Imion Challenge", titleEn: "99 Names Challenge", descPl: "20 min: wpisz jak najwięcej imion Allaha", descEn: "20 min: type as many Names of Allah as possible" },
+    { id: "aiQuiz",      icon: "AI", titlePl: "Quizy AI",      titleEn: "AI Quizzes",       descPl: "Graj w quizy stworzone przez AI", descEn: "Play quizzes created by AI" },
     { id: "flashcards",  icon: "▣",  titlePl: "Fiszki",        titleEn: "Flashcards",       descPl: "Powtórki metodą SM-2", descEn: "SM-2 spaced repetition" },
     { id: "speech",      icon: "🗣", titlePl: "Wymowa",        titleEn: "Pronunciation",    descPl: "Ćwicz wymowę arabską", descEn: "Practice Arabic pronunciation" },
     { id: "writing",     icon: "✎",  titlePl: "Pisanie",       titleEn: "Writing",          descPl: "Pisz arabskie litery", descEn: "Write Arabic letters" },
@@ -4469,6 +4462,122 @@ function asmaChallengeAliases(name) {
   return [...new Set([name.tr, name.en, name.pl, ...meaningParts, ...meaningWords].map(normalizeNameInput).filter(Boolean))];
 }
 
+let currentAiQuiz = null;
+let currentAiQuestionIndex = 0;
+let aiQuizScore = 0;
+
+function renderAiQuiz() {
+  const box = $("#aiQuizBox");
+  if (!box) return;
+  const quizzes = state.aiQuizzes || [];
+
+  if (!quizzes.length) {
+    box.innerHTML = `
+      <div class="text-center py-8">
+        <h2 class="text-2xl font-black mb-2">${tx("Brak Quizów AI", "No AI Quizzes")}</h2>
+        <p class="text-[var(--muted)] mb-4">${tx("Poproś AI Assistant o stworzenie quizu i kliknij „Zapisz jako Quiz”.", "Ask the AI Assistant to create a quiz and click \"Save as Quiz\".")}</p>
+        <button class="big-action bg-emerald-500 text-white" data-open-ai>${tx("Otwórz AI", "Open AI")}</button>
+      </div>
+    `;
+    box.querySelector("[data-open-ai]")?.addEventListener("click", openAiChat);
+    return;
+  }
+
+  if (!currentAiQuiz) {
+    box.innerHTML = `
+      <h2 class="text-2xl font-black mb-4">${tx("Twoje Quizy AI", "Your AI Quizzes")}</h2>
+      <div class="grid gap-3">
+        ${quizzes.map((quiz, index) => `
+          <button class="panel p-4 text-left flex items-center justify-between gap-3" data-ai-quiz-index="${index}">
+            <div>
+              <p class="font-black">${escapeHtml(quiz.title)}</p>
+              <p class="text-xs text-[var(--muted)]">${quiz.questions.length} ${tx("pytań", "questions")}</p>
+            </div>
+            <span class="text-xl">&gt;</span>
+          </button>
+        `).join("")}
+      </div>
+    `;
+    box.querySelectorAll("[data-ai-quiz-index]").forEach(button => {
+      button.addEventListener("click", () => startAiQuiz(Number(button.dataset.aiQuizIndex)));
+    });
+    return;
+  }
+
+  const question = currentAiQuiz.questions[currentAiQuestionIndex];
+  box.innerHTML = `
+    <div class="flex items-center justify-between gap-3 mb-4">
+      <h2 class="text-xl font-black">${escapeHtml(currentAiQuiz.title)}</h2>
+      <span class="font-bold">${currentAiQuestionIndex + 1} / ${currentAiQuiz.questions.length}</span>
+    </div>
+    <div class="panel p-6 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 mb-4">
+      <p class="text-lg font-bold text-center">${escapeHtml(question.question)}</p>
+    </div>
+    <div class="grid gap-2">
+      ${question.options.map((option, index) => `
+        <button class="big-action border border-[var(--line)] bg-[var(--surface)] text-left px-4" data-ai-answer="${index}">
+          ${escapeHtml(option)}
+        </button>
+      `).join("")}
+    </div>
+  `;
+  box.querySelectorAll("[data-ai-answer]").forEach(button => {
+    button.addEventListener("click", () => checkAiQuizAnswer(Number(button.dataset.aiAnswer)));
+  });
+}
+
+function startAiQuiz(index) {
+  currentAiQuiz = state.aiQuizzes[index];
+  currentAiQuestionIndex = 0;
+  aiQuizScore = 0;
+  renderAiQuiz();
+}
+
+function checkAiQuizAnswer(index) {
+  const question = currentAiQuiz?.questions?.[currentAiQuestionIndex];
+  if (!question) return;
+  const buttons = $("#aiQuizBox").querySelectorAll("[data-ai-answer]");
+  buttons.forEach(button => { button.disabled = true; });
+
+  if (index === question.correctIndex) {
+    buttons[index].className = "big-action bg-emerald-500 text-white text-left px-4";
+    aiQuizScore += 1;
+    confetti();
+  } else {
+    buttons[index].className = "big-action bg-red-500 text-white text-left px-4";
+    buttons[question.correctIndex].className = "big-action bg-emerald-500 text-white text-left px-4";
+  }
+
+  setTimeout(() => {
+    currentAiQuestionIndex += 1;
+    if (currentAiQuestionIndex < currentAiQuiz.questions.length) renderAiQuiz();
+    else finishAiQuiz();
+  }, 900);
+}
+
+function finishAiQuiz() {
+  const box = $("#aiQuizBox");
+  const finalScore = aiQuizScore;
+  const total = currentAiQuiz.questions.length;
+  const title = currentAiQuiz.title;
+
+  state.points += finalScore * 5;
+  if (!state.gameHistory) state.gameHistory = [];
+  state.gameHistory.unshift({ game: `AI Quiz: ${title}`, score: finalScore, total, ts: Date.now() });
+  saveState();
+  currentAiQuiz = null;
+
+  box.innerHTML = `
+    <div class="text-center py-8">
+      <h2 class="text-3xl font-black mb-2">${tx("Koniec Quizu!", "Quiz Finished!")}</h2>
+      <p class="text-xl mb-4">${tx("Twój wynik", "Your score")}: <span class="font-black text-emerald-600">${finalScore} / ${total}</span></p>
+      <p class="text-[var(--muted)] mb-6">+${finalScore * 5} ${t("points")}</p>
+      <button class="big-action bg-emerald-500 text-white w-full" data-reset-ai-quiz>${tx("Wróć do listy", "Back to list")}</button>
+    </div>
+  `;
+  box.querySelector("[data-reset-ai-quiz]").addEventListener("click", renderAiQuiz);
+}
+
 function renderAsmaChallenge() {
   const DURATION = 20 * 60;
   const pool = asmaulHusna.map(name => ({
@@ -4625,6 +4734,9 @@ function aiActionButtons(index) {
   let html = '<div class="flex flex-wrap gap-2 mt-3">';
   if (/[\u0600-\u06FF].*[—\-–:=].+/.test(msg.content)) {
     html += `<button class="ai-chip" data-ai-action="flashcards" data-message-index="${index}">🗂️ ${t("addFlashcards")}</button>`;
+  }
+  if (/(?:PYTANIE|QUESTION):/i.test(msg.content)) {
+    html += `<button class="ai-chip" data-ai-action="quiz" data-message-index="${index}">+ ${tx("Zapisz jako Quiz", "Save as Quiz")}</button>`;
   }
   html += '</div>';
   return html.includes('data-ai-action') ? html : '';
@@ -4810,8 +4922,47 @@ function handleAiAction(action, messageIndex) {
     addAiFlashcards(message.content);
     setRoute("flashcards");
   }
+  if (action === "quiz") {
+    addAiQuiz(message.content);
+    state.activeGame = "aiQuiz";
+    setRoute("games");
+    saveState();
+  }
   $("#aiDialog").close();
   confetti();
+}
+
+function addAiQuiz(text) {
+  const lines = text.split("\n").map(line => line.trim()).filter(line => /(?:PYTANIE|QUESTION):/i.test(line));
+  if (!lines.length) {
+    showToast(tx("Nie znaleziono pytań do quizu.", "No quiz questions found."));
+    return;
+  }
+
+  const questions = lines.map(line => {
+    const questionMatch = line.match(/(?:PYTANIE|QUESTION):\s*(.*?)\s*\|/i);
+    const optionAMatch = line.match(/A:\s*(.*?)\s*\|/i);
+    const optionBMatch = line.match(/B:\s*(.*?)\s*\|/i);
+    const optionCMatch = line.match(/C:\s*(.*?)\s*\|/i);
+    const correctMatch = line.match(/(?:POPRAWNA|CORRECT):\s*([A-C])/i);
+    if (!questionMatch || !optionAMatch || !optionBMatch || !optionCMatch || !correctMatch) return null;
+    return {
+      question: questionMatch[1].trim(),
+      options: [optionAMatch[1].trim(), optionBMatch[1].trim(), optionCMatch[1].trim()],
+      correctIndex: correctMatch[1].toUpperCase().charCodeAt(0) - 65
+    };
+  }).filter(Boolean);
+
+  if (!questions.length) {
+    showToast(tx("Nie udało się odczytać pytań. Poproś AI o format QUIZ.", "Could not parse questions. Ask AI for QUIZ format."));
+    return;
+  }
+
+  if (!state.aiQuizzes) state.aiQuizzes = [];
+  const title = `${tx("Quiz AI", "AI Quiz")} ${new Date().toLocaleDateString(localeTag())}`;
+  state.aiQuizzes.unshift({ id: crypto.randomUUID(), title, questions });
+  saveState();
+  showToast(tx("Quiz został zapisany.", "Quiz saved."));
 }
 
 function addAiFlashcards(text) {
@@ -4860,7 +5011,8 @@ function addAiFlashcards(text) {
     showToast(tx("Nie znaleziono par słowo–tłumaczenie. Poproś AI o format: arabskie — polskie.", "No word-translation pairs found. Ask AI for format: arabic — translation."));
     return;
   }
-  state.customFlashcards.unshift(...created);
+  if (!state.aiFlashcards) state.aiFlashcards = [];
+  state.aiFlashcards.unshift(...created);
   saveState();
   showToast(tx(`Dodano ${created.length} fiszek ✓`, `Added ${created.length} flashcards ✓`));
 }
@@ -4972,7 +5124,7 @@ function checkBadges() {
   const ll = state.learnedLetters.length;
   const sq = (state.quranSurahFavorites || []).length;
   const pts = state.points;
-  const fc = (state.customFlashcards || []).length + Object.keys(state.flashcards || {}).length;
+  const fc = (state.customFlashcards || []).length + (state.aiFlashcards || []).length + Object.keys(state.flashcards || {}).length;
   const ld = (state.miniLessonsDone || []).length;
   const dhikrTotal = Object.values(state.dhikrCounts || {}).reduce((sum, count) => sum + (Number(count) || 0), 0);
   const prayerSessions = state.prayerGuideSessions || 0;
@@ -4982,6 +5134,7 @@ function checkBadges() {
     (state.dhikrGameHistory || []).length +
     (state.pillarsQuizHistory || []).length +
     (state.surahQuizHistory || []).length +
+    (state.gameHistory || []).filter(item => String(item.game || "").startsWith("AI Quiz")).length +
     (state.memoryStats?.correct || 0) +
     (state.memoryStats?.wrong || 0);
 
