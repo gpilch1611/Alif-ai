@@ -63,8 +63,20 @@ async function mockSurahApi(page, surahNumber = 1) {
 
 test.describe("Alif AI smoke", () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => localStorage.clear());
     await page.goto("/");
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem("alif-ai-state", JSON.stringify({ lang: "pl", theme: "light", onboardingComplete: true }));
+    });
+    await page.goto("/");
+  });
+
+  test("New users see full-screen onboarding first", async ({ page }) => {
+    await page.evaluate(() => localStorage.clear());
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: /Wybierz pierwsza sciezke|Choose your first path/ })).toBeVisible();
+    await expect(page.locator("[data-onboarding-goal]")).toHaveCount(5);
+    await expect(page.locator(".home-stat-card")).toHaveCount(0);
   });
 
   test("Start in Polish keeps learning center and stat cards inside their boxes", async ({ page }) => {
@@ -86,6 +98,7 @@ test.describe("Alif AI smoke", () => {
         JSON.stringify({
           lang: "pl",
           theme: "light",
+          onboardingComplete: true,
           quranSurahFavorites: Array.from({ length: 60 }, (_, index) => index + 1),
           quranFavorites: Array.from({ length: 60 }, (_, index) => ({
             num: String(index + 1),
@@ -114,6 +127,7 @@ test.describe("Alif AI smoke", () => {
         JSON.stringify({
           lang: "pl",
           theme: "light",
+          onboardingComplete: true,
           quranSurahFavorites: [1, 2],
           quranDuaFavorites: ["bismillah"],
           quranFavorites: [{ num: "2", surahName: "Al-Fatiha", trans: "The Opening" }]
@@ -143,6 +157,7 @@ test.describe("Alif AI smoke", () => {
         JSON.stringify({
           lang: "pl",
           theme: "light",
+          onboardingComplete: true,
           quranTab: "dua",
           quranSurahFavorites: [1],
           quranDuaFavorites: [],
@@ -170,7 +185,7 @@ test.describe("Alif AI smoke", () => {
 
   test("Learning journal navigation uses an icon instead of Note text", async ({ page }) => {
     await expect(page.locator("#bottomNav")).not.toContainText("Note");
-    await expect(page.locator("#bottomNav [data-route='adventure'] span").first()).toContainText("✎");
+    await expect(page.locator("#moreNavBtn")).toHaveCount(1);
   });
 
   test("99 Names Challenge accepts prefixes, meanings and simple typos once", async ({ page }) => {

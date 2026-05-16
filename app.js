@@ -29,10 +29,9 @@ import {
   SURAH_LIST
 } from "./data/quran-mode.js";
 
-const GROQ_API_KEY = "gsk_" + "G4hS9B6aMbDC1S3eRxISWGdyb3FY7bOWRXYr4aAFm5NKQH1EVshH";
-const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
 const APP_VERSION = "20260516-2";
+window.__ALIF_APP_VERSION = APP_VERSION;
 const AI_SYSTEM_PROMPT_PL = `Jesteś ekspertem od języka arabskiego, islamu i kultury muzułmańskiej w aplikacji 'Alif AI'. Pomagasz osobom uczącym się arabskiego i islamu — zwłaszcza konwertytom i nowicjuszom.
 Zawsze odpowiadaj TYLKO w języku polskim. Bądź przyjacielski, ciepły i zachęcający.
 NIGDY nie używaj surowych linków markdown ani nie generuj zbędnego kodu.
@@ -70,11 +69,12 @@ const navItems = [
   ["islam",   "☪",  "navIslam"],
   ["lessons", "Aa", "navLessons"],
   ["culture", "✦",  "navCulture"],
-  ["games",   "◎",  "navGames"],
-  ["adventure", "✎", "navAdventure"]
+  ["games",   "◎",  "navGames"]
 ];
 
-const secondaryNavItems = [];
+const secondaryNavItems = [
+  ["adventure", "✎", "navAdventure"]
+];
 
 const ISLAM_ROUTES = ["islam","koran","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","glossary","prayer","prayerGuide"];
 const APP_ROUTES = new Set([
@@ -163,7 +163,7 @@ const I18N = {
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
     welcome: "Witaj w ألف AI", homeTitle: "Islam — krok po kroku", homeLead: "Arabski jest narzędziem — bo czytanie Koranu w oryginale to obowiązek każdego muzułmanina. Ucz się liter, sur, dhikru, historii islamu i modlitw.",
     pillarsQuiz: "Quiz: Filary Islamu", pillarsQuizDesc: "5 Filarów i 6 Filarów Imanu",
-    surahQuiz: "Quiz: Sury Koranu", surahQuizDesc: "Rozpoznaj arabskie nazwy sur",
+    surahQuiz: "Quiz: Sury Koranu", surahQuizDesc: "Rozpoznaj arabskie nazwy sur 78-114",
     dhikrGame: "Szybki Dhikr", dhikrGameDesc: "33 razy — jak najszybciej!", dhikrGameStart: "Dotknij aby zacząć", dhikrGameResult: "Czas",
     streak: "Seria dni", level: "Poziom", alphabetProgress: "Alfabet", todayTask: "Dzisiejsze zadanie", start: "Zaczynam", progress: "Postęp", points: "pkt",
     aiAssistant: "AI Assistant", aiPlaceholder: "Poproś o fiszki, quiz albo zapytaj o coś...", send: "Wyślij", aiHello: "Cześć! Jestem Twoim Alif AI Assistantem. Mogę stworzyć dla Ciebie fiszki, mini-quiz albo odpowiedzieć na pytania o islamie i języku arabskim.",
@@ -181,7 +181,7 @@ const I18N = {
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
     welcome: "Welcome to ألف AI", homeTitle: "Islam — step by step", homeLead: "Arabic is the key — reading the Quran in the original is every Muslim's obligation. Learn letters, surahs, dhikr, Islamic history and prayers.",
     pillarsQuiz: "Pillars Quiz", pillarsQuizDesc: "5 Pillars & 6 Pillars of Iman",
-    surahQuiz: "Surah Quiz", surahQuizDesc: "Recognise Arabic surah names",
+    surahQuiz: "Surah Quiz", surahQuizDesc: "Recognise Arabic surah names 78-114",
     dhikrGame: "Dhikr Speed", dhikrGameDesc: "33 taps — as fast as you can!", dhikrGameStart: "Tap to start", dhikrGameResult: "Time",
     streak: "Daily streak", level: "Level", alphabetProgress: "Alphabet", todayTask: "Today's task", start: "Start", progress: "Progress", points: "pts",
     aiAssistant: "AI Assistant", aiPlaceholder: "Ask for flashcards, a quiz, or anything else...", send: "Send", aiHello: "Hi! I am your Alif AI Assistant. I can create flashcards, a mini-quiz, or answer your questions about Islam and Arabic.",
@@ -1035,11 +1035,6 @@ function registerPwa() {
 
 function renderNav() {
   const moreActive = secondaryNavItems.some(([id]) => id === route);
-  const secondaryHtml = secondaryNavItems.map(([id, icon, labelKey]) => `
-      <button class="nav-btn haptic-feedback ${route === id ? "active" : ""} nav-secondary" data-route="${id}">
-        <span class="text-xl">${icon}</span><span class="nav-label">${t(labelKey)}</span>
-      </button>
-    `).join("");
   const moreHtml = secondaryNavItems.length ? `
     <button id="moreNavBtn" class="nav-btn haptic-feedback ${moreActive ? "active" : ""} nav-more">
       <span class="text-xl">⋯</span><span class="nav-label">${t("more")}</span>
@@ -1050,7 +1045,7 @@ function renderNav() {
       <button class="nav-btn haptic-feedback ${route === id || (id === "islam" && ISLAM_ROUTES.includes(route)) ? "active" : ""}" data-route="${id}">
         <span class="text-xl">${icon}</span><span class="nav-label">${t(labelKey)}</span>
       </button>
-    `).join("") + secondaryHtml + moreHtml;
+    `).join("") + moreHtml;
 
   nav.querySelectorAll("[data-route]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1086,6 +1081,10 @@ function renderNav() {
 }
 
 function render() {
+  if (window._writingResizeHandler) {
+    window.removeEventListener("resize", window._writingResizeHandler);
+    window._writingResizeHandler = null;
+  }
   if (dhikrGameTimer) {
     clearInterval(dhikrGameTimer);
     dhikrGameTimer = null;
@@ -1912,7 +1911,45 @@ function onboardingPanel() {
   `;
 }
 
+function renderOnboardingFullScreen() {
+  view.innerHTML = `
+    <section class="min-h-[68vh] grid place-items-center py-8">
+      <div class="w-full max-w-[480px] text-center">
+        <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Spokojny start", "Calm start")}</p>
+        <h1 class="mt-2 text-3xl font-black">${tx("Wybierz pierwsza sciezke", "Choose your first path")}</h1>
+        <p class="mt-3 text-sm text-[var(--muted)]">${tx("Alif AI dopasuje pierwszy ekran do tego, czego chcesz nauczyc sie najpierw.", "Alif AI will open the first path around what you want to learn first.")}</p>
+        <div class="mt-6 grid gap-3 text-left">
+          ${ONBOARDING_GOALS.map(goal => `
+            <button class="onboarding-choice soft-panel min-h-16 w-full" data-onboarding-goal="${goal.id}" data-route="${goal.route}">
+              <span>${goal.icon}</span>
+              <strong>${state.lang === "pl" ? goal.pl : goal.en}</strong>
+            </button>
+          `).join("")}
+        </div>
+        <button class="mt-5 text-sm font-black text-[var(--muted)]" data-onboarding-skip>${tx("Pomin ->", "Skip ->")}</button>
+      </div>
+    </section>
+  `;
+  view.querySelectorAll("[data-onboarding-goal]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.learningGoal = button.dataset.onboardingGoal;
+      state.onboardingComplete = true;
+      saveState();
+      setRoute(button.dataset.route);
+    });
+  });
+  view.querySelector("[data-onboarding-skip]")?.addEventListener("click", () => {
+    state.onboardingComplete = true;
+    saveState();
+    home();
+  });
+}
+
 function home() {
+  if (!state.onboardingComplete) {
+    renderOnboardingFullScreen();
+    return;
+  }
   const tasks = activeDailyTasks();
   const task = tasks[new Date().getDate() % tasks.length];
   let taskRoute = "lessons";
@@ -2244,6 +2281,7 @@ function parseHadithCollection(source = "") {
 function hadithQuality(hadith) {
   return {
     source: hadith.source || "",
+    grade: hadith.grade || "ungraded",
     verified: Boolean(hadith.source),
     source_type: "hadith_collection",
     source_ref: hadith.source || "",
@@ -3503,6 +3541,9 @@ function writing() {
     </section>
   `;
   setupCanvas();
+  const _resizeHandler = () => { if (route === "writing") setupCanvas(); };
+  window._writingResizeHandler = _resizeHandler;
+  window.addEventListener("resize", _resizeHandler, { passive: true });
   $("#sayWritingLetter").addEventListener("click", () => speakArabic(writingLetter.forms.isolated));
   $("#clearWriting").addEventListener("click", setupCanvas);
   $("#nextWriting").addEventListener("click", writing);
@@ -3819,14 +3860,15 @@ function books() {
       ${state.interactiveBooks.map((book) => `
         <button class="panel p-4 text-left" data-interactive-book="${book.id}">
           <div class="book-cover grid place-items-center text-4xl">AI</div>
-          <strong class="mt-3 block">${book.title}</strong>
+          <!-- SECURITY: escaped AI output -->
+          <strong class="mt-3 block">${escapeHtml(book.title)}</strong>
           <span class="text-sm text-[var(--muted)]">${book.cards.length} ${tx("stron / kart", "pages / cards")}</span>
         </button>
       `).join("")}
       ${state.books.map((book) => `
         <button class="panel p-4 text-left" data-book="${book.id}">
           <div class="book-cover grid place-items-center text-5xl">PDF</div>
-          <strong class="mt-3 block">${book.title}</strong>
+          <strong class="mt-3 block">${escapeHtml(book.title)}</strong>
           <span class="text-sm text-[var(--muted)]">${book.sourceType === "file" ? tx("plik lokalny", "local file") : tx("link", "link")}</span>
         </button>
       `).join("") || (state.interactiveBooks.length ? "" : `<div class="soft-panel p-6 text-center text-[var(--muted)] sm:col-span-2 lg:col-span-3">${tx("Brak ksiazeczek. Wygeneruj pierwsza bajke!", "No books yet. Generate your first story!")}</div>`)}
@@ -3955,7 +3997,7 @@ function openBook(id) {
   $("#pdfViewer").innerHTML = `
     <div class="panel p-4">
       <div class="mb-3 flex items-center justify-between gap-3">
-        <h2 class="text-xl font-black">${book.title}</h2>
+        <h2 class="text-xl font-black">${escapeHtml(book.title)}</h2>
         <a class="font-bold text-emerald-600" href="${book.url}" target="_blank" rel="noopener">${tx("Otworz", "Open")}</a>
       </div>
       <iframe title="${book.title}" src="${book.url}" class="h-[70vh] w-full rounded-lg border border-[var(--line)] bg-white"></iframe>
@@ -3970,7 +4012,8 @@ function openInteractiveBook(id) {
   $("#pdfViewer").innerHTML = `
     <div class="panel p-4" data-flipbook="${book.id}">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 class="text-xl font-black">${book.title}</h2>
+        <!-- SECURITY: escaped AI output -->
+        <h2 class="text-xl font-black">${escapeHtml(book.title)}</h2>
         <div class="flex gap-2">
           <button class="rounded-lg border border-[var(--line)] px-4 py-2 font-bold" data-page-prev>‹</button>
           <span class="rounded-lg bg-emerald-500 px-4 py-2 font-bold text-white"><span data-page-current>1</span>/${Math.max(1, pages.length)}</span>
@@ -3983,7 +4026,7 @@ function openInteractiveBook(id) {
             ${page.map((card) => `
               <article class="soft-panel p-4">
                 <div class="flex items-start justify-between gap-2">
-                  <button class="arabic text-5xl" data-say="${escapeHtml(card.ar)}">${card.ar}</button>
+                  <button class="arabic text-5xl" data-say="${escapeHtml(card.ar)}">${escapeHtml(card.ar)}</button>
                   <button class="speaker-btn" data-say="${escapeHtml(card.ar)}">🔊</button>
                 </div>
                 <p class="mt-2 font-bold">${escapeHtml(card.pl)}</p>
@@ -4079,17 +4122,21 @@ function culture() {
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="text-sm font-bold text-emerald-600">${tx("Ciekawostka dnia", "Fact of the day")}</p>
-          <h2 class="text-2xl font-black">${todayFact ? todayFact.title : tx("Brak ciekawostki na dziś", "No fact for today yet")}</h2>
+          <!-- SECURITY: escaped AI output -->
+          <h2 class="text-2xl font-black">${todayFact ? escapeHtml(todayFact.title) : tx("Brak ciekawostki na dzis", "No fact for today yet")}</h2>
         </div>
         <button id="generateCultureBtn" class="${btnClass}" ${hasToday ? "disabled" : ""}>${btnLabel}</button>
       </div>
+      <!-- SECURITY: escaped AI output -->
       <p class="mt-4 whitespace-pre-wrap text-[var(--muted)]">${todayFact ? escapeHtml(todayFact.text) : tx("AI przygotuje krótką ciekawostkę z mini-słówkiem arabskim. Jedna ciekawostka na dzień.", "AI will prepare a short fact with an Arabic mini-word. One fact per day.")}</p>
     </section>
     <div class="mt-4 grid gap-3 sm:grid-cols-2">
       ${state.cultureFacts.slice(0, 10).map((item) => `
         <article class="soft-panel p-4">
           <p class="text-xs font-bold text-[var(--muted)]">${item.date}</p>
-          <h3 class="mt-1 font-black">${item.title}</h3>
+          <!-- SECURITY: escaped AI output -->
+          <h3 class="mt-1 font-black">${escapeHtml(item.title)}</h3>
+          <!-- SECURITY: escaped AI output -->
           <p class="mt-2 text-sm text-[var(--muted)]">${escapeHtml(item.text)}</p>
         </article>
       `).join("")}
@@ -4458,9 +4505,16 @@ function renderSurahQuiz() {
   const choices = [correct, ...others.sort(() => Math.random() - 0.5).slice(0, 3)].sort(() => Math.random() - 0.5);
   const streak = state.surahQuizBest;
 
+  const poolStart = 78;
+  const poolEnd = 114;
+  const scopeDesc = `${tx("Rozpoznaj arabskie nazwy sur", "Identify Arabic surah names")} ${poolStart}-${poolEnd} (${pool.length} ${tx("sur", "surahs")})`;
+
   $("#surahQuizBox").innerHTML = `
-    <h2 class="text-2xl font-black">${t("surahQuiz")}</h2>
-    <p class="mt-1 text-[var(--muted)] text-sm">${t("surahQuizDesc")}</p>
+    <div class="flex flex-wrap items-center gap-2">
+      <h2 class="text-2xl font-black">${t("surahQuiz")}</h2>
+      <span class="trust-badge verified">${tx("Sury", "Surahs")} ${poolStart}-${poolEnd}</span>
+    </div>
+    <p class="mt-1 text-[var(--muted)] text-sm">${scopeDesc}</p>
     <p class="mt-2 text-sm font-bold text-[var(--muted)]">${t("correct")}: ${state.surahQuizStats.correct} · ${t("wrong")}: ${state.surahQuizStats.wrong} · ${t("record")}: ${streak}</p>
     <p class="surah-quiz-name">${escapeHtml(correct.arName)}</p>
     <p class="text-center text-xs text-[var(--muted)] -mt-2 mb-4">${tx("Sura", "Surah")} ${correct.number}</p>
@@ -4879,7 +4933,7 @@ function mountAiAssistant() {
       <div class="ai-card">
         <header class="ai-header">
           <div>
-            <p class="text-xs font-bold text-amber-300">Alif AI</p>
+            <p class="text-xs font-bold text-amber-300">Alif AI <span id="aiStatus" class="ml-2 text-[10px] font-black uppercase"></span></p>
             <h2 class="text-xl font-black">${t("aiAssistant")}</h2>
           </div>
           <button id="closeAi" class="ai-close" aria-label="Zamknij">×</button>
@@ -4904,6 +4958,21 @@ function mountAiAssistant() {
       </div>
     </dialog>
   `);
+  const updateAiAvailability = () => {
+    const fab = document.getElementById("aiFab");
+    const status = document.getElementById("aiStatus");
+    if (fab) {
+      fab.style.opacity = navigator.onLine ? "1" : "0.5";
+      fab.title = navigator.onLine ? "" : "AI wymaga połączenia z internetem";
+    }
+    if (status) {
+      status.textContent = navigator.onLine ? tx("Online", "Online") : tx("Offline", "Offline");
+      status.className = navigator.onLine ? "ml-2 text-[10px] font-black uppercase text-emerald-200" : "ml-2 text-[10px] font-black uppercase text-amber-200";
+    }
+  };
+  window.addEventListener("online", updateAiAvailability);
+  window.addEventListener("offline", updateAiAvailability);
+  updateAiAvailability();
   $("#aiFab").addEventListener("click", openAiChat);
   $("#closeAi").addEventListener("click", () => $("#aiDialog").close());
   $("#aiForm").addEventListener("submit", sendAiMessage);
@@ -5012,6 +5081,10 @@ function hasRequiredIslamicSources(answer = "") {
 
 async function sendAiMessage(event) {
   event.preventDefault();
+  if (!navigator.onLine) {
+    showToast(tx("AI wymaga połączenia z internetem.", "AI requires an internet connection."));
+    return;
+  }
   const input = $("#aiInput");
   let content = input.value.trim();
   if (!content) return;
@@ -5081,11 +5154,10 @@ async function askGroq(messages, model = GROQ_MODEL, imageData = null) {
     ];
   }
 
-  const response = await fetch(GROQ_ENDPOINT, {
+  const response = await fetch("/api/groq-proxy", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${GROQ_API_KEY}`
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(payload)
   });
@@ -5585,7 +5657,7 @@ function hadithOfDayWidget() {
     <h3 class="text-sm font-black text-[var(--accent)] mb-1">📜 ${tx("Hadis Dnia", "Hadith of the Day")}</h3>
     <p class="text-base font-bold arabic text-right leading-relaxed mb-1">${h.ar}</p>
     <p class="text-xs text-[var(--muted)] italic">${state.lang === 'pl' ? h.pl : h.en}</p>
-    <p class="text-xs text-[var(--muted)] mt-1 font-bold">${h.source}</p>
+    <p class="text-xs text-[var(--muted)] mt-1 font-bold">${h.source} <span class="trust-badge verified">${h.grade?.toUpperCase() || "UNGRADED"}</span></p>
     <p class="quality-meta">${hadithQuality(h).source_type} · ${hadithQuality(h).collection} · ${hadithQuality(h).verified ? trustLabel(CONTENT_TRUST.VERIFIED) : trustLabel(CONTENT_TRUST.UNVERIFIED)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).reviewed_at}</p>
   </div>`;
 }
@@ -5701,8 +5773,10 @@ async function fetchPrayerTimes(loc) {
   const now = new Date();
   const d = now.getDate(), m = now.getMonth() + 1, y = now.getFullYear();
   const url = `https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${loc.lat}&longitude=${loc.lng}&method=${loc.method}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { signal: controller.signal });
     const data = await res.json();
     const timings = data.data?.timings || null;
     if (timings) {
@@ -5716,6 +5790,8 @@ async function fetchPrayerTimes(loc) {
   } catch (error) {
     if (cached?.timings) return cached.timings;
     throw error;
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
@@ -5923,15 +5999,21 @@ function qiblaPanel() {
     <section class="grid gap-4">
       <article class="panel p-5">
         <h2 class="text-2xl font-black">${tx("Qibla i czasy modlitw", "Qibla and prayer times")}</h2>
-        <p class="mt-2 text-sm text-[var(--muted)]">${tx("GPS jest opcjonalny i uruchamia się dopiero po kliknięciu. Domyślnie używamy neutralnie Makkah i Madinah.", "GPS is optional and starts only after a click. By default, Makkah and Madinah are used neutrally.")}</p>
+        <p class="mt-2 text-sm text-[var(--muted)]">${tx("GPS jest opcjonalny i uruchamia sie dopiero po kliknieciu. Domyslnie uzywamy neutralnie Makkah i Madinah.", "GPS is optional and starts only after a click. By default, Makkah and Madinah are used neutrally.")}</p>
         <div class="mt-4 flex flex-wrap gap-2">
           <button id="useGpsPrayerLocation" class="big-action bg-emerald-500 text-white">${tx("Użyj GPS", "Use GPS")}</button>
           <button id="manualPrayerLocation" class="big-action border border-[var(--line)] bg-[var(--surface)]">${tx("Wpisz ręcznie", "Enter manually")}</button>
         </div>
-        <p id="gpsPrayerStatus" class="mt-3 text-sm text-[var(--muted)]">${state.gpsPrayerLocation ? tx("GPS zapisany lokalnie.", "GPS saved locally.") : tx("GPS nieaktywny. Możesz zostać przy Makkah/Madinah.", "GPS inactive. You can stay with Makkah/Madinah.")}</p>
+        <p id="gpsPrayerStatus" class="mt-3 text-sm text-[var(--muted)]">${state.gpsPrayerLocation ? tx("GPS zapisany lokalnie.", "GPS saved locally.") : tx("GPS nieaktywny. Mozesz zostac przy Makkah/Madinah.", "GPS inactive. You can stay with Makkah/Madinah.")}</p>
       </article>
       <div class="grid gap-4 lg:grid-cols-2" id="prayerTimesGrid">
-        ${getPrayerLocations().map(loc => `<div id="prayer-${loc.id}" class="panel p-5"><div class="skeleton h-40 w-full"></div></div>`).join("")}
+        ${getPrayerLocations().map(loc => `<div id="prayer-${loc.id}" class="panel p-5">
+          <div class="grid gap-3">
+            <div class="skeleton h-6 w-2/3"></div>
+            <div class="skeleton h-28 w-full"></div>
+            <p class="text-sm font-bold text-[var(--muted)]">${tx("Pobieranie czasow modlitw z aladhan.com...", "Loading prayer times from aladhan.com...")}</p>
+          </div>
+        </div>`).join("")}
       </div>
     </section>
   `;
@@ -6086,7 +6168,15 @@ async function hydratePrayerTimesPreview() {
       if (target) target.innerHTML = prayerTimesCard(loc.label, timings, qibla, nextKey, loc.tz, loc.id);
     } catch {
       const target = state.prayerModeTab === "today" ? $("#todayPrayerPreview") : $(`#prayer-${loc.id}`);
-      if (target) target.innerHTML = `<p class="text-[var(--muted)]">${tx("Błąd ładowania. Sprawdź połączenie.", "Load error. Check your connection.")}</p>`;
+      if (target) {
+        target.innerHTML = `
+          <div class="grid gap-3 text-center">
+            <p class="text-[var(--muted)]">${tx("Nie udalo sie pobrac czasow. Sprawdz polaczenie z internetem.", "Could not load prayer times. Check your internet connection.")}</p>
+            <button class="big-action bg-emerald-500 text-white" data-prayer-retry>${tx("Sprobuj ponownie", "Try again")}</button>
+          </div>
+        `;
+        target.querySelector("[data-prayer-retry]")?.addEventListener("click", prayer);
+      }
     }
     if (state.prayerModeTab === "today") break;
   }
@@ -6146,6 +6236,7 @@ function asmaul() {
       <p class="text-[var(--muted)]">${tx("أَسْمَاءُ اللَّهِ الْحُسْنَى — Asma ul-Husna", "أَسْمَاءُ اللَّهِ الْحُSنَى — Asma ul-Husna")}</p>
     </div>
     <input id="asmaSearch" type="search" class="w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3 mb-4" placeholder="${tx("Szukaj imienia...", "Search name...")}" value="${escapeHtml(state.asmaulSearchQuery || "")}" />
+      <p class="mt-2 text-xs text-[var(--muted)]">${tx("Tekst arabski zawiera harakat (znaki wymowy) dla pierwszych 10 imion. Pozostale w toku weryfikacji.", "Arabic text includes harakat (pronunciation marks) for the first 10 names. The rest are being verified.")}</p>
     <div id="asmaGrid" class="asma-grid">${renderAsmaulList()}</div>
   `;
 
@@ -6239,7 +6330,7 @@ function seerah() {
         <div class="mb-4 pb-4 border-b border-[var(--border)]">
           <p class="text-base font-bold arabic text-right leading-relaxed" style="direction:rtl">${h.ar}</p>
           <p class="text-sm text-[var(--muted)] mt-1 italic">${state.lang === 'pl' ? h.pl : h.en}</p>
-          <p class="text-xs font-bold text-[var(--accent)] mt-1">${h.source}</p>
+          <p class="text-xs font-bold text-[var(--accent)] mt-1">${h.source} <span class="trust-badge verified">${h.grade?.toUpperCase() || "UNGRADED"}</span></p>
           <p class="quality-meta">${hadithQuality(h).source_type} · ${hadithQuality(h).collection} · ${hadithQuality(h).verified ? trustLabel(CONTENT_TRUST.VERIFIED) : trustLabel(CONTENT_TRUST.UNVERIFIED)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).reviewed_at}</p>
         </div>
       `).join('')}

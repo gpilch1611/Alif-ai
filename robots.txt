@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://gpilch1611.github.io/Alif-ai/sitemap.xml

@@ -14,6 +14,8 @@ const APP_SHELL = [
   "./data/quran-mode.js",
   "./data/quran-surahs.js",
   "./manifest.json",
+  "./sitemap.xml",
+  "./robots.txt",
   "./assets/icon.svg",
   "./assets/icon-192.png",
   "./assets/icon-512.png",

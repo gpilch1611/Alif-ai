@@ -6,3 +6,4 @@ lighthouse-report/
 .lighthouse-tmp/
 .lighthouse-profile/
 *.log
+.env

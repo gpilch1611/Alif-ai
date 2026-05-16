@@ -53,6 +53,7 @@
       "label": "Alif AI"
     }
   ],
+  "prefer_related_applications": false,
   "categories": ["education", "kids", "lifestyle"],
   "shortcuts": [
     {

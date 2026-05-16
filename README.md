@@ -54,11 +54,11 @@ npm run content:report
 
 ## AI Assistant
 
-Aplikacja ma globalny pływający przycisk `AI Assistant`, widoczny na każdej stronie. Assistant używa Groq API:
+Aplikacja ma globalny pływający przycisk `AI Assistant`, widoczny na każdej stronie. Assistant uzywa Groq API przez bezpieczny endpoint proxy:
 
 - model: `llama-3.3-70b-versatile`
-- endpoint: `https://api.groq.com/openai/v1/chat/completions`
-- klucz API jest wpisany bezpośrednio w `app.js`
+- endpoint aplikacji: `/api/groq-proxy`
+- klucz API nalezy ustawic w zmiennej srodowiskowej `GROQ_API_KEY`
 
 AI działa online. Reszta aplikacji nadal działa offline po zcache'owaniu PWA.
 
@@ -105,3 +105,34 @@ Assistant może generować treści i zapisywać je bezpośrednio do aplikacji:
 Tailwind CSS i pdf.js są ładowane przez CDN zgodnie z wymaganiem. Po pierwszym udanym uruchomieniu przez HTTP/HTTPS service worker próbuje je zapisać w cache. Jeżeli chcesz absolutnego offline już od pierwszego otwarcia, pobierz te zasoby i podmień linki CDN na lokalne pliki.
 
 AI Assistant, generowanie historyjek i ciekawostek wymagają internetu, bo używają Groq API. SpeechRecognition oraz synteza mowy zależą od obsługi danej przeglądarki i mogą na części urządzeń korzystać z usług systemowych online.
+
+
+## Contributing (English)
+
+Alif AI is a Polish-language Arabic/Islamic learning PWA. Contributions welcome.
+
+### Setup
+
+```bash
+python -m http.server 8080
+# Open http://localhost:8080
+```
+
+### Architecture
+
+- `app.js` — monolithic app (planned modularization in v2)
+- `data.js` — all static Islamic content
+- `data/*.js` — modular content: prayer, quran, hadith, FAQ, halal/haram
+- `service-worker.js` — offline caching
+- `scripts/` — validation and build helpers
+
+### Religious content policy
+
+See `docs/religious-content-policy.md`. All Islamic content requires `source_type`, `confidence`, and `reviewed_at` metadata.
+
+### Running tests
+
+```bash
+npm test          # validates Islamic data integrity
+npm run lint      # checks JS syntax
+```

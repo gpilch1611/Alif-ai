@@ -1,0 +1,14 @@
+import { readFile, writeFile } from 'node:fs/promises';
+const now = new Date();
+const version = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-1`;
+await writeFile('version.json', JSON.stringify({ version }, null, 2) + '\n');
+let app = await readFile('app.js', 'utf8');
+app = app.replace(/const APP_VERSION = "[^"]+";/, `const APP_VERSION = "${version}";`);
+app = app.replace(/styles\.css\?v=[^"]+"/g, `styles.css?v=${version}"`);
+app = app.replace(/app\.js\?v=[^"]+"/g, `app.js?v=${version}"`);
+await writeFile('app.js', app);
+let html = await readFile('index.html', 'utf8');
+html = html.replace(/styles\.css\?v=[^"]+"/g, `styles.css?v=${version}"`);
+html = html.replace(/app\.js\?v=[^"]+"/g, `app.js?v=${version}"`);
+await writeFile('index.html', html);
+console.log('Version bumped to', version);

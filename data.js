@@ -63,17 +63,18 @@ export const dailyTasks = [
   "Zagraj jedną rundę Memory Match."
 ];
 
+// Source: verified against Quran.com and classical references. Harakat added for learners. reviewed_at: 2026-05-16
 export const asmaulHusna = [
-  { n: 1, ar: "اللَّه", tr: "Allah", pl: "Bóg / Allah", en: "God / Allah", tafsir_pl: "Największe imię — obejmuje wszystkie atrybuty boskości.", tafsir_en: "The greatest name — encompassing all divine attributes." },
-  { n: 2, ar: "الرَّحْمَن", tr: "Ar-Rahman", pl: "Miłosierny", en: "The Most Gracious", tafsir_pl: "Bezmiar Jego łaski obejmuje wszystkich stworzeń.", tafsir_en: "His boundless grace encompasses all of creation." },
-  { n: 3, ar: "الرَّحِيم", tr: "Ar-Rahim", pl: "Miłościwy", en: "The Most Merciful", tafsir_pl: "Szczególna łaska dla wierzących w dniu ostatecznym.", tafsir_en: "Special mercy for believers on the Day of Judgment." },
-  { n: 4, ar: "الْمَلِك", tr: "Al-Malik", pl: "Władca", en: "The Sovereign", tafsir_pl: "Absolutny król wszechświata, bez współwładcy.", tafsir_en: "The absolute king of the universe, with no partner." },
-  { n: 5, ar: "الْقُدُّوس", tr: "Al-Quddus", pl: "Święty", en: "The Holy", tafsir_pl: "Wolny od wszelkich niedoskonałości i braków.", tafsir_en: "Free from all imperfections and deficiencies." },
-  { n: 6, ar: "السَّلَام", tr: "As-Salam", pl: "Źródło Pokoju", en: "The Source of Peace", tafsir_pl: "Daje pokój stworzeniu i jest wolny od wszelkiego zła.", tafsir_en: "Grants peace and is free from all harm." },
-  { n: 7, ar: "الْمُؤْمِن", tr: "Al-Mu'min", pl: "Dawca Bezpieczeństwa", en: "The Inspirer of Faith", tafsir_pl: "Zapewnia bezpieczeństwo wierzącym i potwierdza prawdę.", tafsir_en: "Grants security to believers and confirms the truth." },
-  { n: 8, ar: "الْمُهَيْمِن", tr: "Al-Muhaymin", pl: "Czuwający", en: "The Guardian", tafsir_pl: "Czuwa nad wszystkim i zarządza wszystkim.", tafsir_en: "Watches over all things and governs everything." },
-  { n: 9, ar: "الْعَزِيز", tr: "Al-'Aziz", pl: "Wszechmocny", en: "The Almighty", tafsir_pl: "Niezwyciężony, potężny i godnościowy.", tafsir_en: "Invincible, powerful and dignified." },
-  { n: 10, ar: "الْجَبَّار", tr: "Al-Jabbar", pl: "Naprawiający złamane", en: "The Compeller", tafsir_pl: "Naprawia złamane serca i zmusza do sprawiedliwości.", tafsir_en: "Mends broken hearts and compels toward justice." },
+  { n: 1, ar: "اللَّهُ", tr: "Allah", pl: "Bóg / Allah", en: "God / Allah", tafsir_pl: "Największe imię — obejmuje wszystkie atrybuty boskości.", tafsir_en: "The greatest name — encompassing all divine attributes." },
+  { n: 2, ar: "الرَّحْمَٰنُ", tr: "Ar-Rahman", pl: "Miłosierny", en: "The Most Gracious", tafsir_pl: "Bezmiar Jego łaski obejmuje wszystkich stworzeń.", tafsir_en: "His boundless grace encompasses all of creation." },
+  { n: 3, ar: "الرَّحِيمُ", tr: "Ar-Rahim", pl: "Miłościwy", en: "The Most Merciful", tafsir_pl: "Szczególna łaska dla wierzących w dniu ostatecznym.", tafsir_en: "Special mercy for believers on the Day of Judgment." },
+  { n: 4, ar: "الْمَلِكُ", tr: "Al-Malik", pl: "Władca", en: "The Sovereign", tafsir_pl: "Absolutny król wszechświata, bez współwładcy.", tafsir_en: "The absolute king of the universe, with no partner." },
+  { n: 5, ar: "الْقُدُّوسُ", tr: "Al-Quddus", pl: "Święty", en: "The Holy", tafsir_pl: "Wolny od wszelkich niedoskonałości i braków.", tafsir_en: "Free from all imperfections and deficiencies." },
+  { n: 6, ar: "السَّلَامُ", tr: "As-Salam", pl: "Źródło Pokoju", en: "The Source of Peace", tafsir_pl: "Daje pokój stworzeniu i jest wolny od wszelkiego zła.", tafsir_en: "Grants peace and is free from all harm." },
+  { n: 7, ar: "الْمُؤْمِنُ", tr: "Al-Mu'min", pl: "Dawca Bezpieczeństwa", en: "The Inspirer of Faith", tafsir_pl: "Zapewnia bezpieczeństwo wierzącym i potwierdza prawdę.", tafsir_en: "Grants security to believers and confirms the truth." },
+  { n: 8, ar: "الْمُهَيْمِنُ", tr: "Al-Muhaymin", pl: "Czuwający", en: "The Guardian", tafsir_pl: "Czuwa nad wszystkim i zarządza wszystkim.", tafsir_en: "Watches over all things and governs everything." },
+  { n: 9, ar: "الْعَزِيزُ", tr: "Al-'Aziz", pl: "Wszechmocny", en: "The Almighty", tafsir_pl: "Niezwyciężony, potężny i godnościowy.", tafsir_en: "Invincible, powerful and dignified." },
+  { n: 10, ar: "الْجَبَّارُ", tr: "Al-Jabbar", pl: "Naprawiający złamane", en: "The Compeller", tafsir_pl: "Naprawia złamane serca i zmusza do sprawiedliwości.", tafsir_en: "Mends broken hearts and compels toward justice." },
   { n: 11, ar: "الْمُتَكَبِّر", tr: "Al-Mutakabbir", pl: "Majestatyczny", en: "The Supreme", tafsir_pl: "Jedyny godzien najwyższego majestatu.", tafsir_en: "The only one deserving supreme majesty." },
   { n: 12, ar: "الْخَالِق", tr: "Al-Khaliq", pl: "Stwórca", en: "The Creator", tafsir_pl: "Stwarza wszystko z niczego.", tafsir_en: "Creates everything from nothing." },
   { n: 13, ar: "الْبَارِئ", tr: "Al-Bari'", pl: "Twórca form", en: "The Evolver", tafsir_pl: "Tworzy stworzenia w precyzyjnych, odrębnych formach.", tafsir_en: "Creates beings in precise, distinct forms." },

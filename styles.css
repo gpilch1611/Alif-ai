@@ -1437,6 +1437,24 @@ h3 {
 }
 .surah-badge--islamic { background: #dcfce7; color: #166534; }
 
+.calendar-month-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.calendar-month-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 16px;
+}
+
+.calendar-month-card.is-current {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
 .surah-group-header {
   font-size: 0.75rem;
   font-weight: 900;

@@ -7,6 +7,7 @@ export default [
       "node_modules/**",
       "playwright-report/**",
       "test-results/**",
+      "scratch/**",
       ".lighthouse-profile/**",
       "lighthouse-report/**",
       "scratch/**"
