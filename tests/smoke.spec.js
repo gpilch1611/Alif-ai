@@ -30,32 +30,43 @@ async function expectNoOverflow(locator) {
 }
 
 async function mockSurahApi(page, surahNumber = 1) {
-  await page.route(`**/v1/surah/${surahNumber}/**`, async (route) => {
-    const url = route.request().url();
-    const isTransliteration = url.includes("en.transliteration");
-    const isTranslation = url.includes("pl.bielawskiego") || url.includes("en.asad");
+  await page.route(`**/v1/surah/${surahNumber}/editions/**`, async (route) => {
     await route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
         code: 200,
-        data: {
-          number: surahNumber,
-          name: "الفاتحة",
-          englishName: "Al-Fatiha",
-          englishNameTranslation: "The Opening",
-          ayahs: [
-            {
-              number: 1,
-              numberInSurah: 1,
-              text: isTransliteration
-                ? "Bismi Allahi alrrahmani alrraheemi"
-                : isTranslation
-                  ? "W imię Boga Miłosiernego, Litościwego"
-                  : "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
-              audio: "https://example.test/fatiha-1.mp3"
-            }
-          ]
-        }
+        data: [
+          {
+            number: surahNumber,
+            name: "الفاتحة",
+            englishName: "Al-Fatiha",
+            englishNameTranslation: "The Opening",
+            ayahs: [
+              {
+                number: 1,
+                numberInSurah: 1,
+                text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+                audio: "https://example.test/fatiha-1.mp3"
+              }
+            ]
+          },
+          {
+            ayahs: [
+              {
+                numberInSurah: 1,
+                text: "W imię Boga Miłosiernego, Litościwego"
+              }
+            ]
+          },
+          {
+            ayahs: [
+              {
+                numberInSurah: 1,
+                text: "Bismi Allahi alrrahmani alrraheemi"
+              }
+            ]
+          }
+        ]
       })
     });
   });
