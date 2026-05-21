@@ -2124,21 +2124,23 @@ async function loadAyatOfDay() {
 
   try {
     const randomAyah = Math.floor(Math.random() * 6236) + 1;
-    const [resAr, resPl, resEn] = await Promise.all([
-      fetch(`https://api.alquran.cloud/v1/ayah/${randomAyah}`),
-      fetch(`https://api.alquran.cloud/v1/ayah/${randomAyah}/pl.bielawskiego`),
-      fetch(`https://api.alquran.cloud/v1/ayah/${randomAyah}/en.asad`)
-    ]);
-    const [dataAr, dataPl, dataEn] = await Promise.all([resAr.json(), resPl.json(), resEn.json()]);
-    if (dataPl.code === 200) {
+    /**
+     * BOLT OPTIMIZATION: Batched API request for Ayat of the Day.
+     * Consolidates Arabic, Polish, and English fetches into a single network call.
+     */
+    const response = await fetch(`https://api.alquran.cloud/v1/ayah/${randomAyah}/editions/quran-simple,pl.bielawskiego,en.asad`);
+    const result = await response.json();
+
+    if (result.code === 200 && Array.isArray(result.data)) {
+      const [dataAr, dataPl, dataEn] = result.data;
       const cache = {
         date: todayDate,
         cachedAt: new Date().toISOString(),
-        ar: dataAr.data.text,
-        pl: dataPl.data.text,
-        en: dataEn.code === 200 ? dataEn.data.text : dataPl.data.text,
-        surah: dataPl.data.surah.number,
-        numberInSurah: dataPl.data.numberInSurah
+        ar: dataAr.text,
+        pl: dataPl.text,
+        en: dataEn ? dataEn.text : dataPl.text,
+        surah: dataPl.surah.number,
+        numberInSurah: dataPl.numberInSurah
       };
       state.ayatCache = cache;
       saveState();
@@ -2625,16 +2627,19 @@ async function openSurah(num, options = {}) {
   try {
     const reciter = state.quranReciter || "ar.alafasy";
     const transEdition = state.lang === "pl" ? "pl.bielawskiego" : "en.asad";
-    const [resAudio, resTrans, resTr] = await Promise.all([
-      fetch(`https://api.alquran.cloud/v1/surah/${num}/${reciter}`),
-      fetch(`https://api.alquran.cloud/v1/surah/${num}/${transEdition}`),
-      fetch(`https://api.alquran.cloud/v1/surah/${num}/en.transliteration`)
-    ]);
-    const [dataAudio, dataTrans, dataTr] = await Promise.all([resAudio.json(), resTrans.json(), resTr.json()]);
-    if (dataAudio.code === 200) {
-      const s = dataAudio.data;
-      const transAyahs = dataTrans.code === 200 ? dataTrans.data.ayahs : [];
-      const trAyahs = dataTr.code === 200 ? dataTr.data.ayahs : [];
+    /**
+     * BOLT OPTIMIZATION: Batched API request reduces network overhead and waterfalls.
+     * Consolidates 3 separate fetches (audio, translation, transliteration) into 1 call.
+     * Expected impact: ~66% fewer requests in Surah reader, faster load on mobile.
+     */
+    const response = await fetch(`https://api.alquran.cloud/v1/surah/${num}/editions/${reciter},${transEdition},en.transliteration`);
+    const result = await response.json();
+
+    if (result.code === 200 && Array.isArray(result.data)) {
+      const [dataAudio, dataTrans, dataTr] = result.data;
+      const s = dataAudio;
+      const transAyahs = dataTrans ? dataTrans.ayahs : [];
+      const trAyahs = dataTr ? dataTr.ayahs : [];
       const transMap = {};
       const trMap = {};
       transAyahs.forEach(a => { transMap[a.numberInSurah] = a.text; });

@@ -32,6 +32,32 @@ async function expectNoOverflow(locator) {
 async function mockSurahApi(page, surahNumber = 1) {
   await page.route(`**/v1/surah/${surahNumber}/**`, async (route) => {
     const url = route.request().url();
+    // Handle batched editions API call
+    if (url.includes("/editions/")) {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          code: 200,
+          data: [
+            {
+              number: surahNumber,
+              name: "الفاتحة",
+              englishName: "Al-Fatiha",
+              englishNameTranslation: "The Opening",
+              ayahs: [{ number: 1, numberInSurah: 1, text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", audio: "https://example.test/fatiha-1.mp3" }]
+            },
+            {
+              ayahs: [{ number: 1, numberInSurah: 1, text: "W imię Boga Miłosiernego, Litościwego" }]
+            },
+            {
+              ayahs: [{ number: 1, numberInSurah: 1, text: "Bismi Allahi alrrahmani alrraheemi" }]
+            }
+          ]
+        })
+      });
+      return;
+    }
+
     const isTransliteration = url.includes("en.transliteration");
     const isTranslation = url.includes("pl.bielawskiego") || url.includes("en.asad");
     await route.fulfill({
