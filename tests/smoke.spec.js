@@ -32,6 +32,52 @@ async function expectNoOverflow(locator) {
 async function mockSurahApi(page, surahNumber = 1) {
   await page.route(`**/v1/surah/${surahNumber}/**`, async (route) => {
     const url = route.request().url();
+    if (url.includes("/editions/")) {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          code: 200,
+          data: [
+            {
+              number: surahNumber,
+              name: "الفاتحة",
+              englishName: "Al-Fatiha",
+              englishNameTranslation: "The Opening",
+              ayahs: [
+                {
+                  number: 1,
+                  numberInSurah: 1,
+                  text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+                  audio: "https://example.test/fatiha-1.mp3"
+                }
+              ]
+            },
+            {
+              number: surahNumber,
+              ayahs: [
+                {
+                  number: 1,
+                  numberInSurah: 1,
+                  text: "W imię Boga Miłosiernego, Litościwego"
+                }
+              ]
+            },
+            {
+              number: surahNumber,
+              ayahs: [
+                {
+                  number: 1,
+                  numberInSurah: 1,
+                  text: "Bismi Allahi alrrahmani alrraheemi"
+                }
+              ]
+            }
+          ]
+        })
+      });
+      return;
+    }
+
     const isTransliteration = url.includes("en.transliteration");
     const isTranslation = url.includes("pl.bielawskiego") || url.includes("en.asad");
     await route.fulfill({
@@ -150,6 +196,19 @@ test.describe("Alif AI smoke", () => {
   });
 
   test("Home surah favorite opens a focused Quran reader", async ({ page }) => {
+    await page.route(`**/v1/ayah/**/editions/**`, async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          code: 200,
+          data: [
+            { text: "Ar", surah: { number: 1 }, numberInSurah: 1 },
+            { text: "Pl", surah: { number: 1 }, numberInSurah: 1 },
+            { text: "En", surah: { number: 1 }, numberInSurah: 1 }
+          ]
+        })
+      });
+    });
     await mockSurahApi(page, 1);
     await page.addInitScript(() => {
       localStorage.setItem(
