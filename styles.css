@@ -1425,6 +1425,483 @@ h3 {
 .seerah-title { font-weight: 900; font-size: 1.1rem; margin-top: 2px; }
 .seerah-desc { font-size: 0.9rem; color: var(--muted); margin-top: 4px; }
 
+.history-shell {
+  display: grid;
+  gap: 18px;
+}
+
+.history-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  gap: 8px;
+}
+
+.history-tabs .tab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding-inline: 10px;
+  text-align: center;
+  white-space: normal;
+}
+
+.history-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.history-kicker,
+.history-section-heading p {
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.history-hero h1 {
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  line-height: 0.95;
+  font-weight: 950;
+}
+
+.history-subtitle {
+  margin-top: 8px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.history-intro,
+.history-note,
+.history-detail-panel,
+.history-profile-card,
+.history-conversion-card,
+.history-story-card,
+.history-mini-card,
+.history-people-list article {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.history-intro,
+.history-note,
+.history-detail-panel,
+.history-profile-card,
+.history-conversion-card,
+.history-story-card {
+  padding: 18px;
+}
+
+.history-copy,
+.history-profile-card p,
+.history-story-preview {
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.65;
+}
+
+.history-copy + .history-copy,
+.history-story-preview + .history-story-preview {
+  margin-top: 10px;
+}
+
+.history-overview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.history-overview-actions .big-action {
+  width: auto;
+}
+
+.history-progress-panel {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.history-progress-panel > div {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.history-progress-text {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 850;
+}
+
+.history-progress-text strong {
+  color: var(--accent);
+}
+
+.history-progress-panel span {
+  display: block;
+  margin-top: 4px;
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.history-profile-grid,
+.history-conversion-grid,
+.history-story-grid,
+.history-badge-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.history-entry-card {
+  display: grid;
+  gap: 8px;
+  min-height: 150px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: left;
+}
+
+.history-entry-card > span {
+  font-size: 1.8rem;
+}
+
+.history-entry-card strong,
+.history-profile-top h3,
+.history-conversion-card h3,
+.history-story-card h3,
+.history-mini-card h3,
+.history-people-list h3 {
+  font-size: 1.08rem;
+  font-weight: 950;
+}
+
+.history-entry-card small {
+  color: var(--muted);
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.history-section {
+  display: grid;
+  gap: 12px;
+}
+
+.history-section-heading h2 {
+  font-size: 1.45rem;
+  font-weight: 950;
+}
+
+.history-timeline-layout {
+  position: relative;
+  display: grid;
+  gap: 0;
+  padding-left: 18px;
+}
+
+.history-timeline-layout::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--line);
+}
+
+.history-timeline-event {
+  position: relative;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 10px;
+  padding-bottom: 22px;
+}
+
+.history-timeline-node {
+  position: relative;
+  z-index: 1;
+  padding-top: 7px;
+}
+
+.history-timeline-node span {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--surface);
+}
+
+.history-timeline-event.active .history-timeline-node span {
+  width: 14px;
+  height: 14px;
+  margin-left: -2px;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 20%, var(--surface));
+}
+
+.history-timeline-content {
+  min-width: 0;
+}
+
+.history-timeline-summary {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  text-align: left;
+}
+
+.history-timeline-event.active .history-timeline-summary {
+  margin-bottom: 10px;
+}
+
+.history-timeline-date,
+.history-timeline-summary small,
+.history-story-card span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.history-timeline-date {
+  color: var(--accent);
+  text-transform: none;
+}
+
+.history-timeline-summary strong {
+  font-size: 1rem;
+  line-height: 1.25;
+  font-weight: 950;
+}
+
+.history-timeline-summary small {
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.history-timeline-expanded {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.history-timeline-expanded .history-copy {
+  color: var(--muted);
+}
+
+.history-key-lesson {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--surface-soft);
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 900;
+  line-height: 1.5;
+}
+
+.history-read-btn {
+  justify-self: start;
+  margin-top: 4px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-soft);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.history-read-btn.done {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  color: var(--accent);
+}
+
+.history-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.history-profile-card {
+  display: grid;
+  gap: 10px;
+}
+
+.history-profile-card h4 {
+  font-size: 0.78rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.history-profile-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.history-profile-top span {
+  flex-shrink: 0;
+  max-width: 46%;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-align: right;
+}
+
+.history-list {
+  display: grid;
+  gap: 6px;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.history-people-list {
+  display: grid;
+  gap: 10px;
+}
+
+.history-people-list article,
+.history-mini-card {
+  padding: 14px;
+}
+
+.history-conversion-card {
+  display: grid;
+  gap: 12px;
+}
+
+.history-conversion-steps {
+  display: grid;
+  gap: 8px;
+}
+
+.history-conversion-steps div {
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--surface-soft);
+}
+
+.history-conversion-steps span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.history-story-band {
+  display: grid;
+  gap: 12px;
+}
+
+.history-story-card {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.history-mini-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.history-mini-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--surface-soft);
+  font-size: 1.35rem;
+  flex: 0 0 auto;
+}
+
+.history-mini-card p {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.history-term {
+  position: relative;
+  color: var(--accent);
+  font-weight: 950;
+  border-bottom: 1px dotted currentColor;
+  cursor: help;
+}
+
+.history-term:hover::after,
+.history-term:focus::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  z-index: 20;
+  width: min(280px, 70vw);
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+@media (max-width: 760px) {
+  .history-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .history-tabs .tab-btn {
+    min-height: 42px;
+    padding: 8px 6px;
+    font-size: 0.82rem;
+    line-height: 1.15;
+  }
+
+  .history-hero {
+    display: grid;
+  }
+
+  .history-overview-actions .big-action {
+    width: 100%;
+  }
+
+  .history-profile-top {
+    display: grid;
+  }
+
+  .history-profile-top span {
+    max-width: none;
+    text-align: left;
+  }
+}
+
 .surah-badge {
   display: inline-flex;
   align-items: center;

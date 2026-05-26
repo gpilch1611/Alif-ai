@@ -7,6 +7,7 @@ const APP_SHELL = [
   "./version.json",
   "./data.js",
   "./data/content-metadata.js",
+  "./data/history.js",
   "./data/halal-haram.js",
   "./data/islamic-faq.js",
   "./data/islamic-hadith.js",

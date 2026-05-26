@@ -49,10 +49,10 @@ assert(!/zakat|Zakat/.test(stylesCss), "Zakat calculator styles should stay remo
 assert(appJs.includes("muallafChecklist"), "Muallaf 30/90 checklist state is missing.");
 assert(appJs.includes("Plan 30/90 dni po szahadzie"), "Muallaf 30/90 checklist UI is missing.");
 assert(appJs.includes("Pierwsze 7 dni: spokojny start"), "Muallaf 7-day starter plan is missing.");
-assert(appJs.includes("adventure: learningJournal"), "Learning journal route alias is missing.");
-assert(appJs.includes("function learningJournal()"), "Learning journal route is missing.");
-assert(appJs.includes("function learningJournalStats()"), "Learning journal progress summary is missing.");
-assert(appJs.includes("Dziennik nauki"), "Learning journal label is missing.");
+assert(!appJs.includes("adventure: learningJournal"), "Public learning journal route should stay removed.");
+assert(appJs.includes("function systemActivityEvents()"), "Settings system activity events helper is missing.");
+assert(appJs.includes("Dane i historia aktywnosci"), "Settings activity history panel is missing.");
+assert(!appJs.includes("Dziennik nauki"), "Public learning journal label should stay removed.");
 assert(appJs.includes("function renderHifzTab()"), "Short surah learning mode is missing.");
 assert(appJs.includes("function prayerJournalHtml()"), "Prayer journal UI is missing.");
 assert(
@@ -68,6 +68,8 @@ assert(!appJs.includes("_legacyPrayer"), "Legacy Prayer Mode implementations sho
 assert(!appJs.includes("prayerClockInterval"), "Removed live-clock timer code should not return.");
 assert(!appJs.includes("compassWatchId"), "Removed device-orientation compass code should not return.");
 assert(appJs.includes("function glossary()"), "Islamic glossary route is missing.");
+assert(appJs.includes("function history()"), "History route is missing.");
+assert(appJs.includes('from "./data/history.js"'), "History static data should be imported from data/history.js.");
 assert(appJs.includes("function nextStepSuggestion()"), "Home next-step recommendation is missing.");
 assert(appJs.includes("Prywatnosc danych"), "Settings privacy section is missing.");
 assert(appJs.includes("function normalizeRoute()"), "Unknown route normalization is missing.");
@@ -89,7 +91,7 @@ assert(stylesCss.includes(".hijri-widget"), "Hijri widget styles are missing.");
 assert(appJs.includes("review: reviewCenter"), "Active mistakes review route is missing.");
 assert(appJs.includes("function reviewCenter()"), "Active mistakes review center is missing.");
 assert(stylesCss.includes(".review-card"), "Active mistakes review card styles are missing.");
-assert(!appJs.includes('["adventure", "Note", "navAdventure"]'), "Learning journal nav should not use text icon Note.");
+assert(!appJs.includes('["adventure"'), "Learning journal should stay out of main navigation.");
 assert(appJs.includes("reviewMistakes"), "Active review mistakes state is missing.");
 assert(appJs.includes("function renderAsmaChallenge()"), "Asma challenge renderer is missing.");
 assert(appJs.includes("function asmaChallengeAliases("), "Asma challenge alias matching is missing.");
@@ -100,6 +102,7 @@ assert(
 );
 for (const path of [
   "./data/content-metadata.js",
+  "./data/history.js",
   "./data/halal-haram.js",
   "./data/islamic-faq.js",
   "./data/islamic-hadith.js",

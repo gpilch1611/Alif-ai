@@ -1,4 +1,5 @@
-import { arabicAlphabet, words, dailyTasks, asmaulHusna, islamicHadith, seerahTimeline, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, newMuslimSteps, halalHaramData, islamicFaq } from "./data.js";
+import { arabicAlphabet, words, dailyTasks, asmaulHusna, islamicHadith, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, newMuslimSteps, halalHaramData, islamicFaq } from "./data.js";
+import { historyContent } from "./data/history.js";
 import {
   CONTENT_LAST_CHECKED_AT,
   CONTENT_TRUST,
@@ -66,11 +67,11 @@ const THEME_COLOR = {
 
 const navItems = [
   ["home",    "⌂",  "navHome"],
+  ["history", "🧭", "navHistory"],
   ["islam",   "☪",  "navIslam"],
   ["lessons", "Aa", "navLessons"],
   ["culture", "✦",  "navCulture"],
-  ["games",   "◎",  "navGames"],
-  ["adventure", "✎", "navAdventure"]
+  ["games",   "◎",  "navGames"]
 ];
 
 const secondaryNavItems = [];
@@ -157,7 +158,7 @@ const ISLAMIC_SOURCE_LIBRARY = [
 
 const I18N = {
   pl: {
-    navHome: "Start", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navAdventure: "Dziennik", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navSeerah: "Seerah", navPillars: "Filary", navRoots: "Korzenie", navMuallaf: "Nowy muzułmanin", navHalalHaram: "Halal & Haram", navIslamFaq: "FAQ islamu",
+    navHome: "Start", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navSeerah: "Seerah", navHistory: "Historia", navPillars: "Filary", navRoots: "Korzenie", navMuallaf: "Nowy muzułmanin", navHalalHaram: "Halal & Haram", navIslamFaq: "FAQ islamu",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
     welcome: "Witaj w ألف AI", homeTitle: "Islam — krok po kroku", homeLead: "Arabski jest narzędziem — bo czytanie Koranu w oryginale to obowiązek każdego muzułmanina. Ucz się liter, sur, dhikru, historii islamu i modlitw.",
@@ -175,7 +176,7 @@ const I18N = {
     lessonCategories: "Kategorie Lekcji", lessonSelect: "Wybierz kategorię"
   },
   en: {
-    navHome: "Home", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navAdventure: "Journal", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navSeerah: "Seerah", navPillars: "Pillars", navRoots: "Roots", navMuallaf: "New Muslim", navHalalHaram: "Halal & Haram", navIslamFaq: "Islam FAQ",
+    navHome: "Home", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navSeerah: "Seerah", navHistory: "History", navPillars: "Pillars", navRoots: "Roots", navMuallaf: "New Muslim", navHalalHaram: "Halal & Haram", navIslamFaq: "Islam FAQ",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
     welcome: "Welcome to ألف AI", homeTitle: "Islam — step by step", homeLead: "Arabic is the key — reading the Quran in the original is every Muslim's obligation. Learn letters, surahs, dhikr, Islamic history and prayers.",
@@ -462,6 +463,18 @@ const defaultState = {
   asmaChallengeHistory: [],
   badgeCategory: "learning",
   journalTab: "notes",
+  historyTab: "overview",
+  historyTimelineEvent: "adam",
+  historyProgress: {
+    timelineEvents: [],
+    prophets: [],
+    angels: [],
+    sahaba: [],
+    conversions: [],
+    women: [],
+    christianity: [],
+    stories: []
+  },
   onboardingComplete: false,
   onboardingLevel: "beginner",
   onboardingPrayerFocus: "yes",
@@ -1112,7 +1125,7 @@ function render() {
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
   const books = () => setRoute("culture");
-  const views = { home, islam, koran, alphabet, calendar: islamicCalendar, review: reviewCenter, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, pillars, muallaf, halalharam, islamfaq, glossary, adventure: learningJournal };
+  const views = { home, islam, koran, alphabet, calendar: islamicCalendar, review: reviewCenter, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, history, pillars, muallaf, halalharam, islamfaq, glossary };
   (views[route] || home)();
 }
 
@@ -1491,6 +1504,491 @@ function glossary() {
       `).join("")}
     </div>
   `;
+}
+
+function historyValue(value) {
+  if (value == null) return "";
+  if (typeof value === "string") return value;
+  if (Array.isArray(value)) return value;
+  return state.lang === "pl" ? value.pl : value.en;
+}
+
+function historyItems(value) {
+  const localized = historyValue(value);
+  if (Array.isArray(localized)) return localized.filter(Boolean);
+  return localized ? [localized] : [];
+}
+
+function historyLabel(value) {
+  return historyValue(value) || "";
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function historyRichText(text) {
+  const raw = String(text || "");
+  const terms = Object.keys(historyContent.terms || {}).sort((a, b) => b.length - a.length);
+  if (!terms.length || !raw) return escapeHtml(raw);
+
+  const pattern = new RegExp(terms.map(escapeRegExp).join("|"), "gu");
+  const isWordChar = (char) => Boolean(char && /[\p{L}\p{N}]/u.test(char));
+  let cursor = 0;
+  let html = "";
+
+  for (const match of raw.matchAll(pattern)) {
+    const index = match.index || 0;
+    const label = match[0];
+    const before = raw[index - 1];
+    const after = raw[index + label.length];
+    if (isWordChar(before) || isWordChar(after)) continue;
+
+    const term = historyContent.terms[label];
+    const tooltip = historyLabel(term);
+    html += escapeHtml(raw.slice(cursor, index));
+    html += `<span class="history-term" tabindex="0" title="${escapeHtml(tooltip)}" data-tooltip="${escapeHtml(tooltip)}">${escapeHtml(label)}</span>`;
+    cursor = index + label.length;
+  }
+
+  html += escapeHtml(raw.slice(cursor));
+  return html;
+}
+
+function historyParagraphs(value, className = "history-copy") {
+  return historyItems(value).map((text) => `<p class="${className}">${historyRichText(text)}</p>`).join("");
+}
+
+function historySourceList(sources = []) {
+  if (!sources.length) return "";
+  return `
+    <div class="history-sources" aria-label="${tx("Źródła", "Sources")}">
+      ${sources.map((source) => `<span class="trust-badge verified">${escapeHtml(source)}</span>`).join("")}
+    </div>
+  `;
+}
+
+const HISTORY_TABS = [
+  { id: "overview", icon: "⌂", title: { pl: "Start", en: "Start" } },
+  { id: "timeline", icon: "🧭", title: { pl: "Oś czasu", en: "Timeline" } },
+  { id: "prophets", icon: "🌿", title: { pl: "Prorocy", en: "Prophets" } },
+  { id: "angels", icon: "✨", title: { pl: "Aniołowie", en: "Angels" } },
+  { id: "sahaba", icon: "🤝", title: { pl: "Sahaba", en: "Sahaba" } },
+  { id: "conversions", icon: "🫶", title: { pl: "Konwersje", en: "Conversions" } },
+  { id: "women", icon: "🌺", title: { pl: "Kobiety", en: "Women" } },
+  { id: "christianity", icon: "🕊", title: { pl: "Isa i Maryam", en: "Isa & Maryam" } },
+  { id: "stories", icon: "📚", title: { pl: "Stories", en: "Stories" } }
+];
+
+const HISTORY_PROGRESS_KEYS = ["timelineEvents", "prophets", "angels", "sahaba", "conversions", "women", "christianity", "stories"];
+
+function ensureHistoryProgress() {
+  if (!state.historyProgress) state.historyProgress = {};
+  HISTORY_PROGRESS_KEYS.forEach((key) => {
+    if (!Array.isArray(state.historyProgress[key])) state.historyProgress[key] = [];
+  });
+  return state.historyProgress;
+}
+
+function historySafeId(value) {
+  return String(historyLabel(value) || value || "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function historyIsDone(group, id) {
+  return ensureHistoryProgress()[group]?.includes(id);
+}
+
+function historyProgressCount(group) {
+  return new Set(ensureHistoryProgress()[group] || []).size;
+}
+
+function markHistoryProgress(group, id) {
+  if (!HISTORY_PROGRESS_KEYS.includes(group) || !id) return false;
+  const progress = ensureHistoryProgress();
+  if (progress[group].includes(id)) return false;
+  progress[group].push(id);
+  saveState();
+  checkBadges();
+  return true;
+}
+
+function historyProgressButton(group, id, label) {
+  const done = historyIsDone(group, id);
+  return `
+    <button class="history-read-btn ${done ? "done" : ""}" data-history-read="${group}" data-history-id="${escapeHtml(id)}">
+      ${done ? tx("Przeczytane", "Read") : (label || tx("Oznacz jako przeczytane", "Mark as read"))}
+    </button>
+  `;
+}
+
+function historyProgressSummary(group, target) {
+  const count = historyProgressCount(group);
+  return `<p class="history-progress-text">${tx("Postęp:", "Progress:")} <strong>${count}/${target}</strong></p>`;
+}
+
+function historySummary(value, limit = 150) {
+  const text = historyItems(value).join(" ");
+  if (text.length <= limit) return text;
+  return `${text.slice(0, limit).trim()}...`;
+}
+
+function historyOverview() {
+  return `
+    <section class="history-hero">
+      <div>
+        <p class="history-kicker">${tx("Główna sekcja", "Main section")}</p>
+        <h1>${escapeHtml(historyLabel(historyContent.title))}</h1>
+        <p class="history-subtitle">${escapeHtml(historyLabel(historyContent.subtitle))}</p>
+      </div>
+      <span class="trust-badge verified">${tx("Sprawdzone:", "Checked:")} ${escapeHtml(historyContent.reviewed_at)}</span>
+    </section>
+    <section class="history-intro">
+      ${historyParagraphs(historyContent.home.intro)}
+      <div class="history-overview-actions">
+        <button class="big-action bg-emerald-500 text-white" data-history-tab="timeline">${tx("Zacznij od osi czasu", "Start with the timeline")}</button>
+        <button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-history-tab="stories">${tx("Czytaj krótkie stories", "Read short stories")}</button>
+      </div>
+    </section>
+    <section class="history-note">
+      <h2>${tx("Jak czytamy tę historię?", "How do we read this history?")}</h2>
+      ${historyParagraphs(historyContent.methodology)}
+    </section>
+    <section class="history-progress-panel">
+      <div>${historyProgressSummary("timelineEvents", 15)}<span>${tx("wydarzeń osi czasu", "timeline events")}</span></div>
+      <div>${historyProgressSummary("prophets", 8)}<span>${tx("profili proroków", "prophet profiles")}</span></div>
+      <div>${historyProgressSummary("sahaba", 15)}<span>${tx("postaci Sahaba", "Sahaba profiles")}</span></div>
+      <div>${historyProgressSummary("stories", 8)}<span>${tx("stories", "stories")}</span></div>
+    </section>
+  `;
+}
+
+function historyTimeline() {
+  const events = historyContent.timeline;
+  const active = events.find((event) => event.id === state.historyTimelineEvent) || events[0];
+  state.historyTimelineEvent = active.id;
+
+  return `
+    <section class="history-section-heading">
+      <p>${tx("Interaktywna oś czasu", "Interactive timeline")}</p>
+      <h2>${tx("Od Adama (as) po pierwsze stulecia", "From Adam (as) to the first centuries")}</h2>
+      ${historyProgressSummary("timelineEvents", 15)}
+    </section>
+    <section class="history-timeline-layout">
+      ${events.map((event) => {
+        const isActive = event.id === active.id;
+        return `
+          <article class="history-timeline-event ${isActive ? "active" : ""}">
+            <div class="history-timeline-node"><span></span></div>
+            <div class="history-timeline-content">
+              <button class="history-timeline-summary" data-history-event="${event.id}" aria-expanded="${isActive ? "true" : "false"}">
+                <span class="history-timeline-date">${escapeHtml(historyLabel(event.gregorian))} / ${escapeHtml(historyLabel(event.hijri))}</span>
+                <strong>${historyRichText(historyLabel(event.title))}</strong>
+                <small>${historyRichText(historySummary(event.description))}</small>
+              </button>
+              ${isActive ? `
+                <div class="history-timeline-expanded">
+                  ${historyParagraphs(event.description)}
+                  <div class="history-key-lesson">${historyRichText(historyLabel(event.key))}</div>
+                  ${historySourceList(event.sources)}
+                  ${historyProgressButton("timelineEvents", event.id, tx("Oznacz wydarzenie", "Mark event"))}
+                </div>
+              ` : ""}
+            </div>
+          </article>
+        `;
+      }).join("")}
+    </section>
+  `;
+}
+
+function historyProphets() {
+  return `
+    <section class="history-section-heading">
+      <p>${tx("Prorocy Islamu", "Prophets in Islam")}</p>
+      <h2>${tx("Jedna droga: Tawhid, sabr i powrót do Allaha", "One road: Tawhid, sabr and returning to Allah")}</h2>
+      ${historyProgressSummary("prophets", 8)}
+    </section>
+    <section class="history-profile-grid">
+      ${historyContent.prophets.map((prophet) => `
+        <article class="history-profile-card">
+          <div class="history-profile-top">
+            <h3>${historyRichText(prophet.name)}</h3>
+            <span>${historyRichText(historyLabel(prophet.badge))}</span>
+          </div>
+          <h4>${tx("Krótka biografia", "Short biography")}</h4>
+          ${historyParagraphs(prophet.bio)}
+          <h4>${tx("Misja", "Mission")}</h4>
+          ${historyParagraphs(prophet.mission)}
+          <h4>${tx("Lekcja dla nas", "Lesson for us")}</h4>
+          ${historyParagraphs(prophet.lesson)}
+          ${historySourceList(prophet.sources)}
+          ${historyProgressButton("prophets", prophet.id || historySafeId(prophet.name))}
+        </article>
+      `).join("")}
+    </section>
+  `;
+}
+
+function historyAngels() {
+  return `
+    <section class="history-section-heading">
+      <p>${tx("Aniołowie w Islamie", "Angels in Islam")}</p>
+      <h2>${tx("Świat niewidzialny pod rozkazem Allaha", "The unseen world under Allah's command")}</h2>
+      ${historyProgressSummary("angels", historyContent.angels.length)}
+    </section>
+    <section class="history-profile-grid">
+      ${historyContent.angels.map((angel) => `
+        <article class="history-profile-card">
+          <div class="history-profile-top">
+            <h3>${historyRichText(historyLabel(angel.name))}</h3>
+          </div>
+          <h4>${tx("Rola", "Role")}</h4>
+          ${historyParagraphs(angel.role)}
+          <h4>${tx("Dowód", "Proof")}</h4>
+          ${historyParagraphs(angel.proof)}
+          <div class="history-key-lesson">${historyRichText(historyLabel(angel.lesson))}</div>
+          ${historySourceList(angel.sources)}
+          ${historyProgressButton("angels", angel.id || historySafeId(angel.name))}
+        </article>
+      `).join("")}
+    </section>
+  `;
+}
+
+function historySahaba() {
+  const data = historyContent.sahaba;
+  return `
+    <section class="history-section-heading">
+      <p>${tx("Sahaba", "Sahaba")}</p>
+      <h2>${tx("Najlepsze pokolenie", "The best generation")}</h2>
+      ${historyProgressSummary("sahaba", 15)}
+    </section>
+    <section class="history-intro">${historyParagraphs(data.intro)}</section>
+    <section class="history-profile-grid">
+      ${data.caliphs.map((caliph) => `
+        <article class="history-profile-card">
+          <div class="history-profile-top">
+            <h3>${historyRichText(caliph.name)}</h3>
+            <span>${escapeHtml(caliph.years)}</span>
+          </div>
+          ${historyParagraphs(caliph.bio)}
+          <h4>${tx("Cechy", "Qualities")}</h4>
+          <ul class="history-list">${historyItems(caliph.qualities).map((item) => `<li>${historyRichText(item)}</li>`).join("")}</ul>
+          <div class="history-key-lesson">${historyRichText(historyLabel(caliph.lesson))}</div>
+          ${historySourceList(caliph.sources)}
+          ${historyProgressButton("sahaba", caliph.id || historySafeId(caliph.name))}
+        </article>
+      `).join("")}
+    </section>
+    ${data.categories.map((category) => `
+      <section class="history-section">
+        <div class="history-section-heading">
+          <p>${tx("Kategorie", "Categories")}</p>
+          <h2>${historyRichText(historyLabel(category.title))}</h2>
+        </div>
+        <div class="history-people-list">
+          ${category.people.map((person) => `
+            <article>
+              <h3>${historyRichText(person.name)}</h3>
+              ${historyParagraphs(person.note)}
+              ${historySourceList(person.sources)}
+              ${historyProgressButton("sahaba", person.id || historySafeId(person.name))}
+            </article>
+          `).join("")}
+        </div>
+      </section>
+    `).join("")}
+    <section class="history-note">
+      ${historyParagraphs({ pl: data.proof.pl, en: data.proof.en })}
+      ${historySourceList(data.proof.sources)}
+    </section>
+  `;
+}
+
+function historyConversionCard(person) {
+  const id = person.id || historySafeId(person.name);
+  return `
+    <article class="history-conversion-card">
+      <h3>${historyRichText(historyLabel(person.name) || person.name)}</h3>
+      <div class="history-conversion-steps">
+        <div><span>${tx("Przed", "Before")}</span>${historyParagraphs(person.before, "history-story-preview")}</div>
+        <div><span>${tx("Moment zwrotu", "Turning point")}</span>${historyParagraphs(person.turningPoint, "history-story-preview")}</div>
+        <div><span>${tx("Po", "After")}</span>${historyParagraphs(person.after, "history-story-preview")}</div>
+      </div>
+      ${historySourceList(person.sources)}
+      ${historyProgressButton("conversions", id)}
+    </article>
+  `;
+}
+
+function historyConversions() {
+  const data = historyContent.conversions;
+  return `
+    <section class="history-section-heading">
+      <p>${tx("Słynne drogi do Islamu", "Famous roads to Islam")}</p>
+      <h2>${tx("Przed → Moment zwrotu → Po", "Before → Turning point → After")}</h2>
+      ${historyProgressSummary("conversions", 10)}
+    </section>
+    <section class="history-intro">${historyParagraphs(data.intro)}</section>
+    <section class="history-section">
+      <div class="history-section-heading"><p>${tx("Historia klasyczna", "Classical history")}</p><h2>${tx("Pierwsze pokolenia", "Early generations")}</h2></div>
+      <div class="history-conversion-grid">${data.historical.map(historyConversionCard).join("")}</div>
+    </section>
+    <section class="history-section">
+      <div class="history-section-heading"><p>${tx("Nowoczesne", "Modern")}</p><h2>${tx("Różne kraje, różne początki", "Different countries, different beginnings")}</h2></div>
+      <div class="history-conversion-grid">${data.modern.map(historyConversionCard).join("")}</div>
+    </section>
+  `;
+}
+
+function historyWomen() {
+  const data = historyContent.women;
+  return `
+    <section class="history-section-heading">
+      <p>${tx("Kobiety w Historii Islamu", "Women in Islamic History")}</p>
+      <h2>${tx("Wiara, wiedza, odwaga i rodzina", "Faith, knowledge, courage and family")}</h2>
+      ${historyProgressSummary("women", 9)}
+    </section>
+    <section class="history-intro">${historyParagraphs(data.intro)}</section>
+    <section class="history-profile-grid">
+      ${data.people.map((person) => `
+        <article class="history-profile-card">
+          <div class="history-profile-top"><h3>${historyRichText(person.name)}</h3></div>
+          ${historyParagraphs(person.role)}
+          <div class="history-key-lesson">${historyRichText(historyLabel(person.lesson))}</div>
+          ${historySourceList(person.sources)}
+          ${historyProgressButton("women", person.id || historySafeId(person.name))}
+        </article>
+      `).join("")}
+    </section>
+    <section class="history-note">${historyParagraphs(data.familyNote)}</section>
+  `;
+}
+
+function historyChristianity() {
+  const data = historyContent.christianity;
+  const cards = (items) => items.map((item) => `
+    <article class="history-profile-card">
+      <div class="history-profile-top"><h3>${historyRichText(historyLabel(item.title))}</h3></div>
+      ${historyParagraphs(item.text)}
+      ${historySourceList(item.sources)}
+    </article>
+  `).join("");
+
+  return `
+    <section class="history-section-heading">
+      <p>${tx("Islam a Chrześcijaństwo", "Islam and Christianity")}</p>
+      <h2>${tx("Co nas łączy?", "What connects us?")}</h2>
+      ${historyProgressSummary("christianity", 1)}
+    </section>
+    <section class="history-intro">${historyParagraphs(data.intro)}</section>
+    <section class="history-section">
+      <div class="history-section-heading"><p>${tx("Mosty", "Bridges")}</p><h2>${tx("Wspólne punkty szacunku", "Shared points of respect")}</h2></div>
+      <div class="history-profile-grid">${cards(data.bridges)}</div>
+    </section>
+    <section class="history-section">
+      <div class="history-section-heading"><p>${tx("Różnice", "Differences")}</p><h2>${tx("Delikatnie i bez ataku", "Gently and without attack")}</h2></div>
+      <div class="history-profile-grid">${cards(data.differences)}</div>
+    </section>
+    <section class="history-note">
+      ${historyParagraphs(data.toneGuide)}
+      ${historyProgressButton("christianity", "bridge")}
+    </section>
+  `;
+}
+
+function historyStories() {
+  const sections = HISTORY_TABS.filter((tab) => !["overview", "stories"].includes(tab.id));
+  return `
+    <section class="history-section-heading">
+      <p>${tx("Stories", "Stories")}</p>
+      <h2>${tx("Krótkie opowieści na 1-2 minuty", "Short 1-2 minute stories")}</h2>
+      ${historyProgressSummary("stories", 8)}
+    </section>
+    ${sections.map((section) => {
+      const stories = historyContent.stories.filter((story) => story.section === section.id);
+      if (!stories.length) return "";
+      return `
+        <section class="history-section">
+          <div class="history-section-heading">
+            <p>${section.icon}</p>
+            <h2>${escapeHtml(historyLabel(section.title))}</h2>
+          </div>
+          <div class="history-story-grid">
+            ${stories.map((story) => `
+              <article class="history-story-card">
+                <span>${story.readMinutes} min</span>
+                <h3>${historyRichText(historyLabel(story.title))}</h3>
+                ${historyParagraphs(story.body, "history-story-preview")}
+                ${historyProgressButton("stories", story.id)}
+              </article>
+            `).join("")}
+          </div>
+        </section>
+      `;
+    }).join("")}
+  `;
+}
+
+function history() {
+  if (!HISTORY_TABS.some((tab) => tab.id === state.historyTab)) state.historyTab = "overview";
+
+  const renderers = {
+    overview: historyOverview,
+    timeline: historyTimeline,
+    prophets: historyProphets,
+    angels: historyAngels,
+    sahaba: historySahaba,
+    conversions: historyConversions,
+    women: historyWomen,
+    christianity: historyChristianity,
+    stories: historyStories
+  };
+
+  view.innerHTML = `
+    <div class="history-shell">
+      <div class="history-tabs" role="tablist">
+        ${HISTORY_TABS.map((tab) => `
+          <button class="tab-btn ${state.historyTab === tab.id ? "active" : ""}" data-history-tab="${tab.id}">
+            <span>${tab.icon || ""}</span>
+            ${escapeHtml(historyLabel(tab.title))}
+          </button>
+        `).join("")}
+      </div>
+      ${renderers[state.historyTab]()}
+      <section class="panel p-3 mt-4 text-xs text-[var(--muted)]">
+        ${tx(RELIGIOUS_NOTICE.pl, RELIGIOUS_NOTICE.en)}
+      </section>
+    </div>
+  `;
+
+  view.querySelectorAll("[data-history-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.historyTab = button.dataset.historyTab;
+      saveState();
+      history();
+    });
+  });
+
+  view.querySelectorAll("[data-history-event]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const eventId = button.dataset.historyEvent;
+      state.historyTimelineEvent = eventId;
+      if (!markHistoryProgress("timelineEvents", eventId)) saveState();
+      history();
+    });
+  });
+
+  view.querySelectorAll("[data-history-read]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (markHistoryProgress(button.dataset.historyRead, button.dataset.historyId)) history();
+    });
+  });
 }
 
 
@@ -2769,6 +3267,7 @@ function badges() {
     button.addEventListener("click", () => {
       const target = badgeTarget(button.dataset.badgeId);
       if (target.activeGame) state.activeGame = target.activeGame;
+      if (target.historyTab) state.historyTab = target.historyTab;
       saveState();
       setRoute(target.route);
     });
@@ -2809,6 +3308,19 @@ function settings() {
           <p>${tx("Eksport tworzy plik JSON z Twoimi danymi. Import nadpisuje lokalny stan aplikacji.", "Export creates a JSON file with your data. Import replaces the local app state.")}</p>
           <p>${tx("Gdy korzystasz z AI, tresc rozmowy jest wysylana do uslugi Groq, zeby wygenerowac odpowiedz.", "When you use AI, the conversation content is sent to Groq to generate a reply.")}</p>
         </div>
+      </section>
+      <section class="panel p-5 lg:col-span-2">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 class="text-xl font-black">${tx("Dane i historia aktywnosci", "Data and activity history")}</h2>
+            <p class="mt-2 text-[var(--muted)]">${tx("Publiczny Dziennik zostal ukryty. Twoje stare wpisy zostaja lokalnie w przegladarce, a tutaj pokazujemy tylko spokojny zapis zdarzen systemowych.", "The public Journal is hidden. Your old entries remain locally in the browser; here we only show a quiet log of system activity.")}</p>
+          </div>
+          <span class="trust-badge verified">${tx("Lokalnie", "Local")}</span>
+        </div>
+        <details class="soft-panel mt-4 p-4">
+          <summary class="cursor-pointer font-black">${tx("Zdarzenia systemowe", "System events")}</summary>
+          <div class="mt-4 grid gap-3">${systemActivityTimelineHtml(systemActivityEvents().slice(0, 25))}</div>
+        </details>
       </section>
       <section class="panel p-5 lg:col-span-2">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -3709,36 +4221,10 @@ function setupCanvas() {
   };
 }
 
-function learningJournalStats() {
-  const todayLog = state.prayerLog?.[today()] || {};
-  const prayersDone = OBLIGATORY_PRAYERS.filter(name => todayLog[name]).length;
-  const memorized = HIFZ_SURAHS.filter(num => state.hifzProgress?.[num] === "memorized").length;
-  const noteCount = Object.values(state.adventureNotes || {}).filter(Boolean).length;
-  const lettersDone = state.learnedLetters?.length || 0;
-  return [
-    { value: `${lettersDone}/28`, label: tx("Litery", "Letters"), route: "alphabet" },
-    { value: `${prayersDone}/5`, label: tx("Modlitwy dzisiaj", "Prayers today"), route: "prayer" },
-    { value: `${memorized}/${HIFZ_SURAHS.length}`, label: tx("Krotkie sury", "Short surahs"), route: "koran", quranTab: "hifz" },
-    { value: String(noteCount), label: tx("Wpisy", "Entries"), route: "adventure" }
-  ].map(item => `
-    <button class="panel p-4 text-left active:scale-95 transition-transform" data-journal-route="${item.route}" ${item.quranTab ? `data-quran-tab="${item.quranTab}"` : ""}>
-      <p class="text-2xl font-black text-[var(--accent)]">${item.value}</p>
-      <p class="text-xs font-bold text-[var(--muted)] mt-1">${item.label}</p>
-    </button>
-  `).join("");
-}
-
-function learningJournal() {
+function systemActivityEvents() {
   if (!state.learnedLettersLog) state.learnedLettersLog = [];
-  if (!state.adventureNotes) state.adventureNotes = {};
-  state.journalTab = state.journalTab || "notes";
 
   const events = [];
-  const notes = Object.entries(state.adventureNotes || {})
-    .filter(([, text]) => text)
-    .map(([date, text]) => ({ date, text: escapeHtml(text) }))
-    .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
-
   (state.learnedLettersLog || []).forEach(entry => {
     const letter = arabicAlphabet.find(l => l.id === entry.id);
     if (letter) events.push({ date: entry.date, icon: escapeHtml(letter.forms.isolated), text: tx(`Poznałeś/aś literę ${letterName(letter)} (${letter.transliteration})`, `Learned the letter ${letterName(letter)} (${letter.transliteration})`), type: "letter" });
@@ -3756,10 +4242,11 @@ function learningJournal() {
 
   if (state.streak >= 7) events.push({ date: today(), icon: "🔥", text: tx(`Seria ${state.streak} dni nauki z rzędu!`, `${state.streak}-day learning streak!`), type: "milestone" });
 
-  events.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
-  const next = nextStepSuggestion();
+  return events.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+}
 
-  const timelineHtml = events.length ? events.map(ev => `
+function systemActivityTimelineHtml(events = systemActivityEvents()) {
+  return events.length ? events.map(ev => `
     <div class="flex gap-4 items-start">
       <div class="flex flex-col items-center">
         <div class="grid h-11 w-11 place-items-center rounded-full ${ev.type === "letter" ? "bg-emerald-100 arabic text-2xl" : ev.type === "quran" ? "bg-amber-100 text-xl" : ev.type === "milestone" ? "bg-yellow-100 text-xl" : "bg-blue-100 text-xl"}">${ev.icon}</div>
@@ -3770,66 +4257,7 @@ function learningJournal() {
         <p class="text-xs text-[var(--muted)] mt-1">${ev.date}</p>
       </div>
     </div>
-  `).join("") : `<p class="text-[var(--muted)] text-center py-8">${tx("Brak zdarzeń. Zacznij uczyć się liter i dodawaj sury, by tu coś zobaczyć.", "No events yet. Start learning letters and add surahs to see your timeline.")}</p>`;
-
-  const notesHtml = notes.length ? notes.map(note => `
-    <article class="panel p-4">
-      <p class="font-bold leading-relaxed">${note.text}</p>
-      <p class="text-xs text-[var(--muted)] mt-2">${new Date(note.date).toLocaleString(localeTag())}</p>
-    </article>
-  `).join("") : `<p class="text-[var(--muted)] text-center py-8">${tx("Brak własnych wpisów.", "No personal entries yet.")}</p>`;
-
-  view.innerHTML = `
-    <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Dziennik nauki", "Learning Journal")}</h1>
-      <p class="text-[var(--muted)]">${tx("Twoje notatki, postepy, modlitwy, sury i kamienie milowe.", "Your notes, progress, prayers, surahs and milestones.")}</p>
-    </div>
-    <div class="grid gap-3 sm:grid-cols-4 mb-4">
-      ${learningJournalStats()}
-    </div>
-    <button class="panel p-4 mb-4 text-left w-full flex items-center justify-between gap-3 active:scale-95 transition-transform" data-journal-route="${next.route}" ${next.quranTab ? `data-quran-tab="${next.quranTab}"` : ""}>
-      <div>
-        <p class="text-xs font-black uppercase tracking-wide text-[var(--muted)]">${tx("Nastepny maly krok", "Next small step")}</p>
-        <h2 class="text-lg font-black mt-1">${next.title}</h2>
-        <p class="text-sm text-[var(--muted)] mt-1">${next.text}</p>
-        <p class="mt-2 text-xs font-black text-emerald-600">${next.action}</p>
-      </div>
-      <span class="text-xl">&gt;</span>
-    </button>
-    <div class="panel mb-4 p-5">
-      <h2 class="text-lg font-black mb-3">${tx("Dodaj wpis do dziennika", "Add journal entry")}</h2>
-      <textarea id="adventureNoteInput" class="min-h-20 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3" placeholder="${tx("Napisz coś, co chcesz zapamiętać... (np. dzisiaj nauczyłem się...)", "Write something to remember... (e.g. today I learned...)")}"></textarea>
-      <button id="addAdventureNoteBtn" class="big-action mt-3 w-full bg-emerald-500 text-white">${tx("Dodaj wpis", "Add entry")}</button>
-    </div>
-    <div class="mb-3 flex flex-wrap gap-2">
-      <button class="tab-btn ${state.journalTab === "notes" ? "active" : ""}" data-journal-tab="notes">${tx("Moje wpisy", "My entries")}</button>
-      <button class="tab-btn ${state.journalTab === "events" ? "active" : ""}" data-journal-tab="events">${tx("Zdarzenia systemowe", "System events")}</button>
-    </div>
-    <div class="panel p-5 mb-4">
-      <h2 class="text-lg font-black mb-4">${state.journalTab === "notes" ? tx("Moje wpisy", "My entries") : tx("Zdarzenia systemowe", "System events")} · ${state.journalTab === "notes" ? notes.length : events.length}</h2>
-      <div class="mt-2 grid gap-3">${state.journalTab === "notes" ? notesHtml : timelineHtml}</div>
-    </div>
-  `;
-
-  $("#addAdventureNoteBtn").addEventListener("click", () => {
-    const text = $("#adventureNoteInput").value.trim();
-    if (!text) return;
-    if (!state.adventureNotes) state.adventureNotes = {};
-    const key = new Date().toISOString();
-    state.adventureNotes[key] = text;
-    state.journalTab = "notes";
-    saveState();
-    learningJournal();
-  });
-  view.querySelectorAll("[data-journal-tab]").forEach(btn => btn.addEventListener("click", () => {
-    state.journalTab = btn.dataset.journalTab;
-    saveState();
-    learningJournal();
-  }));
-  view.querySelectorAll("[data-journal-route]").forEach(btn => btn.addEventListener("click", () => {
-    if (btn.dataset.quranTab) state.quranTab = btn.dataset.quranTab;
-    setRoute(btn.dataset.journalRoute);
-  }));
+  `).join("") : `<p class="text-[var(--muted)] text-center py-8">${tx("Brak zdarzeń systemowych. Ucz się liter, dodawaj sury i buduj serię, aby coś tu zobaczyć.", "No system events yet. Learn letters, add surahs and build a streak to see activity here.")}</p>`;
 }
 
 function books() {
@@ -5467,6 +5895,14 @@ const BADGES_CATALOG = [
   { id: "dua_fav3",       icon: "☾",   pl: "3 ulubione dua",      en: "3 favorite duas",    criterionPl: "Dodaj 3 dua do ulubionych",         criterionEn: "Favorite 3 duas" },
   { id: "review_clean",   icon: "✓",   pl: "Czysta powtórka",     en: "Clean review",       criterionPl: "Nie miej aktywnych błędów",          criterionEn: "Have no active mistakes" },
   { id: "asma_challenge20", icon: "99", pl: "20 Imion",           en: "20 Names",           criterionPl: "Wpisz 20 imion w challenge",         criterionEn: "Enter 20 names in challenge" },
+  { id: "history_timeline_15", icon: "🧭", pl: "Oś czasu 15", en: "Timeline 15", criterionPl: "Otwórz lub przeczytaj 15 wydarzeń Historii", criterionEn: "Open or read 15 History timeline events" },
+  { id: "history_prophets_8", icon: "🌿", pl: "Poznałem 8 Proroków", en: "8 Prophets", criterionPl: "Oznacz 8 profili proroków w Historii", criterionEn: "Mark 8 prophet profiles in History" },
+  { id: "history_angels_all", icon: "✨", pl: "Aniołowie", en: "Angels", criterionPl: "Przejdź całą sekcję Aniołowie", criterionEn: "Complete the Angels section" },
+  { id: "history_sahaba_15", icon: "🤝", pl: "15 Sahaba", en: "15 Sahaba", criterionPl: "Oznacz 15 postaci z najlepszego pokolenia", criterionEn: "Mark 15 people from the best generation" },
+  { id: "history_conversions_10", icon: "🫶", pl: "Drogi do Islamu", en: "Roads to Islam", criterionPl: "Poznaj 10 historii konwersji", criterionEn: "Learn 10 conversion stories" },
+  { id: "history_women_9", icon: "🌺", pl: "Kobiety historii", en: "Women of History", criterionPl: "Poznaj 9 profili kobiet w historii islamu", criterionEn: "Learn 9 profiles of women in Islamic history" },
+  { id: "history_bridge_builder", icon: "🕊", pl: "Budowniczy mostów", en: "Bridge Builder", criterionPl: "Ukończ sekcję Islam a chrześcijaństwo", criterionEn: "Complete the Islam and Christianity section" },
+  { id: "history_stories_8", icon: "📚", pl: "Stories Historii", en: "History Stories", criterionPl: "Przeczytaj 8 krótkich stories w Historii", criterionEn: "Read 8 short History stories" },
 ];
 
 const BADGE_CATEGORIES = [
@@ -5474,10 +5910,12 @@ const BADGE_CATEGORIES = [
   { id: "quran", pl: "Quran", en: "Quran" },
   { id: "streaks", pl: "Serie", en: "Streaks" },
   { id: "practice", pl: "Ćwiczenia", en: "Practice" },
-  { id: "prayer", pl: "Modlitwa", en: "Prayer" }
+  { id: "prayer", pl: "Modlitwa", en: "Prayer" },
+  { id: "history", pl: "Historia", en: "History" }
 ];
 
 function badgeCategory(id) {
+  if (/^history_/.test(id)) return "history";
   if (/streak/.test(id)) return "streaks";
   if (/surah|fatiha|dua|quran/.test(id)) return "quran";
   if (/quiz|game|flash|review|asma/.test(id)) return "practice";
@@ -5486,6 +5924,14 @@ function badgeCategory(id) {
 }
 
 function badgeTarget(id) {
+  if (/^history_timeline/.test(id)) return { route: "history", historyTab: "timeline" };
+  if (/^history_prophets/.test(id)) return { route: "history", historyTab: "prophets" };
+  if (/^history_angels/.test(id)) return { route: "history", historyTab: "angels" };
+  if (/^history_sahaba/.test(id)) return { route: "history", historyTab: "sahaba" };
+  if (/^history_conversions/.test(id)) return { route: "history", historyTab: "conversions" };
+  if (/^history_women/.test(id)) return { route: "history", historyTab: "women" };
+  if (/^history_bridge/.test(id)) return { route: "history", historyTab: "christianity" };
+  if (/^history_stories/.test(id)) return { route: "history", historyTab: "stories" };
   if (/letter/.test(id)) return { route: "alphabet" };
   if (/surah|fatiha|dua/.test(id)) return { route: "koran" };
   if (/quiz|game|asma/.test(id)) return { route: "games", activeGame: /ai_quiz/.test(id) ? "aiQuiz" : "quizHub" };
@@ -5505,6 +5951,7 @@ function checkBadges() {
   const ld = (state.miniLessonsDone || []).length;
   const dhikrTotal = Object.values(state.dhikrCounts || {}).reduce((sum, count) => sum + (Number(count) || 0), 0);
   const prayerSessions = state.prayerGuideSessions || 0;
+  const historyProgress = ensureHistoryProgress();
   const gamesPlayed =
     (state.quizHistory || []).length +
     (state.dhikrGameHistory || []).length +
@@ -5551,6 +5998,14 @@ function checkBadges() {
   if ((state.quranDuaFavorites || []).length >= 3) unlockBadge("dua_fav3", tx("3 ulubione dua", "3 favorite duas"));
   if (activeMistakeTotal() === 0 && gamesPlayed > 0) unlockBadge("review_clean", tx("Czysta powtórka", "Clean review"));
   if ((state.asmaChallengeBest || 0) >= 20) unlockBadge("asma_challenge20", tx("20 Imion", "20 Names"));
+  if (new Set(historyProgress.timelineEvents || []).size >= 15) unlockBadge("history_timeline_15", tx("Oś czasu 15", "Timeline 15"));
+  if (new Set(historyProgress.prophets || []).size >= 8) unlockBadge("history_prophets_8", tx("Poznałem 8 Proroków", "8 Prophets"));
+  if (new Set(historyProgress.angels || []).size >= historyContent.angels.length) unlockBadge("history_angels_all", tx("Aniołowie", "Angels"));
+  if (new Set(historyProgress.sahaba || []).size >= 15) unlockBadge("history_sahaba_15", tx("15 Sahaba", "15 Sahaba"));
+  if (new Set(historyProgress.conversions || []).size >= 10) unlockBadge("history_conversions_10", tx("Drogi do Islamu", "Roads to Islam"));
+  if (new Set(historyProgress.women || []).size >= 9) unlockBadge("history_women_9", tx("Kobiety historii", "Women of History"));
+  if (new Set(historyProgress.christianity || []).size >= 1) unlockBadge("history_bridge_builder", tx("Budowniczy mostów", "Bridge Builder"));
+  if (new Set(historyProgress.stories || []).size >= 8) unlockBadge("history_stories_8", tx("Stories Historii", "History Stories"));
 }
 
 function unlockBadge(id, name) {
@@ -6312,15 +6767,14 @@ function seerah() {
         <div class="soft-panel p-3"><p class="font-black">🌙 ${tx("Śmierć Proroka ﷺ", "Death of the Prophet ﷺ")}</p><p class="text-[var(--muted)] text-xs">${tx("632 n.e. — Medyna, po ostatniej pielgrzymce", "632 CE — Medina, after the Farewell Pilgrimage")}</p></div>
       </div>
     </div>
-    <h2 class="text-xl font-black mb-3">${tx("Kalendarium", "Timeline")}</h2>
-    <div class="seerah-timeline">
-      ${seerahTimeline.map(ev => `
-        <div class="seerah-event">
-          <div class="seerah-year">${ev.year}${ev.hijri ? ` / ${ev.hijri} H` : ''}</div>
-          <div class="seerah-title">${state.lang === 'pl' ? ev.pl : ev.en}</div>
-          <div class="seerah-desc">${state.lang === 'pl' ? (ev.desc_pl || '') : (ev.desc_en || '')}</div>
+    <div class="panel p-5 mb-5">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 class="text-xl font-black">${tx("Kalendarium jest teraz w Historii", "The timeline now lives in History")}</h2>
+          <p class="mt-2 text-sm text-[var(--muted)]">${tx("Seerah zostaje miejscem zrozumienia życia Proroka ﷺ. Pełną oś czasu, także z prorokami przed nim i pierwszymi stuleciami islamu, znajdziesz w dziale Historia.", "Seerah remains the place for understanding the Prophet's ﷺ life. The full timeline, including earlier prophets and the first centuries of Islam, is in the History section.")}</p>
         </div>
-      `).join('')}
+        <button class="big-action bg-emerald-500 text-white" data-route="history" data-history-go="timeline">${tx("Zobacz oś czasu w Historii", "Open History timeline")}</button>
+      </div>
     </div>
     <div class="panel p-5 mt-6">
       <h2 class="text-xl font-black mb-4">${tx("Hadisy Dnia", "Daily Hadiths")}</h2>
@@ -6335,6 +6789,11 @@ function seerah() {
       `).join('')}
     </div>
   `;
+  view.querySelector("[data-history-go]")?.addEventListener("click", () => {
+    state.historyTab = "timeline";
+    saveState();
+    setRoute("history");
+  });
 }
 
 // ============================================================

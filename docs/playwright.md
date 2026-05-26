@@ -1,6 +1,6 @@
 ﻿# Playwright w Alif AI
 
-Playwright uruchamia aplikacjÄ™ jak prawdziwy uĹĽytkownik w przeglÄ…darce. W tym projekcie sprawdza miÄ™dzy innymi ekran Start po polsku, brak kalkulatora zakat, Dziennik nauki, Islam i ustawienia prywatnoĹ›ci.
+Playwright uruchamia aplikację jak prawdziwy użytkownik w przeglądarce. W tym projekcie sprawdza między innymi ekran Start po polsku, brak kalkulatora zakat, Historię, Islam i ustawienia prywatności.
 
 ## NajwaĹĽniejsze komendy
 

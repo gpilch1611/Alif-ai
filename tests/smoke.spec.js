@@ -276,8 +276,8 @@ test.describe("Alif AI smoke", () => {
     expect(boxes).not.toBeNull();
     expect(boxes.navHeight).toBeLessThan(90);
     expect(boxes.fabBottom).toBeLessThanOrEqual(boxes.navTop - 4);
-    await page.getByRole("button", { name: /Dziennik|Journal/ }).click();
-    await expect(page).toHaveURL(/#adventure$/);
+    await page.getByRole("button", { name: /Historia|History/ }).click();
+    await expect(page).toHaveURL(/#history$/);
   });
 
   test("removed route falls back to Start", async ({ page }) => {
@@ -286,16 +286,23 @@ test.describe("Alif AI smoke", () => {
     await expect(page.getByRole("heading", { name: /Islam/ })).toBeVisible();
   });
 
-  test("Islam and journal routes render expected replacement features", async ({ page }) => {
+  test("Islam, History and settings activity routes render expected replacement features", async ({ page }) => {
     await page.goto("/#islam");
     await expect(page.getByRole("button", { name: /Słownik|Slownik/ })).toBeVisible();
+    await expect(page.locator("#view").getByRole("button", { name: /^Historia$/ })).toHaveCount(0);
     await expect(page.locator("body")).not.toContainText("Kalkulator zakat");
 
+    await page.goto("/#history");
+    await expect(page.getByRole("heading", { name: /Historia/ })).toBeVisible();
+    await expect(page.locator(".history-entry-card")).toHaveCount(0);
+    await expect(page.locator(".history-tabs")).toBeVisible();
+
     await page.goto("/#adventure");
-    await expect(page.getByRole("heading", { name: /Dziennik nauki/ })).toBeVisible();
-    await expect(page.getByText(/Nastepny maly krok|Następny mały krok/)).toBeVisible();
-    await expect(page.getByRole("button", { name: /Moje wpisy/ })).toBeVisible();
-    await expect(page.getByRole("button", { name: /Zdarzenia systemowe/ })).toBeVisible();
+    await expect(page).toHaveURL(/#home$/);
+
+    await page.goto("/#settings");
+    await expect(page.getByText(/Dane i historia aktywnosci|Data and activity history/)).toBeVisible();
+    await expect(page.getByText(/Zdarzenia systemowe|System events/)).toBeVisible();
     await expect(page.getByRole("button", { name: /Wygeneruj wpis AI/ })).toHaveCount(0);
   });
 
