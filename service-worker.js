@@ -1,4 +1,4 @@
-const CACHE_NAME = "alif-ai-v17";
+const CACHE_NAME = "alif-ai-v18";
 const APP_SHELL = [
   "./",
   "./index.html",

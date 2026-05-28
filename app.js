@@ -519,8 +519,39 @@ function letterName(letter) {
     .replace(" (emphatic)", "");
 }
 
+const LETTER_SPEECH_TEXT = {
+  alif: "أَلِفْ",
+  ba: "بَا",
+  ta: "تَا",
+  tha: "ثَا",
+  jim: "جِيمْ",
+  ha: "حَا",
+  kha: "خَا",
+  dal: "دَالْ",
+  dhal: "ذَالْ",
+  ra: "رَا",
+  zay: "زَايْ",
+  sin: "سِينْ",
+  shin: "شِينْ",
+  sad: "صَادْ",
+  dad: "ضَادْ",
+  ta_emph: "طَا",
+  za_emph: "ظَا",
+  ayn: "عَيْنْ",
+  ghayn: "غَيْنْ",
+  fa: "فَا",
+  qaf: "قَافْ",
+  kaf: "كَافْ",
+  lam: "لَامْ",
+  mim: "مِيمْ",
+  nun: "نُونْ",
+  ha2: "هَا",
+  waw: "وَاوْ",
+  ya: "يَا"
+};
+
 function letterSpeechText(letter) {
-  return letter?.arabicName || letter?.forms?.isolated || "";
+  return LETTER_SPEECH_TEXT[letter?.id] || letter?.arabicName || letter?.forms?.isolated || "";
 }
 
 function letterAudioSrc(letter) {
