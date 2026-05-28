@@ -377,7 +377,7 @@ test.describe("Alif AI smoke", () => {
     await expect(page.getByRole("tab", { name: /Dzisiaj/ })).toBeVisible();
     await expect(page.getByRole("tab", { name: /Przewodnik/ })).toBeVisible();
     await expect(page.getByRole("tab", { name: /Wudu/ })).toBeVisible();
-    await expect(page.getByRole("tab", { name: /Qibla\/Czasy/ })).toBeVisible();
+    await expect(page.getByRole("tab", { name: /Qibla\/Czasy/ })).toHaveCount(0);
     await expect(page.getByRole("tab", { name: /Historia/ })).toBeVisible();
 
     await page.getByRole("tab", { name: /Przewodnik/ }).click();
@@ -423,7 +423,7 @@ test.describe("Alif AI smoke", () => {
     await expect(page.getByText("1/5")).toBeVisible();
   });
 
-  test("Prayer Mode keeps GPS optional and shows manual fallback on denial", async ({ page }) => {
+  test("Prayer Mode asks for GPS on entry and keeps retry visible on denial", async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(navigator, "geolocation", {
         configurable: true,
@@ -435,11 +435,11 @@ test.describe("Alif AI smoke", () => {
       });
     });
     await page.goto("/#prayer");
-    await page.getByRole("tab", { name: /Qibla\/Czasy/ }).click();
     await expect(page.getByRole("button", { name: /Użyj GPS|Uzyj GPS/ })).toBeVisible();
-    await expect(page.getByRole("button", { name: /Wpisz ręcznie|Wpisz recznie/ })).toBeVisible();
+    await expect(page.getByRole("tab", { name: /Qibla\/Czasy/ })).toHaveCount(0);
+    await expect(page.locator("#gpsPrayerStatus")).toContainText(/nie został|not confirmed|spróbować ponownie|try again/i);
     await page.getByRole("button", { name: /Użyj GPS|Uzyj GPS/ }).click();
-    await expect(page.locator("#gpsPrayerStatus")).toContainText(/fallback|ręczny|reczny/i);
+    await expect(page.locator("#gpsPrayerStatus")).toContainText(/nie został|not confirmed|spróbować ponownie|try again/i);
   });
 
   test("settings exposes privacy and backup controls", async ({ page }) => {

@@ -496,6 +496,7 @@ let speechVoicesCache = [];
 let speechVoicesLoading = false;
 let currentTtsAudio = null;
 let ttsWarningShownThisSession = false;
+let prayerGpsPromptedThisSession = false;
 
 function t(key) {
   return I18N[state.lang]?.[key] || I18N.pl[key] || key;
@@ -1507,7 +1508,6 @@ function islam() {
     { route: "koran",   icon: "📖", titlePl: "Qur'an",           titleEn: "Qur'an",          descPl: "Czytaj, słuchaj i zapisuj sury",                        descEn: "Read, listen and save surahs" },
     { route: "pillars", icon: "⭐", titlePl: "Filary Islamu",     titleEn: "Pillars of Islam", descPl: "5 Filarów Islamu + 6 Filarów Imanu",                    descEn: "5 Pillars of Islam + 6 Pillars of Iman" },
     { route: "prayerGuide", icon: "🧎", titlePl: "Prayer Mode",   titleEn: "Prayer Mode",      descPl: "Przewodnik salat krok po kroku dla początkujących",       descEn: "Step-by-step salat guide for beginners" },
-    { route: "prayer",  icon: "🕌", titlePl: "Czasy modlitw",     titleEn: "Prayer times",     descPl: "Makkah + Madinah + Qibla",                     descEn: "Makkah + Madinah + Qibla" },
     { route: "asmaul",  icon: "☪",  titlePl: "99 Imion Allaha",  titleEn: "99 Names of Allah",descPl: "Asma ul-Husna — piękne imiona Boga",                    descEn: "Asma ul-Husna — beautiful Names of God" },
     { route: "tajweed", icon: "🔤", titlePl: "Tadżwid",           titleEn: "Tajweed",          descPl: "8 zasad prawidłowej recytacji",                         descEn: "8 rules for correct Quran recitation" },
     { route: "muallaf",    icon: "🌱", titlePl: "Nowy muzułmanin",  titleEn: "New Muslim",       descPl: "Pierwsze kroki, szahada i nie musisz być perfekcyjny",        descEn: "First steps, shahada and you don't need to be perfect" },
@@ -2284,7 +2284,7 @@ function nextStepSuggestion() {
     return {
       route: "prayer",
       title: tx("Modlitwa krok po kroku", "Prayer step by step"),
-      text: tx("Otworz Prayer Mode: dziennik, wudu, qibla i przewodnik salat.", "Open Prayer Mode: journal, wudu, qibla and salat guide."),
+      text: tx("Otwórz Prayer Mode: dziennik, GPS, wudu i przewodnik salat.", "Open Prayer Mode: journal, GPS, wudu and salat guide."),
       action: tx("Otworz Prayer Mode", "Open Prayer Mode")
     };
   }
@@ -6768,10 +6768,6 @@ function prayerGuide() {
 // ============================================================
 // PRAYER TIMES - configurable locations
 // ============================================================
-function getPrayerLocations() {
-  return state.prayerLocations?.length ? state.prayerLocations : PRAYER_LOCATIONS;
-}
-
 async function fetchPrayerTimes(loc) {
   const cacheKey = `${today()}-${loc.id}-${loc.lat}-${loc.lng}-${loc.method}`;
   const cached = state.prayerTimesCache?.[cacheKey];
@@ -6801,13 +6797,6 @@ async function fetchPrayerTimes(loc) {
   }
 }
 
-async function fetchQibla(loc) {
-  const url = `https://api.aladhan.com/v1/qibla/${loc.lat}/${loc.lng}`;
-  const res = await fetch(url);
-  const data = await res.json();
-  return data.data?.direction || null;
-}
-
 function formatLocalTime(tz) {
   try {
     return new Intl.DateTimeFormat(state.lang === 'pl' ? 'pl-PL' : 'en-GB', {
@@ -6816,7 +6805,7 @@ function formatLocalTime(tz) {
   } catch { return '--:--:--'; }
 }
 
-function prayerTimesCard(label, timings, qibla, nextKey, tz, locId) {
+function prayerTimesCard(label, timings, nextKey, tz, locId) {
   const names = PRAYER_NAMES;
   const namesPL = PRAYER_NAMES_PL;
   const prayerRows = names.map((name, i) => {
@@ -6828,21 +6817,6 @@ function prayerTimesCard(label, timings, qibla, nextKey, tz, locId) {
     </div>`;
   }).join('');
 
-  const qiblaHtml = qibla !== null ? `
-    <div class="mt-4 flex items-center gap-4">
-      <div class="qibla-compass" id="compass-${locId}">
-        <div class="qibla-compass-inner">
-          <div class="qibla-needle" id="needle-${locId}" style="transform:rotate(${qibla}deg)"></div>
-          <div class="qibla-compass-n">N</div>
-        </div>
-      </div>
-      <div>
-        <p class="font-bold">${tx("Kierunek Qibla", "Qibla Direction")}</p>
-        <p class="text-[var(--muted)] text-sm">${Math.round(qibla)}° ${tx("od północy", "from north")}</p>
-        <p class="text-xs text-[var(--muted)] mt-1" id="compass-status-${locId}">${tx("Obróć urządzenie ku Mekce", "Point device toward Mecca")}</p>
-      </div>
-    </div>` : '';
-
   return `<div class="prayer-widget">
     <div class="flex items-center justify-between mb-3">
       <h2 class="text-xl font-black">${label}</h2>
@@ -6852,7 +6826,6 @@ function prayerTimesCard(label, timings, qibla, nextKey, tz, locId) {
       </div>
     </div>
     ${prayerRows}
-    ${qiblaHtml}
   </div>`;
 }
 
@@ -6908,21 +6881,44 @@ function prayerModeTabsHtml() {
   `;
 }
 
+function prayerGpsStatusText() {
+  return state.gpsPrayerLocation
+    ? tx("GPS aktywny. Czasy modlitw liczymy dla Twojej lokalizacji.", "GPS active. Prayer times are calculated for your location.")
+    : tx("GPS niepotwierdzony. Kliknij Użyj GPS, żeby pokazać lokalne czasy modlitw.", "GPS not confirmed. Tap Use GPS to show local prayer times.");
+}
+
 function prayerTodayPanel() {
   const log = prayerLogForToday();
   const done = OBLIGATORY_PRAYERS.filter(name => log[name]).length;
+  const hasGps = Boolean(state.gpsPrayerLocation);
   return `
     <section class="prayer-mode-grid">
       <article class="panel p-5">
         <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Dzisiaj", "Today")}</p>
         <h2 class="mt-1 text-2xl font-black">${tx("Modlitwa i spokojny rytm", "Prayer and calm rhythm")}</h2>
-        <p class="mt-2 text-sm text-[var(--muted)]">${tx("Zaznacz modlitwy, sprawdź czas i przejdź do przewodnika bez szukania po aplikacji.", "Track prayers, check time, and open the guide without hunting through the app.")}</p>
+        <p class="mt-2 text-sm text-[var(--muted)]">${tx("Zaznacz modlitwy, włącz GPS dla lokalnych czasów i przejdź do przewodnika bez szukania po aplikacji.", "Track prayers, enable GPS for local times, and open the guide without hunting through the app.")}</p>
         <div class="mt-4 text-4xl font-black text-[var(--accent)]">${done}/5</div>
         <button class="big-action mt-4 w-full bg-emerald-500 text-white" data-prayer-tab="guide">${tx("Rozpocznij przewodnik", "Start guide")}</button>
+        <div class="soft-panel mt-4 p-4">
+          <p class="text-sm font-black">${hasGps ? tx("Lokalizacja modlitwy", "Prayer location") : tx("Lokalne czasy modlitw", "Local prayer times")}</p>
+          <p id="gpsPrayerStatus" class="mt-1 text-sm text-[var(--muted)]">${prayerGpsStatusText()}</p>
+          ${hasGps
+            ? `<button id="useGpsPrayerLocation" class="mt-3 text-sm font-black text-[var(--accent)]">${tx("Odśwież GPS", "Refresh GPS")}</button>`
+            : `<button id="useGpsPrayerLocation" class="big-action mt-3 w-full bg-emerald-500 text-white">${tx("Użyj GPS", "Use GPS")}</button>`
+          }
+        </div>
       </article>
       <div>
         ${prayerJournalHtml()}
-        <article id="todayPrayerPreview" class="panel p-5"><div class="skeleton h-32 w-full"></div></article>
+        <article id="todayPrayerPreview" class="panel p-5">
+          ${hasGps
+            ? `<div class="skeleton h-32 w-full"></div>`
+            : `<div class="grid gap-2 text-center">
+                <h2 class="text-xl font-black">${tx("Najpierw potwierdź GPS", "Confirm GPS first")}</h2>
+                <p class="text-sm text-[var(--muted)]">${tx("Nie pokazujemy już domyślnych czasów Makkah/Madinah w Prayer Mode. Twoje czasy modlitw powinny być lokalne.", "Prayer Mode no longer shows default Makkah/Madinah times. Your prayer times should be local.")}</p>
+              </div>`
+          }
+        </article>
       </div>
     </section>
   `;
@@ -7000,31 +6996,6 @@ function wuduPanel() {
   `;
 }
 
-function qiblaPanel() {
-  return `
-    <section class="grid gap-4">
-      <article class="panel p-5">
-        <h2 class="text-2xl font-black">${tx("Qibla i czasy modlitw", "Qibla and prayer times")}</h2>
-        <p class="mt-2 text-sm text-[var(--muted)]">${tx("GPS jest opcjonalny i uruchamia sie dopiero po kliknieciu. Domyslnie uzywamy neutralnie Makkah i Madinah.", "GPS is optional and starts only after a click. By default, Makkah and Madinah are used neutrally.")}</p>
-        <div class="mt-4 flex flex-wrap gap-2">
-          <button id="useGpsPrayerLocation" class="big-action bg-emerald-500 text-white">${tx("Użyj GPS", "Use GPS")}</button>
-          <button id="manualPrayerLocation" class="big-action border border-[var(--line)] bg-[var(--surface)]">${tx("Wpisz ręcznie", "Enter manually")}</button>
-        </div>
-        <p id="gpsPrayerStatus" class="mt-3 text-sm text-[var(--muted)]">${state.gpsPrayerLocation ? tx("GPS zapisany lokalnie.", "GPS saved locally.") : tx("GPS nieaktywny. Mozesz zostac przy Makkah/Madinah.", "GPS inactive. You can stay with Makkah/Madinah.")}</p>
-      </article>
-      <div class="grid gap-4 lg:grid-cols-2" id="prayerTimesGrid">
-        ${getPrayerLocations().map(loc => `<div id="prayer-${loc.id}" class="panel p-5">
-          <div class="grid gap-3">
-            <div class="skeleton h-6 w-2/3"></div>
-            <div class="skeleton h-28 w-full"></div>
-            <p class="text-sm font-bold text-[var(--muted)]">${tx("Pobieranie czasow modlitw z aladhan.com...", "Loading prayer times from aladhan.com...")}</p>
-          </div>
-        </div>`).join("")}
-      </div>
-    </section>
-  `;
-}
-
 function prayerHistoryPanel() {
   const days = Array.from({ length: 7 }, (_, index) => {
     const date = formatDateOffset(-index);
@@ -7055,7 +7026,6 @@ function prayerHistoryPanel() {
 function prayerModePanel() {
   if (state.prayerModeTab === "guide") return prayerGuidePanel();
   if (state.prayerModeTab === "wudu") return wuduPanel();
-  if (state.prayerModeTab === "qibla") return qiblaPanel();
   if (state.prayerModeTab === "history") return prayerHistoryPanel();
   return prayerTodayPanel();
 }
@@ -7130,16 +7100,12 @@ function bindPrayerModeEvents() {
     prayer();
   });
   $("#useGpsPrayerLocation")?.addEventListener("click", requestPrayerGps);
-  $("#manualPrayerLocation")?.addEventListener("click", () => {
-    const status = $("#gpsPrayerStatus");
-    if (status) status.textContent = tx("Tryb ręczny: używamy zapisanych lokalizacji Makkah i Madinah.", "Manual mode: using saved Makkah and Madinah locations.");
-  });
 }
 
 async function requestPrayerGps() {
   const status = $("#gpsPrayerStatus");
   if (!navigator.geolocation) {
-    if (status) status.textContent = tx("Ta przeglądarka nie obsługuje GPS. Użyj wpisania ręcznego.", "This browser does not support GPS. Use manual entry.");
+    if (status) status.textContent = tx("Ta przeglądarka nie obsługuje GPS. Lokalnych czasów nie da się teraz wyliczyć.", "This browser does not support GPS. Local prayer times cannot be calculated right now.");
     return;
   }
   if (status) status.textContent = tx("Pytam przeglądarkę o lokalizację...", "Asking the browser for location...");
@@ -7159,33 +7125,35 @@ async function requestPrayerGps() {
     saveState();
     prayer();
   }, () => {
-    if (status) status.textContent = tx("Nie udało się pobrać GPS. Zostaje ręczny fallback.", "Could not get GPS. Manual fallback remains available.");
+    if (status) status.textContent = tx("GPS nie został potwierdzony. Kliknij Użyj GPS, gdy chcesz spróbować ponownie.", "GPS was not confirmed. Tap Use GPS when you want to try again.");
   }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 });
 }
 
 async function hydratePrayerTimesPreview() {
-  if (state.prayerModeTab !== "today" && state.prayerModeTab !== "qibla") return;
-  const activeLocations = getPrayerLocations();
-  for (const loc of activeLocations) {
-    try {
-      const [timings, qibla] = await Promise.all([fetchPrayerTimes(loc), fetchQibla(loc)]);
-      const nextKey = getNextPrayer(timings);
-      const target = state.prayerModeTab === "today" ? $("#todayPrayerPreview") : $(`#prayer-${loc.id}`);
-      if (target) target.innerHTML = prayerTimesCard(loc.label, timings, qibla, nextKey, loc.tz, loc.id);
-    } catch {
-      const target = state.prayerModeTab === "today" ? $("#todayPrayerPreview") : $(`#prayer-${loc.id}`);
-      if (target) {
-        target.innerHTML = `
-          <div class="grid gap-3 text-center">
-            <p class="text-[var(--muted)]">${tx("Nie udalo sie pobrac czasow. Sprawdz polaczenie z internetem.", "Could not load prayer times. Check your internet connection.")}</p>
-            <button class="big-action bg-emerald-500 text-white" data-prayer-retry>${tx("Sprobuj ponownie", "Try again")}</button>
-          </div>
-        `;
-        target.querySelector("[data-prayer-retry]")?.addEventListener("click", prayer);
-      }
-    }
-    if (state.prayerModeTab === "today") break;
+  if (state.prayerModeTab !== "today") return;
+  const loc = state.gpsPrayerLocation;
+  const target = $("#todayPrayerPreview");
+  if (!loc || !target) return;
+  try {
+    const timings = await fetchPrayerTimes(loc);
+    const nextKey = getNextPrayer(timings);
+    target.innerHTML = prayerTimesCard(loc.label, timings, nextKey, loc.tz, loc.id);
+  } catch {
+    target.innerHTML = `
+      <div class="grid gap-3 text-center">
+        <p class="text-[var(--muted)]">${tx("Nie udało się pobrać lokalnych czasów. Sprawdź połączenie z internetem.", "Could not load local prayer times. Check your internet connection.")}</p>
+        <button class="big-action bg-emerald-500 text-white" data-prayer-retry>${tx("Spróbuj ponownie", "Try again")}</button>
+      </div>
+    `;
+    target.querySelector("[data-prayer-retry]")?.addEventListener("click", prayer);
   }
+}
+
+function maybePromptPrayerGpsOnEntry() {
+  if (route !== "prayer") return;
+  if (state.gpsPrayerLocation || prayerGpsPromptedThisSession) return;
+  prayerGpsPromptedThisSession = true;
+  window.setTimeout(() => requestPrayerGps(), 250);
 }
 
 async function prayerMode() {
@@ -7195,7 +7163,7 @@ async function prayerMode() {
     <div class="mb-4">
       <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Centrum modlitwy", "Prayer center")}</p>
       <h1 class="text-3xl font-black">${tx("Prayer Mode", "Prayer Mode")}</h1>
-      <p class="text-[var(--muted)]">${tx("Dziennik, wudu, qibla, czasy i przewodnik salat w jednym miejscu.", "Journal, wudu, qibla, times and salat guide in one place.")}</p>
+      <p class="text-[var(--muted)]">${tx("Dziennik, lokalne czasy z GPS, wudu i przewodnik salat w jednym miejscu.", "Journal, GPS-based local times, wudu and salat guide in one place.")}</p>
       <p class="text-xs text-[var(--muted)] mt-2">${tx(RELIGIOUS_NOTICE.pl, RELIGIOUS_NOTICE.en)}</p>
     </div>
     ${prayerModeTabsHtml()}
@@ -7203,6 +7171,7 @@ async function prayerMode() {
   `;
   bindPrayerModeEvents();
   await hydratePrayerTimesPreview();
+  maybePromptPrayerGpsOnEntry();
 }
 
 async function prayer() {

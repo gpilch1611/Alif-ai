@@ -174,7 +174,6 @@ export const PRAYER_MODE_TABS = [
   { id: "today", pl: "Dzisiaj", en: "Today" },
   { id: "guide", pl: "Przewodnik", en: "Guide" },
   { id: "wudu", pl: "Wudu", en: "Wudu" },
-  { id: "qibla", pl: "Qibla/Czasy", en: "Qibla/Times" },
   { id: "history", pl: "Historia", en: "History" }
 ];
 
