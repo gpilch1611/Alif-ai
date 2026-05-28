@@ -18,6 +18,34 @@ const types = {
 createServer(async (request, response) => {
   try {
     const url = new URL(request.url || "/", "http://127.0.0.1");
+    if (url.pathname === "/api/tts" || url.pathname === "/.netlify/functions/tts") {
+      const text = (url.searchParams.get("text") || url.searchParams.get("q") || "").trim();
+      if (!text) {
+        response.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+        response.end("Missing text");
+        return;
+      }
+      if (text.length > 500) {
+        response.writeHead(413, { "Content-Type": "text/plain; charset=utf-8" });
+        response.end("Text too long");
+        return;
+      }
+      const ttsUrl = `https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=ar&ttsspeed=0.65&q=${encodeURIComponent(text)}`;
+      const ttsResponse = await fetch(ttsUrl, { headers: { "User-Agent": "Mozilla/5.0 Alif-AI" } });
+      if (!ttsResponse.ok) {
+        response.writeHead(502, { "Content-Type": "text/plain; charset=utf-8" });
+        response.end("TTS unavailable");
+        return;
+      }
+      const audio = Buffer.from(await ttsResponse.arrayBuffer());
+      response.writeHead(200, {
+        "Content-Type": "audio/mpeg",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      });
+      response.end(audio);
+      return;
+    }
+
     const relativePath = url.pathname === "/" ? "index.html" : decodeURIComponent(url.pathname.slice(1));
     const filePath = resolve(root, relativePath);
     if (!filePath.startsWith(root)) {

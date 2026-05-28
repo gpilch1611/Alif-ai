@@ -4129,6 +4129,8 @@ function preloadSpeechVoices() {
 function arabicTtsUrls(text) {
   const q = encodeURIComponent(text);
   return [
+    `/api/tts?text=${q}`,
+    `/.netlify/functions/tts?text=${q}`,
     `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&ttsspeed=0.65&q=${q}`,
     `https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=ar&ttsspeed=0.65&q=${q}`
   ];
@@ -4182,7 +4184,7 @@ function playArabicTtsUrl(url) {
   });
 }
 
-async function speakArabicOnlineTTS(text, failMessage) {
+async function speakArabicOnlineTTS(text, failMessage, options = {}) {
   for (const url of arabicTtsUrls(text)) {
     try {
       await playArabicTtsUrl(url);
@@ -4191,7 +4193,7 @@ async function speakArabicOnlineTTS(text, failMessage) {
     } catch {}
   }
 
-  if (!ttsWarningShownThisSession) {
+  if (!options.silent && !ttsWarningShownThisSession) {
     ttsWarningShownThisSession = true;
     showToast(failMessage || tx(
       "Nie udało się pobrać audio online. Sprawdź internet i kliknij jeszcze raz.",
@@ -4210,6 +4212,14 @@ function speakArabic(text, options = {}) {
   if (options.forceOnline) {
     if ("speechSynthesis" in window) speechSynthesis.cancel();
     void speakArabicOnlineTTS(clean);
+    return;
+  }
+
+  if (allowOnlineFallback && options.preferSystem !== true) {
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+    void speakArabicOnlineTTS(clean, null, { silent: true }).then((played) => {
+      if (!played) speakArabic(clean, { noOnlineFallback: true, preferSystem: true });
+    });
     return;
   }
 
