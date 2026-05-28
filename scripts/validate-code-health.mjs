@@ -70,6 +70,10 @@ assert(!appJs.includes("compassWatchId"), "Removed device-orientation compass co
 assert(appJs.includes("function glossary()"), "Islamic glossary route is missing.");
 assert(appJs.includes("function history()"), "History route is missing.");
 assert(appJs.includes('from "./data/history.js"'), "History static data should be imported from data/history.js.");
+assert(!appJs.includes('"seerah"'), "Public Seerah route should stay removed.");
+assert(!appJs.includes("function seerah()"), "Standalone Seerah view should stay removed.");
+assert(appJs.includes("function renderHistoryQuiz()"), "History quiz renderer is missing.");
+assert(appJs.includes("historyQuizStats"), "History quiz state is missing.");
 assert(appJs.includes("function nextStepSuggestion()"), "Home next-step recommendation is missing.");
 assert(appJs.includes("Prywatnosc danych"), "Settings privacy section is missing.");
 assert(appJs.includes("function normalizeRoute()"), "Unknown route normalization is missing.");

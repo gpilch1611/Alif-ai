@@ -1,4 +1,4 @@
-const CACHE_NAME = "alif-ai-v16";
+const CACHE_NAME = "alif-ai-v17";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -22,7 +22,35 @@ const APP_SHELL = [
   "./assets/icon-512.png",
   "./assets/maskable.svg",
   "./assets/maskable-512.png",
-  "./assets/apple-touch-icon.svg"
+  "./assets/apple-touch-icon.svg",
+  "./assets/audio/letters/alif.mp3",
+  "./assets/audio/letters/ba.mp3",
+  "./assets/audio/letters/ta.mp3",
+  "./assets/audio/letters/tha.mp3",
+  "./assets/audio/letters/jim.mp3",
+  "./assets/audio/letters/ha.mp3",
+  "./assets/audio/letters/kha.mp3",
+  "./assets/audio/letters/dal.mp3",
+  "./assets/audio/letters/dhal.mp3",
+  "./assets/audio/letters/ra.mp3",
+  "./assets/audio/letters/zay.mp3",
+  "./assets/audio/letters/sin.mp3",
+  "./assets/audio/letters/shin.mp3",
+  "./assets/audio/letters/sad.mp3",
+  "./assets/audio/letters/dad.mp3",
+  "./assets/audio/letters/ta_emph.mp3",
+  "./assets/audio/letters/za_emph.mp3",
+  "./assets/audio/letters/ayn.mp3",
+  "./assets/audio/letters/ghayn.mp3",
+  "./assets/audio/letters/fa.mp3",
+  "./assets/audio/letters/qaf.mp3",
+  "./assets/audio/letters/kaf.mp3",
+  "./assets/audio/letters/lam.mp3",
+  "./assets/audio/letters/mim.mp3",
+  "./assets/audio/letters/nun.mp3",
+  "./assets/audio/letters/ha2.mp3",
+  "./assets/audio/letters/waw.mp3",
+  "./assets/audio/letters/ya.mp3"
 ];
 
 const OPTIONAL_CDN = [

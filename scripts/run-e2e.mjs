@@ -28,6 +28,20 @@ function waitForServer(targetUrl, timeoutMs = 15_000) {
   });
 }
 
+function isServerRunning(targetUrl) {
+  return new Promise((resolve) => {
+    const request = get(targetUrl, (response) => {
+      response.resume();
+      resolve(true);
+    });
+    request.on("error", () => resolve(false));
+    request.setTimeout(1_000, () => {
+      request.destroy();
+      resolve(false);
+    });
+  });
+}
+
 function run(command, commandArgs, options = {}) {
   const child = spawn(command, commandArgs, {
     stdio: "inherit",
@@ -36,11 +50,14 @@ function run(command, commandArgs, options = {}) {
   return child;
 }
 
-const server = run(process.execPath, ["scripts/serve-static.mjs"], {
-  env: { ...process.env, PORT: port },
-  stdio: ["ignore", "pipe", "inherit"]
-});
-server.stdout?.on("data", (chunk) => process.stdout.write(chunk));
+let server;
+if (!(await isServerRunning(url))) {
+  server = run(process.execPath, ["scripts/serve-static.mjs"], {
+    env: { ...process.env, PORT: port },
+    stdio: ["ignore", "pipe", "inherit"]
+  });
+  server.stdout?.on("data", (chunk) => process.stdout.write(chunk));
+}
 
 let exitCode;
 try {
@@ -51,7 +68,7 @@ try {
   exitCode = Number(code || 0);
   await delay(100);
 } finally {
-  if (!server.killed) server.kill();
+  if (server && !server.killed) server.kill();
 }
 
 process.exit(exitCode ?? 1);

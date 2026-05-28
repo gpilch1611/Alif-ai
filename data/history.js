@@ -1,6 +1,6 @@
 export const historyContent = {
   id: "history",
-  reviewed_at: "2026-05-26",
+  reviewed_at: "2026-05-27",
   title: {
     pl: "Historia",
     en: "History"
@@ -101,7 +101,7 @@ export const historyContent = {
       ]
     },
     cards: [
-      { id: "timeline", icon: "🧭", title: { pl: "Timeline", en: "Timeline" }, desc: { pl: "Od Adama (as) po pierwsze stulecia islamu.", en: "From Adam (as) to the first centuries of Islam." } },
+      { id: "timeline", icon: "🧭", title: { pl: "Timeline", en: "Timeline" }, desc: { pl: "Od Adama (as) po świat współczesny.", en: "From Adam (as) to the modern world." } },
       { id: "prophets", icon: "🌿", title: { pl: "Prorocy", en: "Prophets" }, desc: { pl: "Najważniejsi posłańcy i lekcje na dziś.", en: "Key messengers and lessons for today." } },
       { id: "angels", icon: "✨", title: { pl: "Aniołowie", en: "Angels" }, desc: { pl: "Jibril, Mikail, Israfil, Malak al-Mawt i inni.", en: "Jibril, Mikail, Israfil, Malak al-Mawt and others." } },
       { id: "sahaba", icon: "🤝", title: { pl: "Towarzysze", en: "Companions" }, desc: { pl: "Sahaba - najlepsze pokolenie i ich charakter.", en: "The Sahaba - the best generation and their character." } },
@@ -111,6 +111,67 @@ export const historyContent = {
       { id: "stories", icon: "📚", title: { pl: "Stories", en: "Stories" }, desc: { pl: "Krótkie opowieści na 1-2 min czytania.", en: "Short 1-2 minute reads." } }
     ]
   },
+  insightBubbles: [
+    { id: "modern-indonesia", category: { pl: "Czy wiesz, że?", en: "Did you know?" }, title: { pl: "Największa społeczność muzułmańska nie jest na Bliskim Wschodzie", en: "The largest Muslim community is not in the Middle East" }, text: { pl: "Według danych Pew największa liczba muzułmanów mieszka w Indonezji. To dobry moment, by pamiętać: islam nie należy do jednej kultury.", en: "According to Pew data, Indonesia has the largest Muslim population. A useful reminder: Islam does not belong to one culture." }, tab: "timeline", source: "Pew Research Center" },
+    { id: "modern-asia-pacific", category: { pl: "Mapa islamu", en: "Map of Islam" }, title: { pl: "Większość muzułmanów żyje w Azji i regionie Pacyfiku", en: "Most Muslims live in Asia-Pacific" }, text: { pl: "Pew szacuje, że bardzo duża część światowej ummah żyje poza światem arabskim. Dlatego islam brzmi po arabsku, indonezyjsku, urdu, turecku, angielsku i po polsku.", en: "Pew estimates that a very large share of the ummah lives outside the Arab world. Islam is heard in Arabic, Indonesian, Urdu, Turkish, English and Polish." }, tab: "timeline", source: "Pew Research Center" },
+    { id: "arabic-day", category: { pl: "Język", en: "Language" }, title: { pl: "Arabski ma swój dzień w UNESCO", en: "Arabic has a UNESCO day" }, text: { pl: "Światowy Dzień Języka Arabskiego obchodzony jest 18 grudnia. Nauka liter w Alif AI jest małym wejściem do ogromnej cywilizacji słowa.", en: "World Arabic Language Day is marked on 18 December. Learning letters in Alif AI is a small doorway into a vast civilisation of words." }, tab: "stories", source: "UNESCO" },
+    { id: "islamic-art-day", category: { pl: "Kultura", en: "Culture" }, title: { pl: "Istnieje Międzynarodowy Dzień Sztuki Islamskiej", en: "There is an International Day of Islamic Art" }, text: { pl: "UNESCO ogłosiło 18 listopada dniem sztuki islamskiej. To przypomnienie, że wiara inspirowała też piękno, rzemiosło i architekturę.", en: "UNESCO proclaimed 18 November as the International Day of Islamic Art. Faith also inspired beauty, craft and architecture." }, tab: "stories", source: "UNESCO" },
+    { id: "moon-calendar", category: { pl: "Księżyc", en: "Moon" }, title: { pl: "Kalendarz islamski uczy patrzeć w niebo", en: "The Islamic calendar teaches us to look up" }, text: { pl: "Miesiące islamskie są księżycowe. Dlatego Ramadan i Eid wędrują przez pory roku, a obserwacja hilal ma tak żywy charakter.", en: "Islamic months are lunar. That is why Ramadan and Eid move through the seasons, and the sighting of the hilal remains so alive." }, tab: "timeline", source: "NASA / fiqh tradition" },
+    { id: "hajj-global", category: { pl: "Współczesny islam", en: "Modern Islam" }, title: { pl: "Hajj jest jedną z najbardziej międzynarodowych scen na ziemi", en: "Hajj is one of the world’s most international scenes" }, text: { pl: "Na pielgrzymce spotykają się ludzie wielu języków, kolorów skóry i kultur. Ihram przypomina, że przed Allahem status społeczny traci swój blask.", en: "Pilgrims gather from many languages, colours and cultures. Ihram reminds us that social status loses its shine before Allah." }, tab: "stories", source: "British Museum" },
+    { id: "algebra", category: { pl: "Nauka", en: "Science" }, title: { pl: "Słowo algebra prowadzi do arabskiego al-jabr", en: "The word algebra leads back to al-jabr" }, text: { pl: "Al-Chwarizmi pomógł przenieść idee algebry i cyfr do świata, który później budował z nich matematykę szkolną.", en: "Al-Khwarizmi helped carry algebraic ideas and numerals into a world that later built school mathematics from them." }, tab: "stories", source: "Britannica" },
+    { id: "numerals", category: { pl: "Cyfry", en: "Numbers" }, title: { pl: "Cyfry, których używasz dziś, mają długą trasę przez świat muzułmański", en: "The numerals you use today travelled through the Muslim world" }, text: { pl: "System hindusko-arabski dotarł do Europy m.in. przez uczonych piszących po arabsku. Mała cyfra zero zmieniła wielkie obliczenia.", en: "The Hindu-Arabic numeral system reached Europe partly through Arabic-writing scholars. The small zero changed enormous calculations." }, tab: "stories", source: "Britannica" },
+    { id: "ibn-haytham", category: { pl: "Optyka", en: "Optics" }, title: { pl: "Ibn al-Haytham badał światło jak detektyw", en: "Ibn al-Haytham studied light like a detective" }, text: { pl: "Jego Kitab al-Manazir pokazał wagę obserwacji, eksperymentu i ostrożnego wnioskowania. Wiara nie boi się uczciwego patrzenia.", en: "His Book of Optics showed the value of observation, experiment and careful reasoning. Faith does not fear honest seeing." }, tab: "stories", source: "Britannica" },
+    { id: "ibn-sina", category: { pl: "Medycyna", en: "Medicine" }, title: { pl: "Kanon medycyny Ibn Siny był czytany przez stulecia", en: "Ibn Sina’s Canon of Medicine was read for centuries" }, text: { pl: "Nie był księgą religijną, ale częścią wielkiej tradycji szukania wiedzy. Islam uczy, że leczenie i troska o ciało też mają wartość.", en: "It was not a religious book, but part of a great tradition of seeking knowledge. Islam teaches that healing and care for the body also matter." }, tab: "stories", source: "Britannica" },
+    { id: "qarawiyyin", category: { pl: "Kobiety i wiedza", en: "Women and knowledge" }, title: { pl: "Historia Al-Qarawiyyin łączy wiedzę z hojnością kobiety", en: "Al-Qarawiyyin links knowledge with a woman’s generosity" }, text: { pl: "Tradycja przypisuje fundację meczetu Al-Qarawiyyin Fatimie al-Fihri. To piękny most do rozmowy o kobietach i edukacji.", en: "Tradition credits Fatima al-Fihri with founding the Al-Qarawiyyin mosque. It is a beautiful bridge into women and education." }, tab: "women", source: "UNESCO / historical tradition" },
+    { id: "azhar", category: { pl: "Uczeni", en: "Scholars" }, title: { pl: "Al-Azhar działa jako jeden z wielkich symboli nauki islamskiej", en: "Al-Azhar remains a major symbol of Islamic learning" }, text: { pl: "Nie każda wiedza mieści się w krótkim filmie. Tradycja uczonych przypomina: pytaj, sprawdzaj, ucz się z pokorą.", en: "Not all knowledge fits into a short video. Scholarly tradition reminds us: ask, verify and learn with humility." }, tab: "timeline", source: "Britannica" },
+    { id: "europe-muslims", category: { pl: "Europa", en: "Europe" }, title: { pl: "Muzułmanie Europy są bardzo różnorodni", en: "Europe’s Muslims are very diverse" }, text: { pl: "Pew opisuje społeczności z historiami migracji, rodzin, studiów i lokalnych urodzeń. To nie jedna opowieść, ale wiele dróg.", en: "Pew describes communities shaped by migration, families, study and local births. It is not one story, but many roads." }, tab: "conversions", source: "Pew Research Center" },
+    { id: "convert-family", category: { pl: "Most rodzinny", en: "Family bridge" }, title: { pl: "Konwertyta często potrzebuje języka miłości, nie tylko argumentów", en: "A convert often needs the language of love, not only arguments" }, text: { pl: "Zdanie: 'Kocham Isę i Maryam, ale czczę tylko Allaha' może obniżyć napięcie w rodzinnej rozmowie.", en: "The sentence: ‘I love Isa and Maryam, but worship Allah alone’ can soften a family conversation." }, tab: "christianity", source: "Quran 3, 19" },
+    { id: "maryam-surah", category: { pl: "Isa i Maryam", en: "Isa and Maryam" }, title: { pl: "Maryam ma w Koranie całą surę nazwaną jej imieniem", en: "Maryam has an entire Quranic surah named after her" }, text: { pl: "Dla wielu rodzin chrześcijańskich to zaskoczenie i piękny początek rozmowy: islam nie usuwa Maryi z historii wiary.", en: "For many Christian families this is surprising and a beautiful start: Islam does not remove Mary from the story of faith." }, tab: "christianity", source: "Quran 19" },
+    { id: "isa-name", category: { pl: "Wspólne postacie", en: "Shared figures" }, title: { pl: "Muzułmanin nie mówi o Jezusie obojętnie", en: "A Muslim does not speak of Jesus indifferently" }, text: { pl: "Isa (as) jest w islamie Mesjaszem i wielkim prorokiem. Różnica teologiczna nie znosi miłości i szacunku.", en: "Isa (as) is the Messiah and a great prophet in Islam. Theological difference does not erase love and respect." }, tab: "christianity", source: "Quran 3:45" },
+    { id: "sabr-small", category: { pl: "Mały adab", en: "Small adab" }, title: { pl: "Sabr nie zawsze wygląda heroicznie", en: "Sabr does not always look heroic" }, text: { pl: "Czasem sabr to spokojnie odpowiedzieć rodzinie, zamknąć aplikację i wrócić do nauki jutro.", en: "Sometimes sabr is answering family calmly, closing the app, and returning to learning tomorrow." }, tab: "stories", source: "Quranic theme" },
+    { id: "adhan-voices", category: { pl: "Dźwięk islamu", en: "Sound of Islam" }, title: { pl: "Adhan łączy wspólnoty bez jednego stylu muzycznego", en: "Adhan connects communities without one musical style" }, text: { pl: "Wezwanie do modlitwy brzmi inaczej w Stambule, Dżakarcie czy Kairze, ale sens pozostaje ten sam: przyjdź do modlitwy.", en: "The call to prayer sounds different in Istanbul, Jakarta or Cairo, but the meaning stays the same: come to prayer." }, tab: "stories", source: "living Muslim practice" },
+    { id: "qibla", category: { pl: "Kierunek", en: "Direction" }, title: { pl: "Qibla tworzy niewidzialną mapę jedności", en: "The qibla forms an invisible map of unity" }, text: { pl: "Muzułmanie modlą się w różnych językach i krajach, ale kierują serce oraz ciało ku Kaabie.", en: "Muslims pray in many languages and countries, but turn heart and body toward the Ka‘bah." }, tab: "timeline", source: "Quran 2:144" },
+    { id: "wudu-rhythm", category: { pl: "Codzienność", en: "Daily life" }, title: { pl: "Wudu to nie tylko techniczny warunek", en: "Wudu is not only a technical condition" }, text: { pl: "Dla początkującego ablucja może stać się krótkim rytuałem zatrzymania: zwolnij, oczyść się, stań do rozmowy z Allahem.", en: "For a beginner, ablution can become a short pause: slow down, cleanse yourself, and stand to speak with Allah." }, tab: "stories", source: "fiqh basics" },
+    { id: "ramadan-seasons", category: { pl: "Ramadan", en: "Ramadan" }, title: { pl: "Ramadan odwiedza wszystkie pory roku", en: "Ramadan visits every season" }, text: { pl: "Ponieważ kalendarz jest księżycowy, Ramadan przesuwa się względem roku słonecznego. Długie i krótkie dni uczą różnych rodzajów cierpliwości.", en: "Because the calendar is lunar, Ramadan moves through the solar year. Long and short days teach different kinds of patience." }, tab: "stories", source: "lunar calendar" },
+    { id: "eid-home", category: { pl: "Rodzina", en: "Family" }, title: { pl: "Eid może być mostem dla rodziny konwertyty", en: "Eid can be a bridge for a convert’s family" }, text: { pl: "Prosty gest: jedzenie, telefon, wyjaśnienie bez presji. Czasem rodzina najpierw rozumie islam przez twoją łagodność.", en: "A simple gesture: food, a call, a gentle explanation. Sometimes family first understands Islam through your gentleness." }, tab: "conversions", source: "convert support practice" },
+    { id: "mosque-not-only-men", category: { pl: "Wspólnota", en: "Community" }, title: { pl: "Meczet to nie tylko sala modlitwy", en: "A mosque is not only a prayer hall" }, text: { pl: "W wielu miejscach meczet jest szkołą weekendową, miejscem iftaru, poradą dla nowych i spokojnym adresem dla samotnych.", en: "In many places, a mosque is a weekend school, an iftar space, a support point for newcomers and a calm address for the lonely." }, tab: "stories", source: "community practice" },
+    { id: "children-stories", category: { pl: "Dla rodzin", en: "For families" }, title: { pl: "Dziecko nie musi zaczynać od definicji", en: "A child does not have to begin with definitions" }, text: { pl: "Czasem lepszy początek to historia: Musa przy morzu, Maryam z daktylami, Bilal mówiący Ahad.", en: "Sometimes the better beginning is a story: Musa by the sea, Maryam with dates, Bilal saying Ahad." }, tab: "stories", source: "Quran / sirah" },
+    { id: "not-all-arabs", category: { pl: "Mit", en: "Myth" }, title: { pl: "Nie każdy muzułmanin jest Arabem", en: "Not every Muslim is Arab" }, text: { pl: "To jeden z najczęstszych mitów. Arabski jest językiem Koranu, ale ummah jest globalna.", en: "This is one of the most common myths. Arabic is the language of the Quran, but the ummah is global." }, tab: "timeline", source: "Pew Research Center" },
+    { id: "not-all-converts", category: { pl: "Konwersje", en: "Conversions" }, title: { pl: "Nie każda droga do islamu ma wielką scenę", en: "Not every road to Islam has a dramatic scene" }, text: { pl: "Wiele osób przychodzi do wiary przez spokojne pytania, dobre spotkania i małe kroki, które po czasie okazują się wielkie.", en: "Many people come to faith through calm questions, good encounters and small steps that later prove huge." }, tab: "conversions", source: "convert support practice" },
+    { id: "quran-memorization", category: { pl: "Koran", en: "Quran" }, title: { pl: "Hifz to pamięć plus serce", en: "Hifz is memory plus heart" }, text: { pl: "Zapamiętywanie Koranu to nie tylko technika. Dlatego małe powtórki w aplikacji mają sens: wielkie rzeczy rosną z rytmu.", en: "Memorising Quran is not only technique. Small reviews in an app matter because great things grow from rhythm." }, tab: "stories", source: "Quran learning tradition" },
+    { id: "one-ayah", category: { pl: "Mały krok", en: "Small step" }, title: { pl: "Jedna aja dziennie nadal jest drogą", en: "One ayah a day is still a road" }, text: { pl: "Początkujący często przerywa, bo chce od razu dużo. Historia islamu uczy czegoś innego: stałość jest mocą.", en: "Beginners often quit because they want too much at once. Islamic history teaches another lesson: consistency is power." }, tab: "stories", source: "learning principle" },
+    { id: "names-not-labels", category: { pl: "Ludzie", en: "People" }, title: { pl: "Sahaba to nie pomniki z marmuru", en: "The Sahaba are not marble statues" }, text: { pl: "To byli ludzie z emocjami, próbami i decyzjami. Dlatego ich historie uczą bardziej niż suche hasła.", en: "They were people with emotions, trials and decisions. That is why their stories teach more than dry labels." }, tab: "sahaba", source: "sirah / hadith" },
+    { id: "women-first-support", category: { pl: "Kobiety", en: "Women" }, title: { pl: "Pierwszym domowym wsparciem Objawienia była Khadijah", en: "The first home support for Revelation was Khadijah" }, text: { pl: "Kiedy Prorok ﷺ wrócił z Hira, Khadijah (ra) dała mu spokój, język sensu i realną pomoc.", en: "When the Prophet ﷺ returned from Hira, Khadijah (ra) gave him calm, meaning and real support." }, tab: "women", source: "Sahih al-Bukhari" },
+    { id: "bilal-voice", category: { pl: "Sahaba", en: "Sahaba" }, title: { pl: "Głos Bilala przeszedł od bólu do adhan", en: "Bilal’s voice moved from pain to adhan" }, text: { pl: "Historia Bilala (ra) uczy, że człowiek uciszany przez ludzi może zostać podniesiony przez Allaha.", en: "Bilal’s story teaches that a person silenced by people may be raised by Allah." }, tab: "sahaba", source: "sirah tradition" },
+    { id: "salman-search", category: { pl: "Konwersje", en: "Conversions" }, title: { pl: "Salman al-Farisi pokazuje, że długa droga nie jest stratą", en: "Salman al-Farisi shows that a long road is not wasted" }, text: { pl: "Jego szukanie trwało przez miejsca, nauczycieli i próby. Dla konwertyty to piękna wiadomość: Allah zna całą trasę.", en: "His search moved through places, teachers and trials. For a convert this is beautiful: Allah knows the whole route." }, tab: "conversions", source: "sirah / hadith tradition" },
+    { id: "paper-books", category: { pl: "Wiedza", en: "Knowledge" }, title: { pl: "Książka była kiedyś technologią zmieniającą świat", en: "The book was once world-changing technology" }, text: { pl: "Biblioteki Bagdadu czy Kairu przypominają: aplikacje są nowe, ale miłość do nauki jest stara.", en: "Libraries in Baghdad or Cairo remind us: apps are new, but love of learning is old." }, tab: "timeline", source: "Britannica" },
+    { id: "diaspora-language", category: { pl: "Diaspora", en: "Diaspora" }, title: { pl: "Islam uczy się mówić lokalnymi językami", en: "Islam learns to speak local languages" }, text: { pl: "Khutby, książki i lekcje dla dzieci coraz częściej powstają po angielsku, francusku, niemiecku czy polsku.", en: "Khutbahs, books and children’s lessons increasingly appear in English, French, German or Polish." }, tab: "timeline", source: "contemporary community practice" },
+    { id: "polish-beginner", category: { pl: "Polski kontekst", en: "Polish context" }, title: { pl: "Polski język też może nieść spokojną wiedzę o islamie", en: "Polish can also carry calm knowledge about Islam" }, text: { pl: "Dla rodziny konwertyty dobre polskie zdanie bywa ważniejsze niż długi arabski termin bez wyjaśnienia.", en: "For a convert’s family, a good Polish sentence can matter more than a long Arabic term without explanation." }, tab: "christianity", source: "convert support practice" },
+    { id: "source-habit", category: { pl: "Nawyk", en: "Habit" }, title: { pl: "Najlepsze pytanie po religijnej ciekawostce brzmi: skąd to wiemy?", en: "The best question after a religious fact is: how do we know?" }, text: { pl: "To nie psuje duchowości. To ją chroni. Islam kocha prawdę bardziej niż efektowne hasło.", en: "That does not ruin spirituality. It protects it. Islam loves truth more than impressive slogans." }, tab: "stories", source: "content methodology" },
+    { id: "quiet-dawah", category: { pl: "Da'wah", en: "Da'wah" }, title: { pl: "Czasem da'wah to oddać pożyczoną rzecz na czas", en: "Sometimes da'wah is returning something on time" }, text: { pl: "Uczciwość kupca, sąsiada albo kolegi z pracy może powiedzieć o islamie więcej niż długa dyskusja.", en: "The honesty of a merchant, neighbour or coworker can say more about Islam than a long debate." }, tab: "stories", source: "akhlaq principle" },
+    { id: "digital-noise", category: { pl: "Internet", en: "Internet" }, title: { pl: "Szybki dostęp do wiedzy nie oznacza szybkiej mądrości", en: "Fast access to knowledge is not fast wisdom" }, text: { pl: "Internet miesza uczonych, skróty, emocje i komentarze. Dlatego początkujący potrzebuje spokojnej ścieżki.", en: "The internet mixes scholars, shortcuts, emotions and comments. A beginner needs a calm path." }, tab: "timeline", source: "modern learning risk" },
+    { id: "children-maryam", category: { pl: "Do czytania dzieciom", en: "For children" }, title: { pl: "Maryam uczy, że samotność nie znaczy opuszczenia", en: "Maryam teaches that loneliness is not abandonment" }, text: { pl: "Kiedy czuła ból i niezrozumienie, Allah dał jej znak, pokarm i obronę prawdy.", en: "When she felt pain and misunderstanding, Allah gave her a sign, provision and defence of truth." }, tab: "stories", source: "Quran 19" },
+    { id: "children-musa", category: { pl: "Do czytania dzieciom", en: "For children" }, title: { pl: "Morze przed Musą nie było końcem", en: "The sea before Musa was not the end" }, text: { pl: "Dziecko łatwo rozumie tę lekcję: gdy nie widzisz wyjścia, Allah nadal widzi drogę.", en: "A child can grasp this lesson: when you see no way out, Allah still sees a road." }, tab: "stories", source: "Quran 26" },
+    { id: "children-yusuf", category: { pl: "Do czytania dzieciom", en: "For children" }, title: { pl: "Historia Yusufa uczy, że piękny koniec może przyjść po trudnym początku", en: "Yusuf’s story teaches that a beautiful end may follow a hard beginning" }, text: { pl: "Studnia, oddalenie i więzienie nie były ostatnim słowem. Allah prowadził historię dalej.", en: "The well, separation and prison were not the final word. Allah carried the story onward." }, tab: "stories", source: "Quran 12" },
+    { id: "coffee-words", category: { pl: "Język", en: "Language" }, title: { pl: "Wiele codziennych słów ma długie podróże między kulturami", en: "Many everyday words have long journeys between cultures" }, text: { pl: "Języki pożyczają od siebie jak sąsiedzi. To dobry obraz historii: cywilizacje spotykają się częściej, niż myślimy.", en: "Languages borrow from each other like neighbours. It is a good image of history: civilisations meet more often than we think." }, tab: "stories", source: "language history" },
+    { id: "architecture-light", category: { pl: "Architektura", en: "Architecture" }, title: { pl: "Światło w meczecie jest częścią doświadczenia", en: "Light in a mosque is part of the experience" }, text: { pl: "Dziedzińce, okna i lampy nie są tylko ozdobą. Pomagają stworzyć ciszę, kierunek i skupienie.", en: "Courtyards, windows and lamps are not only decoration. They help create quiet, direction and focus." }, tab: "stories", source: "Islamic art history" },
+    { id: "calligraphy", category: { pl: "Kaligrafia", en: "Calligraphy" }, title: { pl: "Kaligrafia uczy szacunku do słowa", en: "Calligraphy teaches respect for words" }, text: { pl: "W kulturach islamu piękno pisma często niosło pamięć Koranu. Litera mogła stać się formą adab.", en: "In Islamic cultures, the beauty of writing often carried the memory of Quran. A letter could become a form of adab." }, tab: "stories", source: "Islamic art tradition" },
+    { id: "food-halal", category: { pl: "Codzienność", en: "Daily life" }, title: { pl: "Halal to więcej niż lista składników", en: "Halal is more than an ingredient list" }, text: { pl: "Dla początkującego halal zaczyna się od zaufania Allahowi, uczciwości i powolnego porządkowania życia.", en: "For a beginner, halal begins with trusting Allah, honesty and slowly ordering one’s life." }, tab: "stories", source: "fiqh basics" },
+    { id: "new-muslim-prayer", category: { pl: "Nowy muzułmanin", en: "New Muslim" }, title: { pl: "Pierwsza modlitwa nie musi być perfekcyjna, żeby była ważna", en: "The first prayer need not be perfect to matter" }, text: { pl: "Allah widzi naukę, nie tylko wynik. Dlatego krok po kroku jest bardziej islamskie niż panika.", en: "Allah sees the learning, not only the result. Step by step is more Islamic than panic." }, tab: "conversions", source: "beginner education" },
+    { id: "quran-sound", category: { pl: "Recytacja", en: "Recitation" }, title: { pl: "Tajwid nie jest ozdobą dla ekspertów", en: "Tajweed is not decoration for experts" }, text: { pl: "Tajwid chroni brzmienie Koranu. Dla początkującego to jak uczenie się chodzić ostrożnie po pięknej ścieżce.", en: "Tajweed protects the sound of Quran. For a beginner it is like learning to walk carefully on a beautiful path." }, tab: "stories", source: "Quran learning tradition" },
+    { id: "salah-rhythm", category: { pl: "Rytm dnia", en: "Daily rhythm" }, title: { pl: "Salah dzieli dzień na powroty", en: "Salah divides the day into returns" }, text: { pl: "Modlitwa nie jest tylko obowiązkiem o konkretnej godzinie. To pięć szans, by wrócić do środka.", en: "Prayer is not only a duty at a fixed time. It is five chances to return inward." }, tab: "stories", source: "worship basics" },
+    { id: "first-words", category: { pl: "Arabskie litery", en: "Arabic letters" }, title: { pl: "Pierwsza litera też jest częścią historii", en: "The first letter is also part of history" }, text: { pl: "Kiedy uczysz się alif, dołączasz do łańcucha ludzi, którzy chcieli czytać Koran bliżej źródła.", en: "When you learn alif, you join a chain of people who wanted to read Quran closer to its source." }, tab: "stories", source: "Alif AI scope" },
+    { id: "humility-scholar", category: { pl: "Uczenie się", en: "Learning" }, title: { pl: "Nie wiem to w islamie dobre zdanie", en: "I do not know is a good Islamic sentence" }, text: { pl: "Wielu uczonych uważało ostrożność za część wiedzy. Pewność bez źródeł bywa bardziej niebezpieczna niż pytanie.", en: "Many scholars treated caution as part of knowledge. Certainty without sources can be more dangerous than a question." }, tab: "stories", source: "scholarly adab" },
+    { id: "global-eid", category: { pl: "Ummah", en: "Ummah" }, title: { pl: "Eid może wyglądać inaczej w każdym domu", en: "Eid can look different in every home" }, text: { pl: "Jedni mają ryż, inni słodkie ciasta, inni małą kawę z rodziną. Radość może mieć wiele lokalnych smaków.", en: "Some have rice, some sweets, some a small coffee with family. Joy can have many local flavours." }, tab: "stories", source: "global Muslim practice" },
+    { id: "names-of-allah", category: { pl: "Serce", en: "Heart" }, title: { pl: "Imiona Allaha są też językiem pocieszenia", en: "Allah’s Names are also a language of comfort" }, text: { pl: "Ar-Rahman, Al-Latif, Al-Hadi - każde imię otwiera inny sposób proszenia, ufania i wracania.", en: "Ar-Rahman, Al-Latif, Al-Hadi - each Name opens a way of asking, trusting and returning." }, tab: "stories", source: "Asma al-Husna" },
+    { id: "history-not-perfect", category: { pl: "Historia", en: "History" }, title: { pl: "Historia muzułmanów nie jest historią ludzi bez błędów", en: "Muslim history is not the history of flawless people" }, text: { pl: "Czytamy ją z miłością i trzeźwością: są światło, wysiłek, konflikty, odnowa i lekcje.", en: "We read it with love and sobriety: there is light, effort, conflict, renewal and lessons." }, tab: "timeline", source: "history methodology" },
+    { id: "quiet-source", category: { pl: "Źródła", en: "Sources" }, title: { pl: "Nie każda piękna historia jest pewna", en: "Not every beautiful story is certain" }, text: { pl: "Dlatego w Historii rozróżniamy Koran, sahih hadisy, sirah i późniejsze przekazy. Piękno potrzebuje prawdy.", en: "That is why History distinguishes Quran, sahih hadith, sirah and later reports. Beauty needs truth." }, tab: "timeline", source: "history methodology" },
+    { id: "digital-quran", category: { pl: "Technologia", en: "Technology" }, title: { pl: "Aplikacja może pomóc, ale nie zastąpi intencji", en: "An app can help, but it cannot replace intention" }, text: { pl: "Najlepsza technologia w nauce islamu robi jedno: pomaga ci spokojnie wrócić do Allaha.", en: "The best technology in Islamic learning does one thing: helps you calmly return to Allah." }, tab: "stories", source: "Alif AI scope" },
+    { id: "family-translation", category: { pl: "Rodzina", en: "Family" }, title: { pl: "Czasem trzeba tłumaczyć nie słowo, ale lęk", en: "Sometimes you translate not a word, but a fear" }, text: { pl: "Rodzina pyta o islam, ale często pod pytaniem jest obawa: czy nadal jesteś blisko nas?", en: "Family asks about Islam, but under the question there is often fear: are you still close to us?" }, tab: "christianity", source: "convert support practice" },
+    { id: "teen-learning", category: { pl: "Młodzi", en: "Youth" }, title: { pl: "Młody człowiek częściej wraca do lekcji, gdy czuje sens", en: "Young learners return when they feel meaning" }, text: { pl: "Dlatego opowieść o Bilalu, Maryam czy Salmanie może nauczyć więcej niż sama definicja.", en: "That is why a story about Bilal, Maryam or Salman can teach more than a definition alone." }, tab: "stories", source: "learning design" },
+    { id: "small-community", category: { pl: "Mała wspólnota", en: "Small community" }, title: { pl: "Trzy osoby przy stole też mogą być początkiem wspólnoty", en: "Three people at a table can be the beginning of community" }, text: { pl: "Nie każda historia islamu zaczyna się od wielkiego meczetu. Czasem od herbaty, pytania i życzliwości.", en: "Not every Islamic story begins with a large mosque. Sometimes it begins with tea, a question and kindness." }, tab: "conversions", source: "community practice" },
+    { id: "learn-with-family", category: { pl: "Rodzina", en: "Family" }, title: { pl: "Nie musisz wygrać każdej rozmowy o islamie", en: "You do not have to win every conversation about Islam" }, text: { pl: "Czasem wygraną jest to, że po rozmowie nadal można usiąść razem przy stole.", en: "Sometimes the win is that after the conversation, you can still sit at the same table." }, tab: "christianity", source: "adab principle" }
+  ],
   timeline: [
     {
       id: "adam",
@@ -415,6 +476,198 @@ export const historyContent = {
       },
       key: { pl: "Lekcja: wielka cywilizacja rośnie z małych aktów amanah - wiernego przekazywania wiedzy.", en: "Lesson: a great civilisation grows from small acts of amanah - faithfully transmitting knowledge." },
       sources: ["Sahih al-Bukhari 2652", "Sahih Muslim 2533"]
+    },
+    {
+      id: "abbasid-baghdad",
+      gregorian: { pl: "750-1258 n.e.", en: "750-1258 CE" },
+      hijri: { pl: "132-656 AH", en: "132-656 AH" },
+      title: { pl: "Bagdad i epoka Abbasydów - wiedza jako amanah", en: "Baghdad and the Abbasid age - knowledge as amanah" },
+      description: {
+        pl: [
+          "Po 750 roku centrum polityczne dużej części świata muzułmańskiego przesunęło się ku Abbasydom i Bagdadowi. Rozwinęły się biblioteki, tłumaczenia, medycyna, matematyka, astronomia, język arabski i debaty teologiczne. Nie wszystko w tej epoce było idealne, bo historia ludzi zawsze ma też napięcia. Ale pokazuje ona, że szukanie wiedzy może być formą służby Allahowi, jeśli zostaje połączone z pokorą."
+        ],
+        en: [
+          "After 750, the political centre of much of the Muslim world shifted toward the Abbasids and Baghdad. Libraries, translation, medicine, mathematics, astronomy, Arabic and theological debates developed. Not everything in this era was ideal, because human history always carries tensions. Yet it shows that seeking knowledge can be a form of service to Allah when joined with humility."
+        ]
+      },
+      key: { pl: "Lekcja: wiedza jest światłem tylko wtedy, gdy prowadzi do odpowiedzialności.", en: "Lesson: knowledge is light only when it leads to responsibility." },
+      sources: ["Britannica: Abbasid caliphate", "Britannica: Bayt al-Hikmah"]
+    },
+    {
+      id: "hadith-madhhabs",
+      gregorian: { pl: "VIII-IX w. n.e.", en: "8th-9th centuries CE" },
+      hijri: { pl: "II-III w. AH", en: "2nd-3rd centuries AH" },
+      title: { pl: "Hadis, fiqh i szkoły prawa", en: "Hadith, fiqh and schools of law" },
+      description: {
+        pl: [
+          "W pierwszych pokoleniach uczeni porządkowali przekaz hadisów, zasady rozumienia Koranu i praktykę prawa. W tym czasie dojrzewały wielkie szkoły fiqh, które pomagały zwykłym ludziom żyć islamem w różnych miejscach. Sunni mainstream nie widzi w tym konkurencji wobec Koranu i Sunny, ale narzędzie odpowiedzialnego rozumienia. Różnica zdań uczonych bywała znakiem powagi, nie chaosu."
+        ],
+        en: [
+          "In the early generations, scholars organised hadith transmission, principles for understanding the Quran and the practice of law. The great schools of fiqh matured, helping ordinary people live Islam in different places. Sunni mainstream does not see this as competition with the Quran and Sunnah, but as a tool for responsible understanding. Scholarly disagreement could be a sign of seriousness, not chaos."
+        ]
+      },
+      key: { pl: "Lekcja: początkujący nie musi sam rozwiązywać wszystkiego - korzysta z wiedzy zaufanych uczonych.", en: "Lesson: a beginner does not have to solve everything alone - they rely on trusted scholarship." },
+      sources: ["Sahih al-Bukhari", "Sahih Muslim", "classical fiqh tradition"]
+    },
+    {
+      id: "qarawiyyin-azhar",
+      gregorian: { pl: "859-972 n.e.", en: "859-972 CE" },
+      hijri: { pl: "245-361 AH", en: "245-361 AH" },
+      title: { pl: "Al-Qarawiyyin i Al-Azhar - domy nauki", en: "Al-Qarawiyyin and Al-Azhar - homes of learning" },
+      description: {
+        pl: [
+          "W Fezie Fatima al-Fihri ufundowała meczet Al-Qarawiyyin, który stał się jednym z najstarszych żywych centrów nauki w świecie muzułmańskim. W Kairze powstał Al-Azhar, później bardzo ważny ośrodek nauki sunnickiej. Te miejsca pokazują, że historia islamu to nie tylko bitwy i władcy, ale też sale nauki, nauczyciele, uczniowie i księgi. Dla rodzin konwertytów to piękny znak: kobiety, wiedza i wspólnota są częścią tej historii."
+        ],
+        en: [
+          "In Fez, Fatima al-Fihri founded the Al-Qarawiyyin mosque, which became one of the oldest living centres of learning in the Muslim world. In Cairo, Al-Azhar emerged and later became a major centre of Sunni scholarship. These places show that Islamic history is not only battles and rulers, but also study circles, teachers, students and books. For convert families this is a beautiful sign: women, knowledge and community belong inside this history."
+        ]
+      },
+      key: { pl: "Lekcja: inwestycja w wiedzę może żyć dłużej niż imię fundatora.", en: "Lesson: an investment in knowledge can live longer than the founder's name." },
+      sources: ["UNESCO: Al-Qarawiyyin", "Britannica: Al-Azhar University"]
+    },
+    {
+      id: "islamic-trade-routes",
+      gregorian: { pl: "XIII-XVI w. n.e.", en: "13th-16th centuries CE" },
+      hijri: { pl: "VII-X w. AH", en: "7th-10th centuries AH" },
+      title: { pl: "Islam poza imperiami - handel, języki i dobre relacje", en: "Islam beyond empires - trade, languages and good relations" },
+      description: {
+        pl: [
+          "Islam rozprzestrzeniał się także przez kupców, uczonych, małżeństwa, podróże i codzienny kontakt. W Afryce Zachodniej, na wybrzeżu Afryki Wschodniej oraz w Azji Południowo-Wschodniej ludzie poznawali islam często bez jednej wielkiej bitwy. Dobre zachowanie, uczciwość i wspólnoty meczetowe miały ogromne znaczenie. To przypomina, że da'wah bywa po prostu wiarygodnym życiem."
+        ],
+        en: [
+          "Islam also spread through merchants, scholars, marriages, travel and everyday contact. In West Africa, the East African coast and Southeast Asia, people often encountered Islam without one great battle. Good character, honesty and mosque communities mattered deeply. This reminds us that da'wah is often simply a trustworthy life."
+        ]
+      },
+      key: { pl: "Lekcja: czasem najgłośniejszym argumentem za islamem jest charakter muzułmanina.", en: "Lesson: sometimes the loudest argument for Islam is a Muslim's character." },
+      sources: ["Britannica: Islamic world", "Cambridge histories of Islam"]
+    },
+    {
+      id: "salahuddin-jerusalem",
+      gregorian: { pl: "1187 n.e.", en: "1187 CE" },
+      hijri: { pl: "583 AH", en: "583 AH" },
+      title: { pl: "Salahuddin i Jerozolima - siła z adabem", en: "Salahuddin and Jerusalem - strength with adab" },
+      description: {
+        pl: [
+          "Po dekadach krucjat Salahuddin odzyskał Jerozolimę w 1187 roku. W pamięci muzułmanów stał się symbolem odwagi, ale też dyscypliny i miłosierdzia wobec pokonanych. Nie chodzi o romantyzowanie wojny, lecz o lekcję odpowiedzialności w chwili zwycięstwa. Prawdziwa siła nie potrzebuje okrucieństwa, by być stanowcza."
+        ],
+        en: [
+          "After decades of Crusades, Salahuddin regained Jerusalem in 1187. In Muslim memory he became a symbol of courage, but also discipline and mercy toward the defeated. The point is not to romanticise war, but to learn responsibility at the moment of victory. True strength does not need cruelty in order to be firm."
+        ]
+      },
+      key: { pl: "Lekcja: adab w zwycięstwie jest częścią duchowej dojrzałości.", en: "Lesson: adab in victory is part of spiritual maturity." },
+      sources: ["Britannica: Saladin", "World History Encyclopedia: Jerusalem 1187"]
+    },
+    {
+      id: "baghdad-1258",
+      gregorian: { pl: "1258 n.e.", en: "1258 CE" },
+      hijri: { pl: "656 AH", en: "656 AH" },
+      title: { pl: "Upadek Bagdadu - próba po wielkiej świetności", en: "Fall of Baghdad - a trial after great brilliance" },
+      description: {
+        pl: [
+          "W 1258 roku armia mongolska zdobyła Bagdad, kończąc polityczną epokę Abbasydów w tym mieście. Był to ogromny wstrząs dla świata muzułmańskiego i symbol utraty wielkiego centrum wiedzy. A jednak islam nie zniknął, bo jego życie nie zależało od jednego miasta ani jednej dynastii. Uczeni, rodziny i wspólnoty przenosiły wiedzę dalej."
+        ],
+        en: [
+          "In 1258, the Mongol army captured Baghdad, ending the Abbasid political era in that city. It was a deep shock for the Muslim world and a symbol of losing a great centre of knowledge. Yet Islam did not disappear, because its life did not depend on one city or one dynasty. Scholars, families and communities carried knowledge onward."
+        ]
+      },
+      key: { pl: "Lekcja: kryzys może zniszczyć instytucje, ale nie musi zniszczyć wiary.", en: "Lesson: a crisis can destroy institutions, but it does not have to destroy faith." },
+      sources: ["Britannica: Iraq, later Abbasids", "Britannica: Iran, Mongol invasion"]
+    },
+    {
+      id: "ottoman-istanbul",
+      gregorian: { pl: "1453 n.e.", en: "1453 CE" },
+      hijri: { pl: "857 AH", en: "857 AH" },
+      title: { pl: "Konstantynopol staje się Stambułem", en: "Constantinople becomes Istanbul" },
+      description: {
+        pl: [
+          "W 1453 roku sułtan Mehmed II zdobył Konstantynopol, a miasto stało się osmańską stolicą Stambułem. Dla wielu muzułmanów był to moment wielkiego znaczenia cywilizacyjnego i politycznego. Imperium Osmańskie przez stulecia wpływało na świat sunnicki, sztukę, prawo, edukację i ochronę świętych miejsc. Jak każde imperium miało też swoje słabości, dlatego czytamy tę historię z wdzięcznością i trzeźwością."
+        ],
+        en: [
+          "In 1453 Sultan Mehmed II captured Constantinople, and the city became the Ottoman capital Istanbul. For many Muslims it was a moment of major civilisational and political significance. The Ottoman Empire shaped the Sunni world, art, law, education and protection of sacred places for centuries. Like every empire it also had weaknesses, so we read this history with gratitude and sobriety."
+        ]
+      },
+      key: { pl: "Lekcja: wielkie zwycięstwa też potrzebują pokory i odpowiedzialnego zarządzania.", en: "Lesson: great victories also need humility and responsible stewardship." },
+      sources: ["Britannica: Fall of Constantinople", "Britannica: Ottoman Empire"]
+    },
+    {
+      id: "granada-1492",
+      gregorian: { pl: "1492 n.e.", en: "1492 CE" },
+      hijri: { pl: "897 AH", en: "897 AH" },
+      title: { pl: "Upadek Granady - pamięć Andaluzji", en: "Fall of Granada - the memory of Al-Andalus" },
+      description: {
+        pl: [
+          "W 1492 roku zakończyła się muzułmańska władza polityczna w Granadzie. Andaluzja pozostawiła po sobie pamięć wiedzy, architektury, poezji, rolnictwa, medycyny i wielokulturowych spotkań. Jej koniec przypomina, że cywilizacje mogą kwitnąć, ale mogą też słabnąć, gdy tracą jedność, sprawiedliwość i zdolność odnowy. Dla współczesnych muzułmanów to lekcja piękna i ostrzeżenie jednocześnie."
+        ],
+        en: [
+          "In 1492, Muslim political rule in Granada came to an end. Al-Andalus left behind a memory of knowledge, architecture, poetry, agriculture, medicine and cross-cultural encounters. Its end reminds us that civilisations may flourish, but they may also weaken when they lose unity, justice and renewal. For modern Muslims it is both a lesson of beauty and a warning."
+        ]
+      },
+      key: { pl: "Lekcja: dziedzictwo trzeba nie tylko podziwiać, ale też rozumieć i chronić.", en: "Lesson: heritage should not only be admired, but understood and protected." },
+      sources: ["Britannica: Spain, conquest of Granada", "histories of Al-Andalus"]
+    },
+    {
+      id: "colonial-modernity",
+      gregorian: { pl: "XVIII-XIX w. n.e.", en: "18th-19th centuries CE" },
+      hijri: { pl: "XII-XIII w. AH", en: "12th-13th centuries AH" },
+      title: { pl: "Kolonialność i pytanie o odnowę", en: "Colonialism and the question of renewal" },
+      description: {
+        pl: [
+          "W epoce kolonialnej wiele społeczeństw muzułmańskich znalazło się pod presją militarną, gospodarczą i kulturową mocarstw europejskich. Uczeni, reformatorzy i zwykłe rodziny pytały, jak chronić wiarę, edukację i godność w nowych warunkach. Odpowiedzi były różne i nie zawsze wolne od błędów. Ale samo pytanie o odnowę pokazuje, że ummah nie przestała szukać drogi."
+        ],
+        en: [
+          "In the colonial era, many Muslim societies came under military, economic and cultural pressure from European powers. Scholars, reformers and ordinary families asked how to protect faith, education and dignity in new conditions. The answers differed and were not always free of mistakes. Yet the very question of renewal shows that the ummah did not stop searching for a way forward."
+        ]
+      },
+      key: { pl: "Lekcja: odnowa zaczyna się od powrotu do źródeł i uczciwego rozumienia własnego czasu.", en: "Lesson: renewal begins with returning to the sources and honestly understanding one's time." },
+      sources: ["Britannica: Islamic world and colonialism", "Britannica: Ottoman modernization"]
+    },
+    {
+      id: "caliphate-1924",
+      gregorian: { pl: "1924 n.e.", en: "1924 CE" },
+      hijri: { pl: "1342 AH", en: "1342 AH" },
+      title: { pl: "Zniesienie kalifatu osmańskiego", en: "Abolition of the Ottoman caliphate" },
+      description: {
+        pl: [
+          "W 1924 roku w Turcji zniesiono instytucję kalifatu osmańskiego. Dla wielu muzułmanów był to symboliczny koniec długiej epoki politycznej. Od tego czasu większość wspólnot muzułmańskich żyje w państwach narodowych, diasporze albo pod różnymi systemami prawnymi. Ta zmiana uczy, że muzułmanin potrzebuje mocnych fundamentów wiary także wtedy, gdy forma polityczna świata bardzo się zmienia."
+        ],
+        en: [
+          "In 1924, the Ottoman caliphate was abolished in Turkey. For many Muslims it symbolised the end of a long political era. Since then, most Muslim communities have lived in nation-states, diaspora settings or under different legal systems. This change teaches that a Muslim needs strong foundations of faith even when the political shape of the world changes deeply."
+        ]
+      },
+      key: { pl: "Lekcja: gdy wielkie struktury się zmieniają, ibadah, wiedza i akhlaq pozostają codziennym rdzeniem islamu.", en: "Lesson: when large structures change, ibadah, knowledge and akhlaq remain Islam's daily core." },
+      sources: ["Britannica: Turkey and the caliphate", "Britannica: Ataturk reforms"]
+    },
+    {
+      id: "global-diaspora",
+      gregorian: { pl: "po 1945 r.", en: "after 1945" },
+      hijri: { pl: "od ok. 1364 AH", en: "from c. 1364 AH" },
+      title: { pl: "Muzułmanie w diasporze - meczety, rodziny i nowe języki", en: "Muslims in diaspora - mosques, families and new languages" },
+      description: {
+        pl: [
+          "Po II wojnie światowej migracje, studia, praca i uchodźstwo sprawiły, że duże społeczności muzułmańskie rozwinęły się w Europie, Ameryce Północnej i innych regionach. Powstawały meczety, szkoły weekendowe, tłumaczenia Koranu i lokalne wspólnoty dla dzieci urodzonych daleko od krajów rodziców. Dla konwertytów to ważne, bo islam coraz częściej spotyka się w rodzinach mieszanych kulturowo. Wyzwanie brzmi: jak być wiernym islamowi i zarazem dobrym sąsiadem w swoim kraju."
+        ],
+        en: [
+          "After World War II, migration, study, work and refuge led to large Muslim communities developing in Europe, North America and other regions. Mosques, weekend schools, Quran translations and local communities grew for children born far from their parents' countries. For converts this matters, because Islam is increasingly encountered in culturally mixed families. The challenge is how to be faithful to Islam and a good neighbour in one's country."
+        ]
+      },
+      key: { pl: "Lekcja: islam nie należy do jednej kultury - zakorzenia się tam, gdzie ludzie żyją nim z wiedzą i adabem.", en: "Lesson: Islam does not belong to one culture - it takes root wherever people live it with knowledge and adab." },
+      sources: ["Pew Research: Muslim migrants", "Pew Research: Muslims in Europe"]
+    },
+    {
+      id: "digital-ummah",
+      gregorian: { pl: "XXI w. n.e.", en: "21st century CE" },
+      hijri: { pl: "XV w. AH", en: "15th century AH" },
+      title: { pl: "Islam w świecie cyfrowym - nauka bliżej niż kiedykolwiek", en: "Islam in the digital world - learning closer than ever" },
+      description: {
+        pl: [
+          "Dziś początkujący może czytać Koran w aplikacji, słuchać recytacji, znaleźć wykład uczonego i zadać pytanie lokalnej wspólnocie szybciej niż kiedykolwiek. To wielka łaska, ale też odpowiedzialność, bo internet miesza wiedzę, opinie, emocje i dezinformację. Alif AI ma pomagać w spokojnym początku: litery, tajwid, Koran, historia i quizy krok po kroku. Współczesność nie kończy historii islamu - ona pyta, jak będziemy ją nieść dalej."
+        ],
+        en: [
+          "Today a beginner can read Quran in an app, listen to recitation, find a scholar's lesson and ask a local community faster than ever before. This is a great blessing, but also a responsibility, because the internet mixes knowledge, opinions, emotions and misinformation. Alif AI aims to help with a calm beginning: letters, tajweed, Quran, history and quizzes step by step. The modern world does not end Islamic history - it asks how we will carry it forward."
+        ]
+      },
+      key: { pl: "Lekcja: szybkość dostępu do wiedzy musi iść razem z cierpliwością, źródłami i pokorą.", en: "Lesson: fast access to knowledge must walk with patience, sources and humility." },
+      sources: ["Pew Research: global Muslim population", "Alif AI educational scope"]
     }
   ],
   prophets: [
@@ -1174,7 +1427,722 @@ export const historyContent = {
           "Islam does not treat Mary as a foreign figure. It sees in her purity, courage and being chosen by Allah.",
           "Sometimes the best bridge begins with shared love for someone both traditions honour."
         ]
-      }
+      },
+      sources: ["Quran 19"]
+    },
+    {
+      id: "timeline-baghdad-books",
+      section: "timeline",
+      title: { pl: "Miasto, w którym książki były skarbem", en: "A city where books were treasure" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "Wyobraź sobie Bagdad pełen kopistów, tłumaczy, lekarzy, astronomów i uczniów. Książka nie była wtedy tanim przedmiotem z półki, ale owocem pracy wielu rąk.",
+          "Ta historia uczy, że islam nie boi się wiedzy. Boi się raczej pychy, która z wiedzy robi ozdobę ego zamiast służby ludziom."
+        ],
+        en: [
+          "Imagine Baghdad filled with copyists, translators, physicians, astronomers and students. A book was not a cheap shelf object, but the work of many hands.",
+          "This story teaches that Islam does not fear knowledge. It fears arrogance that turns knowledge into ego decoration instead of service."
+        ]
+      },
+      sources: ["Britannica: Abbasid caliphate", "Britannica: Bayt al-Hikmah"]
+    },
+    {
+      id: "timeline-qarawiyyin-lamp",
+      section: "timeline",
+      title: { pl: "Lampa w Fezie", en: "A lamp in Fez" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "W Fezie opowiada się o Fatimie al-Fihri, która z majątku ufundowała miejsce modlitwy i nauki. Nie musiała stać na minbarze, by zostawić po sobie światło.",
+          "Dzieciom można powiedzieć prosto: czasem najlepszy prezent dla świata to miejsce, w którym inni uczą się dobra."
+        ],
+        en: [
+          "In Fez, people tell of Fatima al-Fihri, who used her wealth to endow a place of prayer and learning. She did not need a minbar to leave light behind.",
+          "For children, say it simply: sometimes the best gift to the world is a place where others learn goodness."
+        ]
+      },
+      sources: ["UNESCO / Al-Qarawiyyin tradition"]
+    },
+    {
+      id: "timeline-granada-key",
+      section: "timeline",
+      title: { pl: "Klucz do domu w Granadzie", en: "The key to a home in Granada" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "Upadek Granady nie jest tylko datą. To opowieść o pamięci, utracie, pięknie i pytaniu, jak cywilizacje chronią to, co najcenniejsze.",
+          "Nie czytamy jej po to, by żyć żalem. Czytamy ją, by rozumieć, że wiedza, sprawiedliwość i jedność wymagają troski."
+        ],
+        en: [
+          "The fall of Granada is not only a date. It is a story of memory, loss, beauty and the question of how civilisations protect what matters most.",
+          "We do not read it to live in grief. We read it to understand that knowledge, justice and unity need care."
+        ]
+      },
+      sources: ["Britannica: Spain, conquest of Granada"]
+    },
+    {
+      id: "timeline-digital-scroll",
+      section: "timeline",
+      title: { pl: "Telefon jako mała biblioteka", en: "A phone as a small library" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Dziś w kieszeni możesz mieć mushaf, recytacje, słownik, lekcje tajwidu i pytania do nauczyciela. To ogromna łaska.",
+          "Ale łaska potrzebuje adab: sprawdzaj źródła, nie ucz się religii tylko z kłótni i dawaj sercu ciszę."
+        ],
+        en: [
+          "Today your pocket can hold a mushaf, recitations, a dictionary, tajweed lessons and questions for a teacher. That is a huge blessing.",
+          "But a blessing needs adab: check sources, do not learn religion only from arguments, and give your heart quiet."
+        ]
+      },
+      sources: ["modern learning practice"]
+    },
+    {
+      id: "prophets-yusuf-shirt",
+      section: "prophets",
+      title: { pl: "Koszula Yusufa", en: "Yusuf’s shirt" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "W historii Yusufa (as) koszula pojawia się kilka razy: jako kłamstwo, jako dowód i jako znak radości. Ten sam prosty przedmiot przechodzi przez ból i uzdrowienie.",
+          "Dziecku można powiedzieć: Allah zna prawdę nawet wtedy, gdy ludzie trzymają w ręku złą opowieść."
+        ],
+        en: [
+          "In Yusuf’s story, a shirt appears more than once: as a lie, as evidence and as a sign of joy. One simple object passes through pain and healing.",
+          "For a child: Allah knows the truth even when people hold the wrong story in their hands."
+        ]
+      },
+      sources: ["Quran 12"]
+    },
+    {
+      id: "prophets-nuh-hammer",
+      section: "prophets",
+      title: { pl: "Młotek Nuha", en: "Nuh’s hammer" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Nuh (as) budował arkę, gdy inni nie widzieli sensu. Każde uderzenie było małym aktem zaufania.",
+          "Nie wszystkie dobre decyzje są od razu zrozumiałe dla ludzi. Czasem budujesz, zanim inni zobaczą deszcz."
+        ],
+        en: [
+          "Nuh (as) built the ark when others saw no point. Every strike was a small act of trust.",
+          "Not every good decision is immediately understood by people. Sometimes you build before others see rain."
+        ]
+      },
+      sources: ["Quran 11:36-49"]
+    },
+    {
+      id: "prophets-ibrahim-fire",
+      section: "prophets",
+      title: { pl: "Ogień, który nie miał ostatniego słowa", en: "The fire that did not have the final word" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "Ibrahim (as) stanął przeciw bałwochwalstwu nie dlatego, że lubił spór, ale dlatego, że prawda była większa niż lęk.",
+          "Kiedy wrzucono go w ogień, Allah uczynił ogień chłodnym i bezpiecznym. To nie jest bajka o odwadze bez strachu, ale o zaufaniu mimo strachu."
+        ],
+        en: [
+          "Ibrahim (as) stood against idol worship not because he loved conflict, but because truth was greater than fear.",
+          "When he was thrown into the fire, Allah made it cool and safe. This is not a tale of courage without fear, but trust despite fear."
+        ]
+      },
+      sources: ["Quran 21:51-73"]
+    },
+    {
+      id: "prophets-isa-table",
+      section: "prophets",
+      title: { pl: "Stół, znak i wdzięczność", en: "A table, a sign and gratitude" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Uczniowie Isy (as) prosili o stół z nieba. Koran pokazuje pragnienie znaku, ale też odpowiedzialność po otrzymaniu łaski.",
+          "Największe cuda nie zwalniają serca z wdzięczności. One czynią wdzięczność jeszcze ważniejszą."
+        ],
+        en: [
+          "The disciples of Isa (as) asked for a table from heaven. The Quran shows the desire for a sign, but also responsibility after receiving grace.",
+          "Great signs do not free the heart from gratitude. They make gratitude even more important."
+        ]
+      },
+      sources: ["Quran 5:112-115"]
+    },
+    {
+      id: "prophets-muhammad-smile",
+      section: "prophets",
+      title: { pl: "Uśmiech, który też był sunną", en: "A smile that was also Sunnah" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Prorok ﷺ niósł największą misję, ale nie był zimnym pomnikiem. Uczył, rozmawiał, pocieszał i okazywał łagodność.",
+          "Dla początkującego to ważne: religijność nie ma robić z człowieka twardej ściany. Ma uczyć pięknego charakteru."
+        ],
+        en: [
+          "The Prophet ﷺ carried the greatest mission, but he was not a cold statue. He taught, spoke, comforted and showed gentleness.",
+          "For a beginner this matters: religion should not turn a person into a hard wall. It should teach beautiful character."
+        ]
+      },
+      sources: ["Sahih al-Tirmidhi 1956", "general shamail tradition"]
+    },
+    {
+      id: "angels-mountain",
+      section: "angels",
+      title: { pl: "Anioł gór i wybór miłosierdzia", en: "The angel of mountains and a choice of mercy" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "Po bolesnym odrzuceniu w Ta'if Prorok ﷺ nie poprosił o zemstę. Gdy zaoferowano karę dla tych, którzy go skrzywdzili, wybrał nadzieję dla ich potomków.",
+          "To story dla dorosłych i dzieci: czasem prawdziwa siła mówi 'nie' gniewowi, choć ma powód."
+        ],
+        en: [
+          "After the painful rejection at Ta'if, the Prophet ﷺ did not ask for revenge. When punishment was offered for those who hurt him, he chose hope for their descendants.",
+          "A story for adults and children: sometimes true strength says no to anger, even with reason."
+        ]
+      },
+      sources: ["Sahih al-Bukhari 3231"]
+    },
+    {
+      id: "angels-dua-for-brother",
+      section: "angels",
+      title: { pl: "Dua, której nikt nie słyszał", en: "A dua no one heard" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Kiedy prosisz o dobro dla kogoś pod jego nieobecność, tradycja uczy, że anioł odpowiada: dla ciebie podobnie.",
+          "To piękna lekcja dla domu: módl się za rodzinę nawet wtedy, gdy rozmowy są trudne."
+        ],
+        en: [
+          "When you ask good for someone in their absence, the tradition teaches that an angel says: and for you the same.",
+          "A beautiful lesson for home: pray for family even when conversations are difficult."
+        ]
+      },
+      sources: ["Sahih Muslim 2732"]
+    },
+    {
+      id: "angels-small-good",
+      section: "angels",
+      title: { pl: "Mały dobry czyn nie zgubi adresu", en: "A small good deed does not lose its address" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Nikt nie zauważył, że ustąpiłeś miejsca, zamknąłeś złą stronę, nie odpowiedziałeś ostro. Ale Allah wie.",
+          "Aniołowie zapisujący czyny uczą serce: nie żyjesz tylko przed ludźmi."
+        ],
+        en: [
+          "No one noticed that you gave up a seat, closed a harmful page, or did not reply harshly. But Allah knows.",
+          "The recording angels teach the heart: you do not live only before people."
+        ]
+      },
+      sources: ["Quran 50:17-18"]
+    },
+    {
+      id: "sahaba-sumayya",
+      section: "sahaba",
+      title: { pl: "Sumayya i odwaga pierwszych", en: "Sumayya and the courage of the first" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "Sumayya (ra) była wśród pierwszych muzułmanów i zapłaciła za wiarę najwyższą cenę. Nie miała pozycji, armii ani ochrony wielkiego rodu.",
+          "Jej historia nie jest lekka, ale jest ważna: islam od początku pamięta kobiety, które miały serce większe niż strach."
+        ],
+        en: [
+          "Sumayya (ra) was among the earliest Muslims and paid the highest price for faith. She had no status, army or powerful clan protection.",
+          "Her story is not light, but it matters: Islam remembers from the beginning women whose hearts were greater than fear."
+        ]
+      },
+      sources: ["sirah tradition"]
+    },
+    {
+      id: "sahaba-hamza",
+      section: "sahaba",
+      title: { pl: "Hamza wstał po stronie prawdy", en: "Hamza stood with truth" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Hamza (ra) był znany z siły. Ale w islamie siła musiała nauczyć się kierunku.",
+          "Dziecku można powiedzieć: silny nie jest ten, kto tylko potrafi uderzyć. Silny to ten, kto broni prawdy i uczy się pokory."
+        ],
+        en: [
+          "Hamza (ra) was known for strength. But in Islam, strength had to learn direction.",
+          "For a child: the strong person is not only one who can strike. The strong person defends truth and learns humility."
+        ]
+      },
+      sources: ["sirah tradition"]
+    },
+    {
+      id: "sahaba-aisha-question",
+      section: "sahaba",
+      title: { pl: "Aisha zadawała pytania", en: "Aisha asked questions" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "Aisha (ra) była nauczycielką, przekazicielką hadisów i osobą, która pytała uważnie. Jej wiedza nie była dodatkiem do historii - była częścią przekazu.",
+          "To ważne dla dziewczynek i chłopców: pytanie może być ibadah, jeśli prowadzi do prawdy."
+        ],
+        en: [
+          "Aisha (ra) was a teacher, transmitter of hadith and a careful questioner. Her knowledge was not a footnote to history - it was part of transmission.",
+          "This matters for girls and boys: a question can be ibadah when it leads to truth."
+        ]
+      },
+      sources: ["hadith transmission tradition"]
+    },
+    {
+      id: "sahaba-salman-trench",
+      section: "sahaba",
+      title: { pl: "Pomysł Salmana przy rowie", en: "Salman’s idea at the trench" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Podczas oblężenia Medyny Salman al-Farisi (ra) zaproponował wykopanie rowu - rozwiązanie znane z Persji.",
+          "Ummah nie traci tożsamości, gdy mądrze korzysta z dobrego doświadczenia ludzi."
+        ],
+        en: [
+          "During the siege of Madinah, Salman al-Farisi (ra) suggested digging a trench - an idea known from Persia.",
+          "The ummah does not lose identity when it wisely uses good human experience."
+        ]
+      },
+      sources: ["sirah tradition"]
+    },
+    {
+      id: "sahaba-umm-umara",
+      section: "sahaba",
+      title: { pl: "Umm Umara i odwaga w Uhud", en: "Umm Umara and courage at Uhud" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "Nusaybah bint Ka'b, znana jako Umm Umara (ra), zapamiętana jest za odwagę w trudnych chwilach Uhud.",
+          "Nie każda historia kobiety w islamie dzieje się w ciszy domu. Niektóre dzieją się w samym środku próby wspólnoty."
+        ],
+        en: [
+          "Nusaybah bint Ka'b, known as Umm Umara (ra), is remembered for courage during the hard moments of Uhud.",
+          "Not every woman’s story in Islam happens in the quiet of home. Some happen at the centre of the community’s trial."
+        ]
+      },
+      sources: ["sirah tradition"]
+    },
+    {
+      id: "conversions-umar-door",
+      section: "conversions",
+      title: { pl: "Umar przy drzwiach siostry", en: "Umar at his sister’s door" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "Droga Umara (ra) do islamu nie była miękka od początku. Przyszedł z gniewem, a usłyszał słowa Koranu.",
+          "To nie usprawiedliwia gniewu, ale pokazuje potęgę przemiany: czasem serce, które wydaje się najdalej, jest już blisko drzwi."
+        ],
+        en: [
+          "Umar’s road to Islam was not gentle at the beginning. He came with anger and heard words of Quran.",
+          "This does not excuse anger, but shows the power of transformation: sometimes the heart that seems farthest is already near the door."
+        ]
+      },
+      sources: ["sirah tradition"]
+    },
+    {
+      id: "conversions-abdullah-salam",
+      section: "conversions",
+      title: { pl: "Uczony, który rozpoznał znak", en: "A scholar who recognised a sign" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Abdullah ibn Salam (ra) znał tradycję żydowską Medyny. Gdy spotkał Proroka ﷺ, zobaczył w nim prawdę, której szukał.",
+          "Jego historia jest mostem: szczera wiedza może prowadzić dalej, nie zamykać drzwi."
+        ],
+        en: [
+          "Abdullah ibn Salam (ra) knew the Jewish tradition of Madinah. When he met the Prophet ﷺ, he saw the truth he had been seeking.",
+          "His story is a bridge: sincere knowledge can lead onward, not close doors."
+        ]
+      },
+      sources: ["Sahih al-Bukhari 3329"]
+    },
+    {
+      id: "conversions-malcolm-hajj",
+      section: "conversions",
+      title: { pl: "List z pielgrzymki", en: "A letter from pilgrimage" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "Malcolm X opisywał doświadczenie Hajj jako spotkanie z ludźmi różnych kolorów i narodów, stojących razem przed Allahem.",
+          "Nie idealizujemy żadnego człowieka. Ale ta część jego drogi pokazuje, że tawhid potrafi leczyć fałszywe hierarchie rasowe."
+        ],
+        en: [
+          "Malcolm X described Hajj as meeting people of different colours and nations standing together before Allah.",
+          "We do not idealise any human being. But this part of his road shows that tawhid can heal false racial hierarchies."
+        ]
+      },
+      sources: ["The Autobiography of Malcolm X / Hajj letters"]
+    },
+    {
+      id: "conversions-yusuf-islam-song",
+      section: "conversions",
+      title: { pl: "Cisza po scenie", en: "Silence after the stage" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "Yusuf Islam, wcześniej Cat Stevens, był znanym muzykiem zanim przyjął islam. Jego droga przypomina, że sława nie odpowiada na wszystkie pytania serca.",
+          "Dobra opowieść o konwersji nie mówi: celebryta stał się idealny. Mówi raczej: nawet znany człowiek może szukać sensu."
+        ],
+        en: [
+          "Yusuf Islam, formerly Cat Stevens, was a famous musician before accepting Islam. His road reminds us that fame does not answer every question of the heart.",
+          "A good conversion story does not say: a celebrity became perfect. It says: even a famous person may seek meaning."
+        ]
+      },
+      sources: ["Yusuf Islam public biography"]
+    },
+    {
+      id: "conversions-lauren-booth",
+      section: "conversions",
+      title: { pl: "Spotkanie z modlitwą", en: "Meeting prayer" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Lauren Booth opowiadała publicznie o swojej drodze do islamu i o tym, jak spotkania z muzułmanami zmieniały jej pytania.",
+          "To współczesna lekcja: czasem człowieka prowadzi nie jedna debata, ale wiele małych zetknięć z wiarą."
+        ],
+        en: [
+          "Lauren Booth has spoken publicly about her road to Islam and how encounters with Muslims changed her questions.",
+          "A modern lesson: sometimes a person is guided not by one debate, but by many small encounters with faith."
+        ]
+      },
+      sources: ["public interviews"]
+    },
+    {
+      id: "conversions-jay-palfrey",
+      section: "conversions",
+      title: { pl: "Podróż, która zmieniła pytania", en: "A journey that changed the questions" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Jay Palfrey, brytyjski twórca internetowy, mówił o spotkaniach z muzułmanami i przyjęciu islamu po latach podróży oraz rozmów.",
+          "Internet często pokazuje skróty. Ale za krótkim filmem bywa długa droga, której nie widać."
+        ],
+        en: [
+          "Jay Palfrey, a British online creator, has spoken about meeting Muslims and accepting Islam after years of travel and conversations.",
+          "The internet often shows shortcuts. Behind a short video there may be a long road we do not see."
+        ]
+      },
+      sources: ["public interviews"]
+    },
+    {
+      id: "women-asma-provision",
+      section: "women",
+      title: { pl: "Asma i droga do jaskini", en: "Asma and the road to the cave" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "Podczas Hidżry Asma bint Abi Bakr (ra) pomagała dostarczać zaopatrzenie. Wielka historia miała też ciche kroki odważnej kobiety.",
+          "Dzieciom można powiedzieć: czasem bohaterstwo to nie miecz, ale jedzenie niesione właściwą drogą."
+        ],
+        en: [
+          "During the Hijra, Asma bint Abi Bakr (ra) helped bring provisions. A great history also had the quiet steps of a brave woman.",
+          "For children: sometimes heroism is not a sword, but food carried on the right road."
+        ]
+      },
+      sources: ["sirah tradition"]
+    },
+    {
+      id: "women-fatima-home",
+      section: "women",
+      title: { pl: "Fatima i zwykły ciężar domu", en: "Fatima and the ordinary weight of home" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Fatima (ra) jest kochana w historii islamu, ale jej życie nie było bajką bez trudności. Znała pracę, zmęczenie i stratę.",
+          "To ważne: świętość w islamie nie oznacza życia bez ciężaru. Oznacza serce, które niesie ciężar z wiarą."
+        ],
+        en: [
+          "Fatima (ra) is beloved in Islamic history, but her life was not a tale without hardship. She knew work, tiredness and loss.",
+          "This matters: holiness in Islam does not mean life without weight. It means a heart carrying weight with faith."
+        ]
+      },
+      sources: ["Sahih al-Bukhari 6318", "sirah tradition"]
+    },
+    {
+      id: "women-rufaydah-care",
+      section: "women",
+      title: { pl: "Rufaydah i namiot troski", en: "Rufaydah and the tent of care" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Rufaydah al-Aslamiyyah jest zapamiętana w tradycji jako kobieta związana z opieką nad rannymi.",
+          "W historii islamu troska medyczna też ma swoje miejsce. Ratowanie i opatrywanie ran jest służbą."
+        ],
+        en: [
+          "Rufaydah al-Aslamiyyah is remembered in tradition as a woman connected with caring for the wounded.",
+          "In Islamic history, medical care also has a place. Healing and tending wounds is service."
+        ]
+      },
+      sources: ["sirah / historical tradition"]
+    },
+    {
+      id: "women-fatima-fihri",
+      section: "women",
+      title: { pl: "Fatima al-Fihri i hojność, która stała się nauką", en: "Fatima al-Fihri and generosity that became learning" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "Opowieść o Fatimie al-Fihri jest piękna, bo pokazuje majątek użyty nie na próżność, lecz na miejsce modlitwy i wiedzy.",
+          "Nie każdy zostawi po sobie książkę. Ktoś może zostawić salę, bibliotekę, stypendium albo dziecko, które pokocha naukę."
+        ],
+        en: [
+          "The story of Fatima al-Fihri is beautiful because it shows wealth used not for vanity, but for a place of prayer and knowledge.",
+          "Not everyone leaves a book behind. Someone may leave a room, a library, a scholarship or a child who loves learning."
+        ]
+      },
+      sources: ["UNESCO / historical tradition"]
+    },
+    {
+      id: "christianity-isa-name-home",
+      section: "christianity",
+      title: { pl: "Gdy w domu pada imię Jezus", en: "When the name Jesus is spoken at home" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Konwertyta może powiedzieć rodzinie: nie przestałem kochać Jezusa. Nazywam go Isą (as), Mesjaszem i prorokiem.",
+          "Takie zdanie nie rozwiązuje całej teologii, ale potrafi ocalić ton rozmowy."
+        ],
+        en: [
+          "A convert can tell family: I did not stop loving Jesus. I call him Isa (as), the Messiah and a prophet.",
+          "That sentence does not solve all theology, but it can protect the tone of the conversation."
+        ]
+      },
+      sources: ["Quran 3:45", "Quran 4:171"]
+    },
+    {
+      id: "christianity-common-prayer",
+      section: "christianity",
+      title: { pl: "Wspólna troska o dobro", en: "Shared care for goodness" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Muzułmanin i chrześcijanin mogą różnić się teologią, a jednocześnie wspólnie cenić modlitwę, rodzinę, jałmużnę i skromność.",
+          "Most nie musi udawać, że nie ma różnic. Most pozwala przejść przez rozmowę bez pogardy."
+        ],
+        en: [
+          "A Muslim and a Christian may differ in theology while both valuing prayer, family, charity and modesty.",
+          "A bridge does not pretend differences do not exist. It lets a conversation cross without contempt."
+        ]
+      },
+      sources: ["Quran 29:46"]
+    },
+    {
+      id: "children-date-palm",
+      section: "stories",
+      title: { pl: "Daktyl dla małej dłoni", en: "A date for a small hand" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Dziecko pyta: dlaczego muzułmanie jedzą daktyle? Możesz opowiedzieć o prostocie iftaru i o tym, że dobre rzeczy nie muszą być skomplikowane.",
+          "Mały daktyl może być lekcją: zacznij od wdzięczności, nawet jeśli dzień był długi."
+        ],
+        en: [
+          "A child asks: why do Muslims eat dates? You can tell of the simplicity of iftar and how good things need not be complicated.",
+          "A small date can teach: begin with gratitude, even if the day was long."
+        ]
+      },
+      sources: ["Ramadan practice"]
+    },
+    {
+      id: "children-moon-window",
+      section: "stories",
+      title: { pl: "Księżyc w oknie", en: "The moon in the window" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Wyobraź sobie dziecko szukające cienkiego sierpa księżyca. Nie widzi go od razu, więc patrzy uważniej.",
+          "Kalendarz islamski uczy cierpliwego patrzenia. Nie wszystko ważne pojawia się głośno."
+        ],
+        en: [
+          "Imagine a child looking for the thin crescent moon. They do not see it at once, so they look more carefully.",
+          "The Islamic calendar teaches patient seeing. Not everything important appears loudly."
+        ]
+      },
+      sources: ["lunar calendar"]
+    },
+    {
+      id: "children-two-shoes",
+      section: "stories",
+      title: { pl: "Dwa buty przed modlitwą", en: "Two shoes before prayer" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Chłopiec ustawia buty przed wejściem i myśli, że to mała rzecz. Mama mówi: porządek też może być adab.",
+          "Islam nie składa się tylko z wielkich słów. Czasem zaczyna się od tego, że nie przeszkadzasz innym."
+        ],
+        en: [
+          "A boy places shoes neatly at the entrance and thinks it is a small thing. His mother says: order can also be adab.",
+          "Islam is not made only of big words. Sometimes it begins with not making things harder for others."
+        ]
+      },
+      sources: ["adab principle"]
+    },
+    {
+      id: "children-water-wudu",
+      section: "stories",
+      title: { pl: "Kropla wody przed salah", en: "A drop of water before salah" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Dziewczynka robi wudu powoli, bo woda jest chłodna. Tata mówi: nie śpiesz się, uczysz się spotkania z Allahem.",
+          "To dobra historia dla początkujących: tempo nauki może być spokojne, jeśli serce idzie we właściwą stronę."
+        ],
+        en: [
+          "A girl makes wudu slowly because the water is cool. Her father says: do not rush; you are learning to meet Allah.",
+          "A good story for beginners: learning may be calm when the heart is walking in the right direction."
+        ]
+      },
+      sources: ["wudu education"]
+    },
+    {
+      id: "modern-mosque-open-day",
+      section: "stories",
+      title: { pl: "Dzień otwarty w meczecie", en: "Open day at the mosque" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Ktoś wchodzi do meczetu pierwszy raz i boi się, że zrobi wszystko źle. Ktoś podaje mu herbatę i mówi: witaj, spokojnie.",
+          "Czasem pierwszą da'wah nie jest wykład. Jest nią człowiek, który zdejmie napięcie z ramion gościa."
+        ],
+        en: [
+          "Someone enters a mosque for the first time, afraid of doing everything wrong. Someone offers tea and says: welcome, take it easy.",
+          "Sometimes the first da'wah is not a lecture. It is a person who removes tension from a guest’s shoulders."
+        ]
+      },
+      sources: ["community practice"]
+    },
+    {
+      id: "modern-school-lunch",
+      section: "stories",
+      title: { pl: "Drugie śniadanie w szkole", en: "Lunch at school" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Dziecko pyta, dlaczego kolega nie je żelatyny albo mięsa bez halal. To może być trudne albo może być lekcją szacunku.",
+          "Rodzina konwertyty też uczy się takich rozmów. Proste wyjaśnienie często działa lepiej niż zawstydzanie."
+        ],
+        en: [
+          "A child asks why a classmate avoids gelatin or non-halal meat. It can be awkward, or it can become a lesson in respect.",
+          "A convert’s family also learns such conversations. A simple explanation often works better than embarrassment."
+        ]
+      },
+      sources: ["halal education"]
+    },
+    {
+      id: "modern-grandmother-question",
+      section: "stories",
+      title: { pl: "Pytanie babci", en: "Grandmother’s question" },
+      readMinutes: 2,
+      body: {
+        pl: [
+          "Babcia pyta: czy ty już nie obchodzisz z nami świąt? Wnuk milczy chwilę, bo kocha babcię i chce być szczery.",
+          "Może odpowiedzieć: moje granice religijne się zmieniły, ale moja miłość i szacunek do ciebie nie zniknęły. To zdanie bywa początkiem mostu."
+        ],
+        en: [
+          "Grandmother asks: do you no longer celebrate with us? The grandson pauses, because he loves her and wants to be honest.",
+          "He may answer: my religious boundaries changed, but my love and respect for you did not disappear. That sentence can begin a bridge."
+        ]
+      },
+      sources: ["convert family support"]
+    },
+    {
+      id: "modern-first-eid",
+      section: "stories",
+      title: { pl: "Pierwszy Eid bez wielkiej rodziny", en: "First Eid without a big family" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Nie każdy pierwszy Eid jest pełen zdjęć, gości i stołu. Czasem to mała modlitwa, wiadomość do rodziny i kawa po powrocie.",
+          "To nadal może być piękny dzień. Allah widzi samotne początki."
+        ],
+        en: [
+          "Not every first Eid is full of photos, guests and a large table. Sometimes it is a small prayer, a message to family and coffee afterward.",
+          "It can still be a beautiful day. Allah sees lonely beginnings."
+        ]
+      },
+      sources: ["convert support practice"]
+    },
+    {
+      id: "modern-app-after-fajr",
+      section: "stories",
+      title: { pl: "Pięć minut po Fajr", en: "Five minutes after Fajr" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Ktoś nie ma siły na godzinę nauki. Otwiera aplikację po Fajr i powtarza jedną literę albo jedną krótką surę.",
+          "To nie jest mało, jeśli buduje stałość. Niektóre drogi do Koranu zaczynają się od pięciu minut."
+        ],
+        en: [
+          "Someone has no strength for an hour of study. After Fajr, they open the app and review one letter or one short surah.",
+          "That is not little if it builds consistency. Some roads to Quran begin with five minutes."
+        ]
+      },
+      sources: ["learning design"]
+    },
+    {
+      id: "modern-online-fatwa",
+      section: "stories",
+      title: { pl: "Za szybka odpowiedź", en: "An answer too fast" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Ktoś znajduje w internecie ostrą odpowiedź i od razu czuje lęk. Potem pyta lokalnego, zaufanego nauczyciela i słyszy: spokojnie, sprawa ma szczegóły.",
+          "To lekcja cyfrowej epoki: szybkość informacji nie zastępuje mądrości i kontekstu."
+        ],
+        en: [
+          "Someone finds a harsh answer online and immediately feels fear. Then they ask a trusted local teacher and hear: calmly, the issue has details.",
+          "A lesson of the digital age: speed of information does not replace wisdom and context."
+        ]
+      },
+      sources: ["digital learning risk"]
+    },
+    {
+      id: "modern-neighbour-iftar",
+      section: "stories",
+      title: { pl: "Talerz dla sąsiada", en: "A plate for the neighbour" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "W Ramadanie ktoś zanosi sąsiadowi mały talerz jedzenia. Nie robi wykładu, nie zaczyna debaty, po prostu okazuje dobro.",
+          "Wiele mostów zaczyna się od zwykłej uprzejmości, której nikt nie nazwał wielką akcją."
+        ],
+        en: [
+          "In Ramadan, someone brings a neighbour a small plate of food. No lecture, no debate, just kindness.",
+          "Many bridges begin with ordinary courtesy that no one calls a big campaign."
+        ]
+      },
+      sources: ["akhlaq principle"]
+    },
+    {
+      id: "modern-quran-translation",
+      section: "stories",
+      title: { pl: "Pierwsze tłumaczenie Koranu", en: "The first Quran translation" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Ktoś otwiera tłumaczenie Koranu i rozumie tylko część. To wystarczy, by serce zadało następne pytanie.",
+          "Tłumaczenie jest mostem, nie końcem drogi. Dlatego litery arabskie czekają cierpliwie."
+        ],
+        en: [
+          "Someone opens a Quran translation and understands only part of it. That is enough for the heart to ask the next question.",
+          "A translation is a bridge, not the end of the road. That is why Arabic letters wait patiently."
+        ]
+      },
+      sources: ["Quran learning practice"]
+    },
+    {
+      id: "modern-work-prayer",
+      section: "stories",
+      title: { pl: "Minuta na modlitwę w pracy", en: "A minute for prayer at work" },
+      readMinutes: 1,
+      body: {
+        pl: [
+          "Nowy muzułmanin zastanawia się, jak poprosić w pracy o krótką przerwę na modlitwę. Serce bije szybko, bo nie chce robić problemu.",
+          "Czasem praktykowanie islamu w nowoczesnym świecie zaczyna się od spokojnego, uprzejmego zdania: potrzebuję kilku minut na modlitwę."
+        ],
+        en: [
+          "A new Muslim wonders how to ask at work for a short prayer break. The heart beats fast, not wanting to cause trouble.",
+          "Sometimes living Islam in the modern world begins with a calm, polite sentence: I need a few minutes for prayer."
+        ]
+      },
+      sources: ["convert support practice"]
     }
   ]
 };

@@ -32,10 +32,11 @@ assert(asmaulHusna.length === 99, `Expected 99 Asmaul Husna names, got ${asmaulH
 assert(islamicMonths.length === 12, `Expected 12 Islamic months, got ${islamicMonths.length}.`);
 assert(islamicHadith.length === 30, `Expected the curated hadith list to stay at 30 verified items, got ${islamicHadith.length}.`);
 assert(islamicFaq.length === 44, `Expected 44 FAQ items in data.js after migration, got ${islamicFaq.length}.`);
-assert(historyContent.timeline.length >= 15, `Expected at least 15 history timeline events, got ${historyContent.timeline.length}.`);
+assert(historyContent.timeline.length >= 25, `Expected at least 25 history timeline events, got ${historyContent.timeline.length}.`);
 assert(historyContent.prophets.length >= 8, `Expected at least 8 prophet profiles, got ${historyContent.prophets.length}.`);
 assert(historyContent.angels.length >= 6, `Expected at least 6 angel entries, got ${historyContent.angels.length}.`);
-assert(historyContent.stories.length >= 14, `Expected at least 14 history stories, got ${historyContent.stories.length}.`);
+assert(historyContent.stories.length >= 50, `Expected at least 50 history stories, got ${historyContent.stories.length}.`);
+assert(historyContent.insightBubbles?.length >= 50, `Expected at least 50 history insight bubbles, got ${historyContent.insightBubbles?.length || 0}.`);
 for (const localWordId of ["polska", "warsaw", "indonesia", "surabaya", "borze"]) {
   assert(!words.some((word) => word.id === localWordId), `Local vocabulary word should stay removed: ${localWordId}.`);
 }
@@ -67,6 +68,25 @@ for (const event of historyContent.timeline) {
   assert(event.title?.pl && event.title?.en, `History timeline ${event.id} is missing bilingual title.`);
   assert(event.description?.pl && event.description?.en, `History timeline ${event.id} is missing bilingual description.`);
   assert(event.sources?.length, `History timeline ${event.id} is missing sources.`);
+}
+
+const historyStoryIds = new Set();
+for (const story of historyContent.stories) {
+  assert(hasText(story.id), "History story is missing id.");
+  assert(!historyStoryIds.has(story.id), `Duplicate history story id: ${story.id}.`);
+  historyStoryIds.add(story.id);
+  assert(hasText(story.section), `History story ${story.id} is missing section.`);
+  assert(story.title?.pl && story.title?.en, `History story ${story.id} is missing bilingual title.`);
+  assert(story.body?.pl?.length && story.body?.en?.length, `History story ${story.id} is missing bilingual body.`);
+}
+
+const historyInsightIds = new Set();
+for (const insight of historyContent.insightBubbles || []) {
+  assert(hasText(insight.id), "History insight bubble is missing id.");
+  assert(!historyInsightIds.has(insight.id), `Duplicate history insight id: ${insight.id}.`);
+  historyInsightIds.add(insight.id);
+  assert(insight.title?.pl && insight.title?.en, `History insight ${insight.id} is missing bilingual title.`);
+  assert(insight.text?.pl && insight.text?.en, `History insight ${insight.id} is missing bilingual text.`);
 }
 
 assert(!appJs.includes("<<<<<<<") && !appJs.includes(">>>>>>>"), "app.js contains unresolved merge markers.");

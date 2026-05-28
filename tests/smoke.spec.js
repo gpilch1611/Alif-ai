@@ -198,9 +198,11 @@ test.describe("Alif AI smoke", () => {
     await expect(page.locator("body")).toContainText(/obserwacji księżyca|moon sighting/);
   });
 
-  test("Learning journal navigation uses an icon instead of Note text", async ({ page }) => {
+  test("Bottom navigation exposes History and hides the old journal shortcut", async ({ page }) => {
     await expect(page.locator("#bottomNav")).not.toContainText("Note");
-    await expect(page.locator("#bottomNav [data-route='adventure'] span").first()).toContainText("✎");
+    await expect(page.locator("#bottomNav [data-route='adventure']")).toHaveCount(0);
+    await expect(page.locator("#bottomNav [data-route='history']")).toHaveCount(1);
+    await expect(page.locator("#bottomNav [data-route='history'] span").first()).toContainText("◷");
   });
 
   test("99 Names Challenge accepts prefixes, meanings and simple typos once", async ({ page }) => {
@@ -305,12 +307,31 @@ test.describe("Alif AI smoke", () => {
     await page.goto("/#islam");
     await expect(page.getByRole("button", { name: /Słownik|Slownik/ })).toBeVisible();
     await expect(page.locator("#view").getByRole("button", { name: /^Historia$/ })).toHaveCount(0);
+    await expect(page.locator("#view").getByRole("button", { name: /Seerah/ })).toHaveCount(0);
+    await expect(page.getByText(/Hadisy dnia|Daily hadiths/)).toBeVisible();
     await expect(page.locator("body")).not.toContainText("Kalkulator zakat");
 
     await page.goto("/#history");
     await expect(page.getByRole("heading", { name: /Historia/ })).toBeVisible();
     await expect(page.locator(".history-entry-card")).toHaveCount(0);
     await expect(page.locator(".history-tabs")).toBeVisible();
+    await expect(page.locator(".history-tabs .tab-btn").nth(1)).toContainText(/Oś czasu|Timeline/);
+    await expect(page.locator(".history-tabs .tab-btn").nth(2)).toContainText(/Mosty wiary|Faith bridges/);
+    await expect(page.locator(".history-tabs .tab-btn").nth(3)).toContainText(/Konwersje|Conversions/);
+    await expect(page.locator(".history-tabs .tab-btn").nth(4)).toContainText(/Stories/);
+    await page.getByRole("button", { name: /Oś czasu|Timeline/ }).click();
+    await expect(page.getByRole("heading", { name: /świat współczesny|modern world/i })).toBeVisible();
+    await expect.poll(() => page.locator(".history-timeline-event").count()).toBeGreaterThan(25);
+    await expect(page.getByRole("button", { name: /Islam w świecie cyfrowym|Islam in the digital world/i })).toBeVisible();
+    await page.locator("[data-history-tab='stories']").click();
+    await expect(page.locator(".history-story-section-tabs")).toHaveCount(0);
+    await expect.poll(() => page.locator("[data-history-story-carousel]").count()).toBeGreaterThan(4);
+    await expect(page.locator("[data-history-story-carousel]").first()).toBeVisible();
+    await expect.poll(() => page.locator(".history-story-slide").count()).toBeGreaterThan(1);
+    await expect(page.getByText(/Codzienne opowieści|Everyday stories/)).toBeVisible();
+    await expect(page.getByText(/Opowieści proroków|Prophet stories/)).toBeVisible();
+    await page.locator("#bottomNav [data-route='history']").click();
+    await expect(page.locator(".history-hero")).toContainText("Historia");
 
     await page.goto("/#adventure");
     await expect(page).toHaveURL(/#home$/);
@@ -325,6 +346,11 @@ test.describe("Alif AI smoke", () => {
     await page.goto("/#games");
     await expect(page.getByRole("button", { name: /Quizy/ })).toBeVisible();
     await expect(page.locator("body")).not.toContainText(/Łap literę|Catch the Letter/);
+    await page.getByRole("button", { name: /Quizy/ }).click();
+    await expect(page.getByRole("button", { name: /Quiz Historii|History Quiz/ })).toBeVisible();
+    await page.getByRole("button", { name: /Quiz Historii|History Quiz/ }).click();
+    await expect(page.getByRole("heading", { name: /Quiz Historii|History Quiz/ })).toBeVisible();
+    await page.getByRole("button", { name: /Powrót do gier|Back to games/ }).click();
     await page.getByRole("button", { name: /Quizy/ }).click();
     await expect(page.getByRole("button", { name: /Quizy AI/ })).toBeVisible();
     await page.getByRole("button", { name: /Quizy AI/ }).click();

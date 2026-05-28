@@ -67,7 +67,7 @@ const THEME_COLOR = {
 
 const navItems = [
   ["home",    "⌂",  "navHome"],
-  ["history", "🧭", "navHistory"],
+  ["history", "◷", "navHistory"],
   ["islam",   "☪",  "navIslam"],
   ["lessons", "Aa", "navLessons"],
   ["culture", "✦",  "navCulture"],
@@ -76,7 +76,7 @@ const navItems = [
 
 const secondaryNavItems = [];
 
-const ISLAM_ROUTES = ["islam","koran","asmaul","tajweed","seerah","pillars","muallaf","halalharam","islamfaq","glossary","prayer","prayerGuide"];
+const ISLAM_ROUTES = ["islam","koran","asmaul","tajweed","pillars","muallaf","halalharam","islamfaq","glossary","prayer","prayerGuide"];
 const APP_ROUTES = new Set([
   ...navItems.map(([id]) => id),
   ...secondaryNavItems.map(([id]) => id),
@@ -158,7 +158,7 @@ const ISLAMIC_SOURCE_LIBRARY = [
 
 const I18N = {
   pl: {
-    navHome: "Start", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navSeerah: "Seerah", navHistory: "Historia", navPillars: "Filary", navRoots: "Korzenie", navMuallaf: "Nowy muzułmanin", navHalalHaram: "Halal & Haram", navIslamFaq: "FAQ islamu",
+    navHome: "Start", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navHistory: "Historia", navPillars: "Filary", navRoots: "Korzenie", navMuallaf: "Nowy muzułmanin", navHalalHaram: "Halal & Haram", navIslamFaq: "FAQ islamu",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
     welcome: "Witaj w ألف AI", homeTitle: "Islam — krok po kroku", homeLead: "Arabski jest narzędziem — bo czytanie Koranu w oryginale to obowiązek każdego muzułmanina. Ucz się liter, sur, dhikru, historii islamu i modlitw.",
@@ -176,7 +176,7 @@ const I18N = {
     lessonCategories: "Kategorie Lekcji", lessonSelect: "Wybierz kategorię"
   },
   en: {
-    navHome: "Home", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navSeerah: "Seerah", navHistory: "History", navPillars: "Pillars", navRoots: "Roots", navMuallaf: "New Muslim", navHalalHaram: "Halal & Haram", navIslamFaq: "Islam FAQ",
+    navHome: "Home", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navHistory: "History", navPillars: "Pillars", navRoots: "Roots", navMuallaf: "New Muslim", navHalalHaram: "Halal & Haram", navIslamFaq: "Islam FAQ",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
     welcome: "Welcome to ألف AI", homeTitle: "Islam — step by step", homeLead: "Arabic is the key — reading the Quran in the original is every Muslim's obligation. Learn letters, surahs, dhikr, Islamic history and prayers.",
@@ -441,6 +441,8 @@ const defaultState = {
   surahQuizStats: { correct: 0, wrong: 0 },
   surahQuizHistory: [],
   surahQuizBest: 0,
+  historyQuizStats: { correct: 0, wrong: 0 },
+  historyQuizHistory: [],
   dhikrGameBest: null,
   dhikrGameHistory: [],
   gameHistory: [],
@@ -465,6 +467,7 @@ const defaultState = {
   journalTab: "notes",
   historyTab: "overview",
   historyTimelineEvent: "adam",
+  historyStorySection: "timeline",
   historyProgress: {
     timelineEvents: [],
     prophets: [],
@@ -486,6 +489,13 @@ let writingInk = 0;
 let writingLastPoint = null;
 let writingGuideMask = null;
 let writingUserMask = null;
+let historyInsightTimer = null;
+let historyInsightHideTimer = null;
+let historyInsightSessionIds = [];
+let speechVoicesCache = [];
+let speechVoicesLoading = false;
+let currentTtsAudio = null;
+let ttsWarningShownThisSession = false;
 
 function t(key) {
   return I18N[state.lang]?.[key] || I18N.pl[key] || key;
@@ -507,6 +517,27 @@ function letterName(letter) {
     .replace(" lekkie", "")
     .replace(" gardłowe", "")
     .replace(" (emphatic)", "");
+}
+
+function letterSpeechText(letter) {
+  return letter?.arabicName || letter?.forms?.isolated || "";
+}
+
+function letterAudioSrc(letter) {
+  return letter?.id ? `./assets/audio/letters/${letter.id}.mp3` : "";
+}
+
+async function speakArabicLetter(letter) {
+  const src = letterAudioSrc(letter);
+  if (src) {
+    stopRemoteTts();
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+    try {
+      await playArabicTtsUrl(src);
+      return;
+    } catch {}
+  }
+  speakArabic(letterSpeechText(letter), { noOnlineFallback: true });
 }
 
 function letterPronunciationText(letter) {
@@ -779,7 +810,7 @@ function normalizeRoute() {
   if (APP_ROUTES.has(route)) return;
   route = "home";
   if (location.hash && location.hash !== "#home") {
-    history.replaceState(null, "", "#home");
+    window.history.replaceState(null, "", "#home");
   }
 }
 
@@ -792,7 +823,7 @@ function unlockSpeech() {
   if (speechUnlocked || !("speechSynthesis" in window)) return;
   speechUnlocked = true;
   try {
-    speechSynthesis.getVoices();
+    preloadSpeechVoices();
     speechSynthesis.resume();
   } catch {}
 }
@@ -810,6 +841,8 @@ function init() {
   renderNav();
   bindGlobalEvents();
   mountAiAssistant();
+  preloadSpeechVoices();
+  startHistoryInsightBubbles();
   initSearch();
   window.addEventListener("hashchange", () => {
     route = location.hash.replace("#", "") || "home";
@@ -1062,11 +1095,16 @@ function renderNav() {
   nav.querySelectorAll("[data-route]").forEach((btn) => {
     btn.addEventListener("click", () => {
       triggerHaptic();
-      if (btn.dataset.route === "games") {
+      const targetRoute = btn.dataset.route;
+      if (targetRoute === "games") {
         state.activeGame = null;
         saveState();
       }
-      setRoute(btn.dataset.route);
+      if (targetRoute === "history") {
+        state.historyTab = "overview";
+        saveState();
+      }
+      setRoute(targetRoute);
     });
   });
 
@@ -1125,7 +1163,7 @@ function render() {
   const speech = () => { state.activeGame = "speech"; games(); };
   const writing = () => { state.activeGame = "writing"; games(); };
   const books = () => setRoute("culture");
-  const views = { home, islam, koran, alphabet, calendar: islamicCalendar, review: reviewCenter, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, seerah, history, pillars, muallaf, halalharam, islamfaq, glossary };
+  const views = { home, islam, koran, alphabet, calendar: islamicCalendar, review: reviewCenter, lessons, flashcards, speech, writing, books, culture, games, badges, settings, dhikr, prayer, prayerGuide, asmaul, tajweed, history, pillars, muallaf, halalharam, islamfaq, glossary };
   (views[route] || home)();
 }
 
@@ -1440,7 +1478,6 @@ function islam() {
     { route: "prayerGuide", icon: "🧎", titlePl: "Prayer Mode",   titleEn: "Prayer Mode",      descPl: "Przewodnik salat krok po kroku dla początkujących",       descEn: "Step-by-step salat guide for beginners" },
     { route: "prayer",  icon: "🕌", titlePl: "Czasy modlitw",     titleEn: "Prayer times",     descPl: "Makkah + Madinah + Qibla",                     descEn: "Makkah + Madinah + Qibla" },
     { route: "asmaul",  icon: "☪",  titlePl: "99 Imion Allaha",  titleEn: "99 Names of Allah",descPl: "Asma ul-Husna — piękne imiona Boga",                    descEn: "Asma ul-Husna — beautiful Names of God" },
-    { route: "seerah",  icon: "🌙", titlePl: "Seerah",            titleEn: "Seerah",           descPl: "Życie Proroka Muhammada ﷺ",                             descEn: "Life of Prophet Muhammad ﷺ" },
     { route: "tajweed", icon: "🔤", titlePl: "Tadżwid",           titleEn: "Tajweed",          descPl: "8 zasad prawidłowej recytacji",                         descEn: "8 rules for correct Quran recitation" },
     { route: "muallaf",    icon: "🌱", titlePl: "Nowy muzułmanin",  titleEn: "New Muslim",       descPl: "Pierwsze kroki, szahada i nie musisz być perfekcyjny",        descEn: "First steps, shahada and you don't need to be perfect" },
     { route: "halalharam", icon: "⚖",  titlePl: "Halal & Haram",   titleEn: "Halal & Haram",   descPl: "Jedzenie, napoje, zachowanie — co wolno, czego nie",          descEn: "Food, drinks, behaviour — what is and isn't allowed" },
@@ -1464,6 +1501,7 @@ function islam() {
         </button>
       `).join("")}
     </div>
+    ${dailyHadithsPanel()}
   `;
   view.querySelectorAll("[data-route]").forEach(btn =>
     btn.addEventListener("click", () => setRoute(btn.dataset.route))
@@ -1571,13 +1609,24 @@ function historySourceList(sources = []) {
 const HISTORY_TABS = [
   { id: "overview", icon: "⌂", title: { pl: "Start", en: "Start" } },
   { id: "timeline", icon: "🧭", title: { pl: "Oś czasu", en: "Timeline" } },
-  { id: "prophets", icon: "🌿", title: { pl: "Prorocy", en: "Prophets" } },
-  { id: "angels", icon: "✨", title: { pl: "Aniołowie", en: "Angels" } },
-  { id: "sahaba", icon: "🤝", title: { pl: "Sahaba", en: "Sahaba" } },
+  { id: "christianity", icon: "🕊", title: { pl: "Mosty wiary", en: "Faith bridges" } },
   { id: "conversions", icon: "🫶", title: { pl: "Konwersje", en: "Conversions" } },
+  { id: "stories", icon: "📚", title: { pl: "Stories", en: "Stories" } },
+  { id: "prophets", icon: "🌿", title: { pl: "Prorocy", en: "Prophets" } },
+  { id: "sahaba", icon: "🤝", title: { pl: "Sahaba", en: "Sahaba" } },
   { id: "women", icon: "🌺", title: { pl: "Kobiety", en: "Women" } },
-  { id: "christianity", icon: "🕊", title: { pl: "Isa i Maryam", en: "Isa & Maryam" } },
-  { id: "stories", icon: "📚", title: { pl: "Stories", en: "Stories" } }
+  { id: "angels", icon: "✨", title: { pl: "Aniołowie", en: "Angels" } }
+];
+
+const HISTORY_STORY_GROUPS = [
+  { id: "stories", icon: "📚", title: { pl: "Codzienne opowieści", en: "Everyday stories" }, kicker: { pl: "Dla rodzin i początkujących", en: "For families and beginners" } },
+  { id: "prophets", icon: "🌿", title: { pl: "Opowieści proroków", en: "Prophet stories" }, kicker: { pl: "Sceny, które łatwo zapamiętać", en: "Scenes that stay with you" } },
+  { id: "sahaba", icon: "🤝", title: { pl: "Towarzysze w scenach", en: "Companions in scenes" }, kicker: { pl: "Charakter najlepszych pokoleń", en: "Character of the best generations" } },
+  { id: "conversions", icon: "🫶", title: { pl: "Drogi serca", en: "Roads of the heart" }, kicker: { pl: "Historie szukania i powrotu", en: "Stories of searching and return" } },
+  { id: "women", icon: "🌺", title: { pl: "Kobiety i rodzina", en: "Women and family" }, kicker: { pl: "Odwaga, wiedza i troska", en: "Courage, knowledge and care" } },
+  { id: "christianity", icon: "🕊", title: { pl: "Mosty rodzinne", en: "Family bridges" }, kicker: { pl: "Islam, chrześcijaństwo i rozmowa bez napięcia", en: "Islam, Christianity and calm conversation" } },
+  { id: "angels", icon: "✨", title: { pl: "Świat niewidzialny", en: "The unseen world" }, kicker: { pl: "Aniołowie w prostych historiach", en: "Angels in simple stories" } },
+  { id: "timeline", icon: "🧭", title: { pl: "Epoki i miejsca", en: "Eras and places" }, kicker: { pl: "Miasta, nauka i punkty zwrotne", en: "Cities, learning and turning points" } }
 ];
 
 const HISTORY_PROGRESS_KEYS = ["timelineEvents", "prophets", "angels", "sahaba", "conversions", "women", "christianity", "stories"];
@@ -1675,7 +1724,7 @@ function historyTimeline() {
   return `
     <section class="history-section-heading">
       <p>${tx("Interaktywna oś czasu", "Interactive timeline")}</p>
-      <h2>${tx("Od Adama (as) po pierwsze stulecia", "From Adam (as) to the first centuries")}</h2>
+      <h2>${tx("Od Adama (as) po świat współczesny", "From Adam (as) to the modern world")}</h2>
       ${historyProgressSummary("timelineEvents", 15)}
     </section>
     <section class="history-timeline-layout">
@@ -1688,7 +1737,6 @@ function historyTimeline() {
               <button class="history-timeline-summary" data-history-event="${event.id}" aria-expanded="${isActive ? "true" : "false"}">
                 <span class="history-timeline-date">${escapeHtml(historyLabel(event.gregorian))} / ${escapeHtml(historyLabel(event.hijri))}</span>
                 <strong>${historyRichText(historyLabel(event.title))}</strong>
-                <small>${historyRichText(historySummary(event.description))}</small>
               </button>
               ${isActive ? `
                 <div class="history-timeline-expanded">
@@ -1902,37 +1950,149 @@ function historyChristianity() {
   `;
 }
 
+function historyStoryGroups() {
+  return HISTORY_STORY_GROUPS
+    .map((group) => ({
+      ...group,
+      stories: historyContent.stories.filter((story) => story.section === group.id)
+    }))
+    .filter((group) => group.stories.length);
+}
+
 function historyStories() {
-  const sections = HISTORY_TABS.filter((tab) => !["overview", "stories"].includes(tab.id));
+  const groups = historyStoryGroups();
+  const totalRead = historyProgressCount("stories");
   return `
     <section class="history-section-heading">
       <p>${tx("Stories", "Stories")}</p>
-      <h2>${tx("Krótkie opowieści na 1-2 minuty", "Short 1-2 minute stories")}</h2>
-      ${historyProgressSummary("stories", 8)}
+      <h2>${tx("Opowieści do przesuwania palcem", "Swipeable stories")}</h2>
+      <p class="history-section-subtitle">${tx(
+        `Jedna szeroka historia na raz, z podglądem następnej. Łącznie: ${historyContent.stories.length} krótkich opowieści.`,
+        `One wide story at a time, with a peek of the next one. Total: ${historyContent.stories.length} short stories.`
+      )}</p>
+      ${historyProgressSummary("stories", Math.max(8, historyContent.stories.length))}
     </section>
-    ${sections.map((section) => {
-      const stories = historyContent.stories.filter((story) => story.section === section.id);
-      if (!stories.length) return "";
-      return `
-        <section class="history-section">
-          <div class="history-section-heading">
-            <p>${section.icon}</p>
-            <h2>${escapeHtml(historyLabel(section.title))}</h2>
+    <div class="history-story-stack">
+      ${groups.map((group, groupIndex) => `
+        <section class="history-story-carousel-shell" data-history-story-group="${group.id}">
+          <div class="history-story-carousel-top">
+            <div>
+              <p>${group.icon || ""}</p>
+              <h2>${escapeHtml(historyLabel(group.title))}</h2>
+              <small>${escapeHtml(historyLabel(group.kicker))}</small>
+            </div>
+            <span class="trust-badge verified">${group.stories.length} ${tx("opowieści", "stories")}</span>
           </div>
-          <div class="history-story-grid">
-            ${stories.map((story) => `
-              <article class="history-story-card">
-                <span>${story.readMinutes} min</span>
+          <div class="history-story-controls" aria-label="${tx("Nawigacja stories", "Story navigation")}">
+            <button data-history-story-scroll="-1" aria-label="${tx("Poprzednia opowieść", "Previous story")}">‹</button>
+            <button data-history-story-scroll="1" aria-label="${tx("Następna opowieść", "Next story")}">›</button>
+          </div>
+          <div class="history-story-carousel" data-history-story-carousel>
+            ${group.stories.map((story, index) => `
+              <article class="history-story-card history-story-slide" data-history-story-index="${groupIndex}-${index}">
+                <span>${story.readMinutes} min · ${index + 1}/${group.stories.length} · ${totalRead}/${historyContent.stories.length}</span>
                 <h3>${historyRichText(historyLabel(story.title))}</h3>
-                ${historyParagraphs(story.body, "history-story-preview")}
+                <div class="history-story-body">${historyParagraphs(story.body, "history-story-preview")}</div>
+                ${historySourceList(story.sources)}
                 ${historyProgressButton("stories", story.id)}
               </article>
             `).join("")}
           </div>
         </section>
-      `;
-    }).join("")}
+      `).join("")}
+    </div>
   `;
+}
+
+function randomHistoryInsightDelay() {
+  return 60_000 + Math.floor(Math.random() * 240_000);
+}
+
+function canShowHistoryInsightBubble() {
+  const calmRoutes = new Set(["home", "history", "islam", "lessons", "culture", "badges"]);
+  if (!calmRoutes.has(route)) return false;
+  if (document.hidden) return false;
+  if (document.querySelector("dialog[open]")) return false;
+  if (document.getElementById("bottomSheet")?.classList.contains("open")) return false;
+  return true;
+}
+
+function pickHistoryInsight() {
+  const pool = historyContent.insightBubbles || [];
+  if (!pool.length) return null;
+  if (historyInsightSessionIds.length >= pool.length) historyInsightSessionIds = [];
+  const candidates = pool.filter((item) => !historyInsightSessionIds.includes(item.id));
+  const chosen = candidates[Math.floor(Math.random() * candidates.length)] || pool[0];
+  historyInsightSessionIds.push(chosen.id);
+  return chosen;
+}
+
+function scheduleHistoryInsightBubble(delay = randomHistoryInsightDelay()) {
+  clearTimeout(historyInsightTimer);
+  historyInsightTimer = setTimeout(showHistoryInsightBubble, delay);
+}
+
+function historyInsightDisplayMs(insight) {
+  const text = `${historyLabel(insight.title)} ${historyLabel(insight.text)}`;
+  return Math.min(45_000, Math.max(22_000, text.length * 95));
+}
+
+function hideHistoryInsightBubble({ scheduleNext = true } = {}) {
+  clearTimeout(historyInsightHideTimer);
+  const bubble = document.getElementById("historyInsightBubble");
+  if (bubble) {
+    bubble.classList.remove("visible");
+    setTimeout(() => bubble.remove(), 220);
+  }
+  if (scheduleNext) scheduleHistoryInsightBubble();
+}
+
+function showHistoryInsightBubble() {
+  if (!canShowHistoryInsightBubble()) {
+    scheduleHistoryInsightBubble(45_000);
+    return;
+  }
+  const insight = pickHistoryInsight();
+  if (!insight) return;
+  document.getElementById("historyInsightBubble")?.remove();
+  document.body.insertAdjacentHTML("beforeend", `
+    <aside id="historyInsightBubble" class="history-insight-bubble" role="status" aria-live="polite">
+      <button class="history-insight-main" data-history-insight-open>
+        <span>${escapeHtml(historyLabel(insight.category))}</span>
+        <strong>${historyRichText(historyLabel(insight.title))}</strong>
+        <small>${historyRichText(historyLabel(insight.text))}</small>
+        ${insight.source ? `<em>${escapeHtml(insight.source)}</em>` : ""}
+      </button>
+      <button class="history-insight-close" data-history-insight-close aria-label="${tx("Zamknij ciekawostkę", "Close insight")}">×</button>
+    </aside>
+  `);
+  const bubble = document.getElementById("historyInsightBubble");
+  requestAnimationFrame(() => bubble?.classList.add("visible"));
+  const displayMs = historyInsightDisplayMs(insight);
+  const pauseAutoHide = () => clearTimeout(historyInsightHideTimer);
+  const resumeAutoHide = () => {
+    clearTimeout(historyInsightHideTimer);
+    historyInsightHideTimer = setTimeout(() => hideHistoryInsightBubble({ scheduleNext: true }), Math.max(12_000, Math.round(displayMs * 0.45)));
+  };
+  bubble?.querySelector("[data-history-insight-open]")?.addEventListener("click", () => {
+    state.historyTab = insight.tab || "stories";
+    if (state.historyTab === "stories") state.historyStorySection = "stories";
+    saveState();
+    hideHistoryInsightBubble({ scheduleNext: true });
+    setRoute("history");
+  });
+  bubble?.querySelector("[data-history-insight-close]")?.addEventListener("click", () => hideHistoryInsightBubble({ scheduleNext: true }));
+  bubble?.addEventListener("pointerenter", pauseAutoHide);
+  bubble?.addEventListener("pointerleave", resumeAutoHide);
+  bubble?.addEventListener("focusin", pauseAutoHide);
+  bubble?.addEventListener("focusout", resumeAutoHide);
+  clearTimeout(historyInsightHideTimer);
+  historyInsightHideTimer = setTimeout(() => hideHistoryInsightBubble({ scheduleNext: true }), displayMs);
+}
+
+function startHistoryInsightBubbles() {
+  if (!historyContent.insightBubbles?.length || historyInsightTimer) return;
+  scheduleHistoryInsightBubble();
 }
 
 function history() {
@@ -1972,6 +2132,15 @@ function history() {
       state.historyTab = button.dataset.historyTab;
       saveState();
       history();
+    });
+  });
+
+  view.querySelectorAll("[data-history-story-scroll]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const carousel = button.closest(".history-story-carousel-shell")?.querySelector("[data-history-story-carousel]");
+      if (!carousel) return;
+      const direction = Number(button.dataset.historyStoryScroll) || 1;
+      carousel.scrollBy({ left: direction * Math.max(260, carousel.clientWidth * 0.82), behavior: "smooth" });
     });
   });
 
@@ -3506,7 +3675,7 @@ function alphabet() {
   view.querySelectorAll("[data-letter-say]").forEach((button) => {
     button.addEventListener("click", () => {
       const letter = arabicAlphabet.find((item) => item.id === button.dataset.letterSay);
-      speakArabic(letter.forms.isolated);
+      speakArabicLetter(letter);
       button.closest("article").classList.add("ring-2", "ring-emerald-400");
       setTimeout(() => button.closest("article").classList.remove("ring-2", "ring-emerald-400"), 700);
     });
@@ -3575,8 +3744,8 @@ function openLetter(id) {
     </div>
   `;
   modal.showModal();
-  speakArabic(letter.forms.isolated);
-  modalContent.querySelector("#playLetterBtn").addEventListener("click", () => speakArabic(letter.forms.isolated));
+  speakArabicLetter(letter);
+  modalContent.querySelector("#playLetterBtn").addEventListener("click", () => speakArabicLetter(letter));
   modalContent.querySelector("#markLearnedBtn").addEventListener("click", (e) => {
     if (state.learnedLetters.includes(id)) {
       state.learnedLetters = state.learnedLetters.filter(x => x !== id);
@@ -3754,7 +3923,7 @@ function flashcards() {
 function buildFlashDeck(tab, mode) {
   let source = [];
   if (tab === "letters") {
-    source = arabicAlphabet.map((letter) => ({ id: `letter-${letter.id}`, front: letter.forms.isolated, translation: letterName(letter), transliteration: letter.transliteration, back: `${letterName(letter)} · ${letter.transliteration}`, hint: letterPronunciationText(letter) }));
+    source = arabicAlphabet.map((letter) => ({ id: `letter-${letter.id}`, letterId: letter.id, front: letter.forms.isolated, speech: letterSpeechText(letter), translation: letterName(letter), transliteration: letter.transliteration, back: `${letterName(letter)} · ${letter.transliteration}`, hint: letterPronunciationText(letter) }));
   } else if (tab === "words") {
     source = words.map((word) => ({ id: `word-${word.id}`, front: word.ar, translation: wordMeaning(word), transliteration: word.tr, back: `${wordMeaning(word)} · ${word.tr}`, hint: tx("slowo", "word") }));
   } else if (tab === "ai") {
@@ -3798,7 +3967,7 @@ function renderFlashCard() {
         <div class="flash-face flash-front">
           <div class="text-center">
             <p class="arabic text-8xl">${escapeHtml(card.front)}</p>
-            <button type="button" class="speaker-btn mt-4" data-say-card="${escapeHtml(card.front)}">🔊</button>
+            <button type="button" class="speaker-btn mt-4" data-say-card="${escapeHtml(card.speech || card.front)}" data-letter-audio-id="${escapeHtml(card.letterId || "")}">🔊</button>
             <p class="mt-3 text-sm font-bold text-[var(--muted)]">${escapeHtml(card.hint)}</p>
             <p class="mt-2 text-xs text-[var(--muted)]">${t("frontHint")}</p>
           </div>
@@ -3826,7 +3995,9 @@ function renderFlashCard() {
   });
   area.querySelector("[data-say-card]").addEventListener("click", (event) => {
     event.stopPropagation();
-    speakArabic(event.currentTarget.dataset.sayCard);
+    const letter = arabicAlphabet.find((item) => item.id === event.currentTarget.dataset.letterAudioId);
+    if (letter) speakArabicLetter(letter);
+    else speakArabic(event.currentTarget.dataset.sayCard);
   });
   area.querySelectorAll("[data-grade]").forEach((button) => button.addEventListener("click", () => {
     gradeCard(card.id, Number(button.dataset.grade));
@@ -3897,56 +4068,174 @@ function speech() {
   $("#recordBtn").addEventListener("click", toggleRecording);
 }
 
-function speakArabicGoogleTTS(text) {
-  const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=ar&client=gtx&ttsspeed=0.6`;
-  const audio = new Audio(url);
-  audio.play().catch(() => {
-    if (!state.ttsWarningShown) {
-      state.ttsWarningShown = true;
-      saveState();
-      showToast(tx("Brak arabskiego TTS. Zainstaluj język arabski w systemie lub użyj Chrome.", "No Arabic TTS. Install Arabic language pack or use Chrome."));
-    }
+function refreshSpeechVoices() {
+  if (!("speechSynthesis" in window)) return [];
+  speechVoicesCache = speechSynthesis.getVoices() || [];
+  return speechVoicesCache;
+}
+
+function bestArabicVoice(voices = speechVoicesCache) {
+  return voices.find(v => v.lang === "ar-SA")
+    || voices.find(v => v.lang === "ar-AE")
+    || voices.find(v => v.lang === "ar-EG")
+    || voices.find(v => /^ar\b/i.test(v.lang))
+    || voices.find(v => /arab|arabs/i.test(`${v.name} ${v.lang}`));
+}
+
+function preloadSpeechVoices() {
+  if (!("speechSynthesis" in window)) return [];
+  const voices = refreshSpeechVoices();
+  if (!voices.length && !speechVoicesLoading) {
+    speechVoicesLoading = true;
+    speechSynthesis.onvoiceschanged = () => {
+      speechVoicesLoading = false;
+      refreshSpeechVoices();
+    };
+  }
+  return voices;
+}
+
+function arabicTtsUrls(text) {
+  const q = encodeURIComponent(text);
+  return [
+    `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&ttsspeed=0.65&q=${q}`,
+    `https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=ar&ttsspeed=0.65&q=${q}`
+  ];
+}
+
+function stopRemoteTts() {
+  if (!currentTtsAudio) return;
+  try {
+    currentTtsAudio.pause();
+    currentTtsAudio.removeAttribute("src");
+    currentTtsAudio.load();
+  } catch {}
+  currentTtsAudio = null;
+}
+
+function playArabicTtsUrl(url) {
+  return new Promise((resolve, reject) => {
+    const audio = new Audio();
+    currentTtsAudio = audio;
+    audio.preload = "auto";
+    audio.src = url;
+    let settled = false;
+    const timeout = setTimeout(() => fail(new Error("tts-timeout")), 8000);
+    const cleanup = () => {
+      clearTimeout(timeout);
+      audio.removeEventListener("playing", ok);
+      audio.removeEventListener("error", fail);
+    };
+    const ok = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(true);
+    };
+    const fail = (error) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      if (currentTtsAudio === audio) currentTtsAudio = null;
+      reject(error);
+    };
+    audio.addEventListener("playing", ok, { once: true });
+    audio.addEventListener("error", fail, { once: true });
+    const playAttempt = audio.play();
+    if (playAttempt?.then) playAttempt.then(ok).catch(fail);
   });
 }
 
-function speakArabic(text) {
+async function speakArabicOnlineTTS(text, failMessage) {
+  for (const url of arabicTtsUrls(text)) {
+    try {
+      await playArabicTtsUrl(url);
+      ttsWarningShownThisSession = false;
+      return true;
+    } catch {}
+  }
+
+  if (!ttsWarningShownThisSession) {
+    ttsWarningShownThisSession = true;
+    showToast(failMessage || tx(
+      "Nie udało się pobrać audio online. Sprawdź internet i kliknij jeszcze raz.",
+      "Online audio could not be loaded. Check your connection and tap again."
+    ));
+  }
+  return false;
+}
+
+function speakArabic(text, options = {}) {
   const clean = String(text || "").trim();
   if (!clean) return;
+  stopRemoteTts();
+  const allowOnlineFallback = !options.noOnlineFallback;
 
-  // Always try Web Speech API first - even without a specific Arabic voice,
-  // setting lang="ar-SA" lets the browser use built-in TTS
+  if (options.forceOnline) {
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+    void speakArabicOnlineTTS(clean);
+    return;
+  }
+
   if ("speechSynthesis" in window) {
     speechSynthesis.cancel();
+    const voices = preloadSpeechVoices();
+    const arabicVoice = bestArabicVoice(voices);
+    const noArabicVoiceMessage = tx(
+      allowOnlineFallback
+        ? "Ten PC nie ma arabskiego głosu systemowego, więc używam audio online."
+        : "Nie udało się odtworzyć lokalnego audio tej litery. Odśwież aplikację i spróbuj ponownie.",
+      allowOnlineFallback
+        ? "This PC has no Arabic system voice, so I am using online audio."
+        : "The local letter audio could not be played. Refresh the app and try again."
+    );
+
+    if (!arabicVoice) {
+      if (allowOnlineFallback) void speakArabicOnlineTTS(clean, noArabicVoiceMessage);
+      else showToast(noArabicVoiceMessage);
+      return;
+    }
+
     const u = new SpeechSynthesisUtterance(clean);
     u.lang = "ar-SA";
     u.rate = 0.75;
     u.pitch = 1;
     u.volume = 1;
+    u.voice = arabicVoice;
 
-    // Try to find an Arabic voice to improve quality
-    const voices = speechSynthesis.getVoices();
-    const arabicVoice = voices.find(v => v.lang === "ar-SA")
-      || voices.find(v => v.lang === "ar-AE")
-      || voices.find(v => v.lang === "ar-EG")
-      || voices.find(v => /^ar\b/i.test(v.lang))
-      || voices.find(v => /arab/i.test(v.name));
-    if (arabicVoice) u.voice = arabicVoice;
-
-    u.onerror = () => speakArabicGoogleTTS(clean);
-    speechSynthesis.resume();
-    speechSynthesis.speak(u);
-
-    // If voices not loaded yet, try again after they load
-    if (!voices.length) {
-      speechSynthesis.onvoiceschanged = () => {
-        speechSynthesis.onvoiceschanged = null;
-        speakArabic(clean);
-      };
+    let started = false;
+    const watchdog = setTimeout(() => {
+      if (started) return;
+      speechSynthesis.cancel();
+      if (allowOnlineFallback) void speakArabicOnlineTTS(clean, noArabicVoiceMessage);
+      else showToast(noArabicVoiceMessage);
+    }, 1400);
+    u.onstart = () => {
+      started = true;
+      clearTimeout(watchdog);
+    };
+    u.onend = () => clearTimeout(watchdog);
+    u.onerror = () => {
+      clearTimeout(watchdog);
+      if (allowOnlineFallback) void speakArabicOnlineTTS(clean, noArabicVoiceMessage);
+      else showToast(noArabicVoiceMessage);
+    };
+    try {
+      speechSynthesis.resume();
+      speechSynthesis.speak(u);
+    } catch {
+      clearTimeout(watchdog);
+      if (allowOnlineFallback) void speakArabicOnlineTTS(clean, noArabicVoiceMessage);
+      else showToast(noArabicVoiceMessage);
     }
     return;
   }
 
-  speakArabicGoogleTTS(clean);
+  if (allowOnlineFallback) void speakArabicOnlineTTS(clean);
+  else showToast(tx(
+    "Nie udało się odtworzyć lokalnego audio tej litery. Odśwież aplikację i spróbuj ponownie.",
+    "The local letter audio could not be played. Refresh the app and try again."
+  ));
 }
 
 function startSpeech(sample) {
@@ -4053,7 +4342,7 @@ function writing() {
   const _resizeHandler = () => { if (route === "writing") setupCanvas(); };
   window._writingResizeHandler = _resizeHandler;
   window.addEventListener("resize", _resizeHandler, { passive: true });
-  $("#sayWritingLetter").addEventListener("click", () => speakArabic(writingLetter.forms.isolated));
+  $("#sayWritingLetter").addEventListener("click", () => speakArabicLetter(writingLetter));
   $("#clearWriting").addEventListener("click", setupCanvas);
   $("#nextWriting").addEventListener("click", writing);
   $("#checkWriting").addEventListener("click", () => {
@@ -4631,6 +4920,7 @@ function games() {
       dhikrGame:   '<div id="dhikrGameBox" class="panel p-5"></div>',
       surahQuiz:   '<div id="surahQuizBox" class="panel p-5"></div>',
       pillarsQuiz: '<div id="pillarsQuizBox" class="panel p-5"></div>',
+      historyQuiz: '<div id="historyQuizBox" class="panel p-5"></div>',
       asmaChallenge: '<div id="asmaChallengeBox" class="panel p-5"></div>',
       aiQuiz:      '<div id="aiQuizBox" class="panel p-5"></div>',
       quizHub:     '<div id="quizHubBox"></div>',
@@ -4642,7 +4932,7 @@ function games() {
     };
     if (containerMap[state.activeGame]) {
       view.innerHTML = containerMap[state.activeGame];
-      const renderers = { quiz: renderQuiz, memory: renderMemory, dhikrGame: renderDhikrGame, surahQuiz: renderSurahQuiz, pillarsQuiz: renderPillarsQuiz, asmaChallenge: renderAsmaChallenge, aiQuiz: renderAiQuiz, quizHub: renderQuizHub };
+      const renderers = { quiz: renderQuiz, memory: renderMemory, dhikrGame: renderDhikrGame, surahQuiz: renderSurahQuiz, pillarsQuiz: renderPillarsQuiz, historyQuiz: renderHistoryQuiz, asmaChallenge: renderAsmaChallenge, aiQuiz: renderAiQuiz, quizHub: renderQuizHub };
       (renderers[state.activeGame] || (() => {}))();
     } else if (directMap[state.activeGame]) {
       directMap[state.activeGame]();
@@ -4734,6 +5024,7 @@ function renderQuizHub() {
     { id: "quiz", icon: "Aa", titlePl: "Quiz liter", titleEn: "Letter Quiz", descPl: "Rozpoznaj arabską literę", descEn: "Identify the Arabic letter" },
     { id: "surahQuiz", icon: "📖", titlePl: "Quiz Surah", titleEn: "Surah Quiz", descPl: "Rozpoznaj krótkie sury", descEn: "Identify short surahs" },
     { id: "pillarsQuiz", icon: "⭐", titlePl: "Quiz Filarów", titleEn: "Pillars Quiz", descPl: "Filary islamu i imanu", descEn: "Pillars of Islam and Iman" },
+    { id: "historyQuiz", icon: "🧭", titlePl: "Quiz Historii", titleEn: "History Quiz", descPl: "Oś czasu, prorocy, Sahaba i konwersje", descEn: "Timeline, prophets, Sahaba and conversions" },
     { id: "aiQuiz", icon: "AI", titlePl: "Quizy AI", titleEn: "AI Quizzes", descPl: "Generuj i rozwiązuj własne quizy", descEn: "Generate and play custom quizzes" }
   ];
   $("#quizHubBox").innerHTML = `
@@ -4770,7 +5061,7 @@ function renderQuiz() {
     <p class="mt-2 text-[var(--muted)]">${tx("Ktora to litera?", "Which letter is this?")}</p>
     <p class="mt-2 text-sm font-bold text-[var(--muted)]">${t("correct")}: ${state.quizStats.correct} · ${t("wrong")}: ${state.quizStats.wrong}</p>
     <p class="arabic my-4 text-center text-7xl">${escapeHtml(correct.forms.isolated)}</p>
-    <button class="big-action mb-4 w-full bg-amber-500 text-white" data-say="${escapeHtml(correct.forms.isolated)}">🔊 ${t("play")}</button>
+    <button class="big-action mb-4 w-full bg-amber-500 text-white" data-say="${escapeHtml(letterSpeechText(correct))}">🔊 ${t("play")}</button>
     <div class="grid gap-2">
       ${choices.map((choice) => `<button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-answer="${choice.id}">${escapeHtml(letterName(choice))}</button>`).join("")}
     </div>
@@ -4781,7 +5072,7 @@ function renderQuiz() {
       </div>
     </div>
   `;
-  $("#quizBox").querySelector("[data-say]").addEventListener("click", () => speakArabic(correct.forms.isolated));
+  $("#quizBox").querySelector("[data-say]").addEventListener("click", () => speakArabicLetter(correct));
   $("#quizBox").querySelectorAll("[data-answer]").forEach((button) => button.addEventListener("click", () => {
     if (button.dataset.answer === correct.id) {
       button.className = "big-action bg-emerald-500 text-white";
@@ -4808,8 +5099,8 @@ function renderQuiz() {
 function renderMemory() {
   const letters = [...arabicAlphabet].sort(() => Math.random() - 0.5).slice(0, 12);
   const cards = letters.flatMap((letter) => [
-    { key: letter.id, label: letter.forms.isolated, sound: letter.forms.isolated, type: "ar", matched: false },
-    { key: letter.id, label: letterName(letter), sound: letter.forms.isolated, type: "pl", matched: false }
+    { key: letter.id, label: letter.forms.isolated, sound: letterSpeechText(letter), type: "ar", matched: false },
+    { key: letter.id, label: letterName(letter), sound: letterSpeechText(letter), type: "pl", matched: false }
   ]);
   cards.push({ key: "bonus", label: "★", sound: "سلام", type: "bonus", matched: true });
   cards.sort(() => Math.random() - 0.5);
@@ -4831,7 +5122,9 @@ function renderMemory() {
   $("#memoryBox").querySelectorAll(".memory-card").forEach((button) => button.addEventListener("click", () => {
     if (locked || button.classList.contains("matched") || button.textContent !== "?") return;
     button.textContent = button.dataset.label;
-    speakArabic(button.dataset.sound);
+    const letter = arabicAlphabet.find((item) => item.id === button.dataset.key);
+    if (letter) speakArabicLetter(letter);
+    else speakArabic(button.dataset.sound);
     button.classList.toggle("arabic", /[\u0600-\u06FF]/.test(button.dataset.label));
     if (!first) {
       first = button;
@@ -4920,6 +5213,190 @@ function renderPillarsQuiz() {
         saveState();
       }
     });
+  });
+}
+
+function historyQuizChoices(correct, pool) {
+  const uniquePool = [...new Set(pool.filter(Boolean).filter(item => item !== correct))];
+  return [correct, ...shuffledForHome(uniquePool).slice(0, 3)].sort(() => Math.random() - 0.5);
+}
+
+function historyQuizPool() {
+  const questions = [];
+  const timelineTitles = historyContent.timeline.map(event => historyLabel(event.title));
+  historyContent.timeline.forEach((event) => {
+    questions.push({
+      id: `timeline-${event.id}`,
+      group: "timelineEvents",
+      progressId: event.id,
+      category: tx("Oś czasu", "Timeline"),
+      prompt: tx("Które wydarzenie opisuje ten fragment?", "Which event does this passage describe?"),
+      body: historySummary(event.description, 170),
+      answer: historyLabel(event.title),
+      choices: historyQuizChoices(historyLabel(event.title), timelineTitles),
+      explanation: historyLabel(event.key)
+    });
+  });
+
+  const prophetNames = historyContent.prophets.map(prophet => historyLabel(prophet.name || prophet.name));
+  historyContent.prophets.forEach((prophet) => {
+    questions.push({
+      id: `prophet-${prophet.id}`,
+      group: "prophets",
+      progressId: prophet.id,
+      category: tx("Prorocy", "Prophets"),
+      prompt: tx("Którego proroka dotyczy ta lekcja?", "Which prophet does this lesson describe?"),
+      body: historyItems(prophet.lesson).join(" "),
+      answer: historyLabel(prophet.name || prophet.name),
+      choices: historyQuizChoices(historyLabel(prophet.name || prophet.name), prophetNames),
+      explanation: historyItems(prophet.mission).join(" ")
+    });
+  });
+
+  const angelNames = historyContent.angels.map(angel => historyLabel(angel.name));
+  historyContent.angels.forEach((angel) => {
+    const angelId = angel.id || historySafeId(angel.name);
+    questions.push({
+      id: `angel-${angelId}`,
+      group: "angels",
+      progressId: angelId,
+      category: tx("Aniołowie", "Angels"),
+      prompt: tx("Który anioł ma taką rolę?", "Which angel has this role?"),
+      body: historyItems(angel.role).join(" "),
+      answer: historyLabel(angel.name),
+      choices: historyQuizChoices(historyLabel(angel.name), angelNames),
+      explanation: historyItems(angel.proof).join(" ")
+    });
+  });
+
+  const sahabaPeople = [
+    ...historyContent.sahaba.caliphs,
+    ...historyContent.sahaba.categories.flatMap(category => category.people)
+  ];
+  const sahabaNames = sahabaPeople.map(person => historyLabel(person.name || person.name));
+  sahabaPeople.forEach((person) => {
+    const personId = person.id || historySafeId(person.name);
+    questions.push({
+      id: `sahaba-${personId}`,
+      group: "sahaba",
+      progressId: personId,
+      category: tx("Sahaba", "Sahaba"),
+      prompt: tx("O kim jest ta karta?", "Who is this card about?"),
+      body: historySummary(person.bio || person.note, 170),
+      answer: historyLabel(person.name || person.name),
+      choices: historyQuizChoices(historyLabel(person.name || person.name), sahabaNames),
+      explanation: historyLabel(person.lesson) || historyItems(person.qualities).join(" ")
+    });
+  });
+
+  const conversionPeople = [...historyContent.conversions.historical, ...historyContent.conversions.modern];
+  const conversionNames = conversionPeople.map(person => historyLabel(person.name || person.name));
+  conversionPeople.forEach((person) => {
+    questions.push({
+      id: `conversion-${person.id}`,
+      group: "conversions",
+      progressId: person.id,
+      category: tx("Konwersje", "Conversions"),
+      prompt: tx("Która droga do islamu jest tu opisana?", "Which road to Islam is described here?"),
+      body: historyItems(person.turningPoint).join(" "),
+      answer: historyLabel(person.name || person.name),
+      choices: historyQuizChoices(historyLabel(person.name || person.name), conversionNames),
+      explanation: historyItems(person.after).join(" ")
+    });
+  });
+
+  const womenNames = historyContent.women.people.map(person => historyLabel(person.name || person.name));
+  historyContent.women.people.forEach((person) => {
+    questions.push({
+      id: `woman-${person.id}`,
+      group: "women",
+      progressId: person.id,
+      category: tx("Kobiety w historii", "Women in history"),
+      prompt: tx("Której kobiety dotyczy ten opis?", "Which woman does this describe?"),
+      body: historyItems(person.role).join(" "),
+      answer: historyLabel(person.name || person.name),
+      choices: historyQuizChoices(historyLabel(person.name || person.name), womenNames),
+      explanation: historyLabel(person.lesson)
+    });
+  });
+
+  return questions.filter(question => question.answer && question.choices.length >= 2);
+}
+
+function recordHistoryQuizProgress(question) {
+  const progress = ensureHistoryProgress();
+  if (question.group && question.progressId && !progress[question.group].includes(question.progressId)) {
+    progress[question.group].push(question.progressId);
+  }
+}
+
+function renderHistoryQuiz() {
+  if (!state.historyQuizStats) state.historyQuizStats = { correct: 0, wrong: 0 };
+  if (!state.historyQuizHistory) state.historyQuizHistory = [];
+  const pool = historyQuizPool();
+  const question = pool[Math.floor(Math.random() * pool.length)];
+  if (!question) {
+    $("#historyQuizBox").innerHTML = `<p class="text-[var(--muted)]">${tx("Brak pytań historycznych.", "No history questions yet.")}</p>`;
+    return;
+  }
+
+  $("#historyQuizBox").innerHTML = `
+    <div class="flex flex-wrap items-center gap-2">
+      <h2 class="text-2xl font-black">${tx("Quiz Historii", "History Quiz")}</h2>
+      <span class="trust-badge verified">${escapeHtml(question.category)}</span>
+    </div>
+    <p class="mt-1 text-[var(--muted)] text-sm">${tx("Pytania z osi czasu, proroków, aniołów, Sahaba, konwersji i kobiet w historii islamu.", "Questions from the timeline, prophets, angels, Sahaba, conversions and women in Islamic history.")}</p>
+    <p class="mt-2 text-sm font-bold text-[var(--muted)]">${t("correct")}: ${state.historyQuizStats.correct} · ${t("wrong")}: ${state.historyQuizStats.wrong}</p>
+    <div class="my-5 rounded-xl border border-[var(--line)] bg-[var(--surface-soft)] p-4">
+      <p class="text-xs font-black uppercase text-[var(--accent)]">${escapeHtml(question.prompt)}</p>
+      <p class="mt-2 text-[var(--text)] leading-relaxed">${historyRichText(question.body)}</p>
+    </div>
+    <div class="grid gap-2">
+      ${question.choices.map((choice, index) => `<button class="big-action border border-[var(--line)] bg-[var(--surface)] text-left" data-history-quiz-choice="${index}">${historyRichText(choice)}</button>`).join("")}
+    </div>
+    <div class="mt-4">
+      <h3 class="font-black text-sm">${t("history")}</h3>
+      <div class="mt-2 grid gap-1 text-sm text-[var(--muted)]">
+        ${state.historyQuizHistory.slice(0, 5).map(item => `<p>${item.ok ? t("correct") : t("wrong")} · ${escapeHtml(item.name)} · ${new Date(item.date).toLocaleTimeString(localeTag())}</p>`).join("") || `<p>${tx("Brak prób.", "No attempts yet.")}</p>`}
+      </div>
+    </div>
+  `;
+
+  let answered = false;
+  $("#historyQuizBox").querySelectorAll("[data-history-quiz-choice]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (answered) return;
+      answered = true;
+      const selected = question.choices[Number(btn.dataset.historyQuizChoice)];
+      const isCorrect = selected === question.answer;
+      if (isCorrect) {
+        btn.className = "big-action bg-emerald-500 text-white text-left";
+        state.historyQuizStats.correct += 1;
+        state.historyQuizHistory.unshift({ ok: true, name: question.answer, date: new Date().toISOString() });
+        state.historyQuizHistory = state.historyQuizHistory.slice(0, 20);
+        state.points += 20;
+        recordHistoryQuizProgress(question);
+        updateReviewMistake(`historyQuiz:${question.id}`, true);
+        saveState();
+        checkBadges();
+        confetti();
+        setTimeout(renderHistoryQuiz, 750);
+      } else {
+        btn.className = "big-action bg-red-500 text-white text-left";
+        $("#historyQuizBox").querySelectorAll("[data-history-quiz-choice]").forEach(choice => { choice.disabled = true; });
+        state.historyQuizStats.wrong += 1;
+        state.historyQuizHistory.unshift({ ok: false, name: question.answer, date: new Date().toISOString() });
+        state.historyQuizHistory = state.historyQuizHistory.slice(0, 20);
+        updateReviewMistake(`historyQuiz:${question.id}`, false);
+        saveState();
+        const explanation = document.createElement("div");
+        explanation.className = "history-key-lesson";
+        explanation.innerHTML = `${tx("Poprawna odpowiedź:", "Correct answer:")} <strong>${historyRichText(question.answer)}</strong>${question.explanation ? `<br>${historyRichText(question.explanation)}` : ""}
+          <button class="history-read-btn mt-3" data-next-history-quiz>${tx("Następne pytanie", "Next question")}</button>`;
+        $("#historyQuizBox").appendChild(explanation);
+        $("#historyQuizBox").querySelector("[data-next-history-quiz]")?.addEventListener("click", renderHistoryQuiz);
+      }
+    }, { once: true });
   });
 }
 
@@ -5887,6 +6364,7 @@ const BADGES_CATALOG = [
   { id: "dhikr100",       icon: "💚",  pl: "100 dhikr",           en: "100 dhikr",          criterionPl: "Wykonaj 100 kliknięć dhikru",       criterionEn: "Complete 100 dhikr taps" },
   { id: "pillars_quiz10", icon: "⭐",  pl: "Filary quiz",         en: "Pillars quiz",       criterionPl: "Zdobądź 10 poprawnych w quizie filarów", criterionEn: "Get 10 correct in the pillars quiz" },
   { id: "surah_quiz10",   icon: "📜",  pl: "Quiz sur",            en: "Surah quiz",         criterionPl: "Zdobądź 10 poprawnych w quizie sur", criterionEn: "Get 10 correct in the surah quiz" },
+  { id: "history_quiz10", icon: "🧭",  pl: "Quiz Historii",       en: "History quiz",       criterionPl: "Zdobądź 10 poprawnych w quizie Historii", criterionEn: "Get 10 correct in the History quiz" },
   { id: "games3",         icon: "🎮",  pl: "3 gry",               en: "3 games",            criterionPl: "Zagraj 3 razy w gry",                criterionEn: "Play games 3 times" },
   { id: "ai_quiz_first",  icon: "AI",  pl: "Pierwszy quiz AI",    en: "First AI quiz",      criterionPl: "Zapisz lub wygeneruj 1 quiz AI",     criterionEn: "Save or generate 1 AI quiz" },
   { id: "ai_cards10",     icon: "▣",   pl: "10 fiszek AI",        en: "10 AI cards",        criterionPl: "Dodaj 10 fiszek z AI",              criterionEn: "Add 10 AI cards" },
@@ -5922,6 +6400,7 @@ function badgeCategory(id) {
 }
 
 function badgeTarget(id) {
+  if (/^history_quiz/.test(id)) return { route: "games", activeGame: "historyQuiz" };
   if (/^history_timeline/.test(id)) return { route: "history", historyTab: "timeline" };
   if (/^history_prophets/.test(id)) return { route: "history", historyTab: "prophets" };
   if (/^history_angels/.test(id)) return { route: "history", historyTab: "angels" };
@@ -5955,6 +6434,7 @@ function checkBadges() {
     (state.dhikrGameHistory || []).length +
     (state.pillarsQuizHistory || []).length +
     (state.surahQuizHistory || []).length +
+    (state.historyQuizHistory || []).length +
     (state.gameHistory || []).filter(item => String(item.game || "").startsWith("AI Quiz")).length +
     (state.memoryStats?.correct || 0) +
     (state.memoryStats?.wrong || 0);
@@ -5990,6 +6470,7 @@ function checkBadges() {
   if (dhikrTotal >= 100) unlockBadge("dhikr100", tx("100 dhikr", "100 dhikr"));
   if ((state.pillarsQuizStats?.correct || 0) >= 10) unlockBadge("pillars_quiz10", tx("Filary quiz", "Pillars quiz"));
   if ((state.surahQuizStats?.correct || 0) >= 10) unlockBadge("surah_quiz10", tx("Quiz sur", "Surah quiz"));
+  if ((state.historyQuizStats?.correct || 0) >= 10) unlockBadge("history_quiz10", tx("Quiz Historii", "History quiz"));
   if (gamesPlayed >= 3) unlockBadge("games3", tx("3 gry", "3 games"));
   if ((state.aiQuizzes || []).length >= 1) unlockBadge("ai_quiz_first", tx("Pierwszy quiz AI", "First AI quiz"));
   if ((state.aiFlashcards || []).length >= 10) unlockBadge("ai_cards10", tx("10 fiszek AI", "10 AI cards"));
@@ -6105,13 +6586,40 @@ function hadithOfDayWidget() {
   const idx = daysSinceEpoch % islamicHadith.length;
   const h = islamicHadith[idx];
   if (!h) return '';
-  return `<div class="panel p-4 cursor-pointer" data-route="seerah">
+  return `<div class="panel p-4">
     <h3 class="text-sm font-black text-[var(--accent)] mb-1">📜 ${tx("Hadis Dnia", "Hadith of the Day")}</h3>
     <p class="text-base font-bold arabic text-right leading-relaxed mb-1">${h.ar}</p>
     <p class="text-xs text-[var(--muted)] italic">${state.lang === 'pl' ? h.pl : h.en}</p>
     <p class="text-xs text-[var(--muted)] mt-1 font-bold">${h.source} <span class="trust-badge verified">${h.grade?.toUpperCase() || "UNGRADED"}</span></p>
     <p class="quality-meta">${hadithQuality(h).source_type} · ${hadithQuality(h).collection} · ${hadithQuality(h).verified ? trustLabel(CONTENT_TRUST.VERIFIED) : trustLabel(CONTENT_TRUST.UNVERIFIED)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).reviewed_at}</p>
   </div>`;
+}
+
+function dailyHadithsPanel() {
+  const dayIndex = Math.floor(Date.now() / 86400000);
+  const dailyHadiths = Array.from({ length: 4 }, (_, i) => islamicHadith[(dayIndex * 4 + i) % islamicHadith.length]).filter(Boolean);
+  if (!dailyHadiths.length) return "";
+  return `
+    <section class="panel p-5 mt-5">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 class="text-xl font-black">${tx("Hadisy dnia", "Daily hadiths")}</h2>
+          <p class="mt-1 text-sm text-[var(--muted)]">${tx("Krótka dawka Sunnah w dziale Islam.", "A short dose of Sunnah inside the Islam section.")}</p>
+        </div>
+        <span class="trust-badge verified">${tx("Zweryfikowane", "Verified")}</span>
+      </div>
+      <div class="mt-4 grid gap-3 sm:grid-cols-2">
+        ${dailyHadiths.map(h => `
+          <article class="soft-panel p-4">
+            <p class="text-base font-bold arabic text-right leading-relaxed" style="direction:rtl">${h.ar}</p>
+            <p class="text-sm text-[var(--muted)] mt-2 italic">${state.lang === 'pl' ? h.pl : h.en}</p>
+            <p class="text-xs font-bold text-[var(--accent)] mt-2">${h.source} <span class="trust-badge verified">${h.grade?.toUpperCase() || "UNGRADED"}</span></p>
+            <p class="quality-meta">${hadithQuality(h).source_type} · ${hadithQuality(h).collection} · ${hadithQuality(h).verified ? trustLabel(CONTENT_TRUST.VERIFIED) : trustLabel(CONTENT_TRUST.UNVERIFIED)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).reviewed_at}</p>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+  `;
 }
 
 // ============================================================
@@ -6734,64 +7242,6 @@ function tajweed() {
       </div>
     `).join('')}
   `;
-}
-
-// ============================================================
-// SEERAH — Life of the Prophet ﷺ
-// ============================================================
-function seerah() {
-  const dayIndex = Math.floor(Date.now() / 86400000);
-  const dailyHadiths = Array.from({length: 5}, (_, i) => islamicHadith[(dayIndex * 5 + i) % islamicHadith.length]).filter(Boolean);
-
-  view.innerHTML = `
-    <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Seerah — Życie Proroka ﷺ", "Seerah — Life of the Prophet ﷺ")} 🌙</h1>
-      <p class="text-[var(--muted)]">${tx("Kluczowe wydarzenia z życia Proroka Muhammada ﷺ", "Key events from the life of Prophet Muhammad ﷺ")}</p>
-    </div>
-    <div class="panel p-5 mb-5">
-      <h2 class="text-lg font-black mb-2">${tx("Czym jest Seerah?", "What is Seerah?")}</h2>
-      <p class="text-sm text-[var(--muted)] mb-3">${tx(
-        "Seerah (سِيرَة) to biografia Proroka Muhammada ﷺ. Słowo oznacza dosłownie \"droga\" lub \"sposób życia\". Seerah obejmuje jego narodziny (~570 n.e.), dzieciństwo, wiek dorosły, objawienie Koranu, emigrację do Medyny i budowę pierwszej wspólnoty muzułmańskiej.",
-        "Seerah (سِيرَة) is the biography of Prophet Muhammad ﷺ. The word literally means \"path\" or \"way of life.\" Seerah covers his birth (~570 CE), childhood, adulthood, the revelation of the Quran, the migration to Medina, and the building of the first Muslim community."
-      )}</p>
-      <p class="text-sm text-[var(--muted)] mb-3">${tx(
-        "Dlaczego Seerah jest ważna? Poznanie życia Proroka ﷺ pomaga zrozumieć Koran w kontekście, uczyć się od jego przykładu (sunna) i umacniać wiarę. Jego życie to praktyczny przewodnik islamu — jak się modlić, jak traktować innych, jak zachować się w trudnościach.",
-        "Why does Seerah matter? Knowing the life of the Prophet ﷺ helps understand the Quran in context, learn from his example (sunnah), and strengthen faith. His life is a practical guide to Islam — how to pray, how to treat others, how to behave in hardship."
-      )}</p>
-      <div class="grid gap-2 sm:grid-cols-2 text-sm">
-        <div class="soft-panel p-3"><p class="font-black">🕌 ${tx("Mekka → Medyna", "Mecca → Medina")}</p><p class="text-[var(--muted)] text-xs">${tx("Hidżra (622 n.e.) — punkt zwrotny islamu", "Hijra (622 CE) — turning point of Islam")}</p></div>
-        <div class="soft-panel p-3"><p class="font-black">📖 ${tx("Pierwsze objawienie", "First Revelation")}</p><p class="text-[var(--muted)] text-xs">${tx("610 n.e., jaskinia Hira — Iqra! (Czytaj!)", "610 CE, Cave of Hira — Iqra! (Read!)")}</p></div>
-        <div class="soft-panel p-3"><p class="font-black">⚔️ ${tx("Bitwy islamu", "Battles of Islam")}</p><p class="text-[var(--muted)] text-xs">${tx("Badr, Uhud, Khandaq — obrona wspólnoty", "Badr, Uhud, Khandaq — defense of the community")}</p></div>
-        <div class="soft-panel p-3"><p class="font-black">🌙 ${tx("Śmierć Proroka ﷺ", "Death of the Prophet ﷺ")}</p><p class="text-[var(--muted)] text-xs">${tx("632 n.e. — Medyna, po ostatniej pielgrzymce", "632 CE — Medina, after the Farewell Pilgrimage")}</p></div>
-      </div>
-    </div>
-    <div class="panel p-5 mb-5">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 class="text-xl font-black">${tx("Kalendarium jest teraz w Historii", "The timeline now lives in History")}</h2>
-          <p class="mt-2 text-sm text-[var(--muted)]">${tx("Seerah zostaje miejscem zrozumienia życia Proroka ﷺ. Pełną oś czasu, także z prorokami przed nim i pierwszymi stuleciami islamu, znajdziesz w dziale Historia.", "Seerah remains the place for understanding the Prophet's ﷺ life. The full timeline, including earlier prophets and the first centuries of Islam, is in the History section.")}</p>
-        </div>
-        <button class="big-action bg-emerald-500 text-white" data-route="history" data-history-go="timeline">${tx("Zobacz oś czasu w Historii", "Open History timeline")}</button>
-      </div>
-    </div>
-    <div class="panel p-5 mt-6">
-      <h2 class="text-xl font-black mb-4">${tx("Hadisy Dnia", "Daily Hadiths")}</h2>
-      <p class="text-xs text-[var(--muted)] mb-4">${tx("Zweryfikowana lista wybranych hadisow. To nie jest pelny kanoniczny korpus hadisow.", "Verified curated hadith list. This is not a complete canonical hadith corpus.")}</p>
-      ${dailyHadiths.map(h => `
-        <div class="mb-4 pb-4 border-b border-[var(--border)]">
-          <p class="text-base font-bold arabic text-right leading-relaxed" style="direction:rtl">${h.ar}</p>
-          <p class="text-sm text-[var(--muted)] mt-1 italic">${state.lang === 'pl' ? h.pl : h.en}</p>
-          <p class="text-xs font-bold text-[var(--accent)] mt-1">${h.source} <span class="trust-badge verified">${h.grade?.toUpperCase() || "UNGRADED"}</span></p>
-          <p class="quality-meta">${hadithQuality(h).source_type} · ${hadithQuality(h).collection} · ${hadithQuality(h).verified ? trustLabel(CONTENT_TRUST.VERIFIED) : trustLabel(CONTENT_TRUST.UNVERIFIED)} · ${tx("Sprawdzone:", "Checked:")} ${hadithQuality(h).reviewed_at}</p>
-        </div>
-      `).join('')}
-    </div>
-  `;
-  view.querySelector("[data-history-go]")?.addEventListener("click", () => {
-    state.historyTab = "timeline";
-    saveState();
-    setRoute("history");
-  });
 }
 
 // ============================================================
