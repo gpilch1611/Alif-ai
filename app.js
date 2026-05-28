@@ -4,7 +4,6 @@ import {
   FAMILY_BRIDGE_QUIZ,
   FAMILY_CONVERSATION_GUIDE,
   FAMILY_REASSURANCE_POINTS,
-  HOME_BRIDGE_CARDS,
   MUALLAF_SUPPORT_PANELS,
   QURAN_LEARNING_STEPS
 } from "./data/family-support.js";
@@ -40,7 +39,7 @@ import {
 import { PRAYER_STEP_VISUALS } from "./data/prayer-visuals.js";
 
 const GROQ_MODEL = "llama-3.3-70b-versatile";
-const APP_VERSION = "20260528-2";
+const APP_VERSION = "20260528-3";
 window.__ALIF_APP_VERSION = APP_VERSION;
 const AI_SYSTEM_PROMPT_PL = `Jesteś spokojnym doradcą Alif AI od islamu, muzułmanów, konwersji, rozmowy z rodziną, Koranu, modlitwy i pierwszych kroków w wierze.
 Zawsze odpowiadaj TYLKO w języku polskim. Bądź ciepły, konkretny, delikatny i praktyczny.
@@ -2392,31 +2391,6 @@ function nextStepCard() {
   `;
 }
 
-function familyBridgePanel() {
-  return `
-    <section class="family-bridge-panel panel p-5 sm:p-6 mb-4">
-      <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Dla ciebie i bliskich", "For you and loved ones")}</p>
-          <h2 class="mt-1 text-2xl font-black">${tx("Islam bez lęku, bez presji", "Islam without fear, without pressure")}</h2>
-          <p class="mt-2 text-sm text-[var(--muted)]">${tx("Ta aplikacja ma pomagać też wtedy, gdy chcesz spokojnie pokazać rodzinie, co naprawdę poznajesz.", "This app should also help when you want to calmly show family what you are truly learning.")}</p>
-        </div>
-        <span class="trust-badge verified">${tx("Most, nie debata", "Bridge, not debate")}</span>
-      </div>
-      <div class="family-bridge-grid mt-4">
-        ${HOME_BRIDGE_CARDS.map(card => `
-          <button class="family-bridge-card text-left" data-route="${card.route}" ${card.historyTab ? `data-history-tab="${card.historyTab}"` : ""} ${card.anchor ? `data-muallaf-anchor="${card.anchor}"` : ""}>
-            <span>${card.icon}</span>
-            <strong>${state.lang === "pl" ? card.titlePl : card.titleEn}</strong>
-            <small>${state.lang === "pl" ? card.textPl : card.textEn}</small>
-            <em>${state.lang === "pl" ? card.actionPl : card.actionEn}</em>
-          </button>
-        `).join("")}
-      </div>
-    </section>
-  `;
-}
-
 function reviewBuckets() {
   const now = Date.now();
   const tomorrow = now + 86400000;
@@ -2733,7 +2707,6 @@ function home() {
 
   view.innerHTML = `
     ${onboardingPanel()}
-    ${familyBridgePanel()}
     <div class="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
       <section class="panel min-w-0 p-5 sm:p-7">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
