@@ -342,7 +342,7 @@ test.describe("Alif AI smoke", () => {
     await expect(page.getByRole("button", { name: /Wygeneruj wpis AI/ })).toHaveCount(0);
   });
 
-  test("AI assistant topics and quiz hub use the new guarded creation flow", async ({ page }) => {
+  test("AI assistant is advice-only and quiz hub has no AI generator", async ({ page }) => {
     await page.goto("/#games");
     await expect(page.getByRole("button", { name: /Quizy/ })).toBeVisible();
     await expect(page.locator("body")).not.toContainText(/Łap literę|Catch the Letter/);
@@ -352,14 +352,14 @@ test.describe("Alif AI smoke", () => {
     await expect(page.getByRole("heading", { name: /Quiz Historii|History Quiz/ })).toBeVisible();
     await page.getByRole("button", { name: /Powrót do gier|Back to games/ }).click();
     await page.getByRole("button", { name: /Quizy/ }).click();
-    await expect(page.getByRole("button", { name: /Quizy AI/ })).toBeVisible();
-    await page.getByRole("button", { name: /Quizy AI/ }).click();
-    await expect(page.getByRole("button", { name: /Generuj quiz/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Quizy AI|AI Quizzes/ })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Generuj quiz|Generate quiz/ })).toHaveCount(0);
 
     await page.getByRole("button", { name: /AI Assistant/ }).click();
-    await page.getByRole("button", { name: /Generuj fiszki|Generate cards/ }).click();
+    await expect(page.getByRole("button", { name: /Generuj fiszki|Generate cards|Mini quiz/ })).toHaveCount(0);
+    await page.getByRole("button", { name: /Rodzina|Family/ }).click();
     await expect(page.getByText(/Wybierz temat|Choose a topic/)).toBeVisible();
-    await expect(page.getByText(/Modlitwa|Prayer/)).toBeVisible();
+    await expect(page.getByText(/Rodzice boją się islamu|parents fear Islam/)).toBeVisible();
   });
 
   test("badges are grouped and locked badges navigate to unlock activities", async ({ page }) => {
@@ -367,7 +367,8 @@ test.describe("Alif AI smoke", () => {
     await expect(page.getByRole("button", { name: /Nauka/ })).toBeVisible();
     await expect(page.getByRole("button", { name: /Ćwiczenia|Practice/ })).toBeVisible();
     await page.getByRole("button", { name: /Ćwiczenia|Practice/ }).click();
-    await page.getByRole("button", { name: /Pierwszy quiz AI|First AI quiz/ }).click();
+    await expect(page.getByRole("button", { name: /Pierwszy quiz AI|First AI quiz/ })).toHaveCount(0);
+    await page.locator("[data-badge-id='quiz10']").click();
     await expect(page).toHaveURL(/#games$/);
   });
 

@@ -31,26 +31,18 @@ import {
 } from "./data/quran-mode.js";
 
 const GROQ_MODEL = "llama-3.3-70b-versatile";
-const APP_VERSION = "20260516-2";
+const APP_VERSION = "20260528-1";
 window.__ALIF_APP_VERSION = APP_VERSION;
-const AI_SYSTEM_PROMPT_PL = `Jesteś ekspertem od języka arabskiego, islamu i kultury muzułmańskiej w aplikacji 'Alif AI'. Pomagasz osobom uczącym się arabskiego i islamu — zwłaszcza konwertytom i nowicjuszom.
-Zawsze odpowiadaj TYLKO w języku polskim. Bądź przyjacielski, ciepły i zachęcający.
-NIGDY nie używaj surowych linków markdown ani nie generuj zbędnego kodu.
-
-Zasady generowania treści:
-FISZKI: Format WYŁĄCZNIE "arabskie_słowo — polskie_tłumaczenie", jedna para na linię, BEZ numerów, BEZ "Strona przednia/tylna", BEZ zdań.
-Przykład poprawny: كِتَاب — książka
-ISLAM/MODLITWA/KORAN: odpowiadaj merytorycznie, z szacunkiem i precyzją.
-QUIZ: Format "PYTANIE: [tekst] | A: [opcja] | B: [opcja] | C: [opcja] | POPRAWNA: [A/B/C]", jedna linia to jedno pytanie.`;
-const AI_SYSTEM_PROMPT_EN = `You are an expert in Arabic language, Islam and Muslim culture inside the app 'Alif AI'. You help people learning Arabic and Islam — especially converts and beginners.
-Always reply ONLY in English. Be friendly, warm and encouraging.
-NEVER use raw markdown links or generate unnecessary code.
-
-Content generation rules:
-FLASHCARDS: Format ONLY "arabic_word — english_translation", one pair per line, NO numbers, NO "Front/Back" labels, NO sentences.
-Correct example: كِتَاب — book
-ISLAM/PRAYER/QURAN: answer accurately, with respect and precision.
-QUIZ: Format "QUESTION: [text] | A: [option] | B: [option] | C: [option] | CORRECT: [A/B/C]", each line one question.`;
+const AI_SYSTEM_PROMPT_PL = `Jesteś spokojnym doradcą Alif AI od islamu, muzułmanów, konwersji, rozmowy z rodziną, Koranu, modlitwy i pierwszych kroków w wierze.
+Zawsze odpowiadaj TYLKO w języku polskim. Bądź ciepły, konkretny, delikatny i praktyczny.
+Nie generuj fiszek, quizów, bajek, list ćwiczeń AI ani materiałów do automatycznego zapisu w aplikacji.
+Nie udawaj fatwy. Przy sprawach spornych, prawnych, zdrowotnych, małżeńskich lub finansowych zachęć do rozmowy z lokalnym zaufanym imamem albo uczonym.
+NIGDY nie używaj surowych linków markdown ani nie generuj zbędnego kodu.`;
+const AI_SYSTEM_PROMPT_EN = `You are a calm Alif AI advisor for Islam, Muslims, conversion, family conversations, Quran, prayer and first steps in faith.
+Always reply ONLY in English. Be warm, concrete, gentle and practical.
+Do not generate flashcards, quizzes, stories, AI exercise lists, or content meant to be saved automatically inside the app.
+Do not pretend to issue a fatwa. For disputed, legal, medical, marriage or financial matters, encourage speaking with a trusted local imam or scholar.
+NEVER use raw markdown links or generate unnecessary code.`;
 
 const $ = (selector) => document.querySelector(selector);
 const view = $("#view");
@@ -166,9 +158,9 @@ const I18N = {
     surahQuiz: "Quiz: Sury Koranu", surahQuizDesc: "Rozpoznaj arabskie nazwy sur 78-114",
     dhikrGame: "Szybki Dhikr", dhikrGameDesc: "33 razy — jak najszybciej!", dhikrGameStart: "Dotknij aby zacząć", dhikrGameResult: "Czas",
     streak: "Seria dni", level: "Poziom", alphabetProgress: "Alfabet", todayTask: "Dzisiejsze zadanie", start: "Zaczynam", progress: "Postęp", points: "pkt",
-    aiAssistant: "AI Assistant", aiPlaceholder: "Poproś o fiszki, quiz albo zapytaj o coś...", send: "Wyślij", aiHello: "Cześć! Jestem Twoim Alif AI Assistantem. Mogę stworzyć dla Ciebie fiszki, mini-quiz albo odpowiedzieć na pytania o islamie i języku arabskim.",
+    aiAssistant: "AI Assistant", aiPlaceholder: "Zapytaj o islam, konwersję, rodzinę albo modlitwę...", send: "Wyślij", aiHello: "Cześć! Jestem Twoim Alif AI Assistantem. Pomagam w pytaniach o islam, muzułmanów, konwersję, rozmowę z rodziną i pierwsze kroki w wierze.",
     addFlashcards: "Dodaj do fiszek",
-    aiGenerateFlashcards: "🗂️ Generuj fiszki", aiGenerateQuiz: "📝 Mini quiz", aiAskIslam: "🕌 Zapytaj o Islam",
+    aiFamilyTalk: "👨‍👩‍👧 Rodzina", aiIslamBasics: "🕌 Podstawy islamu", aiPrayerHelp: "🤲 Modlitwa",
     more: "Więcej", play: "Odtwórz", check: "Sprawdź", clear: "Wyczyść", next: "Następna", good: "dobrze", weak: "słabo", veryWeak: "bardzo słabo", attempts: "Historia prób",
     frontHint: "Dotknij karty, żeby ją odwrócić", hard: "Trudne", ok: "OK", easy: "Łatwe", noCards: "Nie ma kart w tym trybie",
     correct: "Dobrze", wrong: "Źle", history: "Historia", stop: "Stop", record: "Rekord", score: "Wynik",
@@ -184,9 +176,9 @@ const I18N = {
     surahQuiz: "Surah Quiz", surahQuizDesc: "Recognise Arabic surah names 78-114",
     dhikrGame: "Dhikr Speed", dhikrGameDesc: "33 taps — as fast as you can!", dhikrGameStart: "Tap to start", dhikrGameResult: "Time",
     streak: "Daily streak", level: "Level", alphabetProgress: "Alphabet", todayTask: "Today's task", start: "Start", progress: "Progress", points: "pts",
-    aiAssistant: "AI Assistant", aiPlaceholder: "Ask for flashcards, a quiz, or anything else...", send: "Send", aiHello: "Hi! I am your Alif AI Assistant. I can create flashcards, a mini-quiz, or answer your questions about Islam and Arabic.",
+    aiAssistant: "AI Assistant", aiPlaceholder: "Ask about Islam, conversion, family or prayer...", send: "Send", aiHello: "Hi! I am your Alif AI Assistant. I help with questions about Islam, Muslims, conversion, family conversations and first steps in faith.",
     addFlashcards: "Add to flashcards",
-    aiGenerateFlashcards: "🗂️ Generate cards", aiGenerateQuiz: "📝 Mini quiz", aiAskIslam: "🕌 Ask about Islam",
+    aiFamilyTalk: "👨‍👩‍👧 Family", aiIslamBasics: "🕌 Islam basics", aiPrayerHelp: "🤲 Prayer",
     more: "More", play: "Play", check: "Check", clear: "Clear", next: "Next", good: "good", weak: "weak", veryWeak: "very weak", attempts: "Attempt history",
     frontHint: "Tap the card to flip it", hard: "Hard", ok: "OK", easy: "Easy", noCards: "No cards in this mode",
     correct: "Correct", wrong: "Wrong", history: "History", stop: "Stop", record: "Best", score: "Score",
@@ -359,30 +351,24 @@ const AI_LIMITS = {
   maxMessages: 16,
   dailyRequests: 10,
   minSecondsBetweenRequests: 20,
-  maxTokens: 550,
-  maxGeneratedFlashcards: 6,
-  maxGeneratedQuizQuestions: 5,
-  maxStoredAiFlashcards: 80,
-  maxStoredAiQuizzes: 25
+  maxTokens: 550
 };
 
 const AI_TOPIC_SUGGESTIONS = {
-  flashcards: [
-    { pl: "Modlitwa: wudu i salat", en: "Prayer: wudu and salat" },
-    { pl: "Arabskie powitania", en: "Arabic greetings" },
-    { pl: "Rodzina i dom", en: "Family and home" },
-    { pl: "Koran: krótkie sury", en: "Quran: short surahs" }
+  family: [
+    { pl: "Jak powiedzieć rodzinie, że interesuję się islamem?", en: "How do I tell my family I am interested in Islam?" },
+    { pl: "Rodzice boją się islamu. Jak rozmawiać spokojnie?", en: "My parents fear Islam. How can I speak calmly?" },
+    { pl: "Jak wyjaśnić, że konwersja nie oznacza odrzucenia rodziny?", en: "How do I explain that conversion does not mean rejecting family?" }
   ],
-  quiz: [
-    { pl: "Filary islamu", en: "Pillars of Islam" },
-    { pl: "99 Imion Allaha", en: "99 Names of Allah" },
-    { pl: "Wudu krok po kroku", en: "Wudu step by step" },
-    { pl: "Podstawowe słowa arabskie", en: "Basic Arabic words" }
+  basics: [
+    { pl: "Od czego zacząć naukę islamu bez presji?", en: "Where do I start learning Islam without pressure?" },
+    { pl: "Co jest najważniejsze w pierwszym miesiącu po szahadzie?", en: "What matters most in the first month after shahada?" },
+    { pl: "Jak odróżnić kulturę od religii?", en: "How do I tell culture apart from religion?" }
   ],
-  islam: [
+  prayer: [
     { pl: "Jak zacząć regularną modlitwę?", en: "How to start praying regularly?" },
-    { pl: "Czym jest sunnah?", en: "What is sunnah?" },
-    { pl: "Jak uczyć się krótkich sur?", en: "How to learn short surahs?" }
+    { pl: "Co zrobić, jeśli boję się popełniać błędy w salat?", en: "What if I am afraid of making mistakes in salat?" },
+    { pl: "Jak uczyć się Al-Fatiha krok po kroku?", en: "How can I learn Al-Fatiha step by step?" }
   ]
 };
 
@@ -620,12 +606,12 @@ function nextTheme(theme) {
 
 function aiSystemPrompt() {
   const sourceRule = state.lang === "en"
-    ? `\n\nRELIGIOUS SAFETY: For Islam/prayer/Quran/dua/hadith/halal answers, use only the verified Alif AI source context. Every religious answer must include a "Sources:" section with concrete citations. If no verified source is available, say that the Alif AI database has no verified source for that answer.`
-    : `\n\nBEZPIECZENSTWO RELIGIJNE: Dla odpowiedzi o islamie, modlitwie, Quranie, dua, hadith, halal/haram uzywaj tylko zweryfikowanego kontekstu zrodlowego Alif AI. Kazda odpowiedz religijna musi zawierac sekcje "Zrodla:" z konkretnymi cytatami. Jesli nie ma zweryfikowanego zrodla, powiedz, ze baza Alif AI nie ma zweryfikowanego zrodla dla tej odpowiedzi.`;
-  const economyRule = state.lang === "en"
-    ? `\n\nTOKEN ECONOMY: Be concise. For generated flashcards return at most 6 pairs. For quizzes return at most 5 questions. Do not repeat examples already listed in the app context.`
-    : `\n\nOSZCZEDZANIE TOKENOW: Odpowiadaj zwiezle. Dla fiszek zwracaj maksymalnie 6 par. Dla quizow zwracaj maksymalnie 5 pytan. Nie powtarzaj przykladow wymienionych w kontekscie aplikacji.`;
-  return (state.lang === "en" ? AI_SYSTEM_PROMPT_EN : AI_SYSTEM_PROMPT_PL) + sourceRule + economyRule;
+    ? `\n\nRELIGIOUS SAFETY: For doctrinal Islam/prayer/Quran/dua/hadith/halal answers, use the verified Alif AI source context when available and include a short "Sources:" section with concrete citations. If no verified source is available for a doctrinal claim, say that clearly and keep the answer general.`
+    : `\n\nBEZPIECZENSTWO RELIGIJNE: Dla odpowiedzi doktrynalnych o islamie, modlitwie, Koranie, dua, hadith, halal/haram uzywaj zweryfikowanego kontekstu zrodlowego Alif AI, gdy jest dostepny, i dodaj krotka sekcje "Zrodla:" z konkretnymi cytatami. Jesli nie ma zweryfikowanego zrodla dla twierdzenia doktrynalnego, powiedz to jasno i odpowiedz ogolnie.`;
+  const scopeRule = state.lang === "en"
+    ? `\n\nSCOPE: If the user asks for AI flashcards, AI quizzes, generated stories, coding, entertainment or unrelated topics, politely refuse and redirect them to an Islam-related question or an existing app section.`
+    : `\n\nZAKRES: Jesli uzytkownik prosi o fiszki AI, quizy AI, generowane bajki, kodowanie, rozrywke albo tematy niezwiązane z islamem, odmow uprzejmie i przekieruj do pytania o islam albo istniejacej sekcji aplikacji.`;
+  return (state.lang === "en" ? AI_SYSTEM_PROMPT_EN : AI_SYSTEM_PROMPT_PL) + sourceRule + scopeRule;
 }
 
 function loadState() {
@@ -650,8 +636,8 @@ function loadState() {
 function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch(e) {
-    if (e.name === 'QuotaExceededError' || e.code === 22) {
+  } catch(_e) {
+    if (_e.name === 'QuotaExceededError' || _e.code === 22) {
       showToast(tx("⚠️ Pamięć urządzenia jest pełna. Usuń stare zdjęcia lub PDF-y w Ustawieniach.", "⚠️ Device storage is full. Remove old photos or PDFs in Settings."));
     }
   }
@@ -801,23 +787,6 @@ function recordAiUse() {
   usage.count += 1;
   usage.lastRequestAt = Date.now();
   saveState();
-}
-
-function isAiCreationRequest(content = "") {
-  return /(fisz|flashcard|cards?|quiz|test|pytan|question)/i.test(content);
-}
-
-function existingAiCreationContext() {
-  const cardTerms = [
-    ...(state.aiFlashcards || []),
-    ...(state.customFlashcards || []),
-    ...words.slice(0, 80).map(word => ({ front: word.ar, back: wordMeaning(word), hint: word.tr }))
-  ].map(card => `${card.front || card.ar || ""} -> ${card.back || card.translation || card.pl || ""}`.trim()).filter(Boolean).slice(0, 80);
-  const quizTopics = (state.aiQuizzes || []).map(quiz => quiz.title).slice(0, 20);
-  return tx(
-    `Unikaj duplikatów. W aplikacji są już fiszki/słowa: ${cardTerms.join("; ") || "brak danych"}. Istniejące quizy AI: ${quizTopics.join("; ") || "brak"}. Twórz nowe, inne przykłady i tematy.`,
-    `Avoid duplicates. Existing app cards/words: ${cardTerms.join("; ") || "none"}. Existing AI quizzes: ${quizTopics.join("; ") || "none"}. Create new examples and topics.`
-  );
 }
 
 function updateReviewMistake(key, isCorrect) {
@@ -3926,7 +3895,7 @@ function flashcards() {
     <div class="mb-3 flex flex-wrap gap-2">
       <button class="tab-btn active" data-tab="letters">${tx("Litery", "Letters")}</button>
       <button class="tab-btn" data-tab="words">${tx("Słowa", "Words")}</button>
-      <button class="tab-btn" data-tab="ai">${tx("Fiszki AI", "AI Cards")}</button>
+      <button class="tab-btn" data-tab="custom">${tx("Moje fiszki", "My cards")}</button>
     </div>
     <div class="mb-4 flex flex-wrap gap-2">
       <button class="mode-btn active" data-mode="random">${tx("Losowo", "Random")}</button>
@@ -3957,16 +3926,16 @@ function buildFlashDeck(tab, mode) {
     source = arabicAlphabet.map((letter) => ({ id: `letter-${letter.id}`, letterId: letter.id, front: letter.forms.isolated, speech: letterSpeechText(letter), translation: letterName(letter), transliteration: letter.transliteration, back: `${letterName(letter)} · ${letter.transliteration}`, hint: letterPronunciationText(letter) }));
   } else if (tab === "words") {
     source = words.map((word) => ({ id: `word-${word.id}`, front: word.ar, translation: wordMeaning(word), transliteration: word.tr, back: `${wordMeaning(word)} · ${word.tr}`, hint: tx("slowo", "word") }));
-  } else if (tab === "ai") {
-    source = (state.aiFlashcards || []).concat(state.customFlashcards || []).map((card) => {
+  } else if (tab === "custom") {
+    source = (state.customFlashcards || []).map((card) => {
       const parsed = parseBack(card.back);
       return {
-        id: card.id || `ai-${crypto.randomUUID()}`,
+        id: card.id || `custom-${crypto.randomUUID()}`,
         front: card.front || card.ar || "سلام",
-        translation: card.translation || parsed.translation || card.pl || (state.lang === "pl" ? "Karta AI" : "AI card"),
-        transliteration: card.transliteration || parsed.transliteration || card.tr || card.hint || "AI",
-        back: card.back || parsed.translation || card.pl || "AI",
-        hint: card.hint || "AI"
+        translation: card.translation || parsed.translation || card.pl || (state.lang === "pl" ? "Moja fiszka" : "My card"),
+        transliteration: card.transliteration || parsed.transliteration || card.tr || card.hint || "",
+        back: card.back || parsed.translation || card.pl || tx("Moja fiszka", "My card"),
+        hint: card.hint || tx("własna fiszka", "custom card")
       };
     });
   }
@@ -4597,12 +4566,7 @@ function books() {
   view.innerHTML = `
     <div class="mb-4">
       <h1 class="text-3xl font-black">${tx("Moje ksiazeczki", "My books")}</h1>
-      <p class="text-[var(--muted)]">${tx("AI bajki po arabsku z tłumaczeniem, PDF i interaktywne karty.", "AI stories in Arabic with translation, PDFs and interactive cards.")}</p>
-    </div>
-    <div class="panel mb-4 p-5">
-      <h2 class="text-lg font-black mb-3">${tx("Wygeneruj bajkę arabską z AI", "Generate Arabic story with AI")}</h2>
-      <textarea id="aiStoryPrompt" class="min-h-20 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3 mb-3" placeholder="${tx("Temat bajki (np. podroz, dobre uczynki, nauka liter...)", "Story theme (e.g. travel, good deeds, learning letters...)")}"></textarea>
-      <button id="generateAiBookBtn" class="big-action w-full bg-emerald-500 text-white">${tx("Wygeneruj bajkę", "Generate story")}</button>
+      <p class="text-[var(--muted)]">${tx("PDF-y, linki i interaktywne karty z własnych materiałów.", "PDFs, links and interactive cards from your own materials.")}</p>
     </div>
     <details class="panel mb-4 p-5">
       <summary class="font-black cursor-pointer">${tx("Dodaj PDF / link", "Add PDF / link")}</summary>
@@ -4619,8 +4583,7 @@ function books() {
     <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       ${state.interactiveBooks.map((book) => `
         <button class="panel p-4 text-left" data-interactive-book="${book.id}">
-          <div class="book-cover grid place-items-center text-4xl">AI</div>
-          <!-- SECURITY: escaped AI output -->
+          <div class="book-cover grid place-items-center text-4xl">TXT</div>
           <strong class="mt-3 block">${escapeHtml(book.title)}</strong>
           <span class="text-sm text-[var(--muted)]">${book.cards.length} ${tx("stron / kart", "pages / cards")}</span>
         </button>
@@ -4631,56 +4594,14 @@ function books() {
           <strong class="mt-3 block">${escapeHtml(book.title)}</strong>
           <span class="text-sm text-[var(--muted)]">${book.sourceType === "file" ? tx("plik lokalny", "local file") : tx("link", "link")}</span>
         </button>
-      `).join("") || (state.interactiveBooks.length ? "" : `<div class="soft-panel p-6 text-center text-[var(--muted)] sm:col-span-2 lg:col-span-3">${tx("Brak ksiazeczek. Wygeneruj pierwsza bajke!", "No books yet. Generate your first story!")}</div>`)}
+      `).join("") || (state.interactiveBooks.length ? "" : `<div class="soft-panel p-6 text-center text-[var(--muted)] sm:col-span-2 lg:col-span-3">${tx("Brak ksiazeczek. Dodaj PDF albo link, aby zacząć.", "No books yet. Add a PDF or link to begin.")}</div>`)}
     </div>
     <div id="pdfViewer" class="mt-4"></div>
   `;
-  $("#generateAiBookBtn").addEventListener("click", generateAiBook);
   $("#addBook").addEventListener("click", addBook);
   $("#extractBook").addEventListener("click", extractBook);
   view.querySelectorAll("[data-book]").forEach((button) => button.addEventListener("click", () => openBook(button.dataset.book)));
   view.querySelectorAll("[data-interactive-book]").forEach((button) => button.addEventListener("click", () => openInteractiveBook(button.dataset.interactiveBook)));
-}
-
-async function generateAiBook() {
-  const btn = $("#generateAiBookBtn");
-  const promptText = $("#aiStoryPrompt").value.trim();
-  btn.textContent = tx("Generuję...", "Generating...");
-  btn.disabled = true;
-  try {
-    const systemPrompt = tx(
-      `Napisz KRÓTKĄ bajkę (5-8 par zdań) po arabsku dla osoby uczącej się (poziom A1-A2).
-Temat: "${promptText || "Bajka o przyjaźni i nauce arabskiego"}"
-Format BEZWZGLĘDNIE:
-arabskie zdanie
-polskie tłumaczenie
-
-(pusta linia)
-następna para
-
-Na końcu: SŁOWNICZEK z 5 trudniejszych słów w formacie: عربي — polskie.
-NIE używaj: nagłówków, markdown, numerów, "Strona przednia/tylna".`,
-      `Write a SHORT story (5-8 sentence pairs) in Arabic for a beginner (A1-A2 level).
-Topic: "${promptText || "A story about friendship and learning Arabic"}"
-Format STRICTLY:
-Arabic sentence
-English translation
-
-(blank line)
-next pair
-
-At the end: GLOSSARY of 5 harder words in format: عربي — english.
-Do NOT use: headers, markdown, numbers, "Front/Back" labels.`
-    );
-    const text = await askGroq([{ role: "user", content: systemPrompt }]);
-    const title = tx(`Bajka ${new Date().toLocaleDateString(localeTag())}`, `Story ${new Date().toLocaleDateString(localeTag())}`);
-    saveInteractiveBook(title, text);
-    openInteractiveBook(state.interactiveBooks[0].id);
-    confetti();
-  } catch {
-    btn.textContent = tx("Błąd AI", "AI error");
-    btn.disabled = false;
-  }
 }
 
 function addBook() {
@@ -4824,38 +4745,8 @@ function bindFlipbook(totalPages) {
   });
 }
 
-function addSingleFlashcard(front, back, hint = "AI") {
+function addSingleFlashcard(front, back, hint = "PDF") {
   state.customFlashcards.unshift({ id: `custom-${crypto.randomUUID()}`, front, back, hint });
-  saveState();
-}
-
-function saveInteractiveBook(title, text) {
-  const cards = [];
-  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
-
-  for (let i = 0; i < lines.length - 1; i++) {
-    const isAr = /[؀-ۿ]/.test(lines[i]);
-    const nextNoAr = !/[؀-ۿ]/.test(lines[i + 1]) && lines[i + 1].length > 2;
-    if (isAr && nextNoAr) {
-      cards.push({ ar: lines[i], pl: lines[i + 1], tr: "" });
-      i++;
-    }
-  }
-
-  if (cards.length < 3) {
-    lines.filter(l => /[؀-ۿ]/.test(l)).slice(0, 16).forEach((arLine, idx) => {
-      const plLine = lines.find(l => !(/[؀-ۿ]/.test(l)) && l.length > 5) || `${tx("Strona", "Page")} ${idx + 1}`;
-      cards.push({ ar: arLine, pl: plLine, tr: "" });
-    });
-  }
-
-  if (cards.length < 1) {
-    text.split(/[.!?\n]+/).filter(Boolean).slice(0, 10).forEach((line, idx) => {
-      cards.push({ ar: words[idx % words.length].ar, pl: line.trim(), tr: words[idx % words.length].tr });
-    });
-  }
-
-  state.interactiveBooks.unshift({ id: crypto.randomUUID(), title, rawText: text, cards });
   saveState();
 }
 
@@ -4867,95 +4758,38 @@ function readFileAsDataUrl(file, callback) {
 }
 
 function culture() {
-  const todayFact = state.cultureFacts.find((item) => item.date === today());
-  const hasToday = !!todayFact;
-  const btnClass = hasToday
-    ? "big-action border border-[var(--line)] bg-[var(--surface)] text-[var(--muted)] cursor-not-allowed"
-    : "big-action bg-emerald-500 text-white";
-  const btnLabel = hasToday ? tx("✓ Wygenerowano dziś", "✓ Generated today") : tx("Generuj AI", "Generate AI");
+  const facts = [
+    {
+      title: tx("Gościnność bez występu", "Hospitality without performance"),
+      text: tx("W wielu rodzinach muzułmańskich kawa, herbata albo daktyle są prostym znakiem szacunku. Nie chodzi o bogactwo stołu, tylko o danie drugiej osobie miejsca i spokoju.", "In many Muslim families, coffee, tea or dates are a simple sign of respect. It is not about a wealthy table, but about giving another person space and calm.")
+    },
+    {
+      title: tx("Adab, czyli piękny sposób", "Adab, a beautiful way"),
+      text: tx("Adab oznacza dobre maniery, takt i szacunek. W praktyce to miękki głos, cierpliwość w rozmowie i pamiętanie, że prawda nie musi być wypowiedziana ostro.", "Adab means good manners, tact and respect. In practice it is a gentle voice, patience in conversation and remembering that truth does not need to be harsh.")
+    },
+    {
+      title: tx("Rodzina i zmiana wiary", "Family and a change of faith"),
+      text: tx("Konwersja bywa dla rodziny zaskoczeniem. Dobry pierwszy krok to nie debata, ale spokojne pokazanie: nadal kocham, nadal jestem sobą, po prostu szukam Boga poważniej.", "Conversion can surprise a family. A good first step is not a debate, but calmly showing: I still love you, I am still myself, I am simply seeking God more seriously.")
+    },
+    {
+      title: tx("Meczet jako bezpieczne miejsce", "The mosque as a safe place"),
+      text: tx("Meczet to nie tylko sala modlitwy. Często jest miejscem nauki, pomocy dla nowych muzułmanów, rozmowy z imamem i poznania ludzi, którzy przeszli podobną drogę.", "A mosque is not only a prayer hall. Often it is a place to learn, find support as a new Muslim, speak with an imam and meet people who walked a similar road.")
+    }
+  ];
   view.innerHTML = `
     <div class="mb-4">
       <h1 class="text-3xl font-black">${tx("Kultura i ciekawostki", "Culture and facts")}</h1>
-      <p class="text-[var(--muted)]">${tx("Ciekawostki dnia o arabskim, islamie i codziennych zwyczajach.", "Daily facts about Arabic, Islam and everyday customs.")}</p>
+      <p class="text-[var(--muted)]">${tx("Krótkie, sprawdzone obserwacje o codzienności muzułmanów i rozmowie z bliskimi.", "Short, curated notes about everyday Muslim life and conversations with loved ones.")}</p>
     </div>
-    <section class="panel p-5">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p class="text-sm font-bold text-emerald-600">${tx("Ciekawostka dnia", "Fact of the day")}</p>
-          <!-- SECURITY: escaped AI output -->
-          <h2 class="text-2xl font-black">${todayFact ? escapeHtml(todayFact.title) : tx("Brak ciekawostki na dzis", "No fact for today yet")}</h2>
-        </div>
-        <button id="generateCultureBtn" class="${btnClass}" ${hasToday ? "disabled" : ""}>${btnLabel}</button>
-      </div>
-      <!-- SECURITY: escaped AI output -->
-      <p class="mt-4 whitespace-pre-wrap text-[var(--muted)]">${todayFact ? escapeHtml(todayFact.text) : tx("AI przygotuje krótką ciekawostkę z mini-słówkiem arabskim. Jedna ciekawostka na dzień.", "AI will prepare a short fact with an Arabic mini-word. One fact per day.")}</p>
-    </section>
-    <div class="mt-4 grid gap-3 sm:grid-cols-2">
-      ${state.cultureFacts.slice(0, 10).map((item) => `
+    <div class="grid gap-3 sm:grid-cols-2">
+      ${facts.map((item) => `
         <article class="soft-panel p-4">
-          <p class="text-xs font-bold text-[var(--muted)]">${item.date}</p>
-          <!-- SECURITY: escaped AI output -->
           <h3 class="mt-1 font-black">${escapeHtml(item.title)}</h3>
-          <!-- SECURITY: escaped AI output -->
           <p class="mt-2 text-sm text-[var(--muted)]">${escapeHtml(item.text)}</p>
         </article>
       `).join("")}
     </div>
   `;
-  if (!hasToday) {
-    $("#generateCultureBtn").addEventListener("click", generateCultureFact);
-  }
-}
-
-async function generateCultureFact() {
-  const button = $("#generateCultureBtn");
-  if (!button || button.disabled) return;
-  button.textContent = tx("Myślę...", "Thinking...");
-  button.disabled = true;
-  try {
-    const prevTitles = state.cultureFacts.slice(0, 15).map(f => f.title).filter(Boolean);
-    const avoidNote = prevTitles.length
-      ? tx(
-          `NIE powtarzaj tematów: ${prevTitles.join(', ')}. Wybierz zupełnie inny temat.`,
-          `Do NOT repeat these topics: ${prevTitles.join(', ')}. Choose a completely different topic.`
-        )
-      : '';
-    const prompt = tx(
-      `Napisz JEDNĄ krótką ciekawostkę (2-4 zdania) o kulturze arabskiej, islamie lub Indonezji. NIE generuj listy fiszek. NIE używaj nagłówków. ${avoidNote}
-Format odpowiedzi:
-TYTUŁ: [krótki tytuł 3-5 słów]
-FAKT: [2-4 zdania ciekawostki]
-SŁOWO: [jedno arabskie słowo]
-WYMOWA: [transliteracja]
-ZNACZENIE: [polskie tłumaczenie]`,
-      `Write ONE short culture fact (2-4 sentences) about Arabic culture or Islam. Do NOT generate flashcard lists. Do NOT use headers. ${avoidNote}
-Response format:
-TITLE: [short title 3-5 words]
-FACT: [2-4 sentences]
-WORD: [one Arabic word]
-PRONUNCIATION: [transliteration]
-MEANING: [English translation]`
-    );
-    const text = await askGroq([{ role: "user", content: prompt }]);
-    const titleMatch = text.match(/(?:TYTUŁ|TITLE):\s*(.+)/i);
-    const factMatch = text.match(/(?:FAKT|FACT):\s*([\s\S]+?)(?:\n(?:SŁOWO|WORD):|\n\n|$)/i);
-    const wordMatch = text.match(/(?:SŁOWO|WORD):\s*(.+)/i);
-    const pronMatch = text.match(/(?:WYMOWA|PRONUNCIATION):\s*(.+)/i);
-    const meaningMatch = text.match(/(?:ZNACZENIE|MEANING):\s*(.+)/i);
-    const title = titleMatch?.[1]?.trim() || tx(`Ciekawostka ${new Date().toLocaleDateString(localeTag())}`, `Fact ${new Date().toLocaleDateString(localeTag())}`);
-    const fact = factMatch?.[1]?.trim() || text.slice(0, 400);
-    const word = wordMatch?.[1]?.trim() || "";
-    const pron = pronMatch?.[1]?.trim() || "";
-    const meaning = meaningMatch?.[1]?.trim() || "";
-    const formatted = fact + (word ? `
-
-🔤 ${word} (${pron}) — ${meaning}` : "");
-    state.cultureFacts.unshift({ id: crypto.randomUUID(), date: today(), title, text: formatted });
-    saveState();
-    culture();
-  } catch {
-    button.textContent = tx("Błąd AI", "AI error");
-  }
 }
 
 function games() {
@@ -4968,7 +4802,6 @@ function games() {
       pillarsQuiz: '<div id="pillarsQuizBox" class="panel p-5"></div>',
       historyQuiz: '<div id="historyQuizBox" class="panel p-5"></div>',
       asmaChallenge: '<div id="asmaChallengeBox" class="panel p-5"></div>',
-      aiQuiz:      '<div id="aiQuizBox" class="panel p-5"></div>',
       quizHub:     '<div id="quizHubBox"></div>',
     };
     const directMap = {
@@ -4978,7 +4811,7 @@ function games() {
     };
     if (containerMap[state.activeGame]) {
       view.innerHTML = containerMap[state.activeGame];
-      const renderers = { quiz: renderQuiz, memory: renderMemory, dhikrGame: renderDhikrGame, surahQuiz: renderSurahQuiz, pillarsQuiz: renderPillarsQuiz, historyQuiz: renderHistoryQuiz, asmaChallenge: renderAsmaChallenge, aiQuiz: renderAiQuiz, quizHub: renderQuizHub };
+      const renderers = { quiz: renderQuiz, memory: renderMemory, dhikrGame: renderDhikrGame, surahQuiz: renderSurahQuiz, pillarsQuiz: renderPillarsQuiz, historyQuiz: renderHistoryQuiz, asmaChallenge: renderAsmaChallenge, quizHub: renderQuizHub };
       (renderers[state.activeGame] || (() => {}))();
     } else if (directMap[state.activeGame]) {
       directMap[state.activeGame]();
@@ -5070,13 +4903,12 @@ function renderQuizHub() {
     { id: "quiz", icon: "Aa", titlePl: "Quiz liter", titleEn: "Letter Quiz", descPl: "Rozpoznaj arabską literę", descEn: "Identify the Arabic letter" },
     { id: "surahQuiz", icon: "📖", titlePl: "Quiz Surah", titleEn: "Surah Quiz", descPl: "Rozpoznaj krótkie sury", descEn: "Identify short surahs" },
     { id: "pillarsQuiz", icon: "⭐", titlePl: "Quiz Filarów", titleEn: "Pillars Quiz", descPl: "Filary islamu i imanu", descEn: "Pillars of Islam and Iman" },
-    { id: "historyQuiz", icon: "🧭", titlePl: "Quiz Historii", titleEn: "History Quiz", descPl: "Oś czasu, prorocy, Sahaba i konwersje", descEn: "Timeline, prophets, Sahaba and conversions" },
-    { id: "aiQuiz", icon: "AI", titlePl: "Quizy AI", titleEn: "AI Quizzes", descPl: "Generuj i rozwiązuj własne quizy", descEn: "Generate and play custom quizzes" }
+    { id: "historyQuiz", icon: "◷", titlePl: "Quiz Historii", titleEn: "History Quiz", descPl: "Oś czasu, prorocy, Sahaba i konwersje", descEn: "Timeline, prophets, Sahaba and conversions" }
   ];
   $("#quizHubBox").innerHTML = `
     <div class="mb-5">
       <h1 class="text-3xl font-black">${tx("Quizy", "Quizzes")}</h1>
-      <p class="text-[var(--muted)] mt-1">${tx("Wybierz typ quizu. Quizy AI możesz tworzyć od razu w środku.", "Choose a quiz type. You can create AI quizzes inside.")}</p>
+      <p class="text-[var(--muted)] mt-1">${tx("Wybierz gotowy quiz z aplikacji.", "Choose a ready-made app quiz.")}</p>
     </div>
     <div class="grid gap-3 sm:grid-cols-2">
       ${quizTiles.map(tile => `
@@ -5596,15 +5428,6 @@ function normalizeNameInput(s) {
   return cleaned.replace(/^(allah|ash|adh|ath|al|ar|as|at|ad|an|az)/, "");
 }
 
-function normalizeCardKey(s) {
-  return String(s || "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f\u064B-\u0652]/g, "")
-    .replace(/\s+/g, "")
-    .trim();
-}
-
 function editDistanceWithin(input, target, maxEdits) {
   if (Math.abs(input.length - target.length) > maxEdits) return false;
   const row = Array.from({ length: target.length + 1 }, (_, index) => index);
@@ -5633,179 +5456,6 @@ function asmaChallengeAliases(name) {
   const meaningParts = [...String(name.en || "").split("/"), ...String(name.pl || "").split("/")];
   const meaningWords = meaningParts.flatMap(part => String(part).split(/[\s,;()]+/));
   return [...new Set([name.tr, name.en, name.pl, ...meaningParts, ...meaningWords].map(normalizeNameInput).filter(Boolean))];
-}
-
-let currentAiQuiz = null;
-let currentAiQuestionIndex = 0;
-let aiQuizScore = 0;
-
-function renderAiQuiz() {
-  const box = $("#aiQuizBox");
-  if (!box) return;
-  const quizzes = state.aiQuizzes || [];
-  const suggestions = AI_TOPIC_SUGGESTIONS.quiz.map(topic => state.lang === "pl" ? topic.pl : topic.en);
-
-  if (!quizzes.length) {
-    box.innerHTML = `
-      <div class="text-center py-8">
-        <h2 class="text-2xl font-black mb-2">${tx("Brak Quizów AI", "No AI Quizzes")}</h2>
-        <p class="text-[var(--muted)] mb-4">${tx("Wygeneruj krótki quiz tutaj albo zapisz quiz z AI Assistant.", "Generate a short quiz here or save one from AI Assistant.")}</p>
-        ${aiQuizGeneratorHtml(suggestions)}
-      </div>
-    `;
-    bindAiQuizGenerator(box);
-    return;
-  }
-
-  if (!currentAiQuiz) {
-    box.innerHTML = `
-      <h2 class="text-2xl font-black mb-4">${tx("Twoje Quizy AI", "Your AI Quizzes")}</h2>
-      ${aiQuizGeneratorHtml(suggestions)}
-      <div class="grid gap-3">
-        ${quizzes.map((quiz, index) => `
-          <button class="panel p-4 text-left flex items-center justify-between gap-3" data-ai-quiz-index="${index}">
-            <div>
-              <p class="font-black">${escapeHtml(quiz.title)}</p>
-              <p class="text-xs text-[var(--muted)]">${quiz.questions.length} ${tx("pytań", "questions")}</p>
-            </div>
-            <span class="text-xl">&gt;</span>
-          </button>
-        `).join("")}
-      </div>
-    `;
-    bindAiQuizGenerator(box);
-    box.querySelectorAll("[data-ai-quiz-index]").forEach(button => {
-      button.addEventListener("click", () => startAiQuiz(Number(button.dataset.aiQuizIndex)));
-    });
-    return;
-  }
-
-  const question = currentAiQuiz.questions[currentAiQuestionIndex];
-  box.innerHTML = `
-    <div class="flex items-center justify-between gap-3 mb-4">
-      <h2 class="text-xl font-black">${escapeHtml(currentAiQuiz.title)}</h2>
-      <span class="font-bold">${currentAiQuestionIndex + 1} / ${currentAiQuiz.questions.length}</span>
-    </div>
-    <div class="panel p-6 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 mb-4">
-      <p class="text-lg font-bold text-center">${escapeHtml(question.question)}</p>
-    </div>
-    <div class="grid gap-2">
-      ${question.options.map((option, index) => `
-        <button class="big-action border border-[var(--line)] bg-[var(--surface)] text-left px-4" data-ai-answer="${index}">
-          ${escapeHtml(option)}
-        </button>
-      `).join("")}
-    </div>
-  `;
-  box.querySelectorAll("[data-ai-answer]").forEach(button => {
-    button.addEventListener("click", () => checkAiQuizAnswer(Number(button.dataset.aiAnswer)));
-  });
-}
-
-function aiQuizGeneratorHtml(suggestions) {
-  return `
-    <div class="panel p-4 mb-4 text-left">
-      <label class="text-xs font-black uppercase text-[var(--muted)]" for="aiQuizTopic">${tx("Temat quizu", "Quiz topic")}</label>
-      <div class="mt-2 flex flex-col gap-2 sm:flex-row">
-        <input id="aiQuizTopic" class="min-w-0 flex-1 rounded-lg border border-[var(--line)] bg-[var(--surface)] px-3 h-11" maxlength="80" placeholder="${tx("np. wudu, filary islamu, alfabet", "e.g. wudu, pillars, alphabet")}" />
-        <button class="big-action bg-emerald-500 text-white" data-generate-ai-quiz>${tx("Generuj quiz", "Generate quiz")}</button>
-      </div>
-      <div class="mt-3 flex flex-wrap gap-2">
-        ${suggestions.map(topic => `<button class="ai-topic-chip" data-fill-ai-quiz-topic="${escapeHtml(topic)}">${escapeHtml(topic)}</button>`).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function bindAiQuizGenerator(root) {
-  root.querySelectorAll("[data-fill-ai-quiz-topic]").forEach(button => {
-    button.addEventListener("click", () => {
-      root.querySelector("#aiQuizTopic").value = button.dataset.fillAiQuizTopic;
-    });
-  });
-  root.querySelector("[data-generate-ai-quiz]")?.addEventListener("click", () => generateAiQuizFromTopic(root));
-}
-
-async function generateAiQuizFromTopic(root) {
-  const topic = root.querySelector("#aiQuizTopic")?.value.trim();
-  if (!topic) {
-    showToast(tx("Wpisz temat quizu.", "Enter a quiz topic."));
-    return;
-  }
-  const aiCheck = canUseAi();
-  if (!aiCheck.ok) {
-    showToast(aiCheck.reason);
-    return;
-  }
-  const button = root.querySelector("[data-generate-ai-quiz]");
-  button.disabled = true;
-  button.textContent = tx("Generuję...", "Generating...");
-  recordAiUse();
-  try {
-    const prompt = aiPromptForTopic("quiz", topic);
-    const text = await askGroq([
-      { role: "system", content: existingAiCreationContext() },
-      { role: "user", content: prompt }
-    ]);
-    if (addAiQuiz(text, topic)) renderAiQuiz();
-  } catch {
-    showToast(tx("Nie udało się wygenerować quizu.", "Could not generate quiz."));
-  } finally {
-    button.disabled = false;
-    button.textContent = tx("Generuj quiz", "Generate quiz");
-  }
-}
-
-function startAiQuiz(index) {
-  currentAiQuiz = state.aiQuizzes[index];
-  currentAiQuestionIndex = 0;
-  aiQuizScore = 0;
-  renderAiQuiz();
-}
-
-function checkAiQuizAnswer(index) {
-  const question = currentAiQuiz?.questions?.[currentAiQuestionIndex];
-  if (!question) return;
-  const buttons = $("#aiQuizBox").querySelectorAll("[data-ai-answer]");
-  buttons.forEach(button => { button.disabled = true; });
-
-  if (index === question.correctIndex) {
-    buttons[index].className = "big-action bg-emerald-500 text-white text-left px-4";
-    aiQuizScore += 1;
-    confetti();
-  } else {
-    buttons[index].className = "big-action bg-red-500 text-white text-left px-4";
-    buttons[question.correctIndex].className = "big-action bg-emerald-500 text-white text-left px-4";
-  }
-
-  setTimeout(() => {
-    currentAiQuestionIndex += 1;
-    if (currentAiQuestionIndex < currentAiQuiz.questions.length) renderAiQuiz();
-    else finishAiQuiz();
-  }, 900);
-}
-
-function finishAiQuiz() {
-  const box = $("#aiQuizBox");
-  const finalScore = aiQuizScore;
-  const total = currentAiQuiz.questions.length;
-  const title = currentAiQuiz.title;
-
-  state.points += finalScore * 5;
-  if (!state.gameHistory) state.gameHistory = [];
-  state.gameHistory.unshift({ game: `AI Quiz: ${title}`, score: finalScore, total, ts: Date.now() });
-  saveState();
-  currentAiQuiz = null;
-
-  box.innerHTML = `
-    <div class="text-center py-8">
-      <h2 class="text-3xl font-black mb-2">${tx("Koniec Quizu!", "Quiz Finished!")}</h2>
-      <p class="text-xl mb-4">${tx("Twój wynik", "Your score")}: <span class="font-black text-emerald-600">${finalScore} / ${total}</span></p>
-      <p class="text-[var(--muted)] mb-6">+${finalScore * 5} ${t("points")}</p>
-      <button class="big-action bg-emerald-500 text-white w-full" data-reset-ai-quiz>${tx("Wróć do listy", "Back to list")}</button>
-    </div>
-  `;
-  box.querySelector("[data-reset-ai-quiz]").addEventListener("click", renderAiQuiz);
 }
 
 function renderAsmaChallenge() {
@@ -5888,14 +5538,14 @@ function mountAiAssistant() {
         </header>
         <div id="aiMessages" class="ai-messages"></div>
         <div class="ai-quick-actions">
-          <button class="ai-action-btn" data-ai-preset="flashcards">
-            ${t("aiGenerateFlashcards")}
+          <button class="ai-action-btn" data-ai-preset="family">
+            ${t("aiFamilyTalk")}
           </button>
-          <button class="ai-action-btn" data-ai-preset="quiz">
-            ${t("aiGenerateQuiz")}
+          <button class="ai-action-btn" data-ai-preset="basics">
+            ${t("aiIslamBasics")}
           </button>
-          <button class="ai-action-btn" data-ai-preset="islam">
-            ${t("aiAskIslam")}
+          <button class="ai-action-btn" data-ai-preset="prayer">
+            ${t("aiPrayerHelp")}
           </button>
         </div>
         <div id="aiTopicPanel" class="ai-topic-panel hidden"></div>
@@ -5936,20 +5586,18 @@ function renderAiTopicPanel(kind) {
   panel.innerHTML = `
     <p class="ai-topic-title">${tx("Wybierz temat albo wpisz własny", "Choose a topic or type your own")}</p>
     <div class="ai-topic-list">
-      ${topics.map(topic => `<button class="ai-topic-chip" data-ai-topic="${escapeHtml(state.lang === "pl" ? topic.pl : topic.en)}" data-ai-kind="${kind}">${escapeHtml(state.lang === "pl" ? topic.pl : topic.en)}</button>`).join("")}
+      ${topics.map(topic => `<button class="ai-topic-chip" data-ai-topic="${escapeHtml(state.lang === "pl" ? topic.pl : topic.en)}">${escapeHtml(state.lang === "pl" ? topic.pl : topic.en)}</button>`).join("")}
     </div>
   `;
   panel.querySelectorAll("[data-ai-topic]").forEach(button => {
     button.addEventListener("click", () => {
-      $("#aiInput").value = aiPromptForTopic(button.dataset.aiKind, button.dataset.aiTopic);
+      $("#aiInput").value = aiPromptForTopic(button.dataset.aiTopic);
       $("#aiInput").focus();
     });
   });
 }
 
-function aiPromptForTopic(kind, topic) {
-  if (kind === "flashcards") return tx(`Wygeneruj 5 nowych fiszek na temat: ${topic}. Nie powtarzaj fiszek, które już są w aplikacji.`, `Generate 5 new flashcards about: ${topic}. Do not repeat cards already in the app.`);
-  if (kind === "quiz") return tx(`Zrób 4-pytaniowy quiz na temat: ${topic}. Użyj formatu QUIZ i nie powtarzaj istniejących quizów.`, `Create a 4-question quiz about: ${topic}. Use QUIZ format and do not repeat existing quizzes.`);
+function aiPromptForTopic(topic) {
   return topic;
 }
 
@@ -5971,38 +5619,47 @@ function renderAiMessages() {
   const box = $("#aiMessages");
   if (!box) return;
   box.textContent = "";
-  state.aiMessages.forEach((message, index) => {
+  state.aiMessages.forEach((message) => {
     const article = document.createElement("article");
     article.className = `ai-message ${message.role === "user" ? "user" : "assistant"}`;
     appendTextBlock(article, "p", "whitespace-pre-wrap", message.content);
-    if (message.role === "assistant") {
-      const actions = aiActionButtons(index);
-      if (actions) article.insertAdjacentHTML("beforeend", actions);
-    }
     box.appendChild(article);
   });
-  box.querySelectorAll("[data-ai-action]").forEach((button) => button.addEventListener("click", () => handleAiAction(button.dataset.aiAction, Number(button.dataset.messageIndex))));
   requestAnimationFrame(() => {
     box.scrollTop = box.scrollHeight;
   });
 }
 
-function aiActionButtons(index) {
-  const msg = state.aiMessages[index];
-  if (!msg || msg.role !== "assistant" || msg.content.includes("...")) return '';
-  let html = '<div class="flex flex-wrap gap-2 mt-3">';
-  if (/[\u0600-\u06FF].*[—\-–:=].+/.test(msg.content)) {
-    html += `<button class="ai-chip" data-ai-action="flashcards" data-message-index="${index}">🗂️ ${t("addFlashcards")}</button>`;
-  }
-  if (/(?:PYTANIE|QUESTION):/i.test(msg.content)) {
-    html += `<button class="ai-chip" data-ai-action="quiz" data-message-index="${index}">+ ${tx("Zapisz jako Quiz", "Save as Quiz")}</button>`;
-  }
-  html += '</div>';
-  return html.includes('data-ai-action') ? html : '';
+function isIslamicQuery(content = "") {
+  return /\b(islam|allah|quran|koran|surah|sura|ayah|ajat|dua|du'a|hadith|hadis|salat|modlitw|halal|haram|ramadan|wudu|meczet|imam|prorok|muhammad|muzu|muslim|shahada|szahada|konwers|convert|conversion|rodzin|rodzic|mama|tata|family|parents|maryam|isa|jihad|dĹĽihad)\b/i.test(content);
 }
 
-function isIslamicQuery(content = "") {
-  return /\b(islam|allah|quran|koran|surah|sura|ayah|ajat|dua|du'a|hadith|hadis|salat|modlitw|halal|haram|ramadan|wudu|meczet|prorok|muhammad|muzu|shahada|szahada|jihad|dĹĽihad)\b/i.test(content);
+function isAiGenerationRequest(content = "") {
+  return /\b(fiszki?|flashcards?|ai cards?|quizy?|mini quiz|uloz quiz|ułóż quiz|zrob quiz|zrób quiz|wygeneruj\s+(fisz|quiz|bajk)|generate\s+(flashcard|quiz|story)|stw[oó]rz\s+(fisz|quiz|bajk)|bajk[aię]\s+ai)\b/i.test(content);
+}
+
+function isAllowedAiConversation(content = "") {
+  return isIslamicQuery(content) || /\b(boje|boję|strach|rodzina|rodzice|mama|tata|wiara|nawroc|nawróc|konwert|convert|mosque|meczet|imam|muslim|muzułman)\b/i.test(content);
+}
+
+function aiScopeRefusal(content = "") {
+  if (isAiGenerationRequest(content)) {
+    return tx(
+      "Nie tworzę już fiszek, quizów ani bajek AI. Mogę za to spokojnie wyjaśnić temat islamski, podpowiedzieć jak się uczyć albo jak porozmawiać z rodziną. Gotowe quizy i fiszki znajdziesz w sekcjach Gry oraz Fiszki.",
+      "I no longer create AI flashcards, quizzes or stories. I can calmly explain an Islamic topic, suggest how to learn, or help you talk with family. Ready-made quizzes and cards are in Games and Flashcards."
+    );
+  }
+  if (!isAllowedAiConversation(content)) {
+    return tx(
+      "Mogę odpowiadać tylko na pytania związane z islamem, muzułmanami, konwersją, rodziną, Koranem i modlitwą. Zadaj pytanie w tym kierunku, a pomogę najlepiej jak umiem.",
+      "I can only answer questions about Islam, Muslims, conversion, family, Quran and prayer. Ask in that direction and I will help as best I can."
+    );
+  }
+  return "";
+}
+
+function requiresReligiousSources(content = "") {
+  return /\b(quran|koran|ayah|ajat|hadith|hadis|halal|haram|fatwa|fiqh|aqidah|aqida|sunnah|salat|wudu|dua|zakaz|nakaz|obowiazek|obowiązek)\b/i.test(content);
 }
 
 function buildIslamicSourceContext(content = "") {
@@ -6040,6 +5697,16 @@ async function sendAiMessage(event) {
     showToast(tx(`Wiadomość jest za długa. Limit: ${AI_LIMITS.maxPromptLength} znaków.`, `Message is too long. Limit: ${AI_LIMITS.maxPromptLength} characters.`));
     return;
   }
+  const scopeMessage = aiScopeRefusal(content);
+  if (scopeMessage) {
+    state.aiMessages.push({ role: "user", content });
+    state.aiMessages.push({ role: "assistant", content: scopeMessage });
+    state.aiMessages = state.aiMessages.slice(-AI_LIMITS.maxMessages);
+    input.value = "";
+    saveState();
+    renderAiMessages();
+    return;
+  }
   const aiCheck = canUseAi();
   if (!aiCheck.ok) {
     showToast(aiCheck.reason);
@@ -6058,16 +5725,14 @@ async function sendAiMessage(event) {
       `Kontekst aplikacji: uzytkownik ma ${state.points} punktow, poziom ${level()}, zna ${state.learnedLetters.length}/28 liter. Sekcje: Alfabet, Lekcje, Fiszki, Wymowa, Pisanie, O? czasu nauki, Kultura, Gry, Qur'an, Islam.`,
       `App context: user has ${state.points} points, level ${level()}, knows ${state.learnedLetters.length}/28 letters. Sections: Alphabet, Lessons, Flashcards, Speech, Writing, Learning Timeline, Culture, Games, Qur'an, Islam.`
     );
-    const creationContext = isAiCreationRequest(content) ? existingAiCreationContext() : "";
     const islamicSourceContext = isIslamicQuery(content) ? buildIslamicSourceContext(content) : "";
     const recent = state.aiMessages.filter((message) => message.content !== aiThinking).slice(-8);
     const answer = await askGroq([
       { role: "system", content: appContext },
-      ...(creationContext ? [{ role: "system", content: creationContext }] : []),
       ...(islamicSourceContext ? [{ role: "system", content: `Verified Alif AI Islamic source context:\n${islamicSourceContext}\nAnswer religious questions only from this context and include Sources.` }] : []),
       ...recent
     ]);
-    const guardedAnswer = isIslamicQuery(content) && !hasRequiredIslamicSources(answer)
+    const guardedAnswer = requiresReligiousSources(content) && !hasRequiredIslamicSources(answer)
       ? tx(
           "Nie mam zweryfikowanego zrodla w bazie Alif AI dla tej odpowiedzi.\n\nZrodla: brak dopasowanego zrodla w lokalnej bazie",
           "I do not have a verified source in the Alif AI database for this answer.\n\nSources: no matching source in the local database"
@@ -6189,127 +5854,6 @@ function initSearch() {
   });
 }
 
-function handleAiAction(action, messageIndex) {
-  const message = state.aiMessages[messageIndex];
-  if (!message) return;
-  if (action === "flashcards") {
-    addAiFlashcards(message.content);
-    setRoute("flashcards");
-  }
-  if (action === "quiz") {
-    if (!addAiQuiz(message.content)) return;
-    state.activeGame = "aiQuiz";
-    setRoute("games");
-    saveState();
-  }
-  $("#aiDialog").close();
-  confetti();
-}
-
-function addAiQuiz(text, topic = "") {
-  const lines = text.split("\n").map(line => line.trim()).filter(line => /(?:PYTANIE|QUESTION):/i.test(line));
-  if (!lines.length) {
-    showToast(tx("Nie znaleziono pytań do quizu.", "No quiz questions found."));
-    return false;
-  }
-
-  const questions = lines.map(line => {
-    const questionMatch = line.match(/(?:PYTANIE|QUESTION):\s*(.*?)\s*\|/i);
-    const optionAMatch = line.match(/A:\s*(.*?)\s*\|/i);
-    const optionBMatch = line.match(/B:\s*(.*?)\s*\|/i);
-    const optionCMatch = line.match(/C:\s*(.*?)\s*\|/i);
-    const correctMatch = line.match(/(?:POPRAWNA|CORRECT):\s*([A-C])/i);
-    if (!questionMatch || !optionAMatch || !optionBMatch || !optionCMatch || !correctMatch) return null;
-    return {
-      question: questionMatch[1].trim(),
-      options: [optionAMatch[1].trim(), optionBMatch[1].trim(), optionCMatch[1].trim()],
-      correctIndex: correctMatch[1].toUpperCase().charCodeAt(0) - 65
-    };
-  }).filter(Boolean).slice(0, AI_LIMITS.maxGeneratedQuizQuestions);
-
-  if (!questions.length) {
-    showToast(tx("Nie udało się odczytać pytań. Poproś AI o format QUIZ.", "Could not parse questions. Ask AI for QUIZ format."));
-    return false;
-  }
-
-  if (!state.aiQuizzes) state.aiQuizzes = [];
-  const title = topic ? `${tx("Quiz AI", "AI Quiz")}: ${topic}` : `${tx("Quiz AI", "AI Quiz")} ${new Date().toLocaleString(localeTag(), { dateStyle: "short", timeStyle: "short" })}`;
-  if (state.aiQuizzes.some(quiz => normalizeCardKey(quiz.title) === normalizeCardKey(title))) {
-    showToast(tx("Taki quiz AI już istnieje. Wybierz inny temat.", "This AI quiz already exists. Choose another topic."));
-    return false;
-  }
-  state.aiQuizzes.unshift({ id: crypto.randomUUID(), title, questions });
-  state.aiQuizzes = state.aiQuizzes.slice(0, AI_LIMITS.maxStoredAiQuizzes);
-  saveState();
-  showToast(tx("Quiz został zapisany.", "Quiz saved."));
-  return true;
-}
-
-function addAiFlashcards(text) {
-  const created = [];
-  const lines = text.split(String.fromCharCode(10)).map(l => l.trim()).filter(Boolean);
-  const existingFronts = new Set([...(state.aiFlashcards || []), ...(state.customFlashcards || []), ...words].map(card => normalizeCardKey(card.front || card.ar || "")));
-  const canAddMore = () => created.length < AI_LIMITS.maxGeneratedFlashcards;
-  const hasArabic = (value = "") => Array.from(value).some((char) => {
-    const code = char.charCodeAt(0);
-    return code >= 0x0600 && code <= 0x06ff;
-  });
-  const addCard = (front, back) => {
-    const cleanFront = String(front || "").trim();
-    const cleanBack = String(back || "").trim().slice(0, 180);
-    const key = normalizeCardKey(cleanFront);
-    if (!canAddMore() || cleanFront.length < 2 || cleanBack.length < 2 || !hasArabic(cleanFront) || hasArabic(cleanBack) || existingFronts.has(key)) return;
-    created.push({ id: `ai-${crypto.randomUUID()}`, front: cleanFront, back: cleanBack, hint: "AI" });
-    existingFronts.add(key);
-  };
-  const splitPair = (line) => {
-    const emDash = String.fromCharCode(0x2014);
-    const enDash = String.fromCharCode(0x2013);
-    const separators = [` ${emDash} `, ` ${enDash} `, " - ", " = ", " : ", emDash, enDash, "-", "=", ":"];
-    const separator = separators.find((item) => line.includes(item));
-    if (!separator) return null;
-    const index = line.indexOf(separator);
-    return [line.slice(0, index), line.slice(index + separator.length)];
-  };
-
-  for (const line of lines) {
-    if (!canAddMore()) break;
-    const pair = splitPair(line);
-    if (pair) addCard(pair[0], pair[1]);
-  }
-
-  if (!created.length) {
-    for (let i = 0; i < lines.length - 1; i++) {
-      if (!canAddMore()) break;
-      const frontLine = lines[i].toLowerCase();
-      const backLine = lines[i + 1].toLowerCase();
-      if ((!frontLine.includes("strona przednia") && !frontLine.includes("front")) || (!backLine.includes("strona tylna") && !backLine.includes("back"))) continue;
-      const front = lines[i].slice(lines[i].indexOf(":") + 1);
-      const back = lines[i + 1].slice(lines[i + 1].indexOf(":") + 1);
-      addCard(front, back);
-      i++;
-    }
-  }
-
-  if (!created.length) {
-    for (const line of lines) {
-      if (!canAddMore()) break;
-      const withoutNumber = line.replace(/^\s*[0-9]+[.)]?\s*/, "");
-      const pair = splitPair(withoutNumber);
-      if (pair) addCard(pair[0], pair[1]);
-    }
-  }
-
-  if (!created.length) {
-    showToast(tx("Nie znaleziono par slowo-tlumaczenie. Popros AI o format: arabskie - polskie.", "No word-translation pairs found. Ask AI for format: arabic - translation."));
-    return;
-  }
-  if (!state.aiFlashcards) state.aiFlashcards = [];
-  state.aiFlashcards.unshift(...created);
-  state.aiFlashcards = state.aiFlashcards.slice(0, AI_LIMITS.maxStoredAiFlashcards);
-  saveState();
-  showToast(tx(`Dodano ${created.length} fiszek. Limit jednego zapisu: ${AI_LIMITS.maxGeneratedFlashcards}.`, `Added ${created.length} flashcards. Per-save limit: ${AI_LIMITS.maxGeneratedFlashcards}.`));
-}
 function confetti() {
   const canvas = $("#confettiCanvas");
   const ctx = canvas.getContext("2d");
@@ -6412,8 +5956,6 @@ const BADGES_CATALOG = [
   { id: "surah_quiz10",   icon: "📜",  pl: "Quiz sur",            en: "Surah quiz",         criterionPl: "Zdobądź 10 poprawnych w quizie sur", criterionEn: "Get 10 correct in the surah quiz" },
   { id: "history_quiz10", icon: "🧭",  pl: "Quiz Historii",       en: "History quiz",       criterionPl: "Zdobądź 10 poprawnych w quizie Historii", criterionEn: "Get 10 correct in the History quiz" },
   { id: "games3",         icon: "🎮",  pl: "3 gry",               en: "3 games",            criterionPl: "Zagraj 3 razy w gry",                criterionEn: "Play games 3 times" },
-  { id: "ai_quiz_first",  icon: "AI",  pl: "Pierwszy quiz AI",    en: "First AI quiz",      criterionPl: "Zapisz lub wygeneruj 1 quiz AI",     criterionEn: "Save or generate 1 AI quiz" },
-  { id: "ai_cards10",     icon: "▣",   pl: "10 fiszek AI",        en: "10 AI cards",        criterionPl: "Dodaj 10 fiszek z AI",              criterionEn: "Add 10 AI cards" },
   { id: "dua_fav3",       icon: "☾",   pl: "3 ulubione dua",      en: "3 favorite duas",    criterionPl: "Dodaj 3 dua do ulubionych",         criterionEn: "Favorite 3 duas" },
   { id: "review_clean",   icon: "✓",   pl: "Czysta powtórka",     en: "Clean review",       criterionPl: "Nie miej aktywnych błędów",          criterionEn: "Have no active mistakes" },
   { id: "asma_challenge20", icon: "99", pl: "20 Imion",           en: "20 Names",           criterionPl: "Wpisz 20 imion w challenge",         criterionEn: "Enter 20 names in challenge" },
@@ -6457,7 +5999,7 @@ function badgeTarget(id) {
   if (/^history_stories/.test(id)) return { route: "history", historyTab: "stories" };
   if (/letter/.test(id)) return { route: "alphabet" };
   if (/surah|fatiha|dua/.test(id)) return { route: "koran" };
-  if (/quiz|game|asma/.test(id)) return { route: "games", activeGame: /ai_quiz/.test(id) ? "aiQuiz" : "quizHub" };
+  if (/quiz|game|asma/.test(id)) return { route: "games", activeGame: "quizHub" };
   if (/flash/.test(id)) return { route: "flashcards" };
   if (/lesson|bismillah|shahada/.test(id)) return { route: "lessons" };
   if (/salat|prayer/.test(id)) return { route: "prayerGuide" };
@@ -6467,10 +6009,12 @@ function badgeTarget(id) {
 }
 
 function checkBadges() {
+  const validBadgeIds = new Set(BADGES_CATALOG.map(badge => badge.id));
+  state.badges = [...new Set(state.badges || [])].filter(id => validBadgeIds.has(id));
   const ll = state.learnedLetters.length;
   const sq = (state.quranSurahFavorites || []).length;
   const pts = state.points;
-  const fc = (state.customFlashcards || []).length + (state.aiFlashcards || []).length + Object.keys(state.flashcards || {}).length;
+  const fc = (state.customFlashcards || []).length + Object.keys(state.flashcards || {}).length;
   const ld = (state.miniLessonsDone || []).length;
   const dhikrTotal = Object.values(state.dhikrCounts || {}).reduce((sum, count) => sum + (Number(count) || 0), 0);
   const prayerSessions = state.prayerGuideSessions || 0;
@@ -6481,7 +6025,6 @@ function checkBadges() {
     (state.pillarsQuizHistory || []).length +
     (state.surahQuizHistory || []).length +
     (state.historyQuizHistory || []).length +
-    (state.gameHistory || []).filter(item => String(item.game || "").startsWith("AI Quiz")).length +
     (state.memoryStats?.correct || 0) +
     (state.memoryStats?.wrong || 0);
 
@@ -6518,8 +6061,6 @@ function checkBadges() {
   if ((state.surahQuizStats?.correct || 0) >= 10) unlockBadge("surah_quiz10", tx("Quiz sur", "Surah quiz"));
   if ((state.historyQuizStats?.correct || 0) >= 10) unlockBadge("history_quiz10", tx("Quiz Historii", "History quiz"));
   if (gamesPlayed >= 3) unlockBadge("games3", tx("3 gry", "3 games"));
-  if ((state.aiQuizzes || []).length >= 1) unlockBadge("ai_quiz_first", tx("Pierwszy quiz AI", "First AI quiz"));
-  if ((state.aiFlashcards || []).length >= 10) unlockBadge("ai_cards10", tx("10 fiszek AI", "10 AI cards"));
   if ((state.quranDuaFavorites || []).length >= 3) unlockBadge("dua_fav3", tx("3 ulubione dua", "3 favorite duas"));
   if (activeMistakeTotal() === 0 && gamesPlayed > 0) unlockBadge("review_clean", tx("Czysta powtórka", "Clean review"));
   if ((state.asmaChallengeBest || 0) >= 20) unlockBadge("asma_challenge20", tx("20 Imion", "20 Names"));

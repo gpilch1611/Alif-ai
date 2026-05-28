@@ -60,29 +60,23 @@ Aplikacja ma globalny pływający przycisk `AI Assistant`, widoczny na każdej s
 - endpoint aplikacji: `/api/groq-proxy`
 - klucz API nalezy ustawic w zmiennej srodowiskowej `GROQ_API_KEY`
 
-AI działa online. Reszta aplikacji nadal działa offline po zcache'owaniu PWA.
+AI działa online i jest ograniczone do pytań oraz porad o islamie, muzułmanach, konwersji, rodzinie, Koranie i modlitwie. Reszta aplikacji nadal działa offline po zcache'owaniu PWA.
 
 Treści islamskie w aplikacji mają osobną politykę odpowiedzialności: widoczny disclaimer, poziomy zaufania treści i metadane źródeł. Szczegóły są w `docs/religious-content-policy.md`.
 
-Assistant może generować treści i zapisywać je bezpośrednio do aplikacji:
-
-- `Dodaj do fiszek`
-- `Zapisz jako nową książeczkę`
-- `Dodaj do Naszej Przygody`
-- `Dodaj jako ciekawostkę`
+Assistant nie tworzy już fiszek, quizów, bajek ani ciekawostek AI. Gotowe ćwiczenia są kuratorowane w sekcjach aplikacji, a AI pełni rolę doradcy i wsparcia w rozmowach o islamie.
 
 ## Funkcje
 
 - Strona główna z serią dni, poziomem, paskiem postępu i zadaniem dnia.
 - Alfabet: 28 liter, 4 formy każdej litery, wymowa i przykłady.
 - Mini-lekcje `Pierwsze słowa i zwroty`, odblokowane po opanowaniu alfabetu.
-- Fiszki: litery, słowa i fiszki AI, tryby losowo / nieznane / powtórki, prosty algorytm SM-2.
+- Fiszki: litery, słowa i własne karty, tryby losowo / nieznane / powtórki, prosty algorytm SM-2.
 - Zaawansowana wymowa: SpeechRecognition, wzorzec TTS, nagrywanie własnej wymowy i odsłuch.
 - Pisanie: canvas z półprzezroczystą literą do przerysowania.
-- Nasza Przygoda 2.0: wiele zdjęć, lokalna galeria i historyjki generowane przez AI.
 - Moje Książeczki: PDF jako plik lub link, viewer oraz interaktywne książeczki z kartami i wymową.
-- Kultura: ciekawostka dnia generowana przez AI.
-- Gry: quiz, Memory Match i `Łap literę`.
+- Kultura: krótkie, kuratorowane notatki o codzienności muzułmanów i rozmowie z rodziną.
+- Gry: quizy aplikacji, Memory Match, Dhikr Speed, Historia Quiz i 99 Imion Challenge.
 - Light / Dark mode.
 - Confetti przy sukcesach.
 
@@ -104,7 +98,7 @@ Assistant może generować treści i zapisywać je bezpośrednio do aplikacji:
 
 Tailwind CSS i pdf.js są ładowane przez CDN zgodnie z wymaganiem. Po pierwszym udanym uruchomieniu przez HTTP/HTTPS service worker próbuje je zapisać w cache. Jeżeli chcesz absolutnego offline już od pierwszego otwarcia, pobierz te zasoby i podmień linki CDN na lokalne pliki.
 
-AI Assistant, generowanie historyjek i ciekawostek wymagają internetu, bo używają Groq API. SpeechRecognition oraz synteza mowy zależą od obsługi danej przeglądarki i mogą na części urządzeń korzystać z usług systemowych online.
+AI Assistant wymaga internetu, bo używa Groq API. SpeechRecognition oraz synteza mowy zależą od obsługi danej przeglądarki i mogą na części urządzeń korzystać z usług systemowych online.
 
 
 ## Contributing (English)
