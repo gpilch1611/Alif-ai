@@ -1,17 +1,19 @@
-const CACHE_NAME = "alif-ai-v21";
+const CACHE_NAME = "alif-ai-v22";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260528-1",
-  "./app.js?v=20260528-1",
+  "./styles.css?v=20260528-2",
+  "./app.js?v=20260528-2",
   "./version.json",
   "./data.js",
   "./data/content-metadata.js",
+  "./data/family-support.js",
   "./data/history.js",
   "./data/halal-haram.js",
   "./data/islamic-faq.js",
   "./data/islamic-hadith.js",
   "./data/prayer-mode.js",
+  "./data/prayer-visuals.js",
   "./data/quran-mode.js",
   "./data/quran-surahs.js",
   "./manifest.json",

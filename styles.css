@@ -548,6 +548,176 @@ select {
   line-height: 1.2;
 }
 
+.family-bridge-panel {
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--accent) 9%, transparent), transparent 60%),
+    var(--surface);
+}
+
+.family-bridge-grid,
+.family-reassurance-grid,
+.conversation-grid,
+.muallaf-support-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.family-bridge-grid {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.family-bridge-card,
+.family-reassurance-card,
+.conversation-card,
+.muallaf-support-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+}
+
+.family-bridge-card {
+  min-height: 176px;
+  display: grid;
+  align-content: space-between;
+  gap: 10px;
+  padding: 16px;
+}
+
+.family-bridge-card span,
+.muallaf-support-card span,
+.family-reassurance-card span {
+  display: inline-grid;
+  width: fit-content;
+  min-width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--accent) 14%, transparent);
+  font-size: 1.25rem;
+}
+
+.family-bridge-card strong,
+.family-bridge-card small,
+.family-bridge-card em,
+.family-reassurance-card h3,
+.family-reassurance-card p,
+.conversation-card strong,
+.muallaf-support-card strong,
+.muallaf-support-card small {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.family-bridge-card strong,
+.muallaf-support-card strong,
+.family-reassurance-card h3 {
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.family-bridge-card small,
+.muallaf-support-card small,
+.family-reassurance-card p {
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.family-bridge-card em {
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.muallaf-support-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.muallaf-support-card {
+  display: grid;
+  gap: 10px;
+}
+
+.family-reassurance-grid {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.family-reassurance-card {
+  display: grid;
+  gap: 9px;
+  padding: 16px;
+}
+
+.family-reassurance-card small {
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.conversation-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.conversation-card {
+  padding: 14px;
+}
+
+.conversation-card p {
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.conversation-card strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.quran-learning-steps {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.quran-learning-step {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
+  padding: 14px;
+}
+
+.quran-learning-step span {
+  display: block;
+  font-size: 1.3rem;
+}
+
+.quran-learning-step strong,
+.quran-learning-step small {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.quran-learning-step strong {
+  margin-top: 8px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.quran-learning-step small {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
 .review-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -579,6 +749,229 @@ select {
   display: grid;
   gap: 16px;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+}
+
+.prayer-position-card {
+  display: grid;
+  grid-template-columns: minmax(0, 180px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+  padding: 16px;
+}
+
+.prayer-position-figure {
+  min-height: 168px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--accent) 9%, transparent);
+}
+
+.prayer-avatar {
+  position: relative;
+  width: 132px;
+  height: 132px;
+}
+
+.prayer-avatar span {
+  position: absolute;
+  display: block;
+  background: var(--accent);
+  border-radius: 999px;
+}
+
+.prayer-avatar .avatar-head {
+  width: 28px;
+  height: 28px;
+  left: 52px;
+  top: 6px;
+}
+
+.prayer-avatar .avatar-body {
+  width: 18px;
+  height: 58px;
+  left: 57px;
+  top: 34px;
+}
+
+.prayer-avatar .avatar-arm {
+  width: 13px;
+  height: 48px;
+  top: 38px;
+}
+
+.prayer-avatar .avatar-arm.left {
+  left: 42px;
+  transform: rotate(8deg);
+}
+
+.prayer-avatar .avatar-arm.right {
+  left: 77px;
+  transform: rotate(-8deg);
+}
+
+.prayer-avatar .avatar-leg {
+  width: 13px;
+  height: 45px;
+  top: 86px;
+}
+
+.prayer-avatar .avatar-leg.left {
+  left: 51px;
+}
+
+.prayer-avatar .avatar-leg.right {
+  left: 68px;
+}
+
+.prayer-avatar .avatar-ground {
+  width: 112px;
+  height: 5px;
+  left: 10px;
+  bottom: 2px;
+  opacity: 0.28;
+}
+
+.prayer-avatar.takbir .avatar-arm.left {
+  top: 22px;
+  left: 35px;
+  transform: rotate(-40deg);
+}
+
+.prayer-avatar.takbir .avatar-arm.right {
+  top: 22px;
+  left: 84px;
+  transform: rotate(40deg);
+}
+
+.prayer-avatar.ruku .avatar-head {
+  left: 86px;
+  top: 42px;
+}
+
+.prayer-avatar.ruku .avatar-body {
+  width: 62px;
+  height: 17px;
+  left: 34px;
+  top: 56px;
+}
+
+.prayer-avatar.ruku .avatar-arm.left,
+.prayer-avatar.ruku .avatar-arm.right {
+  top: 66px;
+  height: 38px;
+}
+
+.prayer-avatar.ruku .avatar-arm.left {
+  left: 40px;
+  transform: rotate(18deg);
+}
+
+.prayer-avatar.ruku .avatar-arm.right {
+  left: 72px;
+  transform: rotate(-18deg);
+}
+
+.prayer-avatar.ruku .avatar-leg.left,
+.prayer-avatar.ruku .avatar-leg.right {
+  top: 75px;
+}
+
+.prayer-avatar.sujud .avatar-head {
+  left: 86px;
+  top: 88px;
+}
+
+.prayer-avatar.sujud .avatar-body {
+  width: 58px;
+  height: 16px;
+  left: 38px;
+  top: 94px;
+}
+
+.prayer-avatar.sujud .avatar-arm.left,
+.prayer-avatar.sujud .avatar-arm.right {
+  width: 38px;
+  height: 11px;
+  top: 105px;
+}
+
+.prayer-avatar.sujud .avatar-arm.left {
+  left: 60px;
+  transform: rotate(0);
+}
+
+.prayer-avatar.sujud .avatar-arm.right {
+  left: 80px;
+  transform: rotate(0);
+}
+
+.prayer-avatar.sujud .avatar-leg.left,
+.prayer-avatar.sujud .avatar-leg.right {
+  width: 44px;
+  height: 12px;
+  top: 108px;
+}
+
+.prayer-avatar.sujud .avatar-leg.left {
+  left: 20px;
+}
+
+.prayer-avatar.sujud .avatar-leg.right {
+  left: 32px;
+}
+
+.prayer-avatar.sit .avatar-head {
+  top: 30px;
+}
+
+.prayer-avatar.sit .avatar-body {
+  top: 58px;
+  height: 38px;
+}
+
+.prayer-avatar.sit .avatar-leg.left,
+.prayer-avatar.sit .avatar-leg.right {
+  width: 45px;
+  height: 12px;
+  top: 108px;
+}
+
+.prayer-avatar.sit .avatar-leg.left {
+  left: 25px;
+}
+
+.prayer-avatar.sit .avatar-leg.right {
+  left: 58px;
+}
+
+.prayer-avatar.salam .avatar-head {
+  transform: translateX(10px);
+}
+
+.prayer-position-copy h3 {
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.prayer-position-copy ul {
+  margin-top: 10px;
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.prayer-position-copy li::before {
+  content: "✓ ";
+  color: var(--accent);
+  font-weight: 900;
 }
 
 .prayer-history-row {
@@ -632,6 +1025,10 @@ select {
 @media (max-width: 760px) {
   .learning-mini-grid,
   .prayer-mode-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .prayer-position-card {
     grid-template-columns: 1fr;
   }
 }

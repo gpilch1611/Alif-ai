@@ -56,8 +56,16 @@ assert(!appJs.includes("Dziennik nauki"), "Public learning journal label should 
 assert(appJs.includes("function renderHifzTab()"), "Short surah learning mode is missing.");
 assert(appJs.includes("function prayerJournalHtml()"), "Prayer journal UI is missing.");
 assert(
+  appJs.includes('from "./data/family-support.js"'),
+  "Convert and family support content should be imported from data/family-support.js."
+);
+assert(
   appJs.includes('from "./data/prayer-mode.js"'),
   "Prayer Mode static data should be imported from data/prayer-mode.js."
+);
+assert(
+  appJs.includes('from "./data/prayer-visuals.js"'),
+  "Prayer Mode visual posture metadata should be imported from data/prayer-visuals.js."
 );
 assert(!appJs.includes("const PRAYER_GUIDE_CORE_STEPS ="), "Prayer guide steps should stay out of app.js.");
 assert(!appJs.includes("const WUDU_STEPS ="), "Wudu static steps should stay out of app.js.");
@@ -106,11 +114,13 @@ assert(
 );
 for (const path of [
   "./data/content-metadata.js",
+  "./data/family-support.js",
   "./data/history.js",
   "./data/halal-haram.js",
   "./data/islamic-faq.js",
   "./data/islamic-hadith.js",
   "./data/prayer-mode.js",
+  "./data/prayer-visuals.js",
   "./data/quran-mode.js",
   "./data/quran-surahs.js"
 ]) {

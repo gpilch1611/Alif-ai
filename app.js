@@ -1,6 +1,14 @@
 import { arabicAlphabet, words, dailyTasks, asmaulHusna, islamicHadith, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, newMuslimSteps, halalHaramData, islamicFaq } from "./data.js";
 import { historyContent } from "./data/history.js";
 import {
+  FAMILY_BRIDGE_QUIZ,
+  FAMILY_CONVERSATION_GUIDE,
+  FAMILY_REASSURANCE_POINTS,
+  HOME_BRIDGE_CARDS,
+  MUALLAF_SUPPORT_PANELS,
+  QURAN_LEARNING_STEPS
+} from "./data/family-support.js";
+import {
   CONTENT_LAST_CHECKED_AT,
   CONTENT_TRUST,
   HIGH_RISK_FAQ_IDS,
@@ -29,9 +37,10 @@ import {
   SURAH_LENGTH_GROUPS,
   SURAH_LIST
 } from "./data/quran-mode.js";
+import { PRAYER_STEP_VISUALS } from "./data/prayer-visuals.js";
 
 const GROQ_MODEL = "llama-3.3-70b-versatile";
-const APP_VERSION = "20260528-1";
+const APP_VERSION = "20260528-2";
 window.__ALIF_APP_VERSION = APP_VERSION;
 const AI_SYSTEM_PROMPT_PL = `Jesteś spokojnym doradcą Alif AI od islamu, muzułmanów, konwersji, rozmowy z rodziną, Koranu, modlitwy i pierwszych kroków w wierze.
 Zawsze odpowiadaj TYLKO w języku polskim. Bądź ciepły, konkretny, delikatny i praktyczny.
@@ -153,7 +162,7 @@ const I18N = {
     navHome: "Start", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alfabet", navLessons: "Lekcje", navFlashcards: "Fiszki", navSpeech: "Wymowa", navWriting: "Pisanie", navBooks: "Książki", navCulture: "Kultura", navGames: "Gry", navBadges: "Odznaki", navSettings: "Ustawienia", navDhikr: "Dhikr", navPrayer: "Modlitwy", navAsmaul: "99 Imion", navTajweed: "Tadżwid", navHistory: "Historia", navPillars: "Filary", navRoots: "Korzenie", navMuallaf: "Nowy muzułmanin", navHalalHaram: "Halal & Haram", navIslamFaq: "FAQ islamu",
     install: "Zainstaluj", settings: "Ustawienia", language: "Język", polish: "Polski", english: "Angielski", resetToday: "Reset dzisiejszego progresu", resetStreak: "Reset streak", exportProgress: "Eksport postępu", importProgress: "Import postępu", clearData: "Wyczyść wszystkie dane",
     exportHint: "Pobierz plik JSON z całym postępem.", importHint: "Wybierz wcześniej wyeksportowany plik JSON.", dangerZone: "Strefa ostrożności", saved: "Zapisano", imported: "Zaimportowano dane", cleared: "Dane wyczyszczone",
-    welcome: "Witaj w ألف AI", homeTitle: "Islam — krok po kroku", homeLead: "Arabski jest narzędziem — bo czytanie Koranu w oryginale to obowiązek każdego muzułmanina. Ucz się liter, sur, dhikru, historii islamu i modlitw.",
+    welcome: "Witaj w ألف AI", homeTitle: "Islam — krok po kroku", homeLead: "Spokojne miejsce do poznawania islamu: dla osoby, która szuka wiary, i dla rodziny, która chce zrozumieć bez lęku. Ucz się Koranu, modlitwy, historii, adabu i pierwszych kroków bez presji.",
     pillarsQuiz: "Quiz: Filary Islamu", pillarsQuizDesc: "5 Filarów i 6 Filarów Imanu",
     surahQuiz: "Quiz: Sury Koranu", surahQuizDesc: "Rozpoznaj arabskie nazwy sur 78-114",
     dhikrGame: "Szybki Dhikr", dhikrGameDesc: "33 razy — jak najszybciej!", dhikrGameStart: "Dotknij aby zacząć", dhikrGameResult: "Czas",
@@ -171,7 +180,7 @@ const I18N = {
     navHome: "Home", navIslam: "Islam", navKoran: "Qur'an", navAlphabet: "Alphabet", navLessons: "Lessons", navFlashcards: "Cards", navSpeech: "Speech", navWriting: "Writing", navBooks: "Books", navCulture: "Culture", navGames: "Games", navBadges: "Badges", navSettings: "Settings", navDhikr: "Dhikr", navPrayer: "Prayers", navAsmaul: "99 Names", navTajweed: "Tajweed", navHistory: "History", navPillars: "Pillars", navRoots: "Roots", navMuallaf: "New Muslim", navHalalHaram: "Halal & Haram", navIslamFaq: "Islam FAQ",
     install: "Install", settings: "Settings", language: "Language", polish: "Polish", english: "English", resetToday: "Reset today's progress", resetStreak: "Reset streak", exportProgress: "Export progress", importProgress: "Import progress", clearData: "Clear all data",
     exportHint: "Download a JSON file with your full progress.", importHint: "Choose a previously exported JSON file.", dangerZone: "Careful zone", saved: "Saved", imported: "Data imported", cleared: "Data cleared",
-    welcome: "Welcome to ألف AI", homeTitle: "Islam — step by step", homeLead: "Arabic is the key — reading the Quran in the original is every Muslim's obligation. Learn letters, surahs, dhikr, Islamic history and prayers.",
+    welcome: "Welcome to ألف AI", homeTitle: "Islam — step by step", homeLead: "A calm place to understand Islam: for the person seeking faith, and for family who want to understand without fear. Learn Quran, prayer, history, adab and first steps without pressure.",
     pillarsQuiz: "Pillars Quiz", pillarsQuizDesc: "5 Pillars & 6 Pillars of Iman",
     surahQuiz: "Surah Quiz", surahQuizDesc: "Recognise Arabic surah names 78-114",
     dhikrGame: "Dhikr Speed", dhikrGameDesc: "33 taps — as fast as you can!", dhikrGameStart: "Tap to start", dhikrGameResult: "Time",
@@ -429,6 +438,8 @@ const defaultState = {
   surahQuizBest: 0,
   historyQuizStats: { correct: 0, wrong: 0 },
   historyQuizHistory: [],
+  familyBridgeQuizStats: { correct: 0, wrong: 0 },
+  familyBridgeQuizHistory: [],
   dhikrGameBest: null,
   dhikrGameHistory: [],
   gameHistory: [],
@@ -626,6 +637,8 @@ function loadState() {
     if (!next.wuduChecklist) next.wuduChecklist = [];
     if (!next.prayerHistory) next.prayerHistory = [];
     if (!next.prayerTimesCache) next.prayerTimesCache = {};
+    if (!next.familyBridgeQuizStats) next.familyBridgeQuizStats = { correct: 0, wrong: 0 };
+    if (!next.familyBridgeQuizHistory) next.familyBridgeQuizHistory = [];
     next.reviewMistakes = sanitizeReviewMistakes(next.reviewMistakes);
     return next;
   } catch {
@@ -1244,8 +1257,48 @@ function muallaf() {
   view.innerHTML = `
     <div class="panel p-5 mb-5" style="background:linear-gradient(135deg,var(--panel) 0%,rgba(16,185,129,0.08) 100%);border:1px solid rgba(16,185,129,0.25)">
       <h1 class="text-3xl font-black mb-1">🌱 ${tx("Nowy muzułmanin", "New Muslim")}</h1>
-      <p class="text-[var(--muted)]">${tx("Zaczynasz od zera? Doskonale. Islam jest religią łatwości, nie perfekcji.", "Starting from scratch? Perfect. Islam is a religion of ease, not perfection.")}</p>
+      <p class="text-[var(--muted)]">${tx("Zaczynasz od zera albo chcesz pokazać rodzinie, co się dzieje w twoim sercu? Dobrze. Islam jest religią łatwości, szczerości i dobrego charakteru.", "Starting from zero or trying to show family what is happening in your heart? Good. Islam is a religion of ease, sincerity and good character.")}</p>
     </div>
+
+    <section class="muallaf-support-grid mb-6">
+      ${MUALLAF_SUPPORT_PANELS.map(panel => `
+        <button class="panel p-4 text-left muallaf-support-card" data-muallaf-route="${panel.route}">
+          <span>${panel.icon}</span>
+          <strong>${state.lang === "pl" ? panel.titlePl : panel.titleEn}</strong>
+          <small>${state.lang === "pl" ? panel.bodyPl : panel.bodyEn}</small>
+        </button>
+      `).join("")}
+    </section>
+
+    <section id="muallaf-family" class="panel p-5 mb-6">
+      <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Dla rodziny konwertyty", "For a convert's family")}</p>
+      <h2 class="mt-1 text-2xl font-black">${tx("Najpierw uspokoić lęk, potem tłumaczyć szczegóły", "Calm the fear first, explain details later")}</h2>
+      <p class="mt-2 text-sm text-[var(--muted)]">${tx("Rodzice często nie boją się tylko teologii. Boją się, że tracą dziecko. Ta część pomaga mówić prosto, bez walki.", "Parents often do not fear only theology. They fear losing their child. This part helps speak simply, without fighting.")}</p>
+      <div class="family-reassurance-grid mt-4">
+        ${FAMILY_REASSURANCE_POINTS.map(point => `
+          <article class="family-reassurance-card">
+            <span>${point.icon}</span>
+            <h3>${state.lang === "pl" ? point.titlePl : point.titleEn}</h3>
+            <p>${state.lang === "pl" ? point.bodyPl : point.bodyEn}</p>
+            <small>${point.source}</small>
+          </article>
+        `).join("")}
+      </div>
+      <h3 class="mt-5 font-black">${tx("Gotowe zdania do rozmowy", "Ready sentences for conversation")}</h3>
+      <div class="conversation-grid mt-3">
+        ${FAMILY_CONVERSATION_GUIDE.map(item => `
+          <article class="conversation-card">
+            <p>${state.lang === "pl" ? item.labelPl : item.labelEn}</p>
+            <strong>${state.lang === "pl" ? item.textPl : item.textEn}</strong>
+          </article>
+        `).join("")}
+      </div>
+      <div class="mt-4 grid gap-2 sm:grid-cols-3">
+        <button class="big-action bg-emerald-500 text-white" data-muallaf-route="history" data-history-tab="christianity">${tx("Isa i Maryam", "Isa and Maryam")}</button>
+        <button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-muallaf-route="games" data-active-game="familyBridgeQuiz">${tx("Quiz dla rodziny", "Family quiz")}</button>
+        <button class="big-action border border-[var(--line)] bg-[var(--surface)]" data-muallaf-route="ai">${tx("Zapytaj AI", "Ask AI")}</button>
+      </div>
+    </section>
 
     <h2 class="text-xl font-black mb-3">${tx("7 kroków — po kolei, bez pośpiechu", "7 steps — one at a time, no rush")}</h2>
     <div class="mb-6">
@@ -1337,6 +1390,15 @@ function muallaf() {
       state.muallafChecklist = [...current];
       saveState();
       muallaf();
+    });
+  });
+  view.querySelectorAll("[data-muallaf-route]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.dataset.historyTab) state.historyTab = button.dataset.historyTab;
+      if (button.dataset.activeGame) state.activeGame = button.dataset.activeGame;
+      saveState();
+      if (button.dataset.muallafRoute === "ai") openAiChat();
+      else setRoute(button.dataset.muallafRoute);
     });
   });
 }
@@ -2274,6 +2336,14 @@ function nextStepSuggestion() {
       action: tx("Otworz Islam", "Open Islam")
     };
   }
+  if (state.learningGoal === "family") {
+    return {
+      route: "muallaf",
+      title: tx("Most dla rodziny", "Bridge for family"),
+      text: tx("Otwórz spokojne odpowiedzi: rodzice, Jezus i Maryja, brak przymusu, dobroć wobec rodziny.", "Open calm answers: parents, Jesus and Mary, no compulsion, kindness toward family."),
+      action: tx("Pokaż rodzinie", "Show family")
+    };
+  }
   if ((state.muallafChecklist || []).length < 3) {
     return {
       route: "muallaf",
@@ -2319,6 +2389,31 @@ function nextStepCard() {
       </div>
       <span class="text-xl">&gt;</span>
     </button>
+  `;
+}
+
+function familyBridgePanel() {
+  return `
+    <section class="family-bridge-panel panel p-5 sm:p-6 mb-4">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Dla ciebie i bliskich", "For you and loved ones")}</p>
+          <h2 class="mt-1 text-2xl font-black">${tx("Islam bez lęku, bez presji", "Islam without fear, without pressure")}</h2>
+          <p class="mt-2 text-sm text-[var(--muted)]">${tx("Ta aplikacja ma pomagać też wtedy, gdy chcesz spokojnie pokazać rodzinie, co naprawdę poznajesz.", "This app should also help when you want to calmly show family what you are truly learning.")}</p>
+        </div>
+        <span class="trust-badge verified">${tx("Most, nie debata", "Bridge, not debate")}</span>
+      </div>
+      <div class="family-bridge-grid mt-4">
+        ${HOME_BRIDGE_CARDS.map(card => `
+          <button class="family-bridge-card text-left" data-route="${card.route}" ${card.historyTab ? `data-history-tab="${card.historyTab}"` : ""} ${card.anchor ? `data-muallaf-anchor="${card.anchor}"` : ""}>
+            <span>${card.icon}</span>
+            <strong>${state.lang === "pl" ? card.titlePl : card.titleEn}</strong>
+            <small>${state.lang === "pl" ? card.textPl : card.textEn}</small>
+            <em>${state.lang === "pl" ? card.actionPl : card.actionEn}</em>
+          </button>
+        `).join("")}
+      </div>
+    </section>
   `;
 }
 
@@ -2530,6 +2625,7 @@ function learningCenter() {
 const ONBOARDING_GOALS = [
   { id: "letters", route: "alphabet", icon: "Aa", pl: "Chcę zacząć od liter", en: "Start with letters" },
   { id: "muallaf", route: "muallaf", icon: "01", pl: "Jestem nowym muzułmaninem", en: "I am a new Muslim" },
+  { id: "family", route: "muallaf", icon: "🤝", pl: "Chcę pokazać to rodzinie", en: "I want to show family" },
   { id: "prayer", route: "prayerGuide", icon: "5x", pl: "Chcę nauczyć się modlitwy", en: "Learn prayer" },
   { id: "quran", route: "koran", icon: "Q", pl: "Chcę czytać Quran", en: "Read Quran" },
   { id: "basics", route: "islam", icon: "?", pl: "Chcę podstaw islamu", en: "Learn Islam basics" }
@@ -2637,6 +2733,7 @@ function home() {
 
   view.innerHTML = `
     ${onboardingPanel()}
+    ${familyBridgePanel()}
     <div class="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
       <section class="panel min-w-0 p-5 sm:p-7">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -2744,6 +2841,7 @@ function home() {
   view.querySelectorAll("[data-route]").forEach((button) => {
     button.addEventListener("click", () => {
       if (button.dataset.quranTab) state.quranTab = button.dataset.quranTab;
+      if (button.dataset.historyTab) state.historyTab = button.dataset.historyTab;
       if (button.dataset.route === "ai") openAiChat();
       else setRoute(button.dataset.route);
     });
@@ -3083,11 +3181,32 @@ function hifzNextStatus(current) {
 
 function renderHifzTab() {
   const memorized = HIFZ_SURAHS.filter(num => state.hifzProgress?.[num] === "memorized").length;
+  const inProgress = HIFZ_SURAHS.filter(num => state.hifzProgress?.[num] === "in-progress").length;
   return `
     <div class="panel p-4 mb-4">
-      <h2 class="text-xl font-black">${tx("Tryb nauki krotkich sur", "Short Surah Learning")}</h2>
-      <p class="text-sm text-[var(--muted)] mt-1">${tx("Najpierw Al-Fatiha, potem Al-Ikhlas, Al-Falaq i An-Nas. Odhaczaj postep bez presji.", "Start with Al-Fatiha, then Al-Ikhlas, Al-Falaq and An-Nas. Track progress without pressure.")}</p>
-      <p class="mt-3 text-sm font-black text-emerald-600">${memorized}/${HIFZ_SURAHS.length} ${tx("zapamietane", "memorized")}</p>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Quran learning mode", "Quran learning mode")}</p>
+          <h2 class="text-xl font-black">${tx("Krótkie sury do modlitwy", "Short surahs for prayer")}</h2>
+          <p class="text-sm text-[var(--muted)] mt-1">${tx("Najpierw Al-Fatiha, potem Al-Ikhlas, Al-Falaq i An-Nas. Słuchaj, czytaj, powtarzaj i dopiero potem oznacz jako zapamiętane.", "Start with Al-Fatiha, then Al-Ikhlas, Al-Falaq and An-Nas. Listen, read, repeat and only then mark as memorized.")}</p>
+        </div>
+        <div class="learning-snapshot min-w-[180px]">
+          <div class="learning-snapshot-card">
+            <span>${memorized}/${HIFZ_SURAHS.length}</span>
+            <strong>${tx("zapamiętane", "memorized")}</strong>
+            <small>${inProgress} ${tx("w trakcie", "in progress")}</small>
+          </div>
+        </div>
+      </div>
+      <div class="quran-learning-steps mt-4">
+        ${QURAN_LEARNING_STEPS.map(step => `
+          <article class="quran-learning-step">
+            <span>${step.icon}</span>
+            <strong>${state.lang === "pl" ? step.titlePl : step.titleEn}</strong>
+            <small>${state.lang === "pl" ? step.bodyPl : step.bodyEn}</small>
+          </article>
+        `).join("")}
+      </div>
     </div>
     <div class="grid gap-3 sm:grid-cols-2">
       ${HIFZ_SURAHS.map(num => {
@@ -3105,6 +3224,7 @@ function renderHifzTab() {
             </div>
             <div class="mt-4 grid gap-2 sm:grid-cols-2">
               <button class="big-action border border-[var(--line)]" data-read-surah="${num}">${tx("Czytaj", "Read")}</button>
+              <button class="big-action border border-[var(--line)]" data-hifz-listen="${num}">${tx("Odsłuchaj", "Listen")}</button>
               <button class="big-action bg-emerald-500 text-white" data-hifz-toggle="${num}">${tx("Zmien status", "Change status")}</button>
             </div>
           </article>
@@ -3247,10 +3367,17 @@ function koran() {
       koran();
       setTimeout(() => openSurah(Number(btn.dataset.readSurah)), 100);
     }));
+    view.querySelectorAll("[data-hifz-listen]").forEach(btn => btn.addEventListener("click", () => {
+      state.quranTab = "surahs";
+      saveState();
+      koran();
+      setTimeout(() => openSurah(Number(btn.dataset.hifzListen), { focusReader: true, autoPlay: true }), 100);
+    }));
     view.querySelectorAll("[data-hifz-toggle]").forEach(btn => btn.addEventListener("click", () => {
       const num = Number(btn.dataset.hifzToggle);
       state.hifzProgress = { ...(state.hifzProgress || {}), [num]: hifzNextStatus(state.hifzProgress?.[num] || "not-started") };
       saveState();
+      checkBadges();
       koran();
     }));
   }
@@ -3366,7 +3493,7 @@ async function openSurah(num, options = {}) {
 
       const ayahAudios = s.ayahs.map(a => a.audio);
       let playIndex = 0;
-      $("#playFullSurah").addEventListener("click", () => {
+      const playFullSurah = () => {
         if (!ayahAudios.length) return;
         playIndex = 0;
         const playNext = () => {
@@ -3376,7 +3503,9 @@ async function openSurah(num, options = {}) {
           audio.play();
         };
         playNext();
-      });
+      };
+      $("#playFullSurah").addEventListener("click", playFullSurah);
+      if (options.autoPlay) playFullSurah();
       const reader = container.querySelector(".surah-reader");
       if (options.focusReader) {
         requestAnimationFrame(() => reader?.scrollIntoView({ behavior: "smooth", block: "start" }));
@@ -3435,6 +3564,7 @@ function badges() {
       const target = badgeTarget(button.dataset.badgeId);
       if (target.activeGame) state.activeGame = target.activeGame;
       if (target.historyTab) state.historyTab = target.historyTab;
+      if (target.quranTab) state.quranTab = target.quranTab;
       saveState();
       setRoute(target.route);
     });
@@ -3584,6 +3714,17 @@ function settings() {
     state.quizStats = { correct: 0, wrong: 0 };
     state.quizHistory = [];
     state.memoryStats = { correct: 0, wrong: 0 };
+    state.pillarsQuizStats = { correct: 0, wrong: 0 };
+    state.pillarsQuizHistory = [];
+    state.surahQuizStats = { correct: 0, wrong: 0 };
+    state.surahQuizHistory = [];
+    state.historyQuizStats = { correct: 0, wrong: 0 };
+    state.historyQuizHistory = [];
+    state.familyBridgeQuizStats = { correct: 0, wrong: 0 };
+    state.familyBridgeQuizHistory = [];
+    state.asmaChallengeBest = 0;
+    state.asmaChallengeHistory = [];
+    state.gameHistory = [];
     state.writingAttempts = [];
     state.reviewMistakes = {};
     state.recordings = {};
@@ -3592,6 +3733,7 @@ function settings() {
     state.wuduChecklist = [];
     state.prayerHistory = [];
     state.hifzProgress = {};
+    state.historyProgress = structuredClone(defaultState.historyProgress);
     saveState();
     render();
   });
@@ -4801,6 +4943,7 @@ function games() {
       surahQuiz:   '<div id="surahQuizBox" class="panel p-5"></div>',
       pillarsQuiz: '<div id="pillarsQuizBox" class="panel p-5"></div>',
       historyQuiz: '<div id="historyQuizBox" class="panel p-5"></div>',
+      familyBridgeQuiz: '<div id="familyBridgeQuizBox" class="panel p-5"></div>',
       asmaChallenge: '<div id="asmaChallengeBox" class="panel p-5"></div>',
       quizHub:     '<div id="quizHubBox"></div>',
     };
@@ -4811,7 +4954,7 @@ function games() {
     };
     if (containerMap[state.activeGame]) {
       view.innerHTML = containerMap[state.activeGame];
-      const renderers = { quiz: renderQuiz, memory: renderMemory, dhikrGame: renderDhikrGame, surahQuiz: renderSurahQuiz, pillarsQuiz: renderPillarsQuiz, historyQuiz: renderHistoryQuiz, asmaChallenge: renderAsmaChallenge, quizHub: renderQuizHub };
+      const renderers = { quiz: renderQuiz, memory: renderMemory, dhikrGame: renderDhikrGame, surahQuiz: renderSurahQuiz, pillarsQuiz: renderPillarsQuiz, historyQuiz: renderHistoryQuiz, familyBridgeQuiz: renderFamilyBridgeQuiz, asmaChallenge: renderAsmaChallenge, quizHub: renderQuizHub };
       (renderers[state.activeGame] || (() => {}))();
     } else if (directMap[state.activeGame]) {
       directMap[state.activeGame]();
@@ -4903,7 +5046,8 @@ function renderQuizHub() {
     { id: "quiz", icon: "Aa", titlePl: "Quiz liter", titleEn: "Letter Quiz", descPl: "Rozpoznaj arabską literę", descEn: "Identify the Arabic letter" },
     { id: "surahQuiz", icon: "📖", titlePl: "Quiz Surah", titleEn: "Surah Quiz", descPl: "Rozpoznaj krótkie sury", descEn: "Identify short surahs" },
     { id: "pillarsQuiz", icon: "⭐", titlePl: "Quiz Filarów", titleEn: "Pillars Quiz", descPl: "Filary islamu i imanu", descEn: "Pillars of Islam and Iman" },
-    { id: "historyQuiz", icon: "◷", titlePl: "Quiz Historii", titleEn: "History Quiz", descPl: "Oś czasu, prorocy, Sahaba i konwersje", descEn: "Timeline, prophets, Sahaba and conversions" }
+    { id: "historyQuiz", icon: "◷", titlePl: "Quiz Historii", titleEn: "History Quiz", descPl: "Oś czasu, prorocy, Sahaba i konwersje", descEn: "Timeline, prophets, Sahaba and conversions" },
+    { id: "familyBridgeQuiz", icon: "🤝", titlePl: "Quiz dla rodziny", titleEn: "Family Bridge Quiz", descPl: "Spokojne odpowiedzi na najczęstsze obawy", descEn: "Calm answers to common fears" }
   ];
   $("#quizHubBox").innerHTML = `
     <div class="mb-5">
@@ -5206,6 +5350,72 @@ function recordHistoryQuizProgress(question) {
   if (question.group && question.progressId && !progress[question.group].includes(question.progressId)) {
     progress[question.group].push(question.progressId);
   }
+}
+
+function renderFamilyBridgeQuiz() {
+  if (!state.familyBridgeQuizStats) state.familyBridgeQuizStats = { correct: 0, wrong: 0 };
+  if (!state.familyBridgeQuizHistory) state.familyBridgeQuizHistory = [];
+  const question = FAMILY_BRIDGE_QUIZ[Math.floor(Math.random() * FAMILY_BRIDGE_QUIZ.length)];
+  const choices = (state.lang === "pl" ? question.choicesPl : question.choicesEn).slice().sort(() => Math.random() - 0.5);
+  const answer = state.lang === "pl" ? question.answerPl : question.answerEn;
+
+  $("#familyBridgeQuizBox").innerHTML = `
+    <div class="flex flex-wrap items-center gap-2">
+      <h2 class="text-2xl font-black">${tx("Quiz dla rodziny", "Family Bridge Quiz")}</h2>
+      <span class="trust-badge context-dependent">${tx("adab i mosty", "adab and bridges")}</span>
+    </div>
+    <p class="mt-1 text-[var(--muted)] text-sm">${tx("Ćwicz spokojne odpowiedzi na pytania, które często pojawiają się w rodzinie konwertyty.", "Practice calm answers to questions that often appear in a convert's family.")}</p>
+    <p class="mt-2 text-sm font-bold text-[var(--muted)]">${t("correct")}: ${state.familyBridgeQuizStats.correct} · ${t("wrong")}: ${state.familyBridgeQuizStats.wrong}</p>
+    <div class="my-5 rounded-xl border border-[var(--line)] bg-[var(--surface-soft)] p-4">
+      <p class="text-xs font-black uppercase text-[var(--accent)]">${escapeHtml(question.source)}</p>
+      <p class="mt-2 text-[var(--text)] leading-relaxed">${escapeHtml(state.lang === "pl" ? question.promptPl : question.promptEn)}</p>
+    </div>
+    <div class="grid gap-2">
+      ${choices.map((choice, index) => `<button class="big-action border border-[var(--line)] bg-[var(--surface)] text-left" data-family-bridge-choice="${index}">${escapeHtml(choice)}</button>`).join("")}
+    </div>
+    <div class="mt-4">
+      <h3 class="font-black text-sm">${t("history")}</h3>
+      <div class="mt-2 grid gap-1 text-sm text-[var(--muted)]">
+        ${state.familyBridgeQuizHistory.slice(0, 5).map(item => `<p>${item.ok ? t("correct") : t("wrong")} · ${escapeHtml(item.name)} · ${new Date(item.date).toLocaleTimeString(localeTag())}</p>`).join("") || `<p>${tx("Brak prób.", "No attempts yet.")}</p>`}
+      </div>
+    </div>
+  `;
+
+  let answered = false;
+  $("#familyBridgeQuizBox").querySelectorAll("[data-family-bridge-choice]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (answered) return;
+      answered = true;
+      const selected = choices[Number(btn.dataset.familyBridgeChoice)];
+      const isCorrect = selected === answer;
+      $("#familyBridgeQuizBox").querySelectorAll("[data-family-bridge-choice]").forEach(choice => { choice.disabled = true; });
+      if (isCorrect) {
+        btn.className = "big-action bg-emerald-500 text-white text-left";
+        state.familyBridgeQuizStats.correct += 1;
+        state.points += 15;
+        state.familyBridgeQuizHistory.unshift({ ok: true, name: question.source, date: new Date().toISOString() });
+        updateReviewMistake(`familyBridge:${question.id}`, true);
+        saveState();
+        checkBadges();
+        confetti();
+        setTimeout(renderFamilyBridgeQuiz, 900);
+      } else {
+        btn.className = "big-action bg-red-500 text-white text-left";
+        state.familyBridgeQuizStats.wrong += 1;
+        state.familyBridgeQuizHistory.unshift({ ok: false, name: question.source, date: new Date().toISOString() });
+        updateReviewMistake(`familyBridge:${question.id}`, false);
+        saveState();
+        const explanation = document.createElement("div");
+        explanation.className = "history-key-lesson";
+        explanation.innerHTML = `${tx("Spokojniejsza odpowiedź:", "Calmer answer:")} <strong>${escapeHtml(answer)}</strong><br>${escapeHtml(question.source)}
+          <button class="history-read-btn mt-3" data-next-family-bridge>${tx("Następne pytanie", "Next question")}</button>`;
+        $("#familyBridgeQuizBox").appendChild(explanation);
+        $("#familyBridgeQuizBox").querySelector("[data-next-family-bridge]")?.addEventListener("click", renderFamilyBridgeQuiz);
+      }
+      state.familyBridgeQuizHistory = state.familyBridgeQuizHistory.slice(0, 20);
+      saveState();
+    }, { once: true });
+  });
 }
 
 function renderHistoryQuiz() {
@@ -5954,7 +6164,10 @@ const BADGES_CATALOG = [
   { id: "dhikr100",       icon: "💚",  pl: "100 dhikr",           en: "100 dhikr",          criterionPl: "Wykonaj 100 kliknięć dhikru",       criterionEn: "Complete 100 dhikr taps" },
   { id: "pillars_quiz10", icon: "⭐",  pl: "Filary quiz",         en: "Pillars quiz",       criterionPl: "Zdobądź 10 poprawnych w quizie filarów", criterionEn: "Get 10 correct in the pillars quiz" },
   { id: "surah_quiz10",   icon: "📜",  pl: "Quiz sur",            en: "Surah quiz",         criterionPl: "Zdobądź 10 poprawnych w quizie sur", criterionEn: "Get 10 correct in the surah quiz" },
+  { id: "quran_hifz_first", icon: "🔊", pl: "Pierwsza sura w toku", en: "First surah started", criterionPl: "Rozpocznij naukę jednej krótkiej sury", criterionEn: "Start learning one short surah" },
+  { id: "quran_hifz_4", icon: "🕋", pl: "4 krótkie sury", en: "4 short surahs", criterionPl: "Oznacz 4 krótkie sury jako zapamiętane", criterionEn: "Mark 4 short surahs as memorized" },
   { id: "history_quiz10", icon: "🧭",  pl: "Quiz Historii",       en: "History quiz",       criterionPl: "Zdobądź 10 poprawnych w quizie Historii", criterionEn: "Get 10 correct in the History quiz" },
+  { id: "family_bridge_quiz5", icon: "🤝", pl: "Most rodzinny", en: "Family bridge", criterionPl: "Zdobądź 5 poprawnych w quizie dla rodziny", criterionEn: "Get 5 correct in the Family Bridge quiz" },
   { id: "games3",         icon: "🎮",  pl: "3 gry",               en: "3 games",            criterionPl: "Zagraj 3 razy w gry",                criterionEn: "Play games 3 times" },
   { id: "dua_fav3",       icon: "☾",   pl: "3 ulubione dua",      en: "3 favorite duas",    criterionPl: "Dodaj 3 dua do ulubionych",         criterionEn: "Favorite 3 duas" },
   { id: "review_clean",   icon: "✓",   pl: "Czysta powtórka",     en: "Clean review",       criterionPl: "Nie miej aktywnych błędów",          criterionEn: "Have no active mistakes" },
@@ -5997,6 +6210,8 @@ function badgeTarget(id) {
   if (/^history_women/.test(id)) return { route: "history", historyTab: "women" };
   if (/^history_bridge/.test(id)) return { route: "history", historyTab: "christianity" };
   if (/^history_stories/.test(id)) return { route: "history", historyTab: "stories" };
+  if (/^quran_hifz/.test(id)) return { route: "koran", quranTab: "hifz" };
+  if (/^family_bridge/.test(id)) return { route: "games", activeGame: "familyBridgeQuiz" };
   if (/letter/.test(id)) return { route: "alphabet" };
   if (/surah|fatiha|dua/.test(id)) return { route: "koran" };
   if (/quiz|game|asma/.test(id)) return { route: "games", activeGame: "quizHub" };
@@ -6025,6 +6240,7 @@ function checkBadges() {
     (state.pillarsQuizHistory || []).length +
     (state.surahQuizHistory || []).length +
     (state.historyQuizHistory || []).length +
+    (state.familyBridgeQuizHistory || []).length +
     (state.memoryStats?.correct || 0) +
     (state.memoryStats?.wrong || 0);
 
@@ -6059,7 +6275,10 @@ function checkBadges() {
   if (dhikrTotal >= 100) unlockBadge("dhikr100", tx("100 dhikr", "100 dhikr"));
   if ((state.pillarsQuizStats?.correct || 0) >= 10) unlockBadge("pillars_quiz10", tx("Filary quiz", "Pillars quiz"));
   if ((state.surahQuizStats?.correct || 0) >= 10) unlockBadge("surah_quiz10", tx("Quiz sur", "Surah quiz"));
+  if (Object.values(state.hifzProgress || {}).some(status => status === "in-progress" || status === "memorized")) unlockBadge("quran_hifz_first", tx("Pierwsza sura w toku", "First surah started"));
+  if (HIFZ_SURAHS.every(num => state.hifzProgress?.[num] === "memorized")) unlockBadge("quran_hifz_4", tx("4 krótkie sury", "4 short surahs"));
   if ((state.historyQuizStats?.correct || 0) >= 10) unlockBadge("history_quiz10", tx("Quiz Historii", "History quiz"));
+  if ((state.familyBridgeQuizStats?.correct || 0) >= 5) unlockBadge("family_bridge_quiz5", tx("Most rodzinny", "Family bridge"));
   if (gamesPlayed >= 3) unlockBadge("games3", tx("3 gry", "3 games"));
   if ((state.quranDuaFavorites || []).length >= 3) unlockBadge("dua_fav3", tx("3 ulubione dua", "3 favorite duas"));
   if (activeMistakeTotal() === 0 && gamesPlayed > 0) unlockBadge("review_clean", tx("Czysta powtórka", "Clean review"));
@@ -6465,6 +6684,33 @@ function prayerTodayPanel() {
   `;
 }
 
+function prayerPositionVisualHtml(step) {
+  const visual = PRAYER_STEP_VISUALS[step.id] || PRAYER_STEP_VISUALS.qiyam;
+  const tips = state.lang === "pl" ? visual.tips.pl : visual.tips.en;
+  return `
+    <div class="prayer-position-card">
+      <div class="prayer-position-figure" aria-hidden="true">
+        <div class="prayer-avatar ${visual.posture}">
+          <span class="avatar-head"></span>
+          <span class="avatar-body"></span>
+          <span class="avatar-arm left"></span>
+          <span class="avatar-arm right"></span>
+          <span class="avatar-leg left"></span>
+          <span class="avatar-leg right"></span>
+          <span class="avatar-ground"></span>
+        </div>
+      </div>
+      <div class="prayer-position-copy">
+        <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Pozycja", "Position")}</p>
+        <h3>${state.lang === "pl" ? visual.labelPl : visual.labelEn}</h3>
+        <ul>
+          ${tips.map(tip => `<li>${escapeHtml(tip)}</li>`).join("")}
+        </ul>
+      </div>
+    </div>
+  `;
+}
+
 function prayerGuidePanel() {
   const selected = PRAYER_GUIDE_PRAYERS.find(p => p.id === prayerGuidePrayer) || PRAYER_GUIDE_PRAYERS[0];
   prayerGuidePrayer = selected.id;
@@ -6499,6 +6745,7 @@ function prayerGuidePanel() {
         <div class="mt-4 h-2 overflow-hidden rounded-full bg-emerald-100">
           <div class="h-full bg-emerald-500 transition-all" style="width:${progress}%"></div>
         </div>
+        ${prayerPositionVisualHtml(step)}
         <p class="mt-5 text-[var(--muted)]">${state.lang === "pl" ? step.bodyPl : step.bodyEn}</p>
         ${step.ar ? `<div class="prayer-guide-arabic arabic">${step.ar.replace(/\n/g, "<br>")}</div>` : ""}
         ${step.tr ? `<p class="mt-3 text-lg font-black text-[var(--accent)]">${step.tr}</p>` : ""}

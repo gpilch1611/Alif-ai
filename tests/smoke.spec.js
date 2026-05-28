@@ -90,12 +90,12 @@ test.describe("Alif AI smoke", () => {
     await page.evaluate(() => localStorage.clear());
     await page.goto("/");
     await expect(page.getByRole("heading", { name: /Wybierz pierwsza sciezke|Choose your first path/ })).toBeVisible();
-    await expect(page.locator("[data-onboarding-goal]")).toHaveCount(5);
+    await expect(page.locator("[data-onboarding-goal]")).toHaveCount(6);
     await expect(page.locator(".home-stat-card")).toHaveCount(0);
   });
 
   test("Start in Polish keeps learning center and stat cards inside their boxes", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: /Islam/ })).toBeVisible();
+    await expect(page.locator("#view h1")).toContainText(/Islam/);
     await expect(page.locator(".home-quick-card")).toHaveCount(0);
     await expect(page.locator("[data-stat-action='level']")).toBeVisible();
     await page.locator("[data-stat-action='level']").click();
@@ -300,7 +300,7 @@ test.describe("Alif AI smoke", () => {
   test("removed route falls back to Start", async ({ page }) => {
     await page.goto("/#zakat");
     await expect(page).toHaveURL(/#home$/);
-    await expect(page.getByRole("heading", { name: /Islam/ })).toBeVisible();
+    await expect(page.locator("#view h1")).toContainText(/Islam/);
   });
 
   test("Islam, History and settings activity routes render expected replacement features", async ({ page }) => {
