@@ -4148,10 +4148,14 @@ function playArabicTtsUrl(url) {
   return new Promise((resolve, reject) => {
     const audio = new Audio();
     currentTtsAudio = audio;
+    audio.loop = false;
     audio.preload = "auto";
     audio.src = url;
     let settled = false;
     const timeout = setTimeout(() => fail(new Error("tts-timeout")), 8000);
+    const clearCurrentAudio = () => {
+      if (currentTtsAudio === audio) currentTtsAudio = null;
+    };
     const cleanup = () => {
       clearTimeout(timeout);
       audio.removeEventListener("playing", ok);
@@ -4161,13 +4165,14 @@ function playArabicTtsUrl(url) {
       if (settled) return;
       settled = true;
       cleanup();
+      audio.addEventListener("ended", clearCurrentAudio, { once: true });
       resolve(true);
     };
     const fail = (error) => {
       if (settled) return;
       settled = true;
       cleanup();
-      if (currentTtsAudio === audio) currentTtsAudio = null;
+      clearCurrentAudio();
       reject(error);
     };
     audio.addEventListener("playing", ok, { once: true });
