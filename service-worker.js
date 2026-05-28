@@ -1,9 +1,9 @@
-const CACHE_NAME = "alif-ai-v23";
+const CACHE_NAME = "alif-ai-v24";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260528-3",
-  "./app.js?v=20260528-3",
+  "./styles.css?v=20260528-4",
+  "./app.js?v=20260528-4",
   "./version.json",
   "./data.js",
   "./data/content-metadata.js",

@@ -39,7 +39,7 @@ import {
 import { PRAYER_STEP_VISUALS } from "./data/prayer-visuals.js";
 
 const GROQ_MODEL = "llama-3.3-70b-versatile";
-const APP_VERSION = "20260528-3";
+const APP_VERSION = "20260528-4";
 window.__ALIF_APP_VERSION = APP_VERSION;
 const AI_SYSTEM_PROMPT_PL = `Jesteś spokojnym doradcą Alif AI od islamu, muzułmanów, konwersji, rozmowy z rodziną, Koranu, modlitwy i pierwszych kroków w wierze.
 Zawsze odpowiadaj TYLKO w języku polskim. Bądź ciepły, konkretny, delikatny i praktyczny.
@@ -6663,15 +6663,7 @@ function prayerPositionVisualHtml(step) {
   return `
     <div class="prayer-position-card">
       <div class="prayer-position-figure" aria-hidden="true">
-        <div class="prayer-avatar ${visual.posture}">
-          <span class="avatar-head"></span>
-          <span class="avatar-body"></span>
-          <span class="avatar-arm left"></span>
-          <span class="avatar-arm right"></span>
-          <span class="avatar-leg left"></span>
-          <span class="avatar-leg right"></span>
-          <span class="avatar-ground"></span>
-        </div>
+        ${prayerPostureSvg(visual.posture)}
       </div>
       <div class="prayer-position-copy">
         <p class="text-xs font-black uppercase tracking-wide text-emerald-600">${tx("Pozycja", "Position")}</p>
@@ -6681,6 +6673,104 @@ function prayerPositionVisualHtml(step) {
         </ul>
       </div>
     </div>
+  `;
+}
+
+function prayerPostureSvg(posture) {
+  const shared = `
+    <defs>
+      <linearGradient id="postureMat" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="currentColor" stop-opacity="0.12" />
+        <stop offset="1" stop-color="currentColor" stop-opacity="0.28" />
+      </linearGradient>
+    </defs>
+    <rect class="posture-mat" x="22" y="138" width="216" height="13" rx="7" />
+  `;
+  const label = {
+    qiyam: tx("Stanie", "Standing"),
+    takbir: tx("Takbir", "Takbir"),
+    ruku: tx("Skłon", "Bowing"),
+    sujud: tx("Sujud", "Sujud"),
+    sit: tx("Siedzenie", "Sitting"),
+    salam: tx("Salam", "Salam")
+  }[posture] || tx("Stanie", "Standing");
+  const figures = {
+    qiyam: `
+      <circle class="posture-head" cx="130" cy="35" r="16" />
+      <path class="posture-robe" d="M112 58 Q130 48 148 58 L154 121 Q130 133 106 121 Z" />
+      <path class="posture-line" d="M116 62 L103 112" />
+      <path class="posture-line" d="M144 62 L157 112" />
+      <path class="posture-line" d="M121 125 L116 142" />
+      <path class="posture-line" d="M139 125 L144 142" />
+      <path class="posture-detail" d="M116 66 Q130 76 144 66" />
+    `,
+    takbir: `
+      <circle class="posture-head" cx="130" cy="38" r="15" />
+      <path class="posture-robe" d="M113 62 Q130 52 147 62 L153 121 Q130 133 107 121 Z" />
+      <path class="posture-line" d="M116 66 Q91 47 92 28" />
+      <path class="posture-line" d="M144 66 Q169 47 168 28" />
+      <path class="posture-hand" d="M88 26 L96 26" />
+      <path class="posture-hand" d="M164 26 L172 26" />
+      <path class="posture-line" d="M121 125 L116 142" />
+      <path class="posture-line" d="M139 125 L144 142" />
+    `,
+    ruku: `
+      <circle class="posture-head" cx="176" cy="67" r="15" />
+      <path class="posture-robe" d="M86 65 C110 58 140 57 164 68 L160 91 C134 84 108 84 84 92 Z" />
+      <path class="posture-line" d="M88 88 L84 137" />
+      <path class="posture-line" d="M111 88 L109 137" />
+      <path class="posture-line" d="M128 88 L103 117" />
+      <path class="posture-line" d="M149 89 L113 119" />
+      <path class="posture-knee" d="M80 139 L95 139" />
+      <path class="posture-knee" d="M104 139 L119 139" />
+      <path class="posture-guide" d="M86 56 L163 56" />
+      <path class="posture-detail" d="M101 64 C121 60 143 61 160 68" />
+    `,
+    sujud: `
+      <circle class="posture-head" cx="170" cy="121" r="14" />
+      <path class="posture-robe" d="M73 98 C91 74 126 80 151 108 L141 127 C115 112 91 111 68 125 Z" />
+      <path class="posture-line" d="M75 118 L58 138" />
+      <path class="posture-line" d="M96 118 L84 139" />
+      <path class="posture-line" d="M143 122 L184 122" />
+      <path class="posture-line" d="M147 132 L187 132" />
+      <path class="posture-hand" d="M185 119 L198 119" />
+      <path class="posture-hand" d="M187 134 L200 134" />
+      <path class="posture-detail" d="M78 98 C103 88 127 91 148 109" />
+      <circle class="posture-contact" cx="181" cy="136" r="3" />
+      <circle class="posture-contact" cx="62" cy="139" r="3" />
+      <circle class="posture-contact" cx="88" cy="139" r="3" />
+    `,
+    sit: `
+      <circle class="posture-head" cx="129" cy="48" r="15" />
+      <path class="posture-robe" d="M111 70 Q129 60 147 70 L151 112 Q130 125 108 112 Z" />
+      <path class="posture-line" d="M116 74 L105 111" />
+      <path class="posture-line" d="M142 74 L153 111" />
+      <path class="posture-line" d="M111 117 Q83 128 70 140" />
+      <path class="posture-line" d="M146 117 Q176 128 190 140" />
+      <path class="posture-knee" d="M67 141 L101 141" />
+      <path class="posture-knee" d="M158 141 L193 141" />
+      <path class="posture-detail" d="M115 82 Q130 91 145 82" />
+    `,
+    salam: `
+      <circle class="posture-head turned" cx="137" cy="48" r="15" />
+      <path class="posture-face" d="M145 46 L155 49" />
+      <path class="posture-robe" d="M111 70 Q129 60 147 70 L151 112 Q130 125 108 112 Z" />
+      <path class="posture-line" d="M116 74 L105 111" />
+      <path class="posture-line" d="M142 74 L153 111" />
+      <path class="posture-line" d="M111 117 Q83 128 70 140" />
+      <path class="posture-line" d="M146 117 Q176 128 190 140" />
+      <path class="posture-knee" d="M67 141 L101 141" />
+      <path class="posture-knee" d="M158 141 L193 141" />
+      <path class="posture-guide" d="M160 49 C178 43 190 47 201 57" />
+      <path class="posture-guide" d="M196 48 L203 58 L190 58" />
+    `
+  };
+  return `
+    <svg class="prayer-posture-svg posture-${posture}" viewBox="0 0 260 170" role="img" aria-label="${escapeHtml(label)}">
+      ${shared}
+      ${figures[posture] || figures.qiyam}
+      <text class="posture-label" x="130" y="164" text-anchor="middle">${escapeHtml(label)}</text>
+    </svg>
   `;
 }
 
