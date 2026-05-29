@@ -50,7 +50,7 @@ npm test
 npm run content:report
 ```
 
-`lint` sprawdza składnię głównych plików JS, `test` uruchamia walidację danych islamskich i podstawową kontrolę jakości kodu, a `content:report` pokazuje lokalny raport przeglądu treści bez zależności npm i bez internetu. Raport liczy FAQ wyłącznie z `data.js` i pokazuje rozkład FAQ po `confidence`, `source_type` oraz `high_risk`. Docelowa walidacja oczekuje 44 FAQ w `data.js`, formalnych metadanych `source_type`, `confidence` i `reviewed_at` przy każdym FAQ oraz braku przejściowych `FAQ_REFERENCE_FIXES`, `faqExtraUnique` / extra FAQ w `app.js`.
+`lint` sprawdza składnię głównych plików JS, `test` uruchamia walidację danych islamskich i podstawową kontrolę jakości kodu, a `content:report` pokazuje lokalny raport przeglądu treści.
 
 ## AI Assistant
 
@@ -75,7 +75,6 @@ Assistant nie tworzy już fiszek, quizów, bajek ani ciekawostek AI. Gotowe ćwi
 - Zaawansowana wymowa: SpeechRecognition, wzorzec TTS, nagrywanie własnej wymowy i odsłuch.
 - Pisanie: canvas z półprzezroczystą literą do przerysowania.
 - Moje Książeczki: PDF jako plik lub link, viewer oraz interaktywne książeczki z kartami i wymową.
-- Kultura: krótkie, kuratorowane notatki o codzienności muzułmanów i rozmowie z rodziną.
 - Gry: quizy aplikacji, Memory Match, Dhikr Speed, Historia Quiz i 99 Imion Challenge.
 - Light / Dark mode.
 - Confetti przy sukcesach.
