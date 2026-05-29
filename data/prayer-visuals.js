@@ -1,4 +1,4 @@
-// Visual metadata for Prayer Mode positions.
+// Instruction metadata for Prayer Mode positions.
 
 const qiyamTips = {
   pl: ["Stań spokojnie.", "Wzrok w miejsce sujud.", "Ręce blisko ciała."],

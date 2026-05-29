@@ -719,100 +719,11 @@ select {
 }
 
 .prayer-position-card {
-  display: grid;
-  grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
-  gap: 20px;
-  align-items: center;
   margin-top: 18px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--surface-soft);
   padding: 18px;
-}
-
-.prayer-position-figure {
-  min-height: 190px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  background:
-    radial-gradient(circle at 50% 38%, color-mix(in oklab, var(--accent) 13%, transparent), transparent 54%),
-    color-mix(in oklab, var(--accent) 7%, var(--surface));
-}
-
-.prayer-posture-svg {
-  width: min(100%, 260px);
-  height: auto;
-  color: var(--accent);
-  overflow: visible;
-}
-
-.posture-mat {
-  fill: url("#postureMat");
-}
-
-.posture-head,
-.posture-contact {
-  fill: currentColor;
-}
-
-.posture-robe {
-  fill: color-mix(in oklab, var(--accent) 20%, transparent);
-  stroke: currentColor;
-  stroke-width: 6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.posture-line,
-.posture-hand,
-.posture-knee,
-.posture-detail,
-.posture-guide,
-.posture-face {
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.posture-line {
-  stroke-width: 9;
-}
-
-.posture-hand,
-.posture-knee {
-  stroke-width: 7;
-}
-
-.posture-detail {
-  stroke-width: 3;
-  opacity: 0.55;
-}
-
-.posture-guide {
-  stroke-width: 4;
-  stroke-dasharray: 7 7;
-  opacity: 0.38;
-}
-
-.posture-face {
-  stroke-width: 4;
-}
-
-.posture-label {
-  fill: color-mix(in oklab, var(--text) 72%, var(--accent));
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0;
-}
-
-.prayer-posture-svg.posture-ruku .posture-robe,
-.prayer-posture-svg.posture-sujud .posture-robe,
-.prayer-posture-svg.posture-sit .posture-robe,
-.prayer-posture-svg.posture-salam .posture-robe {
-  fill: color-mix(in oklab, var(--accent) 16%, transparent);
 }
 
 .prayer-position-copy h3 {
@@ -887,10 +798,6 @@ select {
 @media (max-width: 760px) {
   .learning-mini-grid,
   .prayer-mode-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .prayer-position-card {
     grid-template-columns: 1fr;
   }
 }
