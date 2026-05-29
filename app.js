@@ -1939,13 +1939,30 @@ function escapeRegExp(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+let historyTermsCache = null;
+const WORD_CHAR_PATTERN = /[\p{L}\p{N}]/u;
+
 function historyRichText(text) {
   const raw = String(text || "");
-  const terms = Object.keys(historyContent.terms || {}).sort((a, b) => b.length - a.length);
-  if (!terms.length || !raw) return escapeHtml(raw);
+  if (!raw) return "";
 
-  const pattern = new RegExp(terms.map(escapeRegExp).join("|"), "gu");
-  const isWordChar = (char) => Boolean(char && /[\p{L}\p{N}]/u.test(char));
+  // BOLT OPTIMIZATION: Lazy-initialize compiled RegExp for history terms to avoid redundant sorting and compilation.
+  // This replaces O(N log N) sorting and O(M) regex compilation on every call with a single initialization.
+  // We only cache if terms are present to avoid locking into an empty state if data loads asynchronously.
+  if (!historyTermsCache) {
+    const termKeys = Object.keys(historyContent.terms || {});
+    if (termKeys.length > 0) {
+      const sortedTerms = termKeys.sort((a, b) => b.length - a.length);
+      historyTermsCache = {
+        pattern: new RegExp(sortedTerms.map(escapeRegExp).join("|"), "gu")
+      };
+    }
+  }
+
+  const pattern = historyTermsCache?.pattern;
+  if (!pattern) return escapeHtml(raw);
+
+  const isWordChar = (char) => Boolean(char && WORD_CHAR_PATTERN.test(char));
   let cursor = 0;
   let html = "";
 
