@@ -1,5 +1,9 @@
 // Static Prayer Mode content and configuration.
 
+const REVIEWED_AT = "2026-05-29";
+const verified = { source_type: "quran_hadith", confidence: "VERIFIED", reviewed_at: REVIEWED_AT };
+const contextDependent = { source_type: "fiqh_context", confidence: "CONTEXT_DEPENDENT", reviewed_at: REVIEWED_AT };
+
 export const PRAYER_GUIDE_PRAYERS = [
   { id: "fajr", pl: "Fadżr", en: "Fajr", rakat: 2 },
   { id: "dhuhr", pl: "Dhuhr", en: "Dhuhr", rakat: 4 },
@@ -71,8 +75,10 @@ export const PRAYER_GUIDE_CORE_STEPS = [
     id: "ruku",
     titlePl: "Ruku — skłon",
     titleEn: "Ruku — bowing",
-    bodyPl: "Powiedz Allahu Akbar i pochyl się, opierając dłonie na kolanach. Plecy trzymaj możliwie prosto.",
-    bodyEn: "Say Allahu Akbar and bow, placing your hands on your knees. Keep your back as straight as you can.",
+    bodyPl:
+      "Powiedz Allahu Akbar i pochyl się, opierając dłonie na kolanach. Plecy trzymaj możliwie prosto, łokcie lekko od ciała, głowę w linii pleców.",
+    bodyEn:
+      "Say Allahu Akbar and bow, placing your hands on your knees. Keep your back as straight as you can, elbows slightly away and head aligned with the back.",
     ar: "سُبْحَانَ رَبِّيَ الْعَظِيم",
     tr: "Subhana rabbiyal azim",
     meaningPl: "Chwała mojemu Panu, Najwspanialszemu.",
@@ -93,8 +99,10 @@ export const PRAYER_GUIDE_CORE_STEPS = [
     id: "sujud1",
     titlePl: "Pierwszy sujud",
     titleEn: "First sujud",
-    bodyPl: "Powiedz Allahu Akbar i przejdź do pokłonu: czoło, nos, dłonie, kolana i palce stóp dotykają ziemi.",
-    bodyEn: "Say Allahu Akbar and go down: forehead, nose, hands, knees and toes touch the ground.",
+    bodyPl:
+      "Powiedz Allahu Akbar i przejdź do pokłonu. Czoło, nos, dłonie, kolana i palce stóp dotykają ziemi; dłonie są przy głowie, a palce stóp skierowane do Qibla.",
+    bodyEn:
+      "Say Allahu Akbar and go down. Forehead, nose, hands, knees and toes touch the ground; hands are near the head and toes face the Qibla.",
     ar: "سُبْحَانَ رَبِّيَ الْأَعْلَى",
     tr: "Subhana rabbiyal a'la",
     meaningPl: "Chwała mojemu Panu, Najwyższemu.",
@@ -137,12 +145,29 @@ export const PRAYER_GUIDE_CORE_STEPS = [
     id: "tashahhud",
     titlePl: "Tashahhud",
     titleEn: "Tashahhud",
-    bodyPl: "Po ostatniej raka'at usiądź. Na początku ucz się tej formuły powoli, fragment po fragmencie.",
-    bodyEn: "After the final raka'ah, sit. At first, learn this formula slowly, piece by piece.",
-    ar: "التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَات",
-    tr: "At-tahiyyatu lillahi was-salawatu wat-tayyibat",
-    meaningPl: "Pozdrowienia, modlitwy i dobre rzeczy należą do Allaha.",
-    meaningEn: "Greetings, prayers and good things belong to Allah."
+    bodyPl:
+      "Po ostatniej raka'at usiądź. To pełny tashahhud w najczęściej uczonej formie; ucz się go spokojnie, zdanie po zdaniu.",
+    bodyEn:
+      "After the final raka'ah, sit. This is the full tashahhud in a commonly taught form; learn it calmly, phrase by phrase.",
+    ar: "التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ\nالسَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ\nالسَّلَامُ عَلَيْنَا وَعَلَى عِبَادِ اللَّهِ الصَّالِحِينَ\nأَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ",
+    tr: "At-tahiyyatu lillahi was-salawatu wat-tayyibat. As-salamu 'alayka ayyuhan-nabiyyu wa rahmatullahi wa barakatuh. As-salamu 'alayna wa 'ala 'ibadillahis-salihin. Ashhadu an la ilaha illa Allah wa ashhadu anna Muhammadan 'abduhu wa rasuluh.",
+    meaningPl:
+      "Pozdrowienia, modlitwy i dobre rzeczy należą do Allaha. Pokój Prorokowi, nam i prawym sługom Allaha. Świadczę, że nie ma boga prócz Allaha i że Muhammad jest Jego sługą i posłańcem.",
+    meaningEn:
+      "Greetings, prayers and good things belong to Allah. Peace be upon the Prophet, upon us and upon Allah's righteous servants. I bear witness there is no god but Allah and Muhammad is His servant and messenger."
+  },
+  {
+    id: "salawat",
+    titlePl: "Salawat Ibrahimiyyah",
+    titleEn: "Salawat Ibrahimiyyah",
+    bodyPl: "Po tashahhudzie wyślij salawat na Proroka ﷺ. Na początku możesz uczyć się krótszymi fragmentami.",
+    bodyEn: "After tashahhud, send blessings upon the Prophet ﷺ. At first, you may learn it in shorter parts.",
+    ar: "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ\nكَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ\nإِنَّكَ حَمِيدٌ مَجِيدٌ\nاللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ\nكَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ\nإِنَّكَ حَمِيدٌ مَجِيدٌ",
+    tr: "Allahumma salli 'ala Muhammad wa 'ala ali Muhammad, kama sallayta 'ala Ibrahim wa 'ala ali Ibrahim, innaka hamidun majid. Allahumma barik 'ala Muhammad wa 'ala ali Muhammad, kama barakta 'ala Ibrahim wa 'ala ali Ibrahim, innaka hamidun majid.",
+    meaningPl:
+      "O Allahu, obdarz błogosławieństwem Muhammada i rodzinę Muhammada, jak obdarzyłeś Ibrahima i rodzinę Ibrahima. Zaprawdę jesteś Godny Chwały, Pełen Majestatu.",
+    meaningEn:
+      "O Allah, send blessings upon Muhammad and the family of Muhammad as You sent blessings upon Ibrahim and the family of Ibrahim. You are Praiseworthy, Majestic."
   },
   {
     id: "salam",
@@ -174,6 +199,8 @@ export const PRAYER_MODE_TABS = [
   { id: "today", pl: "Dzisiaj", en: "Today" },
   { id: "guide", pl: "Przewodnik", en: "Guide" },
   { id: "wudu", pl: "Wudu", en: "Wudu" },
+  { id: "adhkar", pl: "Po salah", en: "After salah" },
+  { id: "sunnah", pl: "Sunna i podróż", en: "Sunnah & travel" },
   { id: "history", pl: "Historia", en: "History" }
 ];
 
@@ -186,3 +213,171 @@ export const WUDU_STEPS = [
   { id: "head", pl: "Przetrzyj głowę i uszy.", en: "Wipe the head and ears." },
   { id: "feet", pl: "Umyj stopy do kostek.", en: "Wash the feet up to the ankles." }
 ];
+
+export const WUDU_INVALIDATORS = [
+  {
+    id: "toilet",
+    pl: "Oddanie moczu, stolca lub gazów.",
+    en: "Passing urine, stool or wind.",
+    source_ref: "Quran 5:6; Bukhari 135",
+    ...verified
+  },
+  {
+    id: "deep-sleep",
+    pl: "Głęboki sen, w którym traci się kontrolę i świadomość.",
+    en: "Deep sleep in which awareness and control are lost.",
+    source_ref: "Abu Dawud 203",
+    ...contextDependent
+  },
+  {
+    id: "unconscious",
+    pl: "Utrata przytomności, omdlenie lub stan podobny.",
+    en: "Loss of consciousness, fainting or a similar state.",
+    source_ref: "general fiqh",
+    ...contextDependent
+  },
+  {
+    id: "major-impurity",
+    pl: "Stan wymagający ghusl, np. po współżyciu.",
+    en: "A state requiring ghusl, such as after marital intimacy.",
+    source_ref: "Quran 5:6",
+    ...verified
+  }
+];
+
+export const GHUSL_GUIDE = {
+  when: [
+    {
+      id: "janabah",
+      pl: "Po współżyciu lub wytrysku.",
+      en: "After marital intimacy or ejaculation.",
+      source_ref: "Quran 5:6",
+      ...verified
+    },
+    {
+      id: "menses",
+      pl: "Po zakończeniu miesiączki lub krwawienia poporodowego.",
+      en: "After menstruation or postnatal bleeding ends.",
+      source_ref: "Quran 2:222",
+      ...verified
+    },
+    {
+      id: "conversion",
+      pl: "Wielu uczonych zaleca ghusl po przyjęciu islamu; zapytaj lokalnie, jeśli masz wątpliwość.",
+      en: "Many scholars recommend ghusl after accepting Islam; ask locally if unsure.",
+      source_ref: "Tirmidhi 605; fiqh discussion",
+      ...contextDependent
+    }
+  ],
+  steps: [
+    {
+      id: "intention",
+      pl: "Intencja w sercu, że wykonujesz ghusl.",
+      en: "Intention in the heart that you are performing ghusl."
+    },
+    {
+      id: "wash-private",
+      pl: "Umycie miejsc intymnych i usunięcie nieczystości.",
+      en: "Wash private areas and remove impurity."
+    },
+    { id: "wudu", pl: "Wykonanie wudu.", en: "Perform wudu." },
+    {
+      id: "whole-body",
+      pl: "Oblanie całego ciała wodą, tak aby dotarła do skóry i włosów.",
+      en: "Wash the whole body so water reaches the skin and hair."
+    }
+  ],
+  practicalDifference: {
+    pl: "Wudu to małe obmycie przed modlitwą. Ghusl to pełne obmycie po stanie większej nieczystości; po poprawnym ghusl możesz się modlić.",
+    en: "Wudu is the minor washing before prayer. Ghusl is the full washing after major ritual impurity; after a valid ghusl you may pray."
+  }
+};
+
+export const PRAYER_AFTER_SALAH_ADHKAR = [
+  {
+    id: "astaghfirullah",
+    ar: "أَسْتَغْفِرُ اللَّهَ",
+    tr: "Astaghfirullah",
+    pl: "Po salam: powiedz 3 razy «Proszę Allaha o przebaczenie».",
+    en: "After salam: say three times, 'I ask Allah for forgiveness.'",
+    source_ref: "Muslim 591",
+    ...verified
+  },
+  {
+    id: "allahumma-salam",
+    ar: "اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ",
+    tr: "Allahumma antas-salam wa minkas-salam",
+    pl: "O Allahu, Ty jesteś Pokojem i od Ciebie pochodzi pokój.",
+    en: "O Allah, You are Peace and from You comes peace.",
+    source_ref: "Muslim 591",
+    ...verified
+  },
+  {
+    id: "tasbih",
+    ar: "سُبْحَانَ اللَّهِ ٣٣ · الْحَمْدُ لِلَّهِ ٣٣ · اللَّهُ أَكْبَرُ ٣٤",
+    tr: "Subhanallah 33 · Alhamdulillah 33 · Allahu Akbar 34",
+    pl: "Tasbih po modlitwie: 33, 33 i 34.",
+    en: "Tasbih after prayer: 33, 33 and 34.",
+    source_ref: "Bukhari 843; Muslim 595",
+    ...verified
+  },
+  {
+    id: "ayat-kursi",
+    ar: "آيَةُ الْكُرْسِي",
+    tr: "Ayat al-Kursi",
+    pl: "Recytacja Ayat al-Kursi po modlitwie jest znaną praktyką w adhkar.",
+    en: "Reciting Ayat al-Kursi after prayer is a known practice in adhkar.",
+    source_ref: "Quran 2:255; Nasai al-Kubra 9848",
+    ...verified
+  }
+];
+
+export const PRAYER_SUNNAH_TRAVEL = {
+  rawatib: [
+    { id: "fajr", pl: "2 raka'at przed Fajr.", en: "2 raka'at before Fajr.", source_ref: "Muslim 725", ...verified },
+    {
+      id: "dhuhr",
+      pl: "4 przed Dhuhr i 2 po Dhuhr według często uczonego układu.",
+      en: "4 before Dhuhr and 2 after Dhuhr in a commonly taught pattern.",
+      source_ref: "Tirmidhi 415",
+      ...contextDependent
+    },
+    {
+      id: "maghrib",
+      pl: "2 raka'at po Maghrib.",
+      en: "2 raka'at after Maghrib.",
+      source_ref: "Bukhari 1180",
+      ...verified
+    },
+    { id: "isha", pl: "2 raka'at po Isha.", en: "2 raka'at after Isha.", source_ref: "Bukhari 1180", ...verified }
+  ],
+  witr: {
+    pl: "Witr to modlitwa nieparzysta po Isha, zwykle 1 lub 3 raka'at. W praktyce szczegóły różnią się między szkołami.",
+    en: "Witr is the odd-numbered prayer after Isha, commonly 1 or 3 raka'at. Practical details differ between schools.",
+    source_ref: "Bukhari 990; Muslim 749",
+    ...contextDependent
+  },
+  travel: [
+    {
+      id: "qasr",
+      pl: "W podróży Dhuhr, Asr i Isha mogą być skrócone z 4 do 2 raka'at.",
+      en: "During travel, Dhuhr, Asr and Isha may be shortened from 4 to 2 raka'at.",
+      source_ref: "Quran 4:101; Muslim 686",
+      ...verified
+    },
+    {
+      id: "jam",
+      pl: "W podróży lub realnej trudności można łączyć Dhuhr z Asr oraz Maghrib z Isha.",
+      en: "During travel or real hardship, Dhuhr may be combined with Asr and Maghrib with Isha.",
+      source_ref: "Muslim 705",
+      ...contextDependent
+    },
+    {
+      id: "ask",
+      pl: "Granice podróży i lokalna praktyka mogą się różnić, więc warto zapytać lokalnego imama.",
+      en: "Travel thresholds and local practice can differ, so it is worth asking a local imam.",
+      source_ref: "fiqh disagreement",
+      ...contextDependent
+    }
+  ]
+};

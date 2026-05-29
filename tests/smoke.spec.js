@@ -88,7 +88,7 @@ test.describe("Alif AI smoke", () => {
 
   test("New users see full-screen onboarding first", async ({ page }) => {
     await page.evaluate(() => localStorage.clear());
-    await page.goto("/");
+    await page.goto("/?new-user=1");
     await expect(page.getByRole("heading", { name: /Wybierz pierwsza sciezke|Choose your first path/ })).toBeVisible();
     await expect(page.locator("[data-onboarding-goal]")).toHaveCount(6);
     await expect(page.locator(".home-stat-card")).toHaveCount(0);
@@ -205,7 +205,7 @@ test.describe("Alif AI smoke", () => {
     await expect(page.locator("#bottomNav [data-route='history'] span").first()).toContainText("◷");
   });
 
-  test("99 Names Challenge accepts prefixes, meanings and simple typos once", async ({ page }) => {
+  test("99 Names practice accepts prefixes, meanings and simple typos once", async ({ page }) => {
     await page.goto("/#games");
     await page.locator("[data-game='asmaChallenge']").click();
     await expect(page.locator("#asmaChallengeBox")).toBeVisible();
@@ -297,10 +297,79 @@ test.describe("Alif AI smoke", () => {
     await expect(page).toHaveURL(/#history$/);
   });
 
-  test("removed route falls back to Start", async ({ page }) => {
+  test("Islam core content pages render", async ({ page }) => {
+    await page.goto("/#islam");
+    await expect(page.getByRole("button", { name: /40 hadis|40 Hadith/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Aqidah/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Ramadan/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Zakat/ })).toBeVisible();
+
+    await page.goto("/#hadith");
+    await expect(page.getByRole("heading", { name: /40/ })).toBeVisible();
+    await expect(page.locator("#view article")).toHaveCount(40);
+
+    await page.goto("/#aqidah");
+    await expect(page.getByText(/Tawhid ar-Rububiyyah/)).toBeVisible();
+    await expect(page.getByText(/Fard|wajib/i)).toBeVisible();
+
     await page.goto("/#zakat");
-    await expect(page).toHaveURL(/#home$/);
-    await expect(page.locator("#view h1")).toContainText(/Islam/);
+    await expect(page.getByRole("heading", { name: "Zakat: podstawy" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Nisab to|Nisab is/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /2\.5%/ })).toBeVisible();
+    await expect(page.locator("body")).not.toContainText("Kalkulator zakat");
+  });
+
+  test("Ramadan uses local Fajr and Maghrib for Suhoor and Iftar", async ({ page }) => {
+    await page.route("**/v1/timings/**", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            timings: {
+              Fajr: "04:12",
+              Sunrise: "05:43",
+              Dhuhr: "12:20",
+              Asr: "16:15",
+              Maghrib: "20:31",
+              Isha: "22:00"
+            }
+          }
+        })
+      });
+    });
+    await page.evaluate(() => {
+      localStorage.setItem(
+        "alif-ai-state",
+        JSON.stringify({
+          lang: "pl",
+          theme: "light",
+          onboardingComplete: true,
+          gpsPrayerLocation: {
+            id: "gps",
+            label: "Warsaw test",
+            city: "Warsaw",
+            tz: "Europe/Warsaw",
+            lat: "52.2297",
+            lng: "21.0122",
+            method: 2
+          }
+        })
+      );
+    });
+    await page.goto("/?ramadan-test=1#ramadan");
+    await expect(page.getByRole("heading", { name: /Dzisiejszy Suhoor|Today's Suhoor/ })).toBeVisible();
+    await expect(page.getByText("04:12")).toBeVisible();
+    await expect(page.getByText(/Iftar zaczyna|Iftar begins/)).toBeVisible();
+    await expect(page.getByText("20:31")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Laylat al-Qadr", exact: true })).toBeVisible();
+  });
+
+  test("Muallaf guidance explains past sins after shahada", async ({ page }) => {
+    await page.goto("/#muallaf");
+    await expect(page.getByText(/Muslim 121/)).toBeVisible();
+    await expect(page.getByText(/poprzednimi grzechami|past sins/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Jak rozmawiać z rodziną|How to speak with family/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Ślub islamski|Islamic marriage/ })).toBeVisible();
   });
 
   test("Islam, History and settings activity routes render expected replacement features", async ({ page }) => {
@@ -308,7 +377,7 @@ test.describe("Alif AI smoke", () => {
     await expect(page.getByRole("button", { name: /Słownik|Slownik/ })).toBeVisible();
     await expect(page.locator("#view").getByRole("button", { name: /^Historia$/ })).toHaveCount(0);
     await expect(page.locator("#view").getByRole("button", { name: /Seerah/ })).toHaveCount(0);
-    await expect(page.getByText(/Hadisy dnia|Daily hadiths/)).toBeVisible();
+    await expect(page.getByText(/Hadisy dnia|Daily hadiths/)).toHaveCount(0);
     await expect(page.locator("body")).not.toContainText("Kalkulator zakat");
 
     await page.goto("/#history");
@@ -322,7 +391,9 @@ test.describe("Alif AI smoke", () => {
     await page.getByRole("button", { name: /Oś czasu|Timeline/ }).click();
     await expect(page.getByRole("heading", { name: /świat współczesny|modern world/i })).toBeVisible();
     await expect.poll(() => page.locator(".history-timeline-event").count()).toBeGreaterThan(25);
-    await expect(page.getByRole("button", { name: /Islam w świecie cyfrowym|Islam in the digital world/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Islam w świecie cyfrowym|Islam in the digital world/i })
+    ).toBeVisible();
     await page.locator("[data-history-tab='stories']").click();
     await expect(page.locator(".history-story-section-tabs")).toHaveCount(0);
     await expect.poll(() => page.locator("[data-history-story-carousel]").count()).toBeGreaterThan(4);
@@ -350,14 +421,16 @@ test.describe("Alif AI smoke", () => {
     await expect(page.getByRole("button", { name: /Quiz Historii|History Quiz/ })).toBeVisible();
     await page.getByRole("button", { name: /Quiz Historii|History Quiz/ }).click();
     await expect(page.getByRole("heading", { name: /Quiz Historii|History Quiz/ })).toBeVisible();
-    await page.getByRole("button", { name: /Powrót do gier|Back to games/ }).click();
+    await page.getByRole("button", { name: /Powrót do ćwiczeń|Back to practice/ }).click();
     await page.getByRole("button", { name: /Quizy/ }).click();
     await expect(page.getByRole("button", { name: /Quizy AI|AI Quizzes/ })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Generuj quiz|Generate quiz/ })).toHaveCount(0);
 
     await page.getByRole("button", { name: /AI Assistant/ }).click();
     await expect(page.getByRole("button", { name: /Generuj fiszki|Generate cards|Mini quiz/ })).toHaveCount(0);
-    await page.getByRole("button", { name: /Rodzina|Family/ }).click();
+    await expect(page.getByRole("button", { name: /Wyczyść rozmowę|Clear chat/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Pokaż odpowiedź dla rodzica|Parent-ready answer/ })).toBeVisible();
+    await page.getByRole("button", { name: /Rodzice i bliscy|Parents/ }).click();
     await expect(page.getByText(/Wybierz temat|Choose a topic/)).toBeVisible();
     await expect(page.getByText(/Rodzice boją się islamu|parents fear Islam/)).toBeVisible();
   });
@@ -365,8 +438,8 @@ test.describe("Alif AI smoke", () => {
   test("badges are grouped and locked badges navigate to unlock activities", async ({ page }) => {
     await page.goto("/#badges");
     await expect(page.getByRole("button", { name: /Nauka/ })).toBeVisible();
-    await expect(page.getByRole("button", { name: /Ćwiczenia|Practice/ })).toBeVisible();
-    await page.getByRole("button", { name: /Ćwiczenia|Practice/ }).click();
+    await expect(page.locator("[data-badge-category='practice']")).toBeVisible();
+    await page.locator("[data-badge-category='practice']").click();
     await expect(page.getByRole("button", { name: /Pierwszy quiz AI|First AI quiz/ })).toHaveCount(0);
     await page.locator("[data-badge-id='quiz10']").click();
     await expect(page).toHaveURL(/#games$/);
@@ -378,6 +451,8 @@ test.describe("Alif AI smoke", () => {
     await expect(page.getByRole("tab", { name: /Dzisiaj/ })).toBeVisible();
     await expect(page.getByRole("tab", { name: /Przewodnik/ })).toBeVisible();
     await expect(page.getByRole("tab", { name: /Wudu/ })).toBeVisible();
+    await expect(page.getByRole("tab", { name: /Po salah|After salah/ })).toBeVisible();
+    await expect(page.getByRole("tab", { name: /Sunna|Sunnah/ })).toBeVisible();
     await expect(page.getByRole("tab", { name: /Qibla\/Czasy/ })).toHaveCount(0);
     await expect(page.getByRole("tab", { name: /Historia/ })).toBeVisible();
 
@@ -385,8 +460,20 @@ test.describe("Alif AI smoke", () => {
     await expect(page.getByRole("button", { name: /Fadżr|Fajr/ })).toContainText("2 raka'at");
     await expect(page.getByRole("button", { name: /Maghrib/ })).toContainText("3 raka'at");
     await expect(page.getByRole("button", { name: /Isza|Isha/ })).toContainText("4 raka'at");
+    for (let i = 0; i < 11; i += 1) await page.locator("#prayerNext").click();
+    await expect(page.getByRole("heading", { name: "Tashahhud", exact: true })).toBeVisible();
+    await page.locator("#prayerNext").click();
+    await expect(page.getByRole("heading", { name: /Salawat Ibrahimiyyah/ })).toBeVisible();
     await page.getByRole("button", { name: /Pełny ekran|Pelny ekran/ }).click();
     await expect(page.locator(".prayer-guide-card-focus")).toBeVisible();
+
+    await page.getByRole("tab", { name: /Po salah|After salah/ }).click();
+    await expect(page.getByRole("heading", { name: /Adhkar po salah|Adhkar after salah/ })).toBeVisible();
+    await expect(page.getByText(/Astaghfirullah/)).toBeVisible();
+
+    await page.getByRole("tab", { name: /Sunna|Sunnah/ }).click();
+    await expect(page.getByRole("heading", { name: "Witr", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Modlitwa w podrozy|Prayer while travelling/ })).toBeVisible();
   });
 
   test("legacy Prayer Guide route opens the new Prayer Mode guide tab", async ({ page }) => {
@@ -400,6 +487,8 @@ test.describe("Alif AI smoke", () => {
   test("Prayer Mode saves wudu checklist and prayer history", async ({ page }) => {
     await page.goto("/#prayer");
     await page.getByRole("tab", { name: /Wudu/ }).click();
+    await expect(page.getByText(/Co uniewaznia wudu|Co unieważnia wudu|What breaks wudu/)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Wudu a ghusl/ })).toBeVisible();
     await page.locator("[data-wudu-step]").first().check();
     await expect
       .poll(() =>
@@ -438,9 +527,13 @@ test.describe("Alif AI smoke", () => {
     await page.goto("/#prayer");
     await expect(page.getByRole("button", { name: /Użyj GPS|Uzyj GPS/ })).toBeVisible();
     await expect(page.getByRole("tab", { name: /Qibla\/Czasy/ })).toHaveCount(0);
-    await expect(page.locator("#gpsPrayerStatus")).toContainText(/nie został|not confirmed|spróbować ponownie|try again/i);
+    await expect(page.locator("#gpsPrayerStatus")).toContainText(
+      /nie został|not confirmed|spróbować ponownie|try again/i
+    );
     await page.getByRole("button", { name: /Użyj GPS|Uzyj GPS/ }).click();
-    await expect(page.locator("#gpsPrayerStatus")).toContainText(/nie został|not confirmed|spróbować ponownie|try again/i);
+    await expect(page.locator("#gpsPrayerStatus")).toContainText(
+      /nie został|not confirmed|spróbować ponownie|try again/i
+    );
   });
 
   test("settings exposes privacy and backup controls", async ({ page }) => {
@@ -505,6 +598,64 @@ test.describe("Alif AI smoke", () => {
     expect(restored.lang).toBe("en");
     expect(restored.learnedLetters).toEqual(["ba"]);
     expect(restored.groqApiKey).toBe("keep-local-api-key");
+  });
+
+  test("AI, localStorage and Quran API text cannot execute HTML", async ({ page }) => {
+    const attack = `<img src=x onerror="window.__xss=1">`;
+    await page.route("**/v1/surah/1/editions/**", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          code: 200,
+          data: [
+            {
+              number: 1,
+              name: attack,
+              englishName: attack,
+              englishNameTranslation: attack,
+              ayahs: [
+                {
+                  number: 1,
+                  numberInSurah: 1,
+                  text: attack,
+                  audio: `https://example.test/audio.mp3" onerror="window.__xss=1`
+                }
+              ]
+            },
+            { number: 1, ayahs: [{ number: 1, numberInSurah: 1, text: attack }] },
+            { number: 1, ayahs: [{ number: 1, numberInSurah: 1, text: attack }] }
+          ]
+        })
+      });
+    });
+    await page.evaluate((payload) => {
+      localStorage.setItem(
+        "alif-ai-state",
+        JSON.stringify({
+          lang: "pl",
+          theme: "light",
+          onboardingComplete: true,
+          quranTab: "favayahs",
+          quranFavorites: [{ num: payload, surahName: payload, ar: payload, tr: payload, trans: payload }],
+          aiMessages: [{ role: "assistant", content: payload }]
+        })
+      );
+    }, attack);
+
+    await page.goto("/?xss-test=1#koran");
+    await expect(page.locator('img[src="x"]')).toHaveCount(0);
+    await expect.poll(() => page.evaluate(() => window.__xss || 0)).toBe(0);
+
+    await page.locator("#aiFab").click();
+    await expect(page.locator('img[src="x"]')).toHaveCount(0);
+    await expect.poll(() => page.evaluate(() => window.__xss || 0)).toBe(0);
+    await page.locator("#closeAi").click();
+
+    await page.getByRole("button", { name: /Sury|Surahs/ }).click();
+    await page.locator("[data-read-surah='1']").first().click();
+    await expect(page.locator(".surah-reader")).toBeVisible();
+    await expect(page.locator('img[src="x"]')).toHaveCount(0);
+    await expect.poll(() => page.evaluate(() => window.__xss || 0)).toBe(0);
   });
 
   test("Start has no serious automated accessibility violations", async ({ page }) => {

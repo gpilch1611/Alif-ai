@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, resolve } from "node:path";
+import groqProxy from "../functions/groq-proxy.js";
 
 const root = process.cwd();
 const port = Number(process.env.PORT || 4173);
@@ -15,9 +16,49 @@ const types = {
   ".webmanifest": "application/manifest+json; charset=utf-8"
 };
 
+function readRequestBody(request) {
+  return new Promise((resolveBody, rejectBody) => {
+    const chunks = [];
+    request.on("data", (chunk) => chunks.push(chunk));
+    request.on("end", () => resolveBody(Buffer.concat(chunks)));
+    request.on("error", rejectBody);
+  });
+}
+
+function headersFromNodeRequest(request) {
+  const headers = new Headers();
+  for (const [name, value] of Object.entries(request.headers)) {
+    if (Array.isArray(value)) {
+      value.forEach((item) => headers.append(name, item));
+    } else if (value) {
+      headers.set(name, value);
+    }
+  }
+  return headers;
+}
+
+async function sendFetchResponse(nodeResponse, fetchResponse) {
+  const headers = Object.fromEntries(fetchResponse.headers.entries());
+  const body = Buffer.from(await fetchResponse.arrayBuffer());
+  nodeResponse.writeHead(fetchResponse.status, headers);
+  nodeResponse.end(body);
+}
+
 createServer(async (request, response) => {
   try {
     const url = new URL(request.url || "/", "http://127.0.0.1");
+    if (url.pathname === "/api/groq-proxy" || url.pathname === "/.netlify/functions/groq-proxy") {
+      const body = request.method === "GET" || request.method === "HEAD" ? null : await readRequestBody(request);
+      const proxyRequest = new Request(`http://127.0.0.1:${port}${url.pathname}`, {
+        method: request.method,
+        headers: headersFromNodeRequest(request),
+        body
+      });
+      const proxyResponse = await groqProxy.fetch(proxyRequest, process.env);
+      await sendFetchResponse(response, proxyResponse);
+      return;
+    }
+
     if (url.pathname === "/api/tts" || url.pathname === "/.netlify/functions/tts") {
       const text = (url.searchParams.get("text") || url.searchParams.get("q") || "").trim();
       if (!text) {

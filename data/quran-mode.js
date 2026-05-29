@@ -766,20 +766,356 @@ export const SURAH_LENGTH_GROUPS = [
   { key: "long", labelPl: "Długie (>100)", labelEn: "Long (>100)", min: 101, max: 999 }
 ];
 
+const duaMeta = (source_ref) => ({
+  source_ref,
+  source_type: "dua_collection",
+  confidence: "VERIFIED",
+  reviewed_at: "2026-05-29"
+});
+
+export const DUA_DATA = [
+  {
+    id: "bismillah",
+    categoryPl: "Jedzenie",
+    categoryEn: "Food",
+    ar: "بِسْمِ اللَّهِ",
+    tr: "Bismillah",
+    pl: "Przed jedzeniem i piciem",
+    en: "Before eating or drinking",
+    ...duaMeta("Bukhari 5376; Muslim 2022")
+  },
+  {
+    id: "after_eating",
+    categoryPl: "Jedzenie",
+    categoryEn: "Food",
+    ar: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا وَرَزَقَنِيهِ",
+    tr: "Alhamdu lillahil-ladhi at'amani hadha wa razaqanih",
+    pl: "Po jedzeniu: wdzięczność za pożywienie",
+    en: "After eating: gratitude for provision",
+    ...duaMeta("Abu Dawud 4023; Tirmidhi 3458")
+  },
+  {
+    id: "leaving_home",
+    categoryPl: "Dom",
+    categoryEn: "Home",
+    ar: "بِسْمِ اللَّهِ، تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+    tr: "Bismillah, tawakkaltu 'ala Allah, wa la hawla wa la quwwata illa billah",
+    pl: "Wychodząc z domu",
+    en: "When leaving home",
+    ...duaMeta("Abu Dawud 5095; Tirmidhi 3426")
+  },
+  {
+    id: "entering_home",
+    categoryPl: "Dom",
+    categoryEn: "Home",
+    ar: "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلَجِ وَخَيْرَ الْمَخْرَجِ",
+    tr: "Allahumma inni as'aluka khayral-mawlaji wa khayral-makhraj",
+    pl: "Wchodząc do domu",
+    en: "When entering home",
+    ...duaMeta("Abu Dawud 5096")
+  },
+  {
+    id: "morning",
+    categoryPl: "Adhkar poranne",
+    categoryEn: "Morning adhkar",
+    ar: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ",
+    tr: "Asbahna wa asbahal-mulku lillah",
+    pl: "Poranne wspomnienie: nastał ranek i królestwo należy do Allaha",
+    en: "Morning remembrance: we entered morning and dominion belongs to Allah",
+    ...duaMeta("Muslim 2723")
+  },
+  {
+    id: "morning_life",
+    categoryPl: "Adhkar poranne",
+    categoryEn: "Morning adhkar",
+    ar: "اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ",
+    tr: "Allahumma bika asbahna wa bika amsayna wa bika nahya wa bika namutu wa ilaykan-nushur",
+    pl: "Poranne oddanie dnia Allahowi",
+    en: "Morning entrusting the day to Allah",
+    ...duaMeta("Abu Dawud 5068; Tirmidhi 3391")
+  },
+  {
+    id: "morning_protection",
+    categoryPl: "Adhkar poranne",
+    categoryEn: "Morning adhkar",
+    ar: "قُلْ هُوَ اللَّهُ أَحَدٌ، قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ، قُلْ أَعُوذُ بِرَبِّ النَّاسِ",
+    tr: "Qul Huwa Allahu Ahad; Qul a'udhu bi-rabbil-falaq; Qul a'udhu bi-rabbin-nas",
+    pl: "Trzy ostatnie sury rano po 3 razy",
+    en: "The last three surahs in the morning, three times",
+    ...duaMeta("Abu Dawud 5082")
+  },
+  {
+    id: "evening",
+    categoryPl: "Adhkar wieczorne",
+    categoryEn: "Evening adhkar",
+    ar: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ",
+    tr: "Amsayna wa amsal-mulku lillah",
+    pl: "Wieczorne wspomnienie: nastał wieczór i królestwo należy do Allaha",
+    en: "Evening remembrance: we entered evening and dominion belongs to Allah",
+    ...duaMeta("Muslim 2723")
+  },
+  {
+    id: "evening_life",
+    categoryPl: "Adhkar wieczorne",
+    categoryEn: "Evening adhkar",
+    ar: "اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ",
+    tr: "Allahumma bika amsayna wa bika asbahna wa bika nahya wa bika namutu wa ilaykal-masir",
+    pl: "Wieczorne oddanie nocy Allahowi",
+    en: "Evening entrusting the night to Allah",
+    ...duaMeta("Abu Dawud 5068; Tirmidhi 3391")
+  },
+  {
+    id: "evening_protection",
+    categoryPl: "Adhkar wieczorne",
+    categoryEn: "Evening adhkar",
+    ar: "قُلْ هُوَ اللَّهُ أَحَدٌ، قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ، قُلْ أَعُوذُ بِرَبِّ النَّاسِ",
+    tr: "Qul Huwa Allahu Ahad; Qul a'udhu bi-rabbil-falaq; Qul a'udhu bi-rabbin-nas",
+    pl: "Trzy ostatnie sury wieczorem po 3 razy",
+    en: "The last three surahs in the evening, three times",
+    ...duaMeta("Abu Dawud 5082")
+  },
+  {
+    id: "sleeping",
+    categoryPl: "Sen",
+    categoryEn: "Sleep",
+    ar: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
+    tr: "Bismika Allahumma amutu wa ahya",
+    pl: "Przed snem",
+    en: "Before sleeping",
+    ...duaMeta("Bukhari 6324")
+  },
+  {
+    id: "waking",
+    categoryPl: "Sen",
+    categoryEn: "Sleep",
+    ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
+    tr: "Alhamdu lillahil-ladhi ahyana ba'da ma amatana wa ilayhin-nushur",
+    pl: "Po przebudzeniu",
+    en: "Upon waking",
+    ...duaMeta("Bukhari 6312")
+  },
+  {
+    id: "travel",
+    categoryPl: "Podróż",
+    categoryEn: "Travel",
+    ar: "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ",
+    tr: "Subhana alladhi sakhkhara lana hadha wa ma kunna lahu muqrinin wa inna ila rabbina lamunqalibun",
+    pl: "Dua w podróży",
+    en: "Travel dua",
+    ...duaMeta("Quran 43:13-14; Muslim 1342")
+  },
+  {
+    id: "forgiveness",
+    categoryPl: "Istighfar",
+    categoryEn: "Forgiveness",
+    ar: "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ",
+    tr: "Astaghfirullaha wa atubu ilayh",
+    pl: "Krótka prośba o przebaczenie",
+    en: "Short request for forgiveness",
+    ...duaMeta("Bukhari 6307")
+  },
+  {
+    id: "sayyid_istighfar",
+    categoryPl: "Istighfar",
+    categoryEn: "Forgiveness",
+    ar: "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ",
+    tr: "Allahumma anta rabbi la ilaha illa anta khalaqtani wa ana 'abduk",
+    pl: "Sayyid al-Istighfar: najpełniejsza prośba o przebaczenie",
+    en: "Sayyid al-Istighfar: the master supplication for forgiveness",
+    ...duaMeta("Bukhari 6306")
+  },
+  {
+    id: "anxiety",
+    categoryPl: "Smutek i troska",
+    categoryEn: "Hardship",
+    ar: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ",
+    tr: "Allahumma inni a'udhu bika minal-hammi wal-hazan",
+    pl: "Dua przy smutku, trosce i trudnościach",
+    en: "Dua for anxiety, grief and hardship",
+    ...duaMeta("Bukhari 6369")
+  },
+  {
+    id: "yunus",
+    categoryPl: "Smutek i troska",
+    categoryEn: "Hardship",
+    ar: "لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ",
+    tr: "La ilaha illa anta subhanaka inni kuntu minaz-zalimin",
+    pl: "Dua Yunusa w trudności",
+    en: "Dua of Yunus in hardship",
+    ...duaMeta("Quran 21:87; Tirmidhi 3505")
+  },
+  {
+    id: "parents",
+    categoryPl: "Rodzina",
+    categoryEn: "Family",
+    ar: "رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا",
+    tr: "Rabbi irhamhuma kama rabbayani saghira",
+    pl: "Dua za rodziców",
+    en: "Dua for parents",
+    ...duaMeta("Quran 17:24")
+  },
+  {
+    id: "spouse_family",
+    categoryPl: "Rodzina",
+    categoryEn: "Family",
+    ar: "رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ",
+    tr: "Rabbana hab lana min azwajina wa dhurriyyatina qurrata a'yun",
+    pl: "Dua za rodzinę i potomstwo",
+    en: "Dua for family and offspring",
+    ...duaMeta("Quran 25:74")
+  },
+  {
+    id: "knowledge",
+    categoryPl: "Wiedza",
+    categoryEn: "Knowledge",
+    ar: "رَبِّ زِدْنِي عِلْمًا",
+    tr: "Rabbi zidni 'ilma",
+    pl: "Panie, pomnóż moją wiedzę",
+    en: "My Lord, increase me in knowledge",
+    ...duaMeta("Quran 20:114")
+  },
+  {
+    id: "good_end",
+    categoryPl: "Codzienne",
+    categoryEn: "Daily",
+    ar: "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+    tr: "Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanatan wa qina 'adhaban-nar",
+    pl: "Dobro na tym świecie i w życiu wiecznym",
+    en: "Good in this world and the next",
+    ...duaMeta("Quran 2:201")
+  },
+  {
+    id: "heart",
+    categoryPl: "Serce",
+    categoryEn: "Heart",
+    ar: "رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا",
+    tr: "Rabbana la tuzigh qulubana ba'da idh hadaytana",
+    pl: "O stabilność serca po prowadzeniu",
+    en: "For steadiness of the heart after guidance",
+    ...duaMeta("Quran 3:8")
+  },
+  {
+    id: "after_salah_subhanallah",
+    categoryPl: "Po salah",
+    categoryEn: "After salah",
+    ar: "سُبْحَانَ اللَّهِ",
+    tr: "Subhanallah",
+    pl: "Po modlitwie: 33 razy Subhanallah",
+    en: "After prayer: Subhanallah 33 times",
+    ...duaMeta("Bukhari 843; Muslim 595")
+  },
+  {
+    id: "after_salah_alhamdulillah",
+    categoryPl: "Po salah",
+    categoryEn: "After salah",
+    ar: "الْحَمْدُ لِلَّهِ",
+    tr: "Alhamdulillah",
+    pl: "Po modlitwie: 33 razy Alhamdulillah",
+    en: "After prayer: Alhamdulillah 33 times",
+    ...duaMeta("Bukhari 843; Muslim 595")
+  },
+  {
+    id: "after_salah_allahuakbar",
+    categoryPl: "Po salah",
+    categoryEn: "After salah",
+    ar: "اللَّهُ أَكْبَرُ",
+    tr: "Allahu Akbar",
+    pl: "Po modlitwie: 34 razy Allahu Akbar",
+    en: "After prayer: Allahu Akbar 34 times",
+    ...duaMeta("Bukhari 843; Muslim 595")
+  },
+  {
+    id: "after_salah_ayat_kursi",
+    categoryPl: "Po salah",
+    categoryEn: "After salah",
+    ar: "اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
+    tr: "Allahu la ilaha illa huwal-hayyul-qayyum",
+    pl: "Ayat al-Kursi po modlitwie",
+    en: "Ayat al-Kursi after prayer",
+    ...duaMeta("Quran 2:255; Nasai al-Kubra 9848")
+  },
+  {
+    id: "ramadan_iftar",
+    categoryPl: "Ramadan",
+    categoryEn: "Ramadan",
+    ar: "ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ وَثَبَتَ الأَجْرُ إِنْ شَاءَ اللَّهُ",
+    tr: "Dhahaba az-zama'u wabtallatil-'uruqu wa thabatal-ajru in sha Allah",
+    pl: "Dua przy iftar",
+    en: "Iftar dua",
+    ...duaMeta("Abu Dawud 2357")
+  },
+  {
+    id: "ramadan_qadr",
+    categoryPl: "Ramadan",
+    categoryEn: "Ramadan",
+    ar: "اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي",
+    tr: "Allahumma innaka 'afuwwun tuhibbul-'afwa fa'fu 'anni",
+    pl: "Dua Laylat al-Qadr",
+    en: "Laylat al-Qadr dua",
+    ...duaMeta("Tirmidhi 3513")
+  },
+  {
+    id: "market",
+    categoryPl: "Okazje",
+    categoryEn: "Occasions",
+    ar: "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ",
+    tr: "La ilaha illa Allah wahdahu la sharika lah",
+    pl: "Dhikr przy wejściu na targ/miejsce handlu",
+    en: "Dhikr when entering the marketplace",
+    ...duaMeta("Tirmidhi 3428")
+  },
+  {
+    id: "clothing",
+    categoryPl: "Okazje",
+    categoryEn: "Occasions",
+    ar: "الْحَمْدُ لِلَّهِ الَّذِي كَسَانِي هَذَا",
+    tr: "Alhamdu lillahil-ladhi kasani hadha",
+    pl: "Zakładając ubranie",
+    en: "When putting on clothing",
+    ...duaMeta("Abu Dawud 4023")
+  },
+  {
+    id: "sneezing",
+    categoryPl: "Okazje",
+    categoryEn: "Occasions",
+    ar: "الْحَمْدُ لِلَّهِ",
+    tr: "Alhamdulillah",
+    pl: "Po kichnięciu",
+    en: "After sneezing",
+    ...duaMeta("Bukhari 6224")
+  },
+  {
+    id: "rain",
+    categoryPl: "Okazje",
+    categoryEn: "Occasions",
+    ar: "اللَّهُمَّ صَيِّبًا نَافِعًا",
+    tr: "Allahumma sayyiban nafi'a",
+    pl: "Gdy pada deszcz",
+    en: "When rain falls",
+    ...duaMeta("Bukhari 1032")
+  },
+  {
+    id: "mosque_enter",
+    categoryPl: "Meczet",
+    categoryEn: "Mosque",
+    ar: "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ",
+    tr: "Allahumma iftah li abwaba rahmatik",
+    pl: "Wchodząc do meczetu",
+    en: "Entering the mosque",
+    ...duaMeta("Muslim 713")
+  },
+  {
+    id: "mosque_exit",
+    categoryPl: "Meczet",
+    categoryEn: "Mosque",
+    ar: "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ",
+    tr: "Allahumma inni as'aluka min fadlik",
+    pl: "Wychodząc z meczetu",
+    en: "Leaving the mosque",
+    ...duaMeta("Muslim 713")
+  }
+];
+
 export const DUA_SOURCE_MAP = {
-  bismillah: "Bukhari 5376; Muslim 2022",
-  after_eating: "Abu Dawud 3850; Tirmidhi 3457",
-  leaving_home: "Abu Dawud 5095; Tirmidhi 3426",
-  entering_home: "Abu Dawud 5096",
-  morning: "Muslim 2723",
-  evening: "Muslim 2723",
-  sleeping: "Bukhari 6324",
-  waking: "Bukhari 6312",
-  travel: "Quran 43:13-14; Muslim 1342",
-  forgiveness: "Abu Dawud 1517; Tirmidhi 3577",
-  anxiety: "Bukhari 6369",
-  parents: "Quran 17:24",
-  knowledge: "Quran 20:114",
-  good_end: "Quran 2:201",
-  heart: "Quran 3:8"
+  ...Object.fromEntries(DUA_DATA.map((dua) => [dua.id, dua.source_ref]))
 };

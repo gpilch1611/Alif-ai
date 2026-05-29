@@ -1,4 +1,4 @@
-export const CONTENT_LAST_CHECKED_AT = "2026-05-08";
+export const CONTENT_LAST_CHECKED_AT = "2026-05-29";
 
 export const TRUST_LEVEL = {
   VERIFIED: { pl: "ZWERYFIKOWANE", en: "VERIFIED" },
@@ -27,5 +27,7 @@ export const HIGH_RISK_RELIGIOUS_NOTICE = {
 export const HIGH_RISK_FAQ_IDS = new Set([
   "christmas",
   "polygamy",
-  "hijab"
+  "hijab",
+  "extra_halal_job",
+  "extra_family_pushback"
 ]);

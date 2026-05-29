@@ -50,8 +50,8 @@ export const PRAYER_STEP_VISUALS = {
     labelPl: "Ruku - skłon",
     labelEn: "Ruku - bowing",
     tips: {
-      pl: ["Dłonie na kolanach.", "Plecy możliwie prosto.", "Nie napinaj się przesadnie."],
-      en: ["Hands on knees.", "Back as straight as possible.", "Do not overstrain."]
+      pl: ["Dłonie na kolanach.", "Plecy możliwie prosto.", "Głowa w linii pleców."],
+      en: ["Hands on knees.", "Back as straight as possible.", "Head aligned with the back."]
     }
   },
   rise: {
@@ -68,8 +68,8 @@ export const PRAYER_STEP_VISUALS = {
     labelPl: "Sujud - pokłon",
     labelEn: "Sujud - prostration",
     tips: {
-      pl: ["Czoło i nos do ziemi.", "Dłonie przy głowie.", "Kolana i palce stóp oparte."],
-      en: ["Forehead and nose to the ground.", "Hands near the head.", "Knees and toes grounded."]
+      pl: ["Czoło i nos do ziemi.", "Dłonie przy głowie.", "Palce stóp w stronę Qibla."],
+      en: ["Forehead and nose to the ground.", "Hands near the head.", "Toes face the Qibla."]
     }
   },
   sit: {
@@ -106,6 +106,15 @@ export const PRAYER_STEP_VISUALS = {
     tips: {
       pl: ["Usiądź stabilnie.", "Ucz się po fragmencie.", "Nie musisz znać całości od razu."],
       en: ["Sit steadily.", "Learn piece by piece.", "You do not need the whole text at once."]
+    }
+  },
+  salawat: {
+    posture: "sit",
+    labelPl: "Salawat - siedzenie",
+    labelEn: "Salawat - sitting",
+    tips: {
+      pl: ["Pozostań w siedzeniu.", "Czytaj spokojnie.", "Ucz się po jednej linijce."],
+      en: ["Remain seated.", "Read calmly.", "Learn one line at a time."]
     }
   },
   salam: {

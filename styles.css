@@ -623,6 +623,52 @@ select {
   font-weight: 900;
 }
 
+.family-parent-intro {
+  max-width: 76ch;
+  color: var(--muted);
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+
+.family-parent-faq-card {
+  background: var(--surface-soft);
+}
+
+.family-parent-faq-card summary {
+  cursor: pointer;
+  list-style: none;
+  gap: 14px;
+}
+
+.family-parent-faq-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.family-parent-faq-card .faq-question span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.family-parent-faq-card .faq-arrow {
+  flex: 0 0 auto;
+  color: var(--accent);
+  transition: transform 0.18s ease;
+}
+
+.family-parent-faq-card[open] .faq-arrow {
+  transform: rotate(180deg);
+}
+
+.family-parent-faq-card .faq-answer {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.family-parent-fact-card,
+.family-parent-resource-card {
+  background: var(--surface);
+}
+
 .conversation-grid {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
@@ -1190,6 +1236,27 @@ h3 {
   font-size: 26px;
 }
 
+.ai-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-clear {
+  min-height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.ai-clear:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .ai-messages {
   height: min(62dvh, 560px);
   overflow: auto;
@@ -1468,44 +1535,6 @@ h3 {
 .pillar-arabic { font-family: "Amiri"; font-size: 2.2rem; color: var(--accent); margin: 8px 0; }
 .pillar-name { font-weight: 900; font-size: 1.1rem; }
 .pillar-desc { font-size: 0.85rem; color: var(--muted); margin-top: 10px; }
-
-.dhikr-ring {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: conic-gradient(var(--line) 0%, var(--line) 100%);
-}
-
-.dhikr-ring-inner {
-  width: 120px;
-  height: 120px;
-  background: var(--surface);
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 2.5rem;
-  font-weight: 900;
-}
-
-.dhikr-game-btn {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 0 var(--accent2);
-}
-
-.dhikr-game-btn:active {
-  transform: translateY(4px);
-  box-shadow: 0 6px 0 var(--accent2);
-}
 
 .hijri-widget {
   padding: 16px;
@@ -1843,8 +1872,7 @@ h3 {
   margin-bottom: 10px;
 }
 
-.history-timeline-date,
-.history-story-card span {
+.history-timeline-date {
   color: var(--muted);
   font-size: 0.76rem;
   font-weight: 900;

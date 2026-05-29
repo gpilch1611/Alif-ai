@@ -60,7 +60,7 @@ export const dailyTasks = [
   "Zrób 7 fiszek w trybie powtórek.",
   "Przećwicz wymowę słowa سلام.",
   "Narysuj literę ب na canvasie.",
-  "Zagraj jedną rundę Memory Match."
+  "Zrób jedną rundę dopasowywania liter."
 ];
 
 // Source: verified against Quran.com and classical references. Harakat added for learners. reviewed_at: 2026-05-16

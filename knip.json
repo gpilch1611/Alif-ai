@@ -7,7 +7,9 @@
     "!playwright-report/**",
     "!test-results/**",
     "!.lighthouse-profile/**",
-    "!lighthouse-report/**"
+    "!lighthouse-report/**",
+    "!functions/groq-proxy.js",
+    "!functions/tts.js"
   ],
   "ignoreBinaries": ["npm.cmd"]
 }

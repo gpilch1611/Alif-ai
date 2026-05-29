@@ -4,8 +4,15 @@ declare global {
   }
 
   interface Window {
+    __ALIF_APP_VERSION?: string;
     __alifReloading?: boolean;
+    __xss?: number;
+    _writingResizeHandler?: EventListener | null;
     webkitSpeechRecognition?: any;
+  }
+
+  interface Element {
+    dataset: DOMStringMap;
   }
 
   interface DeviceOrientationEventConstructor {

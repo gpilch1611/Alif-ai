@@ -44,8 +44,28 @@ assert(
   !/poland_ar|warsaw_ar|indonesia_ar|surabaya_ar|borze_ar/.test(appJs),
   "Local place vocabulary lessons should stay removed."
 );
-assert(!/zakat|Zakat/.test(appJs), "Zakat calculator should stay removed from app.js.");
-assert(!/zakat|Zakat/.test(stylesCss), "Zakat calculator styles should stay removed from styles.css.");
+assert(
+  !/Kalkulator zakat|Zakat calculator|zakatCalculator/i.test(appJs),
+  "Zakat calculation UI should stay out of app.js."
+);
+assert(
+  !/Kalkulator zakat|Zakat calculator|zakatCalculator/i.test(stylesCss),
+  "Zakat calculation styles should stay out of styles.css."
+);
+for (const route of ["hadith", "aqidah", "ramadan", "zakat"]) {
+  assert(appJs.includes(`"${route}"`), `Islam route is missing: ${route}.`);
+  assert(appJs.includes(`function ${route}()`), `Islam view is missing: ${route}.`);
+}
+assert(!appJs.includes("const DUA_DATA ="), "Dua data should stay out of app.js.");
+assert(appJs.includes("DUA_DATA"), "Dua data import is missing from app.js.");
+assert(appJs.includes("AQIDAH_BASICS"), "Aqidah data import/rendering is missing.");
+assert(appJs.includes("ZAKAT_BASICS"), "Zakat basics import/rendering is missing.");
+assert(appJs.includes("RAMADAN_GUIDE"), "Ramadan guide import/rendering is missing.");
+assert(appJs.includes("MUALLAF_GUIDANCE"), "Muallaf guidance import/rendering is missing.");
+assert(appJs.includes("WUDU_INVALIDATORS"), "Wudu invalidators import/rendering is missing.");
+assert(appJs.includes("GHUSL_GUIDE"), "Ghusl guide import/rendering is missing.");
+assert(appJs.includes("PRAYER_AFTER_SALAH_ADHKAR"), "After-salah adhkar import/rendering is missing.");
+assert(appJs.includes("PRAYER_SUNNAH_TRAVEL"), "Prayer sunnah/travel import/rendering is missing.");
 assert(appJs.includes("muallafChecklist"), "Muallaf 30/90 checklist state is missing.");
 assert(appJs.includes("Plan 30/90 dni po szahadzie"), "Muallaf 30/90 checklist UI is missing.");
 assert(appJs.includes("Pierwsze 7 dni: spokojny start"), "Muallaf 7-day starter plan is missing.");
@@ -117,6 +137,7 @@ for (const path of [
   "./data/family-support.js",
   "./data/history.js",
   "./data/halal-haram.js",
+  "./data/islamic-core.js",
   "./data/islamic-faq.js",
   "./data/islamic-hadith.js",
   "./data/prayer-mode.js",
