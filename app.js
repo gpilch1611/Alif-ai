@@ -1940,6 +1940,7 @@ function escapeRegExp(value) {
 }
 
 let historyTermsCache = null;
+let historyQuizPoolCache = null;
 const WORD_CHAR_PATTERN = /[\p{L}\p{N}]/u;
 
 function historyRichText(text) {
@@ -5454,7 +5455,15 @@ function historyQuizChoices(correct, pool) {
   return [correct, ...shuffledForHome(uniquePool).slice(0, 3)].sort(() => Math.random() - 0.5);
 }
 
+/**
+ * BOLT OPTIMIZATION: Memoize history quiz pool to avoid expensive reconstruction
+ * of 70+ quiz objects from static data on every function call.
+ * This saves CPU cycles and reduces garbage collection pressure when entering
+ * or re-rendering the history quiz view.
+ */
 function historyQuizPool() {
+  if (historyQuizPoolCache) return historyQuizPoolCache;
+
   const questions = [];
   const timelineTitles = historyContent.timeline.map(event => historyLabel(event.title));
   historyContent.timeline.forEach((event) => {
@@ -5553,7 +5562,8 @@ function historyQuizPool() {
     });
   });
 
-  return questions.filter(question => question.answer && question.choices.length >= 2);
+  historyQuizPoolCache = questions.filter(question => question.answer && question.choices.length >= 2);
+  return historyQuizPoolCache;
 }
 
 function recordHistoryQuizProgress(question) {
