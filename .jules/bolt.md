@@ -5,3 +5,7 @@
 ## 2026-05-25 - [API Request Batching]
 **Learning:** The application frequently makes multiple waterfall or parallel requests to the same external API (Al-Quran Cloud) to fetch different "editions" (audio, translation, transliteration) of the same content.
 **Action:** Consolidate these into single batched requests using the `/editions/` endpoint to reduce network overhead and improve load times, especially on mobile networks.
+
+## 2026-05-30 - [History Quiz Pool Memoization]
+**Learning:** Generating large object pools (like 100+ quiz questions) from static data on every re-render or interaction is an unnecessary CPU and GC cost in a vanilla JS app that frequently re-writes innerHTML.
+**Action:** Memoize these derived structures based on application state (e.g., language) to keep transitions lightning-fast.
