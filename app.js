@@ -1940,6 +1940,7 @@ function escapeRegExp(value) {
 }
 
 let historyTermsCache = null;
+let historyQuizPoolCache = { lang: null, questions: null };
 const WORD_CHAR_PATTERN = /[\p{L}\p{N}]/u;
 
 function historyRichText(text) {
@@ -5455,6 +5456,12 @@ function historyQuizChoices(correct, pool) {
 }
 
 function historyQuizPool() {
+  // BOLT OPTIMIZATION: Memoize the history quiz pool by language.
+  // Generating this pool involves loops over large datasets and regex processing.
+  if (historyQuizPoolCache.lang === state.lang && historyQuizPoolCache.questions) {
+    return historyQuizPoolCache.questions;
+  }
+
   const questions = [];
   const timelineTitles = historyContent.timeline.map(event => historyLabel(event.title));
   historyContent.timeline.forEach((event) => {
@@ -5553,7 +5560,9 @@ function historyQuizPool() {
     });
   });
 
-  return questions.filter(question => question.answer && question.choices.length >= 2);
+  const pool = questions.filter(question => question.answer && question.choices.length >= 2);
+  historyQuizPoolCache = { lang: state.lang, questions: pool };
+  return pool;
 }
 
 function recordHistoryQuizProgress(question) {
