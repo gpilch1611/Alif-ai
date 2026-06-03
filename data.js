@@ -39,7 +39,7 @@ export const words = [
   { id: "salam", ar: "سلام", tr: "salam", pl: "pokój / cześć" },
   { id: "islam", ar: "إسلام", tr: "islam", pl: "islam" },
   { id: "quran", ar: "قرآن", tr: "Koran", pl: "Koran" },
-  { id: "masjid", ar: "مسجد", tr: "masdżid", pl: "meczet" },
+  { id: "masjid", ar: "مسجد", tr: "masjid", pl: "meczet" },
   { id: "lublin", ar: "لوبلين", tr: "lublin", pl: "Lublin" },
   { id: "batik", ar: "باتيك", tr: "batik", pl: "batik" },
   { id: "borobudur", ar: "بوروبودور", tr: "borobudur", pl: "Borobudur" },
@@ -50,15 +50,53 @@ export const words = [
   { id: "rahma", ar: "رحمة", tr: "rahma", pl: "miłosierdzie" },
   { id: "nur", ar: "نور", tr: "nur", pl: "światło" },
   { id: "woda", ar: "ماء", tr: "ma", pl: "woda" },
-  { id: "ryz", ar: "أرز", tr: "aruzz", pl: "ryż" }
+  { id: "ryz", ar: "أرز", tr: "aruzz", pl: "ryż" },
+  { id: "hubb", ar: "حب", tr: "hubb", pl: "miłość" },
+  { id: "qalb", ar: "قلب", tr: "qalb", pl: "serce" },
+  { id: "bayt", ar: "بيت", tr: "bayt", pl: "dom" },
+  { id: "walad", ar: "ولد", tr: "walad", pl: "chłopiec/dziecko" },
+  { id: "bint", ar: "بنت", tr: "bint", pl: "dziewczynka" },
+  { id: "rijal", ar: "رجل", tr: "rijal", pl: "mężczyzna" },
+  { id: "imra", ar: "امرأة", tr: "imra'a", pl: "kobieta" },
+  { id: "yad", ar: "يد", tr: "yad", pl: "ręka" },
+  { id: "ayn_word", ar: "عين", tr: "'ajn", pl: "oko" },
+  { id: "kalb", ar: "كلب", tr: "kalb", pl: "pies" },
+  { id: "qitta", ar: "قطة", tr: "qitta", pl: "kot" },
+  { id: "samak", ar: "سمك", tr: "samak", pl: "ryba" },
+  { id: "tayyib", ar: "طيب", tr: "tayyib", pl: "dobry / świetnie" },
+  { id: "shukran", ar: "شكرًا", tr: "szukran", pl: "dziękuję" },
+  { id: "afwan", ar: "عفوًا", tr: "afwan", pl: "proszę / przepraszam" },
+  { id: "ahlan", ar: "أهلاً", tr: "ahlan", pl: "witaj" },
+  { id: "marhaba", ar: "مرحبا", tr: "marhaba", pl: "cześć / witaj" },
+  { id: "sabah", ar: "صباح", tr: "sabah", pl: "poranek" },
+  { id: "masa", ar: "مساء", tr: "masa'", pl: "wieczór" },
+  { id: "lail", ar: "ليل", tr: "lajl", pl: "noc" }
 ];
 
 export const dailyTasks = [
-  "Poznaj 3 nowe litery i kliknij każdą z nich.",
+  "Poznaj 3 nowe litery i otwórz każdą z nich.",
   "Zrób 7 fiszek w trybie powtórek.",
   "Przećwicz wymowę słowa سلام.",
   "Narysuj literę ب na canvasie.",
-  "Zrób jedną rundę dopasowywania liter."
+  "Zagraj jedną rundę Memory Match.",
+  "Naucz się jednej nowej lekcji.",
+  "Posłuchaj sury Al-Fatihah.",
+  "Dodaj 3 nowe słowa do fiszek.",
+  "Przejdź quiz z liter.",
+  "Napisz dowolną literę arabską."
+];
+
+export const dailyTasksEn = [
+  "Learn 3 new letters and open each info card.",
+  "Do 7 flashcards in review mode.",
+  "Practice pronunciation of the word سلام.",
+  "Trace the letter ب on the canvas.",
+  "Play one round of Memory Match.",
+  "Complete one new lesson.",
+  "Listen to Surah Al-Fatihah.",
+  "Add 3 new words to flashcards.",
+  "Take the letter quiz.",
+  "Write any Arabic letter."
 ];
 
 export const surahs = [
@@ -97,6 +135,43 @@ export const surahs = [
       { n: 2, ar: "اللَّهُ الصَّمَدُ", tr: "Allahu s-samad", pl: "Allah, Wiekuisty", en: "Allah, the Eternal Refuge" },
       { n: 3, ar: "لَمْ يَلِدْ وَلَمْ يُولَدْ", tr: "Lam yalid wa lam yulad", pl: "Nie zrodził i nie został zrodzony", en: "He neither begets nor is born" },
       { n: 4, ar: "وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ", tr: "Wa lam yakun lahu kufuwan ahad", pl: "I nie ma Mu równego nikogo", en: "Nor is there to Him any equivalent" }
+    ]
+  },
+  {
+    id: "falaq",
+    number: 113,
+    name: "الفلق",
+    nameEn: "Al-Falaq",
+    namePl: "Al-Falak",
+    meaningEn: "The Daybreak",
+    meaningPl: "Świt",
+    factPl: "Al-Falaq i An-Nas są znane jako Al-Mu'awwidhatayn – dwie sury ochrony. Prorok ﷺ recytował je każdego wieczoru przed snem.",
+    factEn: "Al-Falaq and An-Nas are known as Al-Mu'awwidhatayn – the two suras of protection. The Prophet ﷺ recited them every evening before sleep.",
+    ayat: [
+      { n: 1, ar: "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ", tr: "Qul a'udhu bi rabbi l-falaq", pl: "Powiedz: Szukam schronienia u Pana świtu", en: "Say: I seek refuge in the Lord of daybreak" },
+      { n: 2, ar: "مِن شَرِّ مَا خَلَقَ", tr: "Min sharri ma khalaq", pl: "Przed złem tego, co stworzył", en: "From the evil of that which He created" },
+      { n: 3, ar: "وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ", tr: "Wa min sharri ghasiqin idha waqab", pl: "I przed złem ciemności, gdy się spuści", en: "And from the evil of darkness when it settles" },
+      { n: 4, ar: "وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ", tr: "Wa min sharri n-naffathati fi l-'uqad", pl: "I przed złem tych, co dmuchają w węzły", en: "And from the evil of the blowers in knots" },
+      { n: 5, ar: "وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ", tr: "Wa min sharri hasidin idha hasad", pl: "I przed złem zazdrosnego, gdy zazdrości", en: "And from the evil of an envier when he envies" }
+    ]
+  },
+  {
+    id: "nas",
+    number: 114,
+    name: "الناس",
+    nameEn: "An-Nas",
+    namePl: "An-Nas",
+    meaningEn: "Mankind",
+    meaningPl: "Ludzie",
+    factPl: "An-Nas to ostatnia sura Koranu. Chroni przed szatanem i złymi podszeptami. Recytuj ją rano i wieczorem dla ochrony.",
+    factEn: "An-Nas is the last surah of the Quran. It protects from Satan and evil whispers. Recite it morning and evening for protection.",
+    ayat: [
+      { n: 1, ar: "قُلْ أَعُوذُ بِرَبِّ النَّاسِ", tr: "Qul a'udhu bi rabbi n-nas", pl: "Powiedz: Szukam schronienia u Pana ludzi", en: "Say: I seek refuge in the Lord of mankind" },
+      { n: 2, ar: "مَلِكِ النَّاسِ", tr: "Maliki n-nas", pl: "Króla ludzi", en: "The Sovereign of mankind" },
+      { n: 3, ar: "إِلَٰهِ النَّاسِ", tr: "Ilahi n-nas", pl: "Boga ludzi", en: "The God of mankind" },
+      { n: 4, ar: "مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ", tr: "Min sharri l-waswasi l-khannas", pl: "Przed złem skrywającego się kusiciela", en: "From the evil of the retreating whisperer" },
+      { n: 5, ar: "الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ", tr: "Alladhi yuwaswisu fi suduri n-nas", pl: "Który szepce w piersiach ludzi", en: "Who whispers in the breasts of mankind" },
+      { n: 6, ar: "مِنَ الْجِنَّةِ وَالنَّاسِ", tr: "Mina l-jinnati wa n-nas", pl: "Spośród dżinnów i ludzi", en: "From among the jinn and mankind" }
     ]
   }
 ];
