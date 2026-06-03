@@ -17,6 +17,7 @@
     "data.js",
     "data/**/*.js",
     "scripts/**/*.mjs",
+    "utils/**/*.js",
     "playwright.config.js",
     "tests/**/*.js",
     "types/**/*.d.ts"

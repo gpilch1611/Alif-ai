@@ -1,5 +1,113 @@
 // Convert and family support content used across New Muslim, Quran and Games.
 
+export const MUALLAF_CHECKLIST_GROUPS = [
+  {
+    id: "7",
+    icon: "7",
+    titlePl: "Pierwsze 7 dni: spokojny start",
+    titleEn: "First 7 days: calm start",
+    leadPl: "Tylko fundament: szahada, modlitwa krok po kroku i jedna mala rutyna dziennie.",
+    leadEn: "Only the foundation: shahada, step-by-step prayer and one small daily routine.",
+    items: [
+      {
+        id: "7_shahada",
+        pl: "Powtorz szahade z tlumaczeniem i zapisz pytania do dziennika.",
+        en: "Repeat the shahada with translation and write questions in the journal."
+      },
+      {
+        id: "7_fatiha",
+        pl: "Sluchaj Al-Fatihy codziennie przez 3-5 minut.",
+        en: "Listen to Al-Fatiha daily for 3-5 minutes."
+      },
+      {
+        id: "7_prayer",
+        pl: "Otworz Prayer Mode i przejdz jedna modlitwe bez presji perfekcji.",
+        en: "Open Prayer Mode and walk through one prayer without pressure to be perfect."
+      },
+      {
+        id: "7_wudu",
+        pl: "Naucz sie kolejnosci wudu i przejdz ja powoli raz dziennie.",
+        en: "Learn the order of wudu and practice it slowly once a day."
+      },
+      {
+        id: "7_support",
+        pl: "Wybierz jedna zaufana osobe albo meczet do przyszlych pytan.",
+        en: "Choose one trusted person or mosque for future questions."
+      }
+    ]
+  },
+  {
+    id: "30",
+    icon: "30",
+    titlePl: "Pierwsze 30 dni po szahadzie",
+    titleEn: "First 30 days after shahada",
+    leadPl: "Najpierw rytm, modlitwa i spokojne podstawy. Jedna rzecz naraz.",
+    leadEn: "Start with rhythm, prayer and calm basics. One thing at a time.",
+    items: [
+      {
+        id: "30_shahada",
+        pl: "Zapisz tekst szahady i jej znaczenie własnymi słowami.",
+        en: "Write down the shahada and its meaning in your own words."
+      },
+      {
+        id: "30_fatiha",
+        pl: "Ucz się Al-Fatihy po krótkim fragmencie dziennie.",
+        en: "Learn Al-Fatiha in small daily parts."
+      },
+      {
+        id: "30_prayer",
+        pl: "Przećwicz ruchy salat z przewodnikiem, nawet jeśli recytacja jest jeszcze prosta.",
+        en: "Practice salat movements with a guide, even while recitation is still simple."
+      },
+      {
+        id: "30_mosque",
+        pl: "Znajdź lokalny meczet lub jedną zaufaną osobę do pytań.",
+        en: "Find a local mosque or one trusted person for questions."
+      },
+      {
+        id: "30_halal",
+        pl: "Zacznij od najłatwiejszych zmian halal w jedzeniu i codziennych nawykach.",
+        en: "Begin with the easiest halal changes in food and daily habits."
+      }
+    ]
+  },
+  {
+    id: "90",
+    icon: "90",
+    titlePl: "Do 90 dni: stabilny fundament",
+    titleEn: "By 90 days: a steady foundation",
+    leadPl: "Po trzech miesiącach celem jest stabilność, nie perfekcja.",
+    leadEn: "After three months the goal is steadiness, not perfection.",
+    items: [
+      {
+        id: "90_prayers",
+        pl: "Ułóż realistyczny plan pięciu modlitw wokół pracy, szkoły lub domu.",
+        en: "Build a realistic five-prayer schedule around work, school or home."
+      },
+      {
+        id: "90_surahs",
+        pl: "Dodaj 2-3 krótkie sury do recytacji, np. Al-Ikhlas, Al-Falaq, An-Nas.",
+        en: "Add 2-3 short surahs for recitation, such as Al-Ikhlas, Al-Falaq and An-Nas."
+      },
+      {
+        id: "90_community",
+        pl: "Odwiedź lekcję, khutbę albo spotkanie dla początkujących.",
+        en: "Attend a lesson, khutbah or beginner-friendly gathering."
+      },
+      {
+        id: "90_family",
+        pl: "Przygotuj łagodne odpowiedzi dla rodziny i znajomych, bez presji na spory.",
+        en: "Prepare gentle answers for family and friends without pressure to debate."
+      },
+      {
+        id: "90_questions",
+        pl: "Zapisuj pytania fiqh i finansowe do omówienia z lokalnym imamem lub uczonym.",
+        en: "Save fiqh and finance questions for a local imam or qualified scholar."
+      }
+    ]
+  }
+];
+
 export const FAMILY_REASSURANCE_POINTS = [
   {
     id: "same-person",
@@ -79,91 +187,71 @@ export const FAMILY_PARENT_FAQ = [
     id: "family-contact",
     qPl: "Czy to oznacza zerwanie kontaktu z rodziną?",
     qEn: "Does this mean breaking contact with family?",
-    aPl:
-      "To bardzo naturalny lęk, bo rodzic często najpierw boi się utraty bliskości. Islam nie uczy odcinania się od rodziców tylko dlatego, że mają inną wiarę. Przeciwnie, zachęca do szacunku, cierpliwości i dobrego traktowania rodziny. Konwersja może zmienić niektóre wybory, ale nie musi zabierać miłości, rozmów ani wspólnego życia.",
-    aEn:
-      "This is a very natural fear, because parents often first worry about losing closeness. Islam does not teach cutting parents off simply because they have a different faith. On the contrary, it encourages respect, patience and good treatment of family. Conversion may change some choices, but it does not have to take away love, conversation or shared life."
+    aPl: "To bardzo naturalny lęk, bo rodzic często najpierw boi się utraty bliskości. Islam nie uczy odcinania się od rodziców tylko dlatego, że mają inną wiarę. Przeciwnie, zachęca do szacunku, cierpliwości i dobrego traktowania rodziny. Konwersja może zmienić niektóre wybory, ale nie musi zabierać miłości, rozmów ani wspólnego życia.",
+    aEn: "This is a very natural fear, because parents often first worry about losing closeness. Islam does not teach cutting parents off simply because they have a different faith. On the contrary, it encourages respect, patience and good treatment of family. Conversion may change some choices, but it does not have to take away love, conversation or shared life."
   },
   {
     id: "sect-radicalism",
     qPl: "Czy islam to sekta albo radykalizm?",
     qEn: "Is Islam a sect or radicalism?",
-    aPl:
-      "Rozumiem, że takie skojarzenie może się pojawić, zwłaszcza po tym, co często widać w mediach. Islam jest jedną z największych religii świata, a większość muzułmanów żyje zwyczajnie: pracuje, uczy się, ma rodziny i sąsiadów. Radykalizm jest wypaczeniem, a nie normalną codziennością wiary. Zdrowe poznawanie islamu powinno prowadzić do spokoju, odpowiedzialności i lepszego charakteru.",
-    aEn:
-      "I understand why this association may appear, especially after what is often shown in the media. Islam is one of the world's largest religions, and most Muslims live ordinary lives: they work, study, have families and neighbours. Radicalism is a distortion, not the normal everyday reality of faith. Healthy learning about Islam should lead to calm, responsibility and better character."
+    aPl: "Rozumiem, że takie skojarzenie może się pojawić, zwłaszcza po tym, co często widać w mediach. Islam jest jedną z największych religii świata, a większość muzułmanów żyje zwyczajnie: pracuje, uczy się, ma rodziny i sąsiadów. Radykalizm jest wypaczeniem, a nie normalną codziennością wiary. Zdrowe poznawanie islamu powinno prowadzić do spokoju, odpowiedzialności i lepszego charakteru.",
+    aEn: "I understand why this association may appear, especially after what is often shown in the media. Islam is one of the world's largest religions, and most Muslims live ordinary lives: they work, study, have families and neighbours. Radicalism is a distortion, not the normal everyday reality of faith. Healthy learning about Islam should lead to calm, responsibility and better character."
   },
   {
     id: "freedom",
     qPl: "Czy dziecko straci wolność?",
     qEn: "Will my child lose freedom?",
-    aPl:
-      "Nie, ale może zacząć świadomie stawiać sobie nowe granice. Dla osoby wierzącej wolność nie oznacza robienia wszystkiego, tylko wybieranie tego, co uważa za dobre i odpowiedzialne. Może pojawić się modlitwa, większa ostrożność w jedzeniu, relacjach czy imprezach. To nie musi być utrata życia, ale próba uporządkowania go według nowych wartości.",
-    aEn:
-      "No, but they may begin to set new boundaries consciously. For a believer, freedom does not mean doing everything, but choosing what they see as good and responsible. Prayer, more care with food, relationships or parties may appear. This does not have to be a loss of life, but an attempt to order it around new values."
+    aPl: "Nie, ale może zacząć świadomie stawiać sobie nowe granice. Dla osoby wierzącej wolność nie oznacza robienia wszystkiego, tylko wybieranie tego, co uważa za dobre i odpowiedzialne. Może pojawić się modlitwa, większa ostrożność w jedzeniu, relacjach czy imprezach. To nie musi być utrata życia, ale próba uporządkowania go według nowych wartości.",
+    aEn: "No, but they may begin to set new boundaries consciously. For a believer, freedom does not mean doing everything, but choosing what they see as good and responsible. Prayer, more care with food, relationships or parties may appear. This does not have to be a loss of life, but an attempt to order it around new values."
   },
   {
     id: "family-holidays",
     qPl: "Co z tradycyjnymi świętami rodzinnymi?",
     qEn: "What about traditional family holidays?",
-    aPl:
-      "To delikatny temat, bo święta są często bardziej rodzinne niż teologiczne w codziennym odczuciu. Muzułmanin może chcieć unikać religijnych obrzędów innej wiary, ale nadal może okazywać rodzinie szacunek, zadzwonić, odwiedzić bliskich czy usiąść razem przy stole. W wielu rodzinach da się znaleźć spokojną formę obecności bez udawania czegoś, w co dana osoba już nie wierzy. Najważniejsze są jasne granice i ciepły ton rozmowy.",
-    aEn:
-      "This is a sensitive subject, because holidays often feel more family-based than theological in everyday life. A Muslim may want to avoid the religious rituals of another faith, but can still show respect, call, visit loved ones or sit together at the table. Many families can find a calm way of being present without pretending to believe something the person no longer believes. Clear boundaries and a warm tone matter most."
+    aPl: "To delikatny temat, bo święta są często bardziej rodzinne niż teologiczne w codziennym odczuciu. Muzułmanin może chcieć unikać religijnych obrzędów innej wiary, ale nadal może okazywać rodzinie szacunek, zadzwonić, odwiedzić bliskich czy usiąść razem przy stole. W wielu rodzinach da się znaleźć spokojną formę obecności bez udawania czegoś, w co dana osoba już nie wierzy. Najważniejsze są jasne granice i ciepły ton rozmowy.",
+    aEn: "This is a sensitive subject, because holidays often feel more family-based than theological in everyday life. A Muslim may want to avoid the religious rituals of another faith, but can still show respect, call, visit loved ones or sit together at the table. Many families can find a calm way of being present without pretending to believe something the person no longer believes. Clear boundaries and a warm tone matter most."
   },
   {
     id: "hijab",
     qPl: "Czy córka będzie musiała nosić hidżab?",
     qEn: "Will my daughter have to wear hijab?",
-    aPl:
-      "To pytanie często wynika z troski o bezpieczeństwo i swobodę córki. Hidżab, czyli chusta i skromny sposób ubierania, jest dla wielu muzułmanek ważną praktyką wiary. Nie powinien jednak być narzędziem presji, strachu ani nagłej kontroli ze strony innych ludzi. Najzdrowsza droga to wiedza, spokojna rozmowa i dojrzewanie do decyzji bez upokarzania kogokolwiek.",
-    aEn:
-      "This question often comes from concern for a daughter's safety and freedom. Hijab, meaning a headscarf and a modest way of dressing, is an important faith practice for many Muslim women. It should not become a tool of pressure, fear or sudden control from other people. The healthiest path is knowledge, calm conversation and growing into decisions without humiliating anyone."
+    aPl: "To pytanie często wynika z troski o bezpieczeństwo i swobodę córki. Hidżab, czyli chusta i skromny sposób ubierania, jest dla wielu muzułmanek ważną praktyką wiary. Nie powinien jednak być narzędziem presji, strachu ani nagłej kontroli ze strony innych ludzi. Najzdrowsza droga to wiedza, spokojna rozmowa i dojrzewanie do decyzji bez upokarzania kogokolwiek.",
+    aEn: "This question often comes from concern for a daughter's safety and freedom. Hijab, meaning a headscarf and a modest way of dressing, is an important faith practice for many Muslim women. It should not become a tool of pressure, fear or sudden control from other people. The healthiest path is knowledge, calm conversation and growing into decisions without humiliating anyone."
   },
   {
     id: "respect-parents",
     qPl: "Czy islam szanuje rodziców?",
     qEn: "Does Islam respect parents?",
-    aPl:
-      "Tak, szacunek do rodziców jest w islamie bardzo ważny. Dotyczy to także rodziców, którzy nie są muzułmanami albo nie rozumieją tej decyzji. Dziecko nadal powinno mówić łagodnie, pomagać, nie gardzić rodziną i nie używać wiary jako powodu do pychy. Różnica religijna nie odbiera rodzicom godności ani miejsca w sercu.",
-    aEn:
-      "Yes, respect for parents is very important in Islam. This also applies to parents who are not Muslim or do not understand the decision. A child should still speak gently, help, avoid looking down on family and not use faith as a reason for pride. A religious difference does not take away parents' dignity or their place in the heart."
+    aPl: "Tak, szacunek do rodziców jest w islamie bardzo ważny. Dotyczy to także rodziców, którzy nie są muzułmanami albo nie rozumieją tej decyzji. Dziecko nadal powinno mówić łagodnie, pomagać, nie gardzić rodziną i nie używać wiary jako powodu do pychy. Różnica religijna nie odbiera rodzicom godności ani miejsca w sercu.",
+    aEn: "Yes, respect for parents is very important in Islam. This also applies to parents who are not Muslim or do not understand the decision. A child should still speak gently, help, avoid looking down on family and not use faith as a reason for pride. A religious difference does not take away parents' dignity or their place in the heart."
   },
   {
     id: "brainwashing",
     qPl: "Skąd mam wiedzieć, że to nie jest pranie mózgu?",
     qEn: "How do I know this is not brainwashing?",
-    aPl:
-      "To ważne pytanie i warto je potraktować poważnie. Zdrowa wiara nie boi się pytań, czasu, sprawdzania źródeł ani rozmowy z rodziną. Niepokojące byłoby izolowanie od bliskich, tajemnice, presja, pośpiech albo zakaz samodzielnego myślenia. Dobrym znakiem jest to, że dziecko umie spokojnie wyjaśniać, czego się uczy, i nie zrywa kontaktu z ludźmi, którzy je kochają.",
-    aEn:
-      "This is an important question and it deserves to be taken seriously. Healthy faith is not afraid of questions, time, checking sources or talking with family. Isolation from loved ones, secrecy, pressure, rushing or forbidding independent thought would be worrying signs. A good sign is when your child can calmly explain what they are learning and does not cut contact with people who love them."
+    aPl: "To ważne pytanie i warto je potraktować poważnie. Zdrowa wiara nie boi się pytań, czasu, sprawdzania źródeł ani rozmowy z rodziną. Niepokojące byłoby izolowanie od bliskich, tajemnice, presja, pośpiech albo zakaz samodzielnego myślenia. Dobrym znakiem jest to, że dziecko umie spokojnie wyjaśniać, czego się uczy, i nie zrywa kontaktu z ludźmi, którzy je kochają.",
+    aEn: "This is an important question and it deserves to be taken seriously. Healthy faith is not afraid of questions, time, checking sources or talking with family. Isolation from loved ones, secrecy, pressure, rushing or forbidding independent thought would be worrying signs. A good sign is when your child can calmly explain what they are learning and does not cut contact with people who love them."
   },
   {
     id: "daily-life",
     qPl: "Co to właściwie oznacza na co dzień?",
     qEn: "What does this actually mean day to day?",
-    aPl:
-      "Najczęściej oznacza małe, codzienne zmiany, a nie nagłe wywrócenie całego życia. Może dojść modlitwa, nauka podstaw, unikanie alkoholu i wieprzowiny, większa uważność w relacjach oraz chęć życia spokojniej. Na początku wiele osób uczy się powoli i popełnia błędy. To bardziej droga krok po kroku niż gotowa doskonałość od pierwszego dnia.",
-    aEn:
-      "Most often it means small daily changes, not suddenly turning all of life upside down. Prayer, learning the basics, avoiding alcohol and pork, more care in relationships and a desire to live more calmly may appear. At the beginning many people learn slowly and make mistakes. It is more of a step-by-step path than instant perfection from day one."
+    aPl: "Najczęściej oznacza małe, codzienne zmiany, a nie nagłe wywrócenie całego życia. Może dojść modlitwa, nauka podstaw, unikanie alkoholu i wieprzowiny, większa uważność w relacjach oraz chęć życia spokojniej. Na początku wiele osób uczy się powoli i popełnia błędy. To bardziej droga krok po kroku niż gotowa doskonałość od pierwszego dnia.",
+    aEn: "Most often it means small daily changes, not suddenly turning all of life upside down. Prayer, learning the basics, avoiding alcohol and pork, more care in relationships and a desire to live more calmly may appear. At the beginning many people learn slowly and make mistakes. It is more of a step-by-step path than instant perfection from day one."
   },
   {
     id: "name-culture",
     qPl: "Czy moje dziecko będzie musiało zmienić imię albo odciąć się od polskiej kultury?",
     qEn: "Will my child have to change their name or cut off Polish culture?",
-    aPl:
-      "Zwykle nie ma takiej potrzeby. Islam nie wymaga, żeby człowiek przestał być Polakiem, zapomniał języka albo odrzucił rodzinne korzenie. Niektóre osoby wybierają dodatkowe imię muzułmańskie, ale nie jest to warunek bycia muzułmaninem. Najważniejsza zmiana dotyczy wiary, wartości i charakteru, a nie udawania kogoś z innej kultury.",
-    aEn:
-      "Usually there is no such need. Islam does not require a person to stop being Polish, forget the language or reject family roots. Some people choose an additional Muslim name, but it is not a condition of being Muslim. The most important change concerns faith, values and character, not pretending to be from another culture."
+    aPl: "Zwykle nie ma takiej potrzeby. Islam nie wymaga, żeby człowiek przestał być Polakiem, zapomniał języka albo odrzucił rodzinne korzenie. Niektóre osoby wybierają dodatkowe imię muzułmańskie, ale nie jest to warunek bycia muzułmaninem. Najważniejsza zmiana dotyczy wiary, wartości i charakteru, a nie udawania kogoś z innej kultury.",
+    aEn: "Usually there is no such need. Islam does not require a person to stop being Polish, forget the language or reject family roots. Some people choose an additional Muslim name, but it is not a condition of being Muslim. The most important change concerns faith, values and character, not pretending to be from another culture."
   },
   {
     id: "support",
     qPl: "Jak mogę wspierać moje dziecko, nawet jeśli tego nie rozumiem?",
     qEn: "How can I support my child, even if I do not understand this?",
-    aPl:
-      "Nie musisz od razu wszystkiego rozumieć ani się ze wszystkim zgadzać. Bardzo dużo znaczy spokojne pytanie: „Powiedz mi, co to dla ciebie znaczy” zamiast krzyku lub wyśmiewania. Możesz poprosić o proste materiały, ustalić granice rozmowy i dać sobie czas. Największym wsparciem bywa sygnał: „Jesteś nadal moim dzieckiem i chcę z tobą rozmawiać”.",
-    aEn:
-      "You do not have to understand everything immediately or agree with everything. A calm question like, “Tell me what this means to you,” means far more than shouting or mocking. You can ask for simple materials, set boundaries for the conversation and give yourself time. The greatest support is often the message: “You are still my child and I want to talk with you.”"
+    aPl: "Nie musisz od razu wszystkiego rozumieć ani się ze wszystkim zgadzać. Bardzo dużo znaczy spokojne pytanie: „Powiedz mi, co to dla ciebie znaczy” zamiast krzyku lub wyśmiewania. Możesz poprosić o proste materiały, ustalić granice rozmowy i dać sobie czas. Największym wsparciem bywa sygnał: „Jesteś nadal moim dzieckiem i chcę z tobą rozmawiać”.",
+    aEn: "You do not have to understand everything immediately or agree with everything. A calm question like, “Tell me what this means to you,” means far more than shouting or mocking. You can ask for simple materials, set boundaries for the conversation and give yourself time. The greatest support is often the message: “You are still my child and I want to talk with you.”"
   }
 ];
 
@@ -173,8 +261,10 @@ export const FAMILY_PARENT_FACTS = [
     icon: "💚",
     titlePl: "To nadal Twoje dziecko",
     titleEn: "They are still your child",
-    bodyPl: "Zmiana wiary nie kasuje wspomnień, miłości ani lat spędzonych razem. Najbardziej potrzebny jest teraz spokojny most, nie mur.",
-    bodyEn: "A change of faith does not erase memories, love or years spent together. What is needed most now is a calm bridge, not a wall.",
+    bodyPl:
+      "Zmiana wiary nie kasuje wspomnień, miłości ani lat spędzonych razem. Najbardziej potrzebny jest teraz spokojny most, nie mur.",
+    bodyEn:
+      "A change of faith does not erase memories, love or years spent together. What is needed most now is a calm bridge, not a wall.",
     notePl: "Relacja",
     noteEn: "Relationship"
   },
@@ -193,8 +283,10 @@ export const FAMILY_PARENT_FACTS = [
     icon: "❔",
     titlePl: "Pytania są bezpieczne",
     titleEn: "Questions are safe",
-    bodyPl: "Zdrowa rozmowa może zawierać obawy, pauzy i trudne pytania. Nie trzeba wszystkiego rozstrzygać jednego wieczoru.",
-    bodyEn: "A healthy conversation can include fears, pauses and hard questions. Everything does not need to be settled in one evening.",
+    bodyPl:
+      "Zdrowa rozmowa może zawierać obawy, pauzy i trudne pytania. Nie trzeba wszystkiego rozstrzygać jednego wieczoru.",
+    bodyEn:
+      "A healthy conversation can include fears, pauses and hard questions. Everything does not need to be settled in one evening.",
     notePl: "Bez presji",
     noteEn: "No pressure"
   },
@@ -203,7 +295,8 @@ export const FAMILY_PARENT_FACTS = [
     icon: "🌿",
     titlePl: "Dobra zmiana powinna być widoczna w charakterze",
     titleEn: "Good change should show in character",
-    bodyPl: "Wiara powinna pomagać w cierpliwości, odpowiedzialności, prawdomówności i szacunku. To są owoce, które rodzina może zobaczyć.",
+    bodyPl:
+      "Wiara powinna pomagać w cierpliwości, odpowiedzialności, prawdomówności i szacunku. To są owoce, które rodzina może zobaczyć.",
     bodyEn: "Faith should help with patience, responsibility, honesty and respect. These are fruits a family can see.",
     notePl: "Codzienność",
     noteEn: "Everyday life"
@@ -213,8 +306,10 @@ export const FAMILY_PARENT_FACTS = [
     icon: "🏠",
     titlePl: "Rodzina może pozostać blisko",
     titleEn: "Family can stay close",
-    bodyPl: "Różnica wiary nie musi oznaczać końca wspólnych obiadów, telefonów, pomocy i czułości. Wymaga tylko więcej delikatności.",
-    bodyEn: "A difference in faith does not have to mean the end of shared meals, calls, help and tenderness. It simply asks for more gentleness.",
+    bodyPl:
+      "Różnica wiary nie musi oznaczać końca wspólnych obiadów, telefonów, pomocy i czułości. Wymaga tylko więcej delikatności.",
+    bodyEn:
+      "A difference in faith does not have to mean the end of shared meals, calls, help and tenderness. It simply asks for more gentleness.",
     notePl: "Nadzieja",
     noteEn: "Hope"
   }
@@ -226,7 +321,8 @@ export const FAMILY_PARENT_RESOURCES = [
     labelPl: "Krótka rozmowa bez presji",
     labelEn: "A short talk without pressure",
     textPl: "Zacznijcie od 10 minut i jednego pytania. Lepiej skończyć spokojnie niż próbować wyjaśnić wszystko naraz.",
-    textEn: "Start with 10 minutes and one question. It is better to end calmly than to try to explain everything at once."
+    textEn:
+      "Start with 10 minutes and one question. It is better to end calmly than to try to explain everything at once."
   },
   {
     id: "polish-sources",
@@ -239,15 +335,18 @@ export const FAMILY_PARENT_RESOURCES = [
     id: "parent-pdf-video",
     labelPl: "Krótki film lub PDF dla rodziców",
     labelEn: "A short video or PDF for parents",
-    textPl: "Najlepszy materiał dla rodzica jest krótki, konkretny i możliwy do przeczytania bez znajomości arabskich pojęć.",
+    textPl:
+      "Najlepszy materiał dla rodzica jest krótki, konkretny i możliwy do przeczytania bez znajomości arabskich pojęć.",
     textEn: "The best material for a parent is short, concrete and readable without knowing Arabic terms."
   },
   {
     id: "trusted-community",
     labelPl: "Zaufana, spokojna osoba",
     labelEn: "A trusted, calm person",
-    textPl: "Jeśli to możliwe, porozmawiajcie z kimś ze wspólnoty, kto umie słuchać rodziców, a nie tylko odpowiadać argumentami.",
-    textEn: "If possible, speak with someone from the community who can listen to parents, not only answer with arguments."
+    textPl:
+      "Jeśli to możliwe, porozmawiajcie z kimś ze wspólnoty, kto umie słuchać rodziców, a nie tylko odpowiadać argumentami.",
+    textEn:
+      "If possible, speak with someone from the community who can listen to parents, not only answer with arguments."
   }
 ];
 

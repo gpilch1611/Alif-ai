@@ -3,6 +3,9 @@ import { readFile } from "node:fs/promises";
 const appJs = await readFile(new URL("../app.js", import.meta.url), "utf8");
 const swJs = await readFile(new URL("../service-worker.js", import.meta.url), "utf8");
 const stylesCss = await readFile(new URL("../styles.css", import.meta.url), "utf8");
+const safeRenderJs = await readFile(new URL("../utils/safe-render.js", import.meta.url), "utf8");
+const familySupportJs = await readFile(new URL("../data/family-support.js", import.meta.url), "utf8");
+const onboardingJs = await readFile(new URL("../data/onboarding.js", import.meta.url), "utf8");
 
 const failures = [];
 const assert = (condition, message) => {
@@ -17,6 +20,16 @@ assert(appJs.includes("function homeFavoriteGroups()"), "home favorites grouped 
 assert(appJs.includes("function homeFavoritesCarousel("), "home favorites carousel helper is missing.");
 assert(appJs.includes("function setTrustedHtml("), "central trusted HTML helper is missing.");
 assert(appJs.includes("function appendTextBlock("), "safe text DOM helper is missing.");
+assert(
+  appJs.includes('from "./utils/safe-render.js"'),
+  "safe render helpers should be imported from utils/safe-render.js."
+);
+assert(safeRenderJs.includes("export function escapeHtml"), "escapeHtml should live in utils/safe-render.js.");
+assert(safeRenderJs.includes("export function setTrustedHtml"), "setTrustedHtml should live in utils/safe-render.js.");
+assert(
+  safeRenderJs.includes("export function appendTextBlock"),
+  "appendTextBlock should live in utils/safe-render.js."
+);
 assert(appJs.includes('box.textContent = "";'), "AI message list should clear via textContent, not user/API HTML.");
 assert(
   appJs.includes('appendTextBlock(article, "p", "whitespace-pre-wrap", message.content)'),
@@ -68,7 +81,8 @@ assert(appJs.includes("PRAYER_AFTER_SALAH_ADHKAR"), "After-salah adhkar import/r
 assert(appJs.includes("PRAYER_SUNNAH_TRAVEL"), "Prayer sunnah/travel import/rendering is missing.");
 assert(appJs.includes("muallafChecklist"), "Muallaf 30/90 checklist state is missing.");
 assert(appJs.includes("Plan 30/90 dni po szahadzie"), "Muallaf 30/90 checklist UI is missing.");
-assert(appJs.includes("Pierwsze 7 dni: spokojny start"), "Muallaf 7-day starter plan is missing.");
+assert(familySupportJs.includes("Pierwsze 7 dni: spokojny start"), "Muallaf 7-day starter plan is missing.");
+assert(!appJs.includes("const MUALLAF_CHECKLIST_GROUPS ="), "Muallaf checklist groups should stay out of app.js.");
 assert(!appJs.includes("adventure: learningJournal"), "Public learning journal route should stay removed.");
 assert(appJs.includes("function systemActivityEvents()"), "Settings system activity events helper is missing.");
 assert(appJs.includes("Dane i historia aktywnosci"), "Settings activity history panel is missing.");
@@ -79,6 +93,8 @@ assert(
   appJs.includes('from "./data/family-support.js"'),
   "Convert and family support content should be imported from data/family-support.js."
 );
+assert(appJs.includes('from "./data/badges.js"'), "Badge catalog should be imported from data/badges.js.");
+assert(!appJs.includes("const BADGES_CATALOG ="), "Badge catalog should stay out of app.js.");
 assert(
   appJs.includes('from "./data/prayer-mode.js"'),
   "Prayer Mode static data should be imported from data/prayer-mode.js."
@@ -108,6 +124,9 @@ assert(appJs.includes("function normalizeRoute()"), "Unknown route normalization
 assert(appJs.includes("function readImportedState("), "Import validation helper is missing.");
 assert(appJs.includes('app: "Alif AI"'), "Progress export metadata is missing.");
 assert(appJs.includes("function onboardingPanel()"), "Home onboarding panel is missing.");
+assert(appJs.includes('from "./data/onboarding.js"'), "Onboarding data should be imported from data/onboarding.js.");
+assert(onboardingJs.includes("export const ONBOARDING_GOALS"), "Onboarding goals should live in data/onboarding.js.");
+assert(!appJs.includes("const ONBOARDING_GOALS ="), "Onboarding goals should stay out of app.js.");
 assert(appJs.includes("restartOnboardingBtn"), "Settings should allow restarting onboarding.");
 assert(appJs.includes("Backup i przenoszenie danych"), "Backup/privacy settings panel is missing.");
 assert(!appJs.includes("home-quick-card"), "Home quick cards should stay removed.");
@@ -133,9 +152,12 @@ assert(
   "service worker should not fallback to index.html for failed asset requests."
 );
 for (const path of [
+  "./utils/safe-render.js",
+  "./data/badges.js",
   "./data/content-metadata.js",
   "./data/family-support.js",
   "./data/history.js",
+  "./data/onboarding.js",
   "./data/halal-haram.js",
   "./data/islamic-core.js",
   "./data/islamic-faq.js",

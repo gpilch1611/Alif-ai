@@ -1,13 +1,16 @@
 import { arabicAlphabet, words, dailyTasks, asmaulHusna, islamicHadith, tajweedRules, pillarsOfIslam, pillarsOfIman, islamicMonths, newMuslimSteps, halalHaramData, islamicFaq } from "./data.js";
 import { historyContent } from "./data/history.js";
+import { BADGES_CATALOG, BADGE_CATEGORIES, badgeCategory, badgeTarget } from "./data/badges.js";
 import {
   FAMILY_BRIDGE_QUIZ,
   FAMILY_PARENT_FACTS,
   FAMILY_PARENT_FAQ,
   FAMILY_PARENT_RESOURCES,
+  MUALLAF_CHECKLIST_GROUPS,
   MUALLAF_SUPPORT_PANELS,
   QURAN_LEARNING_STEPS
 } from "./data/family-support.js";
+import { ONBOARDING_GOALS, ONBOARDING_LEVELS, ONBOARDING_PRAYER_FOCUS } from "./data/onboarding.js";
 import {
   CONTENT_LAST_CHECKED_AT,
   CONTENT_TRUST,
@@ -44,9 +47,10 @@ import {
 } from "./data/quran-mode.js";
 import { PRAYER_STEP_VISUALS } from "./data/prayer-visuals.js";
 import { AQIDAH_BASICS, MUALLAF_GUIDANCE, RAMADAN_GUIDE, ZAKAT_BASICS } from "./data/islamic-core.js";
+import { appendTextBlock as appendSafeTextBlock, escapeHtml as escapeUnsafeHtml, safePdfUrl as safeUserPdfUrl, setTrustedHtml as setTrustedHtmlUnsafe } from "./utils/safe-render.js";
 
 const GROQ_MODEL = "llama-3.3-70b-versatile";
-const APP_VERSION = "20260529-practice-rename";
+const APP_VERSION = "20260530-onboarding-data";
 window.__ALIF_APP_VERSION = APP_VERSION;
 const AI_SYSTEM_PROMPT_PL = `Jesteś spokojnym doradcą Alif AI od islamu, muzułmanów, konwersji, rozmowy z rodziną, Koranu, modlitwy i pierwszych kroków w wierze.
 Zawsze odpowiadaj TYLKO w języku polskim. Bądź ciepły, konkretny, delikatny i praktyczny.
@@ -742,37 +746,19 @@ const debouncedAsmaSearch = debounce(() => {
 }, 200);
 
 function escapeHtml(value = "") {
-  return String(value).replace(/[&<>"']/g, (char) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    "\"": "&quot;",
-    "'": "&#039;"
-  }[char]));
+  return escapeUnsafeHtml(value);
 }
 
 function safePdfUrl(value = "") {
-  const text = String(value || "").trim();
-  if (/^data:application\/pdf[;,]/i.test(text)) return text;
-  try {
-    const url = new URL(text, window.location.href);
-    if (url.protocol === "https:" || url.protocol === "http:") return url.href;
-  } catch {}
-  return "";
+  return safeUserPdfUrl(value, window.location.href);
 }
 
 function setTrustedHtml(target, html) {
-  const el = typeof target === "string" ? $(target) : target;
-  if (!el) return;
-  el.innerHTML = html;
+  setTrustedHtmlUnsafe(target, html, $);
 }
 
 function appendTextBlock(target, tagName, className, text) {
-  const el = document.createElement(tagName);
-  if (className) el.className = className;
-  el.textContent = text;
-  target.appendChild(el);
-  return el;
+  return appendSafeTextBlock(target, tagName, className, text);
 }
 
 function markActiveDay() {
@@ -1243,54 +1229,6 @@ function render() {
   const views = { home, islam, koran, alphabet, calendar: islamicCalendar, review: reviewCenter, lessons, flashcards, speech, writing, books, culture, games, badges, settings, prayer, prayerGuide, asmaul, tajweed, history, pillars, muallaf, halalharam, islamfaq, glossary, hadith, aqidah, ramadan, zakat };
   (views[route] || home)();
 }
-
-const MUALLAF_CHECKLIST_GROUPS = [
-  {
-    id: "7",
-    icon: "7",
-    titlePl: "Pierwsze 7 dni: spokojny start",
-    titleEn: "First 7 days: calm start",
-    leadPl: "Tylko fundament: szahada, modlitwa krok po kroku i jedna mala rutyna dziennie.",
-    leadEn: "Only the foundation: shahada, step-by-step prayer and one small daily routine.",
-    items: [
-      { id: "7_shahada", pl: "Powtorz szahade z tlumaczeniem i zapisz pytania do dziennika.", en: "Repeat the shahada with translation and write questions in the journal." },
-      { id: "7_fatiha", pl: "Sluchaj Al-Fatihy codziennie przez 3-5 minut.", en: "Listen to Al-Fatiha daily for 3-5 minutes." },
-      { id: "7_prayer", pl: "Otworz Prayer Mode i przejdz jedna modlitwe bez presji perfekcji.", en: "Open Prayer Mode and walk through one prayer without pressure to be perfect." },
-      { id: "7_wudu", pl: "Naucz sie kolejnosci wudu i przejdz ja powoli raz dziennie.", en: "Learn the order of wudu and practice it slowly once a day." },
-      { id: "7_support", pl: "Wybierz jedna zaufana osobe albo meczet do przyszlych pytan.", en: "Choose one trusted person or mosque for future questions." }
-    ]
-  },
-  {
-    id: "30",
-    icon: "30",
-    titlePl: "Pierwsze 30 dni po szahadzie",
-    titleEn: "First 30 days after shahada",
-    leadPl: "Najpierw rytm, modlitwa i spokojne podstawy. Jedna rzecz naraz.",
-    leadEn: "Start with rhythm, prayer and calm basics. One thing at a time.",
-    items: [
-      { id: "30_shahada", pl: "Zapisz tekst szahady i jej znaczenie własnymi słowami.", en: "Write down the shahada and its meaning in your own words." },
-      { id: "30_fatiha", pl: "Ucz się Al-Fatihy po krótkim fragmencie dziennie.", en: "Learn Al-Fatiha in small daily parts." },
-      { id: "30_prayer", pl: "Przećwicz ruchy salat z przewodnikiem, nawet jeśli recytacja jest jeszcze prosta.", en: "Practice salat movements with a guide, even while recitation is still simple." },
-      { id: "30_mosque", pl: "Znajdź lokalny meczet lub jedną zaufaną osobę do pytań.", en: "Find a local mosque or one trusted person for questions." },
-      { id: "30_halal", pl: "Zacznij od najłatwiejszych zmian halal w jedzeniu i codziennych nawykach.", en: "Begin with the easiest halal changes in food and daily habits." }
-    ]
-  },
-  {
-    id: "90",
-    icon: "90",
-    titlePl: "Do 90 dni: stabilny fundament",
-    titleEn: "By 90 days: a steady foundation",
-    leadPl: "Po trzech miesiącach celem jest stabilność, nie perfekcja.",
-    leadEn: "After three months the goal is steadiness, not perfection.",
-    items: [
-      { id: "90_prayers", pl: "Ułóż realistyczny plan pięciu modlitw wokół pracy, szkoły lub domu.", en: "Build a realistic five-prayer schedule around work, school or home." },
-      { id: "90_surahs", pl: "Dodaj 2-3 krótkie sury do recytacji, np. Al-Ikhlas, Al-Falaq, An-Nas.", en: "Add 2-3 short surahs for recitation, such as Al-Ikhlas, Al-Falaq and An-Nas." },
-      { id: "90_community", pl: "Odwiedź lekcję, khutbę albo spotkanie dla początkujących.", en: "Attend a lesson, khutbah or beginner-friendly gathering." },
-      { id: "90_family", pl: "Przygotuj łagodne odpowiedzi dla rodziny i znajomych, bez presji na spory.", en: "Prepare gentle answers for family and friends without pressure to debate." },
-      { id: "90_questions", pl: "Zapisuj pytania fiqh i finansowe do omówienia z lokalnym imamem lub uczonym.", en: "Save fiqh and finance questions for a local imam or qualified scholar." }
-    ]
-  }
-];
 
 function muallafChecklistTotal() {
   return MUALLAF_CHECKLIST_GROUPS.reduce((sum, group) => sum + group.items.length, 0);
@@ -2916,26 +2854,6 @@ function learningCenter() {
     </section>
   `;
 }
-
-const ONBOARDING_GOALS = [
-  { id: "letters", route: "alphabet", icon: "Aa", pl: "Chcę zacząć od liter", en: "Start with letters" },
-  { id: "muallaf", route: "muallaf", icon: "01", pl: "Jestem nowym muzułmaninem", en: "I am a new Muslim" },
-  { id: "family", route: "muallaf", icon: "🤝", pl: "Chcę pokazać to rodzinie", en: "I want to show family" },
-  { id: "prayer", route: "prayerGuide", icon: "5x", pl: "Chcę nauczyć się modlitwy", en: "Learn prayer" },
-  { id: "quran", route: "koran", icon: "Q", pl: "Chcę czytać Quran", en: "Read Quran" },
-  { id: "basics", route: "islam", icon: "?", pl: "Chcę podstaw islamu", en: "Learn Islam basics" }
-];
-
-const ONBOARDING_LEVELS = [
-  { id: "beginner", pl: "Zaczynam od zera", en: "Starting from zero" },
-  { id: "some", pl: "Coś już umiem", en: "I know a little" },
-  { id: "returning", pl: "Wracam do nauki", en: "Returning to practice" }
-];
-
-const ONBOARDING_PRAYER_FOCUS = [
-  { id: "yes", pl: "Tak, modlitwa jest priorytetem", en: "Yes, prayer is a priority" },
-  { id: "later", pl: "Później, najpierw podstawy", en: "Later, basics first" }
-];
 
 function onboardingPanel() {
   if (state.onboardingComplete) return "";
@@ -6445,94 +6363,6 @@ function toggleFocusMode(content = "") {
     document.body.style.overflow = "";
   }
   saveState();
-}
-
-const BADGES_CATALOG = [
-  { id: "first_letter",   icon: "🅰️", pl: "Pierwsza litera",     en: "First letter",       criterionPl: "Poznaj 1 literę arabską",           criterionEn: "Learn 1 Arabic letter" },
-  { id: "ten_letters",    icon: "✋",  pl: "Dziesięć liter",      en: "Ten letters",        criterionPl: "Poznaj 10 liter",                   criterionEn: "Learn 10 letters" },
-  { id: "half_alphabet",  icon: "⭐",  pl: "Połowa alfabetu",     en: "Half alphabet",      criterionPl: "Poznaj 14 z 28 liter",              criterionEn: "Learn 14 of 28 letters" },
-  { id: "full_alphabet",  icon: "🏆",  pl: "Mistrz alfabetu",     en: "Alphabet master",    criterionPl: "Poznaj wszystkie 28 liter",         criterionEn: "Learn all 28 letters" },
-  { id: "first_surah",    icon: "📖",  pl: "Pierwsza sura",       en: "First surah",        criterionPl: "Dodaj 1 surę do ulubionych ❤️",     criterionEn: "Add 1 surah to favorites ❤️" },
-  { id: "surahs5",        icon: "📗",  pl: "5 sur",               en: "5 surahs",           criterionPl: "Dodaj 5 sur do ulubionych",         criterionEn: "Add 5 surahs to favorites" },
-  { id: "ten_surahs",     icon: "📚",  pl: "Dziesięć sur",        en: "Ten surahs",         criterionPl: "Dodaj 10 sur do ulubionych ❤️",     criterionEn: "Add 10 surahs to favorites ❤️" },
-  { id: "streak3",        icon: "🔥",  pl: "3 dni z rzędu",       en: "3-day streak",       criterionPl: "Ucz się 3 dni pod rząd",            criterionEn: "Learn 3 days in a row" },
-  { id: "streak7",        icon: "🔥🔥", pl: "Tydzień nauki",      en: "Week streak",        criterionPl: "Ucz się 7 dni pod rząd",            criterionEn: "Learn 7 days in a row" },
-  { id: "streak30",       icon: "💫",  pl: "Miesiąc nauki",       en: "Month streak",       criterionPl: "Ucz się 30 dni pod rząd",           criterionEn: "Learn 30 days in a row" },
-  { id: "pts500",         icon: "💯",  pl: "500 punktów",         en: "500 points",         criterionPl: "Zdobądź 500 punktów",               criterionEn: "Earn 500 points" },
-  { id: "pts2000",        icon: "💎",  pl: "2000 punktów",        en: "2000 points",        criterionPl: "Zdobądź 2000 punktów",              criterionEn: "Earn 2000 points" },
-  { id: "quiz10",         icon: "🧠",  pl: "10 poprawnych",       en: "10 correct",         criterionPl: "Odpowiedz poprawnie 10 razy w quizie", criterionEn: "Answer correctly 10 times in quiz" },
-  { id: "quiz25",         icon: "🎓",  pl: "25 poprawnych",       en: "25 correct",         criterionPl: "Odpowiedz poprawnie 25 razy w quizie", criterionEn: "Answer correctly 25 times in quiz" },
-  { id: "flashcard_first", icon: "🔖", pl: "Pierwsza fiszka",      en: "First flashcard",    criterionPl: "Dodaj lub rozpocznij 1 fiszkę",      criterionEn: "Add or start 1 flashcard" },
-  { id: "flashcards25",   icon: "🃏",  pl: "25 fiszek",           en: "25 flashcards",      criterionPl: "Miej 25 fiszek w kolekcji",         criterionEn: "Have 25 flashcards in collection" },
-  { id: "lessons3",       icon: "🌱",  pl: "3 lekcje",            en: "3 lessons",          criterionPl: "Zalicz 3 lekcje",                   criterionEn: "Complete 3 lessons" },
-  { id: "lessons10",      icon: "📝",  pl: "10 lekcji",           en: "10 lessons",         criterionPl: "Zalicz 10 lekcji",                  criterionEn: "Complete 10 lessons" },
-  { id: "lessons25",      icon: "📒",  pl: "25 lekcji",           en: "25 lessons",         criterionPl: "Zalicz 25 lekcji",                  criterionEn: "Complete 25 lessons" },
-  { id: "bismillah",      icon: "🌙",  pl: "Bismillah",           en: "Bismillah",          criterionPl: "Zalicz lekcję Bismillah",           criterionEn: "Complete the Bismillah lesson" },
-  { id: "shahada_badge",  icon: "☪️",  pl: "Szahada",            en: "Shahada",            criterionPl: "Zalicz lekcję Szahada",             criterionEn: "Complete the Shahada lesson" },
-  { id: "fatiha_lesson",  icon: "🕋",  pl: "Al-Fatiha",           en: "Al-Fatiha",          criterionPl: "Zalicz lekcję Al-Fatiha",           criterionEn: "Complete the Al-Fatiha lesson" },
-  { id: "salat_names",    icon: "🕌",  pl: "5 modlitw",           en: "5 prayers",          criterionPl: "Zalicz lekcję o pięciu modlitwach", criterionEn: "Complete the five prayers lesson" },
-  { id: "salat_rakat",    icon: "🧭",  pl: "Raka'at",             en: "Raka'at",            criterionPl: "Zalicz lekcję o raka'at",           criterionEn: "Complete the raka'at lesson" },
-  { id: "salat_positions", icon: "🧎", pl: "Ruchy salat",         en: "Salat moves",        criterionPl: "Zalicz lekcję o ruku lub sujud",    criterionEn: "Complete a ruku or sujud lesson" },
-  { id: "prayer_mode_first", icon: "🤲", pl: "Pierwszy Prayer Mode", en: "First Prayer Mode", criterionPl: "Ukończ 1 sesję Prayer Mode",         criterionEn: "Complete 1 Prayer Mode session" },
-  { id: "prayer_mode_3",  icon: "🌟",  pl: "3 sesje modlitwy",    en: "3 prayer sessions",  criterionPl: "Ukończ 3 sesje Prayer Mode",         criterionEn: "Complete 3 Prayer Mode sessions" },
-  { id: "pillars_quiz10", icon: "⭐",  pl: "Filary quiz",         en: "Pillars quiz",       criterionPl: "Zdobądź 10 poprawnych w quizie filarów", criterionEn: "Get 10 correct in the pillars quiz" },
-  { id: "surah_quiz10",   icon: "📜",  pl: "Quiz sur",            en: "Surah quiz",         criterionPl: "Zdobądź 10 poprawnych w quizie sur", criterionEn: "Get 10 correct in the surah quiz" },
-  { id: "quran_hifz_first", icon: "🔊", pl: "Pierwsza sura w toku", en: "First surah started", criterionPl: "Rozpocznij naukę jednej krótkiej sury", criterionEn: "Start learning one short surah" },
-  { id: "quran_hifz_4", icon: "🕋", pl: "4 krótkie sury", en: "4 short surahs", criterionPl: "Oznacz 4 krótkie sury jako zapamiętane", criterionEn: "Mark 4 short surahs as memorized" },
-  { id: "history_quiz10", icon: "🧭",  pl: "Quiz Historii",       en: "History quiz",       criterionPl: "Zdobądź 10 poprawnych w quizie Historii", criterionEn: "Get 10 correct in the History quiz" },
-  { id: "family_bridge_quiz5", icon: "🤝", pl: "Most rodzinny", en: "Family bridge", criterionPl: "Zdobądź 5 poprawnych w quizie dla rodziny", criterionEn: "Get 5 correct in the Family Bridge quiz" },
-  { id: "games3",         icon: "🎮",  pl: "3 ćwiczenia",         en: "3 practice rounds",  criterionPl: "Zrób 3 rundy ćwiczeń",              criterionEn: "Complete 3 practice rounds" },
-  { id: "dua_fav3",       icon: "☾",   pl: "3 ulubione dua",      en: "3 favorite duas",    criterionPl: "Dodaj 3 dua do ulubionych",         criterionEn: "Favorite 3 duas" },
-  { id: "review_clean",   icon: "✓",   pl: "Czysta powtórka",     en: "Clean review",       criterionPl: "Nie miej aktywnych błędów",          criterionEn: "Have no active mistakes" },
-  { id: "asma_challenge20", icon: "99", pl: "20 Imion",           en: "20 Names",           criterionPl: "Wpisz 20 imion w challenge",         criterionEn: "Enter 20 names in challenge" },
-  { id: "history_timeline_15", icon: "🧭", pl: "Oś czasu 15", en: "Timeline 15", criterionPl: "Otwórz lub przeczytaj 15 wydarzeń Historii", criterionEn: "Open or read 15 History timeline events" },
-  { id: "history_prophets_8", icon: "🌿", pl: "Poznałem 8 Proroków", en: "8 Prophets", criterionPl: "Oznacz 8 profili proroków w Historii", criterionEn: "Mark 8 prophet profiles in History" },
-  { id: "history_angels_all", icon: "✨", pl: "Aniołowie", en: "Angels", criterionPl: "Przejdź całą sekcję Aniołowie", criterionEn: "Complete the Angels section" },
-  { id: "history_sahaba_15", icon: "🤝", pl: "15 Sahaba", en: "15 Sahaba", criterionPl: "Oznacz 15 postaci z najlepszego pokolenia", criterionEn: "Mark 15 people from the best generation" },
-  { id: "history_conversions_10", icon: "🫶", pl: "Drogi do Islamu", en: "Roads to Islam", criterionPl: "Poznaj 10 historii konwersji", criterionEn: "Learn 10 conversion stories" },
-  { id: "history_women_9", icon: "🌺", pl: "Kobiety historii", en: "Women of History", criterionPl: "Poznaj 9 profili kobiet w historii islamu", criterionEn: "Learn 9 profiles of women in Islamic history" },
-  { id: "history_bridge_builder", icon: "🕊", pl: "Budowniczy mostów", en: "Bridge Builder", criterionPl: "Ukończ sekcję Islam a chrześcijaństwo", criterionEn: "Complete the Islam and Christianity section" },
-  { id: "history_stories_8", icon: "📚", pl: "Stories Historii", en: "History Stories", criterionPl: "Przeczytaj 8 krótkich stories w Historii", criterionEn: "Read 8 short History stories" },
-];
-
-const BADGE_CATEGORIES = [
-  { id: "learning", pl: "Nauka", en: "Learning" },
-  { id: "quran", pl: "Quran", en: "Quran" },
-  { id: "streaks", pl: "Serie", en: "Streaks" },
-  { id: "practice", pl: "Ćwiczenia", en: "Practice" },
-  { id: "prayer", pl: "Modlitwa", en: "Prayer" },
-  { id: "history", pl: "Historia", en: "History" }
-];
-
-function badgeCategory(id) {
-  if (/^history_/.test(id)) return "history";
-  if (/streak/.test(id)) return "streaks";
-  if (/surah|fatiha|dua|quran/.test(id)) return "quran";
-  if (/quiz|game|flash|review|asma/.test(id)) return "practice";
-  if (/salat|prayer|wudu/.test(id)) return "prayer";
-  return "learning";
-}
-
-function badgeTarget(id) {
-  if (/^history_quiz/.test(id)) return { route: "games", activeGame: "historyQuiz" };
-  if (/^history_timeline/.test(id)) return { route: "history", historyTab: "timeline" };
-  if (/^history_prophets/.test(id)) return { route: "history", historyTab: "prophets" };
-  if (/^history_angels/.test(id)) return { route: "history", historyTab: "angels" };
-  if (/^history_sahaba/.test(id)) return { route: "history", historyTab: "sahaba" };
-  if (/^history_conversions/.test(id)) return { route: "history", historyTab: "conversions" };
-  if (/^history_women/.test(id)) return { route: "history", historyTab: "women" };
-  if (/^history_bridge/.test(id)) return { route: "history", historyTab: "christianity" };
-  if (/^history_stories/.test(id)) return { route: "history", historyTab: "stories" };
-  if (/^quran_hifz/.test(id)) return { route: "koran", quranTab: "hifz" };
-  if (/^family_bridge/.test(id)) return { route: "games", activeGame: "familyBridgeQuiz" };
-  if (/letter/.test(id)) return { route: "alphabet" };
-  if (/surah|fatiha|dua/.test(id)) return { route: "koran" };
-  if (/quiz|game|asma/.test(id)) return { route: "games", activeGame: "quizHub" };
-  if (/flash/.test(id)) return { route: "flashcards" };
-  if (/lesson|bismillah|shahada/.test(id)) return { route: "lessons" };
-  if (/salat|prayer/.test(id)) return { route: "prayerGuide" };
-  if (/review/.test(id)) return { route: "review" };
-  return { route: "home" };
 }
 
 function checkBadges() {

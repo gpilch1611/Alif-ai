@@ -1,14 +1,17 @@
-const CACHE_NAME = "alif-ai-v33-practice-rename";
+const CACHE_NAME = "alif-ai-v37-onboarding-data";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260529-practice-rename",
-  "./app.js?v=20260529-practice-rename",
+  "./styles.css?v=20260530-onboarding-data",
+  "./app.js?v=20260530-onboarding-data",
   "./version.json",
+  "./utils/safe-render.js",
   "./data.js",
+  "./data/badges.js",
   "./data/content-metadata.js",
   "./data/family-support.js",
   "./data/history.js",
+  "./data/onboarding.js",
   "./data/halal-haram.js",
   "./data/islamic-core.js",
   "./data/islamic-faq.js",

@@ -87,7 +87,8 @@ test.describe("Alif AI smoke", () => {
   });
 
   test("New users see full-screen onboarding first", async ({ page }) => {
-    await page.evaluate(() => localStorage.clear());
+    await page.goto("about:blank");
+    await page.addInitScript(() => localStorage.clear());
     await page.goto("/?new-user=1");
     await expect(page.getByRole("heading", { name: /Wybierz pierwsza sciezke|Choose your first path/ })).toBeVisible();
     await expect(page.locator("[data-onboarding-goal]")).toHaveCount(6);
@@ -337,7 +338,8 @@ test.describe("Alif AI smoke", () => {
         })
       });
     });
-    await page.evaluate(() => {
+    await page.goto("about:blank");
+    await page.addInitScript(() => {
       localStorage.setItem(
         "alif-ai-state",
         JSON.stringify({
@@ -628,7 +630,8 @@ test.describe("Alif AI smoke", () => {
         })
       });
     });
-    await page.evaluate((payload) => {
+    await page.goto("about:blank");
+    await page.addInitScript((payload) => {
       localStorage.setItem(
         "alif-ai-state",
         JSON.stringify({
