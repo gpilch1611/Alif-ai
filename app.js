@@ -5372,7 +5372,14 @@ function historyQuizChoices(correct, pool) {
   return [correct, ...shuffledForHome(uniquePool).slice(0, 3)].sort(() => Math.random() - 0.5);
 }
 
+let historyQuizPoolCache = null;
+
 function historyQuizPool() {
+  const lang = state.lang || "pl";
+  if (historyQuizPoolCache?.lang === lang) {
+    return historyQuizPoolCache.questions;
+  }
+
   const questions = [];
   const timelineTitles = historyContent.timeline.map(event => historyLabel(event.title));
   historyContent.timeline.forEach((event) => {
@@ -5471,7 +5478,9 @@ function historyQuizPool() {
     });
   });
 
-  return questions.filter(question => question.answer && question.choices.length >= 2);
+  const validQuestions = questions.filter(question => question.answer && question.choices.length >= 2);
+  historyQuizPoolCache = { lang, questions: validQuestions };
+  return validQuestions;
 }
 
 function recordHistoryQuizProgress(question) {
