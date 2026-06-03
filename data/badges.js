@@ -264,6 +264,30 @@ export const BADGES_CATALOG = [
     criterionEn: "Get 5 correct in the Family Bridge quiz"
   },
   {
+    id: "culture_seen5",
+    icon: "✦",
+    pl: "5 kart kultury",
+    en: "5 culture cards",
+    criterionPl: "Oznacz 5 kart Kultury jako poznane",
+    criterionEn: "Mark 5 Culture cards as known"
+  },
+  {
+    id: "culture_seen15",
+    icon: "🌍",
+    pl: "Most kultur",
+    en: "Culture bridge",
+    criterionPl: "Oznacz 15 kart Kultury jako poznane",
+    criterionEn: "Mark 15 Culture cards as known"
+  },
+  {
+    id: "culture_fav5",
+    icon: "♥",
+    pl: "Ulubiona kultura",
+    en: "Culture favorites",
+    criterionPl: "Dodaj 5 kart Kultury do ulubionych",
+    criterionEn: "Favorite 5 Culture cards"
+  },
+  {
     id: "games3",
     icon: "🎮",
     pl: "3 ćwiczenia",
@@ -367,10 +391,12 @@ export const BADGE_CATEGORIES = [
   { id: "streaks", pl: "Serie", en: "Streaks" },
   { id: "practice", pl: "Ćwiczenia", en: "Practice" },
   { id: "prayer", pl: "Modlitwa", en: "Prayer" },
+  { id: "culture", pl: "Kultura", en: "Culture" },
   { id: "history", pl: "Historia", en: "History" }
 ];
 
 export function badgeCategory(id) {
+  if (/^culture_/.test(id)) return "culture";
   if (/^history_/.test(id)) return "history";
   if (/streak/.test(id)) return "streaks";
   if (/surah|fatiha|dua|quran/.test(id)) return "quran";
@@ -391,6 +417,7 @@ export function badgeTarget(id) {
   if (/^history_stories/.test(id)) return { route: "history", historyTab: "stories" };
   if (/^quran_hifz/.test(id)) return { route: "koran", quranTab: "hifz" };
   if (/^family_bridge/.test(id)) return { route: "games", activeGame: "familyBridgeQuiz" };
+  if (/^culture_/.test(id)) return { route: "culture" };
   if (/letter/.test(id)) return { route: "alphabet" };
   if (/surah|fatiha|dua/.test(id)) return { route: "koran" };
   if (/quiz|game|asma/.test(id)) return { route: "games", activeGame: "quizHub" };

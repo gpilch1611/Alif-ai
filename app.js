@@ -19,6 +19,7 @@ import {
   RELIGIOUS_NOTICE,
   TRUST_LEVEL
 } from "./data/content-metadata.js";
+import { CULTURE_KIND_LABELS, CULTURE_REVIEWED_AT, CULTURE_TABS, CULTURE_TOPICS } from "./data/culture.js";
 import {
   OBLIGATORY_PRAYERS,
   OBLIGATORY_PRAYERS_PL,
@@ -50,7 +51,7 @@ import { AQIDAH_BASICS, MUALLAF_GUIDANCE, RAMADAN_GUIDE, ZAKAT_BASICS } from "./
 import { appendTextBlock as appendSafeTextBlock, escapeHtml as escapeUnsafeHtml, safePdfUrl as safeUserPdfUrl, setTrustedHtml as setTrustedHtmlUnsafe } from "./utils/safe-render.js";
 
 const GROQ_MODEL = "llama-3.3-70b-versatile";
-const APP_VERSION = "20260530-onboarding-data";
+const APP_VERSION = "20260603-culture-global";
 window.__ALIF_APP_VERSION = APP_VERSION;
 const AI_SYSTEM_PROMPT_PL = `Jesteś spokojnym doradcą Alif AI od islamu, muzułmanów, konwersji, rozmowy z rodziną, Koranu, modlitwy i pierwszych kroków w wierze.
 Zawsze odpowiadaj TYLKO w języku polskim. Bądź ciepły, konkretny, delikatny i praktyczny.
@@ -389,6 +390,7 @@ const WORD_MEANINGS_EN = {
 
 let deferredInstall = null;
 let route = location.hash.replace("#", "") || "home";
+let pendingCultureFocus = "";
 let flashDeck = [];
 let flashIndex = 0;
 let writingLetter = arabicAlphabet[0];
@@ -462,6 +464,9 @@ const defaultState = {
   books: [],
   interactiveBooks: [],
   cultureFacts: [],
+  cultureTab: "situations",
+  cultureSeen: [],
+  cultureFavorites: [],
   aiMessages: [],
   aiUsage: { day: "", count: 0, lastRequestAt: 0 },
   miniLessonsDone: [],
@@ -693,6 +698,11 @@ function loadState() {
     if (!THEMES.includes(next.theme)) next.theme = "light";
     next.learnedLetters = [...new Set(next.learnedLetters || [])].filter((id) => arabicAlphabet.some((letter) => letter.id === id));
     if (!next.quranSurahFavorites) next.quranSurahFavorites = [];
+    const validCultureIds = new Set(CULTURE_TOPICS.map((topic) => topic.id));
+    const validCultureTabs = new Set(CULTURE_TABS.map((tab) => tab.id));
+    if (!validCultureTabs.has(next.cultureTab)) next.cultureTab = "situations";
+    next.cultureSeen = [...new Set(next.cultureSeen || [])].filter((id) => validCultureIds.has(id));
+    next.cultureFavorites = [...new Set(next.cultureFavorites || [])].filter((id) => validCultureIds.has(id));
     if (!next.prayerModeTab) next.prayerModeTab = "today";
     if (!next.prayerGuideProgress) next.prayerGuideProgress = {};
     if (!next.wuduChecklist) next.wuduChecklist = [];
@@ -2527,7 +2537,22 @@ function homeFavoriteGroups() {
       quranTab: "favayahs"
     };
   });
-  return { surahs, duas, ayahs };
+  const culture = shuffledForHome((state.cultureFavorites || []).slice(0, favoriteLimit))
+    .map(id => {
+      const topic = CULTURE_TOPICS.find(item => item.id === id);
+      return topic
+        ? {
+            type: "culture",
+            title: cultureValue(topic, "title"),
+            sub: `${cultureKindLabel(topic.kind)} · ${cultureValue(topic, "source")}`,
+            target: "culture",
+            cultureTab: topic.tab,
+            cultureTopic: topic.id
+          }
+        : null;
+    })
+    .filter(Boolean);
+  return { surahs, duas, ayahs, culture };
 }
 
 function homeFavoritesCarousel(title, items, emptyText, emptyRoute, emptyTab = "") {
@@ -2543,7 +2568,7 @@ function homeFavoritesCarousel(title, items, emptyText, emptyRoute, emptyTab = "
               ${items
                 .map(
                   item => `
-                <button class="home-carousel-card soft-panel text-left" data-home-fav="${item.target}" ${item.quranTab ? `data-quran-tab="${item.quranTab}"` : ""} ${item.openSurah ? `data-home-surah="${item.openSurah}"` : ""}>
+                <button class="home-carousel-card soft-panel text-left" data-home-fav="${item.target}" ${item.quranTab ? `data-quran-tab="${item.quranTab}"` : ""} ${item.openSurah ? `data-home-surah="${item.openSurah}"` : ""} ${item.cultureTab ? `data-culture-tab="${item.cultureTab}"` : ""} ${item.cultureTopic ? `data-culture-topic="${item.cultureTopic}"` : ""}>
                   <p class="text-sm font-black">${escapeHtml(item.title)}</p>
                   ${item.ar ? `<p class="arabic mt-3 text-right text-2xl leading-loose">${escapeHtml(item.ar)}</p>` : ""}
                   <p class="mt-2 text-xs text-[var(--muted)]">${escapeHtml(item.sub)}</p>
@@ -2987,6 +3012,7 @@ function home() {
           ${homeFavoritesCarousel(tx("Ulubione sury", "Favorite surahs"), favoriteGroups.surahs, tx("Dodaj ulubione sury w Quran.", "Add favorite surahs in Quran."), "koran", "surahs")}
           ${homeFavoritesCarousel(tx("Ulubione dua", "Favorite duas"), favoriteGroups.duas, tx("Dodaj ulubione dua w Quran.", "Add favorite duas in Quran."), "koran", "dua")}
           ${homeFavoritesCarousel(tx("Ulubione wersety", "Favorite ayahs"), favoriteGroups.ayahs, tx("Dodaj ulubione wersety podczas czytania sur.", "Add favorite ayahs while reading surahs."), "koran", "favayahs")}
+          ${homeFavoritesCarousel(tx("Ulubione z Kultury", "Favorite culture notes"), favoriteGroups.culture, tx("Dodaj ulubione karty w Kulturze.", "Add favorite cards in Culture."), "culture")}
         </div>
       </section>
       <aside class="grid min-w-0 gap-4">
@@ -3063,6 +3089,9 @@ function home() {
   view.querySelectorAll("[data-home-fav]").forEach((button) => {
     button.addEventListener("click", () => {
       if (button.dataset.quranTab) state.quranTab = button.dataset.quranTab;
+      if (button.dataset.cultureTab) state.cultureTab = button.dataset.cultureTab;
+      if (button.dataset.cultureTopic) pendingCultureFocus = button.dataset.cultureTopic;
+      saveState();
       setRoute(button.dataset.homeFav);
       const num = Number(button.dataset.homeSurah || 0);
       if (num) setTimeout(() => openSurah(num, { focusReader: true }), 150);
@@ -5023,6 +5052,83 @@ function addSingleFlashcard(front, back, hint = "PDF") {
   saveState();
 }
 
+function cultureValue(item, key) {
+  return state.lang === "pl" ? item[`${key}Pl`] : item[`${key}En`];
+}
+
+function cultureKindMeta(kind) {
+  return CULTURE_KIND_LABELS[kind] || CULTURE_KIND_LABELS.custom;
+}
+
+function cultureKindLabel(kind) {
+  const meta = cultureKindMeta(kind);
+  return state.lang === "pl" ? meta.pl : meta.en;
+}
+
+function cultureKindHint(kind) {
+  const meta = cultureKindMeta(kind);
+  return state.lang === "pl" ? meta.hintPl : meta.hintEn;
+}
+
+function cultureLinkAttrs(link = {}) {
+  return [
+    `data-culture-route="${escapeHtml(link.route || "home")}"`,
+    link.historyTab ? `data-culture-history-tab="${escapeHtml(link.historyTab)}"` : "",
+    link.quranTab ? `data-culture-quran-tab="${escapeHtml(link.quranTab)}"` : "",
+    link.faqTab ? `data-culture-faq-tab="${escapeHtml(link.faqTab)}"` : "",
+    link.activeGame ? `data-culture-active-game="${escapeHtml(link.activeGame)}"` : ""
+  ].filter(Boolean).join(" ");
+}
+
+function cultureCard(topic, seenSet, favoriteSet) {
+  const isSeen = seenSet.has(topic.id);
+  const isFavorite = favoriteSet.has(topic.id);
+  const link = topic.link;
+  return `
+    <article class="culture-card panel p-4 ${isSeen ? "seen" : ""}" data-culture-topic="${escapeHtml(topic.id)}">
+      <div class="culture-card-head">
+        <span class="culture-icon">${escapeHtml(topic.icon || "✦")}</span>
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="culture-kind ${escapeHtml(topic.kind || "custom")}" title="${escapeHtml(cultureKindHint(topic.kind))}">${escapeHtml(cultureKindLabel(topic.kind))}</span>
+            <span class="trust-badge ${trustClass(topic.confidence)}">${trustLabel(topic.confidence)}</span>
+          </div>
+          <h3 class="culture-title">${escapeHtml(cultureValue(topic, "title"))}</h3>
+        </div>
+        <button class="culture-fav ${isFavorite ? "active" : ""}" data-culture-favorite="${escapeHtml(topic.id)}" aria-label="${tx("Ulubione", "Favorite")}">♥</button>
+      </div>
+      <p class="culture-copy">${escapeHtml(cultureValue(topic, "body"))}</p>
+      <div class="culture-guides">
+        <div class="culture-guide">
+          <strong>${tx("W praktyce", "In practice")}</strong>
+          <p>${escapeHtml(cultureValue(topic, "do"))}</p>
+        </div>
+        <div class="culture-guide">
+          <strong>${tx("Uważaj", "Mind this")}</strong>
+          <p>${escapeHtml(cultureValue(topic, "avoid"))}</p>
+        </div>
+      </div>
+      <p class="quality-meta">${escapeHtml(cultureValue(topic, "source"))} · ${tx("Sprawdzone:", "Checked:")} ${CULTURE_REVIEWED_AT}</p>
+      <div class="culture-actions">
+        <button class="big-action ${isSeen ? "border border-[var(--line)] bg-[var(--surface)]" : "bg-emerald-500 text-white"}" data-culture-seen="${escapeHtml(topic.id)}">
+          ${isSeen ? tx("Znam to", "Known") : tx("Znam to", "I know this")}
+        </button>
+        ${link ? `<button class="big-action border border-[var(--line)] bg-[var(--surface)]" ${cultureLinkAttrs(link)}>${escapeHtml(state.lang === "pl" ? link.labelPl : link.labelEn)}</button>` : ""}
+      </div>
+    </article>
+  `;
+}
+
+function focusCultureTarget(targetId) {
+  const target = targetId
+    ? view.querySelector(`[data-culture-topic="${targetId}"]`)
+    : view.querySelector(".culture-grid");
+  if (!target) return;
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  target.classList.add("culture-focus");
+  setTimeout(() => target.classList.remove("culture-focus"), 1200);
+}
+
 function readFileAsDataUrl(file, callback) {
   if (!file) return;
   const reader = new FileReader();
@@ -5031,38 +5137,124 @@ function readFileAsDataUrl(file, callback) {
 }
 
 function culture() {
-  const facts = [
-    {
-      title: tx("Gościnność bez występu", "Hospitality without performance"),
-      text: tx("W wielu rodzinach muzułmańskich kawa, herbata albo daktyle są prostym znakiem szacunku. Nie chodzi o bogactwo stołu, tylko o danie drugiej osobie miejsca i spokoju.", "In many Muslim families, coffee, tea or dates are a simple sign of respect. It is not about a wealthy table, but about giving another person space and calm.")
-    },
-    {
-      title: tx("Adab, czyli piękny sposób", "Adab, a beautiful way"),
-      text: tx("Adab oznacza dobre maniery, takt i szacunek. W praktyce to miękki głos, cierpliwość w rozmowie i pamiętanie, że prawda nie musi być wypowiedziana ostro.", "Adab means good manners, tact and respect. In practice it is a gentle voice, patience in conversation and remembering that truth does not need to be harsh.")
-    },
-    {
-      title: tx("Rodzina i zmiana wiary", "Family and a change of faith"),
-      text: tx("Konwersja bywa dla rodziny zaskoczeniem. Dobry pierwszy krok to nie debata, ale spokojne pokazanie: nadal kocham, nadal jestem sobą, po prostu szukam Boga poważniej.", "Conversion can surprise a family. A good first step is not a debate, but calmly showing: I still love you, I am still myself, I am simply seeking God more seriously.")
-    },
-    {
-      title: tx("Meczet jako bezpieczne miejsce", "The mosque as a safe place"),
-      text: tx("Meczet to nie tylko sala modlitwy. Często jest miejscem nauki, pomocy dla nowych muzułmanów, rozmowy z imamem i poznania ludzi, którzy przeszli podobną drogę.", "A mosque is not only a prayer hall. Often it is a place to learn, find support as a new Muslim, speak with an imam and meet people who walked a similar road.")
-    }
-  ];
+  const validTabIds = new Set(CULTURE_TABS.map((tab) => tab.id));
+  if (!validTabIds.has(state.cultureTab)) state.cultureTab = "situations";
+  const activeTab = CULTURE_TABS.find((tab) => tab.id === state.cultureTab) || CULTURE_TABS[0];
+  const seenSet = new Set(state.cultureSeen || []);
+  const favoriteSet = new Set(state.cultureFavorites || []);
+  const tabTopics = CULTURE_TOPICS.filter((topic) => topic.tab === activeTab.id);
+  const seenCount = CULTURE_TOPICS.filter((topic) => seenSet.has(topic.id)).length;
+  const tabSeenCount = tabTopics.filter((topic) => seenSet.has(topic.id)).length;
+  const currentTopic = tabTopics.find((topic) => !seenSet.has(topic.id)) || tabTopics[0];
+  const nextTopic = CULTURE_TOPICS.find((topic) => !seenSet.has(topic.id)) || CULTURE_TOPICS[0];
+  const boundaryTopic = CULTURE_TOPICS.find((topic) => topic.tab === "boundaries") || CULTURE_TOPICS[0];
+
   view.innerHTML = `
-    <div class="mb-4">
-      <h1 class="text-3xl font-black">${tx("Kultura i ciekawostki", "Culture and facts")}</h1>
-      <p class="text-[var(--muted)]">${tx("Krótkie, sprawdzone obserwacje o codzienności muzułmanów i rozmowie z bliskimi.", "Short, curated notes about everyday Muslim life and conversations with loved ones.")}</p>
-    </div>
-    <div class="grid gap-3 sm:grid-cols-2">
-      ${facts.map((item) => `
-        <article class="soft-panel p-4">
-          <h3 class="mt-1 font-black">${escapeHtml(item.title)}</h3>
-          <p class="mt-2 text-sm text-[var(--muted)]">${escapeHtml(item.text)}</p>
-        </article>
-      `).join("")}
+    <div class="culture-shell">
+      <section class="culture-hero">
+        <div>
+          <p class="history-kicker">${tx("Codzienność, adab, zwyczaje", "Everyday life, adab, customs")}</p>
+          <h1 class="text-3xl font-black">${tx("Kultura i codzienność", "Culture and daily life")}</h1>
+          <p class="mt-2 text-[var(--muted)]">${tx("Krótkie sceny o gościnności, adabie, rodzinie, meczecie i różnorodności muzułmanów.", "Short scenes about hospitality, adab, family, mosque life and Muslim diversity.")}</p>
+        </div>
+        <div class="culture-progress-card">
+          <span>${seenCount}/${CULTURE_TOPICS.length}</span>
+          <strong>${tx("poznane", "known")}</strong>
+          <small>${favoriteSet.size} ${tx("ulubione", "favorites")}</small>
+        </div>
+      </section>
+
+      <div class="culture-stat-grid">
+        <button class="culture-stat-card soft-panel p-4" data-culture-stat="current" data-culture-jump-tab="${escapeHtml(activeTab.id)}" ${currentTopic ? `data-culture-jump-topic="${escapeHtml(currentTopic.id)}"` : ""}>
+          <span>${tx("Teraz", "Now")}</span>
+          <strong>${escapeHtml(cultureValue(activeTab, "title"))}</strong>
+          <small>${tabSeenCount}/${tabTopics.length} ${tx("w tej zakładce", "in this tab")}</small>
+        </button>
+        <button class="culture-stat-card soft-panel p-4" data-culture-stat="next" data-culture-jump-tab="${escapeHtml(nextTopic.tab)}" data-culture-jump-topic="${escapeHtml(nextTopic.id)}">
+          <span>${tx("Następny temat", "Next topic")}</span>
+          <strong>${escapeHtml(cultureValue(nextTopic, "title"))}</strong>
+          <small>${escapeHtml(cultureKindLabel(nextTopic.kind))}</small>
+        </button>
+        <button class="culture-stat-card soft-panel p-4" data-culture-stat="boundary" data-culture-jump-tab="boundaries" data-culture-jump-topic="${escapeHtml(boundaryTopic.id)}">
+          <span>${tx("Granica", "Boundary")}</span>
+          <strong>${tx("Zwyczaj ≠ zasada", "Custom ≠ rule")}</strong>
+          <small>${tx("religijne szczegóły są w sekcjach Islamu", "religious details live in Islam sections")}</small>
+        </button>
+      </div>
+
+      <div class="history-tabs" role="tablist" aria-label="${tx("Kategorie kultury", "Culture categories")}">
+        ${CULTURE_TABS.map((tab) => `
+          <button class="tab-btn ${activeTab.id === tab.id ? "active" : ""}" data-culture-tab="${tab.id}">
+            <span>${escapeHtml(tab.icon)}</span>
+            <span>${escapeHtml(cultureValue(tab, "title"))}</span>
+          </button>
+        `).join("")}
+      </div>
+
+      <div class="culture-grid">
+        ${tabTopics.map((topic) => cultureCard(topic, seenSet, favoriteSet)).join("")}
+      </div>
     </div>
   `;
+
+  if (pendingCultureFocus) {
+    const targetId = pendingCultureFocus;
+    pendingCultureFocus = "";
+    setTimeout(() => focusCultureTarget(targetId), 80);
+  }
+
+  view.querySelectorAll("[data-culture-jump-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.cultureTab = button.dataset.cultureJumpTab || "situations";
+      pendingCultureFocus = button.dataset.cultureJumpTopic || "";
+      saveState();
+      culture();
+    });
+  });
+  view.querySelectorAll("[data-culture-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.cultureTab = button.dataset.cultureTab;
+      saveState();
+      culture();
+    });
+  });
+  view.querySelectorAll("[data-culture-seen]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.cultureSeen;
+      const current = new Set(state.cultureSeen || []);
+      const wasSeen = current.has(id);
+      current.add(id);
+      state.cultureSeen = [...current];
+      if (!wasSeen) {
+        state.points += 8;
+        confetti();
+      }
+      saveState();
+      checkBadges();
+      culture();
+    });
+  });
+  view.querySelectorAll("[data-culture-favorite]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.cultureFavorite;
+      const current = new Set(state.cultureFavorites || []);
+      if (current.has(id)) current.delete(id);
+      else current.add(id);
+      state.cultureFavorites = [...current];
+      saveState();
+      culture();
+    });
+  });
+  view.querySelectorAll("[data-culture-route]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.dataset.cultureHistoryTab) state.historyTab = button.dataset.cultureHistoryTab;
+      if (button.dataset.cultureQuranTab) state.quranTab = button.dataset.cultureQuranTab;
+      if (button.dataset.cultureFaqTab) state.faqTab = button.dataset.cultureFaqTab;
+      if (button.dataset.cultureActiveGame) state.activeGame = button.dataset.cultureActiveGame;
+      saveState();
+      setRoute(button.dataset.cultureRoute);
+    });
+  });
 }
 
 function games() {
@@ -6270,6 +6462,13 @@ function runSearch(q) {
   const lessonMatches = (LESSONS_DATA[state.lang] || [])
     .filter(l => !isIslamLessonCategory(l.category))
     .filter(l => l.title.toLowerCase().includes(q) || l.meaning.toLowerCase().includes(q) || l.ar.includes(q) || l.tr.toLowerCase().includes(q));
+  const cultureMatches = CULTURE_TOPICS.filter((topic) => [
+    cultureValue(topic, "title"),
+    cultureValue(topic, "body"),
+    cultureValue(topic, "do"),
+    cultureValue(topic, "avoid"),
+    cultureKindLabel(topic.kind)
+  ].join(" ").toLowerCase().includes(q));
 
   view.innerHTML = `
     <div class="mb-4"><h1 class="text-3xl font-black">${tx("Wyniki", "Results")}: "${escapeHtml(q)}"</h1></div>
@@ -6278,13 +6477,20 @@ function runSearch(q) {
       ${wordMatches.length ? `<section><h2 class="font-black mb-3">${tx("Słowniczek", "Words")}</h2><div class="grid grid-cols-2 gap-2">${wordMatches.map(w => `<div class="panel p-4 text-left"><span class="arabic text-2xl block">${escapeHtml(w.ar)}</span><span class="font-bold">${escapeHtml(w.pl)}</span></div>`).join("")}</div></section>` : ""}
       ${surahMatches.length ? `<section><h2 class="font-black mb-3">${tx("Koran", "Quran")}</h2><div class="grid grid-cols-2 gap-2">${surahMatches.map(s => `<button class="panel p-4 text-left" data-read-surah="${s.number}">${s.number}. ${escapeHtml(s.enName)}</button>`).join("")}</div></section>` : ""}
       ${lessonMatches.length ? `<section><h2 class="font-black mb-3">${tx("Lekcje", "Lessons")}</h2><div class="grid grid-cols-2 gap-2">${lessonMatches.map(l => `<div class="panel p-4 text-left"><span class="arabic text-2xl block">${escapeHtml(l.ar)}</span><span class="font-bold text-sm">${escapeHtml(l.title)}</span><span class="block text-xs text-[var(--muted)]">${escapeHtml(l.meaning)}</span></div>`).join("")}</div></section>` : ""}
-      ${!alphabetMatches.length && !wordMatches.length && !surahMatches.length && !lessonMatches.length ? `<p class="text-[var(--muted)]">${tx("Brak wyników.", "No results.")}</p>` : ""}
+      ${cultureMatches.length ? `<section><h2 class="font-black mb-3">${tx("Kultura", "Culture")}</h2><div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${cultureMatches.map(topic => `<button class="panel p-4 text-left" data-culture-result-tab="${escapeHtml(topic.tab)}" data-culture-result-topic="${escapeHtml(topic.id)}"><span class="text-xl">${escapeHtml(topic.icon || "✦")}</span><span class="block font-bold text-sm">${escapeHtml(cultureValue(topic, "title"))}</span><span class="block text-xs text-[var(--muted)]">${escapeHtml(cultureKindLabel(topic.kind))}</span></button>`).join("")}</div></section>` : ""}
+      ${!alphabetMatches.length && !wordMatches.length && !surahMatches.length && !lessonMatches.length && !cultureMatches.length ? `<p class="text-[var(--muted)]">${tx("Brak wyników.", "No results.")}</p>` : ""}
     </div>
   `;
   view.querySelectorAll("[data-letter-info]").forEach(btn => btn.addEventListener("click", () => openLetter(btn.dataset.letterInfo)));
   view.querySelectorAll("[data-read-surah]").forEach(btn => btn.addEventListener("click", () => {
     setRoute("koran");
     setTimeout(() => openSurah(Number(btn.dataset.readSurah)), 100);
+  }));
+  view.querySelectorAll("[data-culture-result-tab]").forEach(btn => btn.addEventListener("click", () => {
+    state.cultureTab = btn.dataset.cultureResultTab;
+    pendingCultureFocus = btn.dataset.cultureResultTopic || "";
+    saveState();
+    setRoute("culture");
   }));
 }
 
@@ -6382,6 +6588,8 @@ function checkBadges() {
   const pts = state.points;
   const fc = (state.customFlashcards || []).length + Object.keys(state.flashcards || {}).length;
   const ld = (state.miniLessonsDone || []).length;
+  const cultureSeen = new Set(state.cultureSeen || []).size;
+  const cultureFavorites = new Set(state.cultureFavorites || []).size;
   const prayerSessions = state.prayerGuideSessions || 0;
   const historyProgress = ensureHistoryProgress();
   const gamesPlayed =
@@ -6426,6 +6634,9 @@ function checkBadges() {
   if (HIFZ_SURAHS.every(num => state.hifzProgress?.[num] === "memorized")) unlockBadge("quran_hifz_4", tx("4 krótkie sury", "4 short surahs"));
   if ((state.historyQuizStats?.correct || 0) >= 10) unlockBadge("history_quiz10", tx("Quiz Historii", "History quiz"));
   if ((state.familyBridgeQuizStats?.correct || 0) >= 5) unlockBadge("family_bridge_quiz5", tx("Most rodzinny", "Family bridge"));
+  if (cultureSeen >= 5) unlockBadge("culture_seen5", tx("5 kart kultury", "5 culture cards"));
+  if (cultureSeen >= 15) unlockBadge("culture_seen15", tx("Most kultur", "Culture bridge"));
+  if (cultureFavorites >= 5) unlockBadge("culture_fav5", tx("Ulubiona kultura", "Culture favorites"));
   if (gamesPlayed >= 3) unlockBadge("games3", tx("3 ćwiczenia", "3 practice rounds"));
   if ((state.quranDuaFavorites || []).length >= 3) unlockBadge("dua_fav3", tx("3 ulubione dua", "3 favorite duas"));
   if (activeMistakeTotal() === 0 && gamesPlayed > 0) unlockBadge("review_clean", tx("Czysta powtórka", "Clean review"));

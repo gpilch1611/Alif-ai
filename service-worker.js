@@ -1,14 +1,15 @@
-const CACHE_NAME = "alif-ai-v37-onboarding-data";
+const CACHE_NAME = "alif-ai-v39-culture-global";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=20260530-onboarding-data",
-  "./app.js?v=20260530-onboarding-data",
+  "./styles.css?v=20260603-culture-global",
+  "./app.js?v=20260603-culture-global",
   "./version.json",
   "./utils/safe-render.js",
   "./data.js",
   "./data/badges.js",
   "./data/content-metadata.js",
+  "./data/culture.js",
   "./data/family-support.js",
   "./data/history.js",
   "./data/onboarding.js",
